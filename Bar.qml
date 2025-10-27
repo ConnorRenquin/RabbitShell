@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import QtQuick
 
@@ -17,8 +18,23 @@ Scope {
 
             implicitHeight: 30
 
-            ClockWidget {
+            Row {
                 anchors.centerIn: parent
+                ClockWidget {}
+                Repeater {
+                    model: Hyprland.workspaces
+                    Rectangle {
+                        height: 25
+                        border.width: 1
+                        width: 25
+                        color: Colors.bgDim
+                        Text {
+                            text: modelData.id
+                            anchors.centerIn: parent
+                            color: Colors.fg
+                        }
+                    }
+                }
             }
         }
     }
