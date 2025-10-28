@@ -7,13 +7,12 @@ import QtQuick
 Scope {
     Bar {}
     FloatingWindow {
+        visible: false
 
         Rectangle {
-            // match the size of the window
             anchors.fill: parent
-
             radius: 5
-            color: "white" // your actual color
+            color: "white"
 
             Column {
                 anchors.centerIn: parent
