@@ -1,41 +1,35 @@
 import Quickshell
-import Quickshell.Hyprland
-import Quickshell.Io
 import QtQuick
 
-Scope {
-    Variants {
-        model: Quickshell.screens
-        PanelWindow {
-            required property var modelData
-            screen: modelData
+PanelWindow {
+    implicitHeight: 35
+    color: "transparent"
+    anchors {
+        top: true
+        left: true
+        right: true
+    }
 
-            anchors {
-                top: true
-                left: true
-                right: true
-            }
+    Row {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.leftMargin: 10
+        spacing: 20
 
-            implicitHeight: 30
+        WorkspacesWidget {}
+    }
 
-            Row {
-                anchors.centerIn: parent
-                ClockWidget {}
-                Repeater {
-                    model: Hyprland.workspaces
-                    Rectangle {
-                        height: 25
-                        border.width: 1
-                        width: 25
-                        color: Colors.bgDim
-                        Text {
-                            text: modelData.id
-                            anchors.centerIn: parent
-                            color: Colors.fg
-                        }
-                    }
-                }
-            }
-        }
+    // Center section
+    Row {
+        anchors.centerIn: parent
+        spacing: 20
+        ClockWidget {}
+    }
+
+    Row {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.rightMargin: 10
+        spacing: 20
     }
 }
