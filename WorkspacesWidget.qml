@@ -2,7 +2,6 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
 import QtQuick
-import "constants.js" as Constants
 
 Row {
     spacing: 20
@@ -12,7 +11,7 @@ Row {
         Rectangle {
             property string backgroundColor: modelData.focused ? Colors.fg : Colors.bgDim
             property string textColor: modelData.focused ? Colors.bgDim : Colors.fg
-            height: Constants.WIDGET_HEIGHT
+            height: Constants.widgetHeight
 
             width: 35
             radius: 20

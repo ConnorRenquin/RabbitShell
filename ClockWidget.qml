@@ -1,9 +1,8 @@
 import QtQuick
-import "constants.js" as Constants
 
 Rectangle {
     width: 70
-    height: Constants.WIDGET_HEIGHT
+    height: Constants.widgetHeight
     color: Colors.bgDim
     radius: 5
 

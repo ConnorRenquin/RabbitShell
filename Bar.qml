@@ -2,7 +2,9 @@ import Quickshell
 import QtQuick
 
 PanelWindow {
-    implicitHeight: 35
+    readonly property int rowMargin: 10
+
+    implicitHeight: Constants.barHeight
     color: "transparent"
     anchors {
         top: true
@@ -13,13 +15,12 @@ PanelWindow {
     Row {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: 10
+        anchors.leftMargin: rowMargin
         spacing: 20
 
         WorkspacesWidget {}
     }
 
-    // Center section
     Row {
         anchors.centerIn: parent
         spacing: 20
@@ -29,7 +30,9 @@ PanelWindow {
     Row {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.rightMargin: 10
+        anchors.rightMargin: rowMargin
         spacing: 20
+
+        SystemTray {}
     }
 }
