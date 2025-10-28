@@ -1,8 +1,30 @@
 pragma Singleton
-
 import QtQuick
 
 QtObject {
     readonly property color bgDim: "#232A2E"
     readonly property color fg: "#D3C6AA"
+    readonly property color bg0: "#2D353B"
+    readonly property color bg1: "#343F44"
+    readonly property color bg2: "#3D484D"
+    readonly property color bg3: "#475258"
+    readonly property color bg4: "#4F585E"
+    readonly property color bg5: "#56635f"
+    readonly property color bgVisual: "#543A48"
+    readonly property color bgRed: "#514045"
+    readonly property color bgGreen: "#425047"
+    readonly property color bgBlue: "#3A515D"
+    readonly property color bgYellow: "#4D4C43"
+    readonly property color orange: "#E69875"
+    readonly property color yellow: "#DBBC7F"
+    readonly property color green: "#A7C080"
+    readonly property color aqua: "#83C092"
+    readonly property color blue: "#7FBBB3"
+    readonly property color purple: "#D699B6"
+    readonly property color grey0: "#7A8478"
+    readonly property color grey1: "#859289"
+    readonly property color grey2: "#9DA9A0"
+    readonly property color statusline1: "#A7C080"
+    readonly property color statusline2: "#D3C6AA"
+    readonly property color statusline3: "#E67E80"
 }
