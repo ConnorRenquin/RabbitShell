@@ -34,5 +34,6 @@ PanelWindow {
         spacing: 20
 
         SystemTray {}
+        PowerButton {}
     }
 }
