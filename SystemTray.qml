@@ -31,6 +31,14 @@ Rectangle {
                     width: 20  // Set desired icon size
                     height: 20
                 }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: event => {
+                        console.log("hello", modelData.menu.toString());
+                    }
+                }
             }
         }
     }
