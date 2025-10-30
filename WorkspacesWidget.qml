@@ -4,7 +4,7 @@ import Quickshell.Io
 import QtQuick
 
 Row {
-    spacing: 20
+    spacing: 10
 
     Repeater {
         model: Hyprland.workspaces
@@ -13,8 +13,8 @@ Row {
             property string textColor: modelData.focused ? Colors.bgDim : Colors.fg
             height: Constants.widgetHeight
 
-            width: 35
-            radius: 20
+            width: 30
+            radius: 5
             color: backgroundColor
             Text {
                 text: modelData.id
