@@ -6,36 +6,4 @@ import QtQuick
 
 Scope {
     Bar {}
-    FloatingWindow {
-        visible: false
-
-        Rectangle {
-            anchors.fill: parent
-            radius: 5
-            color: "white"
-
-            Column {
-                anchors.centerIn: parent
-                spacing: 5
-                Repeater {
-                    model: SystemTray.items
-                    Row {
-                        spacing: 20
-                        IconImage {
-                            implicitSize: 20
-                            source: modelData.icon
-                        }
-                        Column {
-                            Text {
-                                text: modelData.title
-                            }
-                            Text {
-                                text: modelData.tooltipTitle
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
