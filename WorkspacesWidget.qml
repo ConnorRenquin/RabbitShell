@@ -7,13 +7,13 @@ Row {
     spacing: 10
 
     Repeater {
-        model: Hyprland.workspaces
+        model: Hyprland.workspaces.values.filter(workspace => workspace.id != -99)
         Rectangle {
             property string backgroundColor: modelData.focused ? Colors.fg : Colors.bgDim
             property string textColor: modelData.focused ? Colors.bgDim : Colors.fg
-            height: Constants.widgetHeight
+            implicitHeight: Constants.widgetHeight
 
-            width: 30
+            implicitWidth: 30
             radius: 5
             color: backgroundColor
             TextStyled {
