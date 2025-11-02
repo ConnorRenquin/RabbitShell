@@ -1,13 +1,28 @@
 import QtQuick
 
 Rectangle {
-    width: 70
-    height: Constants.widgetHeight
+    id: clockBackground
     color: Colors.bgDim
     radius: 5
+    height: Constants.widgetHeight
 
-    TextStyled {
+    implicitWidth: contentRow.implicitWidth + 20
+
+    Row {
+        id: contentRow
         anchors.centerIn: parent
-        text: Time.time
+        spacing: 20
+
+        TextStyled {
+            text: Time.time
+        }
+
+        TextStyled {
+            text: ""
+        }
+
+        TextStyled {
+            text: Time.date
+        }
     }
 }
