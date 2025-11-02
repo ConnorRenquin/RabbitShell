@@ -10,6 +10,11 @@ Rectangle {
     color: Colors.bgDim
     property bool showMenu: false
 
+    TextStyled {
+        text: "⏻"
+        anchors.centerIn: parent
+    }
+
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
@@ -38,6 +43,7 @@ Rectangle {
                 anchors.margins: 5
                 spacing: 5
 
+                // TODO This is meant to mean the button within the power menu, need to refactor and introduce a generic button.
                 PowerMenuButton {
                     label: "Logout"
                     command: "logout"
