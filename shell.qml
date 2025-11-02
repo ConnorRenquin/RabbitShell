@@ -6,4 +6,5 @@ import QtQuick
 
 Scope {
     Bar {}
+    NotificationService {}
 }
