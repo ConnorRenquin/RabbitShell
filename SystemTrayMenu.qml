@@ -6,13 +6,10 @@ PanelWindow {
     id: root
     property QsMenuHandle trayMenu
 
+    focusable: true
     color: "transparent"
-    width: 200
-    height: contentColumn.height + 20
-    anchors {
-        top: true
-        right: true
-    }
+    implicitWidth: 200
+    implicitHeight: contentColumn.height
 
     QsMenuOpener {
         id: menuOpener
@@ -70,18 +67,13 @@ PanelWindow {
                         }
                     }
 
-                    Text {
+                    TextStyled {
                         id: textContent
-                        color: Colors.fg
-                        font {
-                            pixelSize: 15
-                        }
                         anchors {
                             centerIn: parent
                         }
                         text: modelData.text
                         wrapMode: Text.WordWrap
-                        width: parent.width - 10
                     }
                     MouseArea {
                         anchors.fill: parent

@@ -4,8 +4,8 @@ import QtQuick
 
 Rectangle {
     id: root
-    height: Constants.widgetHeight
-    width: Constants.widgetHeight
+    implicitHeight: Constants.widgetHeight
+    implicitWidth: Constants.widgetHeight
     radius: 5
     color: Colors.bgDim
     property bool showMenu: false
@@ -20,8 +20,8 @@ Rectangle {
 
     PanelWindow {
         visible: root.showMenu
-        width: 120
-        height: 180
+        implicitWidth: 120
+        implicitHeight: 180
         color: "transparent"
         anchors {
             top: parent.bottom
