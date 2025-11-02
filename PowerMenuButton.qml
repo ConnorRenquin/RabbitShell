@@ -24,7 +24,6 @@ Rectangle {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-            console.log(menuButton.command);
             menuButton.clicked();
         }
     }
