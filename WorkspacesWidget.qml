@@ -16,7 +16,7 @@ Row {
             width: 30
             radius: 5
             color: backgroundColor
-            Text {
+            TextStyled {
                 text: modelData.id
                 anchors.centerIn: parent
                 color: textColor

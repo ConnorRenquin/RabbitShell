@@ -6,9 +6,8 @@ Rectangle {
     color: Colors.bgDim
     radius: 5
 
-    Text {
+    TextStyled {
         anchors.centerIn: parent
         text: Time.time
-        color: Colors.fg
     }
 }
