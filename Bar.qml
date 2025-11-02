@@ -16,14 +16,14 @@ PanelWindow {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         anchors.leftMargin: rowMargin
-        spacing: 20
+        spacing: rowMargin
 
         WorkspacesWidget {}
     }
 
     Row {
         anchors.centerIn: parent
-        spacing: 20
+        spacing: rowMargin
         ClockWidget {}
     }
 
@@ -31,9 +31,10 @@ PanelWindow {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         anchors.rightMargin: rowMargin
-        spacing: 20
+        spacing: rowMargin
 
         SystemTray {}
+        IdleInhibitorWidget {}
         PowerButton {}
     }
 }
