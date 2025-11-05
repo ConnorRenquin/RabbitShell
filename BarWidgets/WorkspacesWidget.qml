@@ -19,7 +19,7 @@ BarWidget {
         spacing: 10
 
         Repeater {
-            model: Hyprland.workspaces.values.filter(workspace => workspace.id != -99 && workspace.monitor.name == monitorName)
+            model: Hyprland.workspaces.values.filter(workspace => workspace.id != -99 && workspace.monitor?.name == monitorName)
             Rectangle {
                 implicitHeight: root.height - (margin * 2)
                 implicitWidth: 25
