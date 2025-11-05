@@ -2,6 +2,9 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 
+import qs.Global
+import qs.Constants
+
 Rectangle {
     id: root
     implicitHeight: Constants.widgetHeight

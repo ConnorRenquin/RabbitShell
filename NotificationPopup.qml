@@ -1,7 +1,9 @@
 import Quickshell
 import Quickshell.Services.Notifications
 import QtQuick
-import qs.base
+
+import qs.Global
+import qs.Constants
 
 PanelWindow {
     id: root

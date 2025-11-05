@@ -2,6 +2,9 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 
+import qs.Global
+import qs.Constants
+
 Rectangle {
     id: root
     width: textIcon.contentWidth + 20

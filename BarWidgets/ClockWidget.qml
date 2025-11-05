@@ -1,5 +1,9 @@
 import QtQuick
 
+import qs.Global
+import qs.Constants
+import qs.Services
+
 Rectangle {
     id: clockBackground
     color: Colors.bgDim

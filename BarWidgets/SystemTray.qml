@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Widgets
 import QtQuick
 import Quickshell.Services.SystemTray
+import qs.Constants
 
 Rectangle {
     id: root

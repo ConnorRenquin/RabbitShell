@@ -1,6 +1,10 @@
 import Quickshell
 import QtQuick
 
+import qs.BarWidgets
+import qs.Global
+import qs.Constants
+
 PanelWindow {
     readonly property int rowMargin: 10
 

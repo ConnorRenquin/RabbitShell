@@ -2,6 +2,9 @@ import Quickshell
 import QtQuick
 import Quickshell.Services.SystemTray
 
+import qs.Global
+import qs.Constants
+
 PanelWindow {
     id: root
     property QsMenuHandle trayMenu

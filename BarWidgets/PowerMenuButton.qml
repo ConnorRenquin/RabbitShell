@@ -1,4 +1,5 @@
 import QtQuick
+import qs.Constants
 
 Rectangle {
     id: menuButton

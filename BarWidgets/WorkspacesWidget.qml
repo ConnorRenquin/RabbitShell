@@ -3,6 +3,9 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import QtQuick
 
+import qs.Global
+import qs.Constants
+
 Row {
     spacing: 10
 
