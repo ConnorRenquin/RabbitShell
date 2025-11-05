@@ -35,6 +35,7 @@ Variants {
             WorkspacesWidget {
                 monitorName: modelData.name
             }
+            WindowTitleWidget {}
         }
 
         BarRow {
