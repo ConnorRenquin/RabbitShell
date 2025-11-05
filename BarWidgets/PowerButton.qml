@@ -5,13 +5,11 @@ import QtQuick
 import qs.Global
 import qs.Constants
 
-Rectangle {
+BarWidget {
     id: root
-    implicitHeight: Constants.widgetHeight
-    implicitWidth: Constants.widgetHeight
-    radius: 5
-    color: Colors.bgDim
     property bool showMenu: false
+
+    width: parent.height
 
     TextStyled {
         text: "⏻"

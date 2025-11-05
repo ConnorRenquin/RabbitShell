@@ -5,12 +5,10 @@ import Quickshell.Wayland
 import qs.Global
 import qs.Constants
 
-Rectangle {
+BarWidget {
     id: root
-    width: textIcon.contentWidth + 20
-    height: Constants.widgetHeight
-    color: IdleInhibitor.enabled ? Colors.orange : Colors.bgDim
-    radius: 5
+    width: parent.height
+    color: inhibitIdle ? Colors.orange : Colors.bgDim
 
     property bool inhibitIdle: false
 

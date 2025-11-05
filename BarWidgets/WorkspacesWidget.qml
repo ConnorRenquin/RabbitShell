@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Hyprland
 import Quickshell.Io
 import QtQuick
@@ -6,29 +7,38 @@ import QtQuick
 import qs.Global
 import qs.Constants
 
-Row {
-    spacing: 10
+BarWidget {
+    id: root
+    property int margin: 5
+    property int monitorId: 1
+    MarginWrapperManager {
+        margin: 5
+    }
+    Row {
+        id: row
+        spacing: 10
 
-    Repeater {
-        model: Hyprland.workspaces.values.filter(workspace => workspace.id != -99)
-        Rectangle {
-            property string backgroundColor: modelData.focused ? Colors.fg : Colors.bgDim
-            property string textColor: modelData.focused ? Colors.bgDim : Colors.fg
-            implicitHeight: Constants.widgetHeight
+        Repeater {
+            model: Hyprland.workspaces.values.filter(workspace => workspace.monitor.id == monitorId)
+            Rectangle {
+                implicitHeight: root.height - (margin * 2)
+                implicitWidth: 25
+                radius: 5
 
-            implicitWidth: 30
-            radius: 5
-            color: backgroundColor
-            TextStyled {
-                text: modelData.id
-                anchors.centerIn: parent
-                color: textColor
-            }
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    Hyprland.dispatch(`workspace ${modelData.id}`);
+                color: modelData.focused ? Colors.green : Colors.bg0
+
+                TextStyled {
+                    text: modelData.id < 0 ? "*" : modelData.id
+                    anchors.centerIn: parent
+                    color: modelData.focused ? Colors.bgDim : Colors.fg
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        Hyprland.dispatch(`workspace ${modelData.id}`);
+                    }
                 }
             }
         }

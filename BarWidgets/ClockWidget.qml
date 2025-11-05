@@ -4,12 +4,7 @@ import qs.Global
 import qs.Constants
 import qs.Services
 
-Rectangle {
-    id: clockBackground
-    color: Colors.bgDim
-    radius: 5
-    height: Constants.widgetHeight
-
+BarWidget {
     implicitWidth: contentRow.implicitWidth + 20
 
     Row {

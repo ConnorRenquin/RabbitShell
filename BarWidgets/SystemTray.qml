@@ -4,13 +4,9 @@ import QtQuick
 import Quickshell.Services.SystemTray
 import qs.Constants
 
-Rectangle {
+BarWidget {
     id: root
-    height: Constants.widgetHeight
     width: row.implicitWidth + 20  // Dynamic width based on content
-    color: Colors.bgDim
-    radius: 5
-
     Row {
         id: row
         anchors.centerIn: parent
