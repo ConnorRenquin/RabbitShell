@@ -10,7 +10,7 @@ import qs.Constants
 BarWidget {
     id: root
     property int margin: 5
-    property int monitorId: 1
+    required property string monitorName
     MarginWrapperManager {
         margin: 5
     }
@@ -19,7 +19,7 @@ BarWidget {
         spacing: 10
 
         Repeater {
-            model: Hyprland.workspaces.values.filter(workspace => workspace.monitor.id == monitorId)
+            model: Hyprland.workspaces.values.filter(workspace => workspace.monitor.name == monitorName)
             Rectangle {
                 implicitHeight: root.height - (margin * 2)
                 implicitWidth: 25
