@@ -16,10 +16,8 @@ PanelWindow {
     }
     exclusionMode: ExclusionMode.Normal
     color: Colors.transparent
-    mask: Region {
-        item: notificationList
-    }
     aboveWindows: false
+
     TextStyled {
         anchors.centerIn: parent
         font.pixelSize: 200
