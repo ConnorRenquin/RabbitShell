@@ -8,6 +8,19 @@ BarWidget {
     implicitWidth: title.width + 20
     clip: true
 
+    function getTitle() {
+	console.log(ToplevelManager.activeToplevel.title);
+	
+	var title = ToplevelManager.activeToplevel.title
+
+	if (title.includes(' — ')) {
+		return title.split(' — ').pop()
+	}
+
+	return title.split(' - ').pop()
+    }
+
+
     Behavior on implicitWidth {
         NumberAnimation {
             duration: 100
@@ -18,7 +31,7 @@ BarWidget {
     TextStyled {
         id: title
         anchors.centerIn: parent
-        text: ToplevelManager.activeToplevel.title ?? "Desktop"
+        text: getTitle() 
         wrapMode: Text.NoWrap
     }
 }
