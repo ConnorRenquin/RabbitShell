@@ -9,17 +9,18 @@ BarWidget {
     clip: true
 
     function getTitle() {
-	console.log(ToplevelManager.activeToplevel.title);
-	
-	var title = ToplevelManager.activeToplevel.title
+        var title = ToplevelManager.activeToplevel?.title;
 
-	if (title.includes(' — ')) {
-		return title.split(' — ').pop()
-	}
+        if (!title) {
+            return 'Desktop';
+        }
 
-	return title.split(' - ').pop()
+        if (title.includes(' — ')) {
+            return title.split(' — ').pop();
+        }
+
+        return title.split(' - ').pop();
     }
-
 
     Behavior on implicitWidth {
         NumberAnimation {
@@ -31,7 +32,7 @@ BarWidget {
     TextStyled {
         id: title
         anchors.centerIn: parent
-        text: getTitle() 
+        text: getTitle()
         wrapMode: Text.NoWrap
     }
 }
