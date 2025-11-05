@@ -25,9 +25,7 @@ PanelWindow {
     }
 
     function addNotification(notification: Notification) {
-        console.log("hello add");
-        console.log(notification.summary);
-        const notificationItem = notificationPopupComponent.createObject(notificationList, {
+        notificationPopupComponent.createObject(notificationList, {
             notification: notification
         });
     }
@@ -49,8 +47,16 @@ PanelWindow {
             }
         }
 
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                notificationBase.destroy();
+            }
+        }
+
         Column {
             id: notificationContent
+
             anchors {
                 left: parent.left
                 right: parent.right
@@ -60,16 +66,20 @@ PanelWindow {
             spacing: 5
 
             TextStyled {
-                id: title
                 width: parent.width
                 font.pixelSize: 25
                 text: notification.appName
             }
 
             TextStyled {
-                id: summary
                 width: parent.width
                 text: notification.summary
+                wrapMode: Text.WordWrap
+            }
+
+            TextStyled {
+                width: parent.width
+                text: notification.body
                 wrapMode: Text.WordWrap
             }
         }
@@ -81,6 +91,7 @@ PanelWindow {
         anchors {
             top: parent.top
             horizontalCenter: parent.horizontalCenter
+            margins: 10
         }
         width: 400
     }
