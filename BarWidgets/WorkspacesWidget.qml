@@ -19,16 +19,29 @@ BarWidget {
         spacing: 10
 
         Repeater {
-            model: Hyprland.workspaces.values.filter(workspace => workspace.monitor.name == monitorName)
+            model: Hyprland.workspaces.values.filter(workspace => workspace.id != -99 && workspace.monitor.name == monitorName)
             Rectangle {
                 implicitHeight: root.height - (margin * 2)
                 implicitWidth: 25
-                radius: 5
+                radius: modelData.focused ? 15 : 5
 
                 color: modelData.focused ? Colors.green : Colors.bg0
 
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 400
+                    }
+                }
+
+                Behavior on radius {
+                    NumberAnimation {
+                        duration: 400
+                        easing.type: Easing.OutQuad
+                    }
+                }
+
                 TextStyled {
-                    text: modelData.id < 0 ? "*" : modelData.id
+                    text: modelData.focused ? "󰜋" : "󰜌"
                     anchors.centerIn: parent
                     color: modelData.focused ? Colors.bgDim : Colors.fg
                 }
