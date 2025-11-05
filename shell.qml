@@ -4,4 +4,5 @@ import QtQuick
 ShellRoot {
     Bar {}
     NotificationPopup {}
+    ClockBackground {}
 }
