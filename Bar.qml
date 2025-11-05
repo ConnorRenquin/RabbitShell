@@ -6,36 +6,44 @@ import qs.Global
 import qs.Constants
 
 PanelWindow {
-    readonly property int rowMargin: 10
 
-    implicitHeight: Constants.barHeight
-    color: "transparent"
+    implicitHeight: 45
+    color: Colors.transparent
+
     anchors {
         top: true
         left: true
         right: true
     }
 
-    Row {
-        anchors.left: parent.left
+    property int margin: 8
+    margins {
+        top: margin
+        bottom: 0 // Hyprland takes care of this margin, so you don't have to.
+        left: margin
+        right: margin
+    }
+
+    component BarRow: Row {
+        height: parent.height
         anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: rowMargin
-        spacing: rowMargin
+        spacing: 8
+    }
+
+    BarRow {
+        anchors.left: parent.left
 
         WorkspacesWidget {}
     }
 
-    Row {
+    BarRow {
         anchors.centerIn: parent
-        spacing: rowMargin
+
         ClockWidget {}
     }
 
-    Row {
+    BarRow {
         anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.rightMargin: rowMargin
-        spacing: rowMargin
 
         SystemTray {}
         IdleInhibitorWidget {}
