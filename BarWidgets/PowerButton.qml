@@ -1,6 +1,7 @@
 import Quickshell
 import Quickshell.Io
 import QtQuick
+import Quickshell.Hyprland
 
 import qs.Global
 import qs.Constants
@@ -10,6 +11,13 @@ BarWidget {
     property bool showMenu: false
 
     width: parent.height
+
+    GlobalShortcut {
+        name: "powermenu"
+        onPressed: {
+            root.showMenu = !root.showMenu;
+        }
+    }
 
     TextStyled {
         text: "⏻"
@@ -31,10 +39,10 @@ BarWidget {
 
     PopupWindow {
         anchor {
-            window: root.QsWindow.window
+            item: root
             rect {
+                x: root.x
                 y: root.height + 10
-                x: root.x * 20
             }
         }
         visible: root.showMenu
