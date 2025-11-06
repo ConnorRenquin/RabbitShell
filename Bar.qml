@@ -8,6 +8,7 @@ import qs.Constants
 Variants {
     model: Quickshell.screens
     delegate: PanelWindow {
+        id: root
 
         required property var modelData
         screen: modelData
@@ -49,6 +50,10 @@ Variants {
 
             SystemTray {}
             IdleInhibitorWidget {}
+            ButtonWidget {
+                icon: "󱪵"
+                command: "waypaper --random"
+            }
             PowerButton {}
         }
     }
