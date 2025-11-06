@@ -26,8 +26,8 @@ BarWidget {
                     id: icon
                     anchors.centerIn: parent
                     source: modelData.icon
-                    width: 32
-                    height: 32
+                    width: 23
+                    height: 23
                     SystemTrayMenu {
                         parentItem: menuItem
                         visible: menuItem.menuVisible
