@@ -26,8 +26,13 @@ BarWidget {
                     id: icon
                     anchors.centerIn: parent
                     source: modelData.icon
-                    width: 20
-                    height: 20
+                    width: 32
+                    height: 32
+                    SystemTrayMenu {
+                        parentItem: menuItem
+                        visible: menuItem.menuVisible
+                        trayMenu: modelData.menu
+                    }
                 }
                 MouseArea {
                     anchors.fill: parent
@@ -35,10 +40,6 @@ BarWidget {
                     onClicked: event => {
                         menuItem.menuVisible = !menuItem.menuVisible;
                     }
-                }
-                SystemTrayMenu {
-                    visible: menuItem.menuVisible
-                    trayMenu: modelData.menu
                 }
             }
         }

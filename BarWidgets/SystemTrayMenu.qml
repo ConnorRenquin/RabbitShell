@@ -5,14 +5,21 @@ import Quickshell.Services.SystemTray
 import qs.Global
 import qs.Constants
 
-PanelWindow {
+PopupWindow {
     id: root
+
+    required property Item parentItem
     property QsMenuHandle trayMenu
 
-    focusable: true
+    anchor {
+        item: parentItem
+        rect.y: parentItem.height + 15
+        rect.x: parentItem.width / 2 - width / 2
+    }
+
     color: "transparent"
-    implicitWidth: 200
-    implicitHeight: contentColumn.height
+    implicitHeight: contentColumn.height + 20
+    width: menuBackground.width
 
     QsMenuOpener {
         id: menuOpener
@@ -23,9 +30,8 @@ PanelWindow {
         id: menuBackground
         color: Colors.bgDim
         radius: 10
-        anchors {
-            fill: parent
-        }
+        width: contentColumn.width + 20
+        anchors.fill: parent
 
         Column {
             id: contentColumn
@@ -36,48 +42,27 @@ PanelWindow {
             }
             spacing: 10
             anchors.margins: 10
+            width: 200
             Repeater {
                 model: menuOpener.children.values
                 delegate: Rectangle {
                     id: menuItem
                     property bool hovered: false
                     property bool pressed: false
-                    anchors {
-                        horizontalCenter: parent.horizontalCenter
-                    }
-                    color: {
-                        if (pressed && !modelData.isSeperator)
-                            return Qt.darker(Colors.bg0, 1.1);
-                        else if (hovered && !modelData.isSeperator)
-                            return Qt.lighter(Colors.bg0, 1.2);
-                        else
-                            return Colors.bg0;
-                    }
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    color: Colors.bg1
                     radius: 5
-                    width: parent.width
+                    width: menuBackground.width - 20
                     height: modelData.isSeperator || modelData.text == "" ? 2 : (textContent.implicitHeight + 10)
-                    scale: pressed ? 0.95 : 1.0
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 150
-                        }
-                    }
-                    Behavior on scale {
-                        NumberAnimation {
-                            duration: 100
-                            easing.type: Easing.OutQuad
-                        }
-                    }
 
                     TextStyled {
                         id: textContent
-                        anchors {
-                            centerIn: parent
-                        }
+                        anchors.centerIn: parent
+                        width: menuItem.width - 10
                         text: modelData.text
                         wrapMode: Text.WordWrap
                     }
+
                     MouseArea {
                         anchors.fill: parent
                         hoverEnabled: true
