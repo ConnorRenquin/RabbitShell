@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Widgets
 import QtQuick
 
 import qs.Constants
@@ -6,7 +7,6 @@ import qs.Global
 import qs.Services
 
 PanelWindow {
-    id: root
 
     anchors {
         top: true
@@ -19,8 +19,11 @@ PanelWindow {
     aboveWindows: false
 
     TextStyled {
-        anchors.centerIn: parent
-        font.pixelSize: 200
+        anchors.bottomMargin: parent.height / 2
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        font.pixelSize: parent.height / 10
+        color: Colors.fg
         text: Time.timeShort
     }
 }
