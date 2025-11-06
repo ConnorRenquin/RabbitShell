@@ -24,15 +24,23 @@ BarWidget {
         }
     }
 
-    PanelWindow {
+    function menuAction(commandArray) {
+        root.showMenu = false;
+        Quickshell.execDetached(commandArray);
+    }
+
+    PopupWindow {
+        anchor {
+            window: root.QsWindow.window
+            rect {
+                y: root.height + 10
+                x: root.x * 20
+            }
+        }
         visible: root.showMenu
         implicitWidth: 120
         implicitHeight: 180
         color: "transparent"
-        anchors {
-            top: parent.bottom
-            right: parent.right
-        }
 
         Rectangle {
             anchors.fill: parent
@@ -48,25 +56,25 @@ BarWidget {
                 PowerMenuButton {
                     label: "Logout"
                     command: "logout"
-                    onClicked: root.showMenu = false
+                    onClicked: root.menuAction(["bash", "-c", "hyprctl dispatch exit"])
                 }
 
                 PowerMenuButton {
                     label: "Lock"
                     command: "lock"
-                    onClicked: root.showMenu = false
+                    onClicked: root.menuAction(["hyprlock"])
                 }
 
                 PowerMenuButton {
                     label: "Reboot"
                     command: "reboot"
-                    onClicked: root.showMenu = false
+                    onClicked: root.menuAction(["reboot"])
                 }
 
                 PowerMenuButton {
                     label: "Shutdown"
                     command: "shutdown"
-                    onClicked: root.showMenu = false
+                    onClicked: root.menuAction(["shutdown"])
                 }
             }
         }
