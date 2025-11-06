@@ -6,7 +6,8 @@ import qs.Constants
 Text {
     color: Colors.fg
     font {
-        pixelSize: 15
+        pixelSize: 18
         family: "RobotoMono Nerd Font Propo"
+        bold: true
     }
 }
