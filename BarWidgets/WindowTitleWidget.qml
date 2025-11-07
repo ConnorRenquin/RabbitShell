@@ -3,9 +3,11 @@ import Quickshell.Wayland
 import QtQuick
 
 import qs.Global
+import qs.Constants
 
 BarWidget {
-    implicitWidth: title.width + 20
+
+    implicitWidth: title.width + Styles.margin * 2
     clip: true
 
     function getTitle() {
@@ -25,14 +27,14 @@ BarWidget {
     Behavior on implicitWidth {
         NumberAnimation {
             duration: 100
-            easing.type: Easing.OutQuad
         }
     }
 
     TextStyled {
         id: title
-        anchors.centerIn: parent
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.leftMargin: Styles.margin
         text: getTitle()
-        wrapMode: Text.NoWrap
     }
 }
