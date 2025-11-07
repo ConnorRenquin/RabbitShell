@@ -7,7 +7,6 @@ import QtQuick
 import qs.Global
 import qs.Constants
 
-// TODO Fix weird animation on new workspace.
 BarWidget {
     id: root
     property int margin: 5
@@ -23,7 +22,9 @@ BarWidget {
     Row {
         id: row
         spacing: 10
-        anchors.centerIn: parent
+        anchors.left: parent.left
+        anchors.leftMargin: 5
+        anchors.verticalCenter: parent.verticalCenter
 
         Repeater {
             model: Hyprland.workspaces.values.filter(workspace => workspace.id != -99 && workspace.monitor?.name == monitorName)
