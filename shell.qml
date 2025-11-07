@@ -5,4 +5,5 @@ ShellRoot {
     Bar {}
     NotificationPopup {}
     ClockBackground {}
+    AppSearch {}
 }
