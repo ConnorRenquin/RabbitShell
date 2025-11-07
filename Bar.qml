@@ -11,10 +11,10 @@ Variants {
         id: root
 
         required property var modelData
-        screen: modelData
 
+        screen: modelData
         implicitHeight: 45
-        color: Colors.transparent
+        color: "transparent"
 
         anchors {
             top: true
@@ -61,6 +61,7 @@ Variants {
     component BarRow: Row {
         height: parent.height
         anchors.verticalCenter: parent.verticalCenter
+        anchors.top: parent.top
         spacing: 8
     }
 }
