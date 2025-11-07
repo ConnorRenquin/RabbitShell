@@ -2,7 +2,7 @@ import Quickshell
 import Quickshell.Services.Notifications
 import QtQuick
 
-import qs.Global
+import qs.Components
 import qs.Constants
 
 PanelWindow {

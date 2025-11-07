@@ -3,7 +3,7 @@ import Quickshell.Io
 import QtQuick
 import Quickshell.Hyprland
 
-import qs.Global
+import qs.Components
 import qs.Constants
 
 BarWidget {

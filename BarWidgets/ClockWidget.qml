@@ -1,16 +1,16 @@
 import QtQuick
 
-import qs.Global
+import qs.Components
 import qs.Constants
 import qs.Services
 
 BarWidget {
-    implicitWidth: contentRow.implicitWidth + 20
+    implicitWidth: contentRow.implicitWidth + Styles.margin
 
     Row {
         id: contentRow
         anchors.centerIn: parent
-        spacing: 20
+        spacing: Styles.margin
 
         TextStyled {
             text: Time.time

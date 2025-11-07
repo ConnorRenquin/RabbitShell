@@ -1,7 +1,7 @@
 import Quickshell
 import QtQuick
 
-import qs.Global
+import qs.Components
 import qs.Constants
 
 BarWidget {

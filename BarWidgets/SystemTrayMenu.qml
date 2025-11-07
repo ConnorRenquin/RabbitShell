@@ -3,7 +3,7 @@ import Quickshell.Widgets
 import QtQuick
 import Quickshell.Services.SystemTray
 
-import qs.Global
+import qs.Components
 import qs.Constants
 
 PopupWindow {

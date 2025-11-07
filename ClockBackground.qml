@@ -3,7 +3,7 @@ import Quickshell.Widgets
 import QtQuick
 
 import qs.Constants
-import qs.Global
+import qs.Components
 import qs.Services
 
 PanelWindow {
