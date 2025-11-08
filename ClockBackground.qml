@@ -19,6 +19,7 @@ PanelWindow {
     aboveWindows: false
 
     TextStyled {
+        antialiasing: true
         anchors.bottomMargin: parent.height / 2
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
