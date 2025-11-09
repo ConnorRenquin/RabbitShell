@@ -10,9 +10,8 @@ import qs.Components
 PanelWindow {
     id: root
 
-    width: body.implicitWidth + Styles.margin * 2
-    height: body.implicitHeight + Styles.margin * 2
-
+    implicitWidth: 1000
+    implicitHeight: 275
     focusable: true
     color: "transparent"
     visible: showing
@@ -69,7 +68,7 @@ PanelWindow {
         var searchText = textInput.text;
 
         if (searchText === "") {
-            filteredApplications = allApps.slice(0, 16);
+            filteredApplications = allApps.slice(0, appGrid.columns * appGrid.rows);
             return;
         }
 
@@ -101,115 +100,122 @@ PanelWindow {
         updateFilteredApplications();
     }
 
-    ColumnLayout {
-        id: body
-        anchors.centerIn: parent
-        spacing: 20
+    // Searchbar
+    Rectangle {
+        id: searchBar
+        readonly property int textSize: 25
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+        }
+        implicitHeight: textInput.implicitHeight + 30
+        color: Colors.bgDim
+        radius: Styles.radius0
 
-        Rectangle {
-            implicitWidth: parent.width
-            implicitHeight: 60
-            color: Colors.bgDim
-            radius: Styles.radius0
+        TextInput {
+            id: textInput
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: Styles.margin
+            anchors.rightMargin: Styles.margin
 
-            TextInput {
-                id: textInput
-                anchors.fill: parent
-                anchors.margins: Styles.margin
+            font.pixelSize: searchBar.textSize
+            color: Colors.fg
+            focus: true
+            selectByMouse: true
+            cursorVisible: true
+            verticalAlignment: TextInput.AlignVCenter
 
-                font.pixelSize: 25
-                color: Colors.fg
-                focus: true
-                selectByMouse: true
-                cursorVisible: true
-                verticalAlignment: TextInput.AlignVCenter
+            onTextChanged: updateFilteredApplications()
 
-                onTextChanged: updateFilteredApplications()
-
-                Keys.onPressed: function (event) {
-                    if (event.key === Qt.Key_Escape) {
+            Keys.onPressed: function (event) {
+                if (event.key === Qt.Key_Escape) {
+                    text = "";
+                    root.showing = false;
+                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    if (filteredApplications.length > 0) {
+                        Quickshell.execDetached(["bash", "-c", filteredApplications[0].execString]);
                         text = "";
                         root.showing = false;
-                    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                        if (filteredApplications.length > 0) {
-                            Quickshell.execDetached(["bash", "-c", filteredApplications[0].execString]);
-                            text = "";
-                            root.showing = false;
-                        }
                     }
                 }
             }
-
-            Text {
-                anchors.fill: textInput
-                text: "Search"
-                font.pixelSize: 25
-                color: Colors.fg
-                opacity: 0.4
-                visible: textInput.text === ""
-                verticalAlignment: Text.AlignVCenter
-            }
         }
 
-        Rectangle {
-            id: appGridBackground
-            Layout.preferredWidth: appGrid.implicitWidth + Styles.margin * 2
-            Layout.preferredHeight: appGrid.implicitHeight + Styles.margin * 2
-            color: Colors.bgDim
-            radius: Styles.radius0
+        Text {
+            anchors.left: textInput.left
+            anchors.verticalCenter: textInput.verticalCenter
+            text: "Search"
+            font.pixelSize: searchBar.textSize
+            color: Colors.fg
+            opacity: 0.4
+            visible: textInput.text === ""
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
 
-            GridLayout {
-                id: appGrid
-                anchors.centerIn: parent
-                columns: 4
-                columnSpacing: Styles.margin
-                rowSpacing: Styles.margin
+    // Applications Grid
+    Grid {
+        id: appGrid
+        anchors {
+            top: searchBar.bottom
+            left: parent.left
+            right: parent.right
+            topMargin: Styles.margin
+        }
 
-                Repeater {
-                    model: filteredApplications
+        columns: 3
+        columnSpacing: Styles.margin
 
-                    Rectangle {
-                        Layout.preferredWidth: 275
-                        Layout.preferredHeight: 50
-                        color: mouseArea.containsMouse ? Colors.bg1 : Colors.bg0
-                        radius: Styles.radius0
+        rows: 4
+        rowSpacing: Styles.margin
 
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 250
-                            }
-                        }
+        Repeater {
+            model: filteredApplications
 
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: Styles.margin
-                            spacing: 10
+            Rectangle {
+                id: menuItemBackground
+                implicitWidth: searchBar.width / appGrid.columns - (Styles.margin / appGrid.columns * 2)
+                implicitHeight: menuItem.implicitHeight + Styles.margin
+                color: mouseArea.containsMouse ? Colors.bg1 : Colors.bg0
+                radius: Styles.radius0
 
-                            IconImage {
-                                Layout.preferredWidth: 32
-                                Layout.preferredHeight: 32
-                                source: Quickshell.iconPath(modelData.icon)
-                            }
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 250
+                    }
+                }
 
-                            TextStyled {
-                                Layout.fillWidth: true
-                                text: modelData.name
-                                elide: Text.ElideRight
-                                verticalAlignment: Text.AlignVCenter
-                                maximumLineCount: 1
-                            }
-                        }
+                RowLayout {
+                    id: menuItem
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.margins: Styles.margin
+                    spacing: 10
 
-                        MouseArea {
-                            id: mouseArea
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            hoverEnabled: true
+                    IconImage {
+                        implicitWidth: 32
+                        implicitHeight: 32
+                        source: Quickshell.iconPath(modelData.icon)
+                    }
 
-                            onClicked: {
-                                Quickshell.execDetached(["bash", "-c", modelData.execString]);
-                            }
-                        }
+                    TextStyled {
+                        text: modelData.name
+                        elide: Text.ElideRight
+                    }
+                }
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
+
+                    onClicked: {
+                        Quickshell.execDetached(["bash", "-c", modelData.execString]);
                     }
                 }
             }
