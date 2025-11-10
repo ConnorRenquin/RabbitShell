@@ -11,13 +11,14 @@ PanelWindow {
     id: root
 
     implicitWidth: 1000
-    implicitHeight: 275
+    implicitHeight: 305
     focusable: true
     color: "transparent"
     visible: showing
 
     property bool showing: false
     property var filteredApplications: []
+    property int currentFocusIndex: -1
 
     GlobalShortcut {
         name: "appsearch"
@@ -68,7 +69,8 @@ PanelWindow {
         var searchText = textInput.text;
 
         if (searchText === "") {
-            filteredApplications = allApps.slice(0, appGrid.columns * appGrid.rows);
+            filteredApplications = allApps;
+            currentFocusIndex = -1;
             return;
         }
 
@@ -88,12 +90,59 @@ PanelWindow {
         });
 
         var results = [];
-        var maxResults = Math.min(16, scored.length);
-        for (var j = 0; j < maxResults; j++) {
+        for (var j = 0; j < scored.length; j++) {
             results.push(scored[j].app);
         }
 
         filteredApplications = results;
+        currentFocusIndex = -1;
+    }
+
+    function executeCurrentItem() {
+        if (currentFocusIndex >= 0 && currentFocusIndex < filteredApplications.length) {
+            Quickshell.execDetached(["bash", "-c", filteredApplications[currentFocusIndex].execString]);
+            textInput.text = "";
+            root.showing = false;
+        }
+    }
+
+    function navigateGrid(direction) {
+        var maxIndex = filteredApplications.length - 1;
+
+        if (currentFocusIndex === -1) {
+            currentFocusIndex = 0;
+            appGridView.positionViewAtIndex(0, GridView.Beginning);
+            return;
+        }
+
+        var columns = 3;
+        var row = Math.floor(currentFocusIndex / columns);
+        var col = currentFocusIndex % columns;
+
+        if (direction === "up") {
+            if (row > 0) {
+                currentFocusIndex = Math.max(0, currentFocusIndex - columns);
+                appGridView.positionViewAtIndex(currentFocusIndex, GridView.Contain);
+            }
+        } else if (direction === "down") {
+            var newIndex = currentFocusIndex + columns;
+            if (newIndex <= maxIndex) {
+                currentFocusIndex = newIndex;
+            } else if (currentFocusIndex < maxIndex) {
+                currentFocusIndex = maxIndex;
+            }
+            appGridView.positionViewAtIndex(currentFocusIndex, GridView.Contain);
+        } else if (direction === "left") {
+            if (col > 0) {
+                currentFocusIndex = Math.max(0, currentFocusIndex - 1);
+                appGridView.positionViewAtIndex(currentFocusIndex, GridView.Contain);
+            }
+        } else if (direction === "right") {
+            if (col < columns - 1 && currentFocusIndex < maxIndex) {
+                currentFocusIndex = Math.min(maxIndex, currentFocusIndex + 1);
+                appGridView.positionViewAtIndex(currentFocusIndex, GridView.Contain);
+            }
+        }
     }
 
     Component.onCompleted: {
@@ -134,12 +183,28 @@ PanelWindow {
                 if (event.key === Qt.Key_Escape) {
                     text = "";
                     root.showing = false;
+                    event.accepted = true;
                 } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                    if (filteredApplications.length > 0) {
+                    if (currentFocusIndex >= 0) {
+                        executeCurrentItem();
+                    } else if (filteredApplications.length > 0) {
                         Quickshell.execDetached(["bash", "-c", filteredApplications[0].execString]);
                         text = "";
                         root.showing = false;
                     }
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Down) {
+                    navigateGrid("down");
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Up) {
+                    navigateGrid("up");
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Left) {
+                    navigateGrid("left");
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Right) {
+                    navigateGrid("right");
+                    event.accepted = true;
                 }
             }
         }
@@ -157,66 +222,65 @@ PanelWindow {
     }
 
     // Applications Grid
-    Grid {
-        id: appGrid
+    GridView {
+        id: appGridView
         anchors {
             top: searchBar.bottom
-            left: parent.left
-            right: parent.right
+            bottom: parent.bottom
             topMargin: Styles.margin
         }
+        width: parent.width + Styles.margin
 
-        columns: 3
-        columnSpacing: Styles.margin
+        model: filteredApplications
+        clip: true
 
-        rows: 4
-        rowSpacing: Styles.margin
+        cellWidth: width / 3
+        cellHeight: 60
 
-        Repeater {
-            model: filteredApplications
+        snapMode: GridView.SnapToRow
 
-            Rectangle {
-                id: menuItemBackground
-                implicitWidth: searchBar.width / appGrid.columns - (Styles.margin / appGrid.columns * 2)
-                implicitHeight: menuItem.implicitHeight + Styles.margin
-                color: mouseArea.containsMouse ? Colors.bg1 : Colors.bg0
-                radius: Styles.radius0
+        delegate: Rectangle {
+            id: menuItemBackground
+            width: appGridView.cellWidth - Styles.margin
+            height: appGridView.cellHeight - Styles.margin
+            color: (mouseArea.containsMouse || index === currentFocusIndex) ? Colors.bg1 : Colors.bg0
+            radius: Styles.radius0
 
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 250
-                    }
+            Behavior on color {
+                ColorAnimation {
+                    duration: 250
+                }
+            }
+
+            RowLayout {
+                id: menuItem
+                anchors.fill: parent
+                anchors.margins: Styles.margin
+                spacing: 10
+
+                IconImage {
+                    implicitWidth: 32
+                    implicitHeight: 32
+                    source: Quickshell.iconPath(modelData.icon)
                 }
 
-                RowLayout {
-                    id: menuItem
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    anchors.margins: Styles.margin
-                    spacing: 10
-
-                    IconImage {
-                        implicitWidth: 32
-                        implicitHeight: 32
-                        source: Quickshell.iconPath(modelData.icon)
-                    }
-
-                    TextStyled {
-                        text: modelData.name
-                        elide: Text.ElideRight
-                    }
+                TextStyled {
+                    text: modelData.name
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
                 }
+            }
 
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
+            MouseArea {
+                id: mouseArea
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true
 
-                    onClicked: {
-                        Quickshell.execDetached(["bash", "-c", modelData.execString]);
-                    }
+                onClicked: {
+                    Quickshell.execDetached(["bash", "-c", modelData.execString]);
+                    textInput.text = "";
+                    root.showing = false;
                 }
             }
         }
