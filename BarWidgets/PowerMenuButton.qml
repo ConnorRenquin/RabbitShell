@@ -1,4 +1,6 @@
 import QtQuick
+
+import qs.Components
 import qs.Constants
 
 Rectangle {
@@ -8,12 +10,14 @@ Rectangle {
     property string command: ""
     signal clicked
 
-    height: 40
-    width: parent.width
-    color: mouseArea.containsMouse ? Colors.bg0 : "transparent"
-    radius: 3
+    property bool isFocused: false
+    height: text.implicitHeight + 20
+    implicitWidth: parent.width
+    color: mouseArea.containsMouse || menuButton.isFocused ? Colors.bg1 : Colors.bg0
+    radius: 10
 
-    Text {
+    TextStyled {
+        id: text
         anchors.centerIn: parent
         text: menuButton.label
         color: Colors.yellow
