@@ -7,7 +7,7 @@ import qs.Constants
 
 BarWidget {
 
-    implicitWidth: title.width + Styles.margin * 2
+    implicitWidth: Math.min(title.implicitWidth + Styles.margin * 2, 600)
     clip: true
 
     function getTitle() {
@@ -35,6 +35,7 @@ BarWidget {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         anchors.leftMargin: Styles.margin
+        elide: Text.ElideRight
         text: getTitle()
     }
 }
