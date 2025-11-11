@@ -4,41 +4,28 @@ import Quickshell.Wayland
 
 import qs.Components
 import qs.Constants
+import qs.Services
 
 BarWidget {
     id: root
     width: parent.height
-    color: inhibitIdle ? Colors.orange : Colors.bgDim
+    color: IdleInhibitorSingleton.enabled ? Colors.orange : Colors.bgDim
 
     property bool inhibitIdle: false
 
     TextStyled {
         id: textIcon
         anchors.centerIn: parent
-        text: inhibitIdle ? "󰅶" : "󰛊"
+        text: IdleInhibitorSingleton.enabled ? "󰅶" : "󰛊"
         color: Colors.fg
-    }
-
-    IdleInhibitor {
-        enabled: inhibitIdle
-        window: PanelWindow {
-            implicitWidth: 0
-            implicitHeight: 0
-            color: "transparent"
-            mask: Region {}
-        }
     }
 
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-            toggle();
-            clickAnimation.start();
+            console.log("Clicked");
+            IdleInhibitorSingleton.enabled = !IdleInhibitorSingleton.enabled;
         }
-    }
-
-    function toggle() {
-        inhibitIdle = !inhibitIdle;
     }
 }
