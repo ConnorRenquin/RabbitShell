@@ -7,4 +7,5 @@ ShellRoot {
     ClockBackground {}
     AppSearch {}
     Workspaces {}
+    Mixer {}
 }
