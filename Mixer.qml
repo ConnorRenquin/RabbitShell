@@ -15,7 +15,7 @@ PanelWindow {
     anchors.right: true
     margins.right: 20
 
-    width: 550
+    width: 650
     height: 600
     color: "transparent"
     visible: false
@@ -29,6 +29,7 @@ PanelWindow {
     }
 
     Rectangle {
+        id: rect
         anchors.fill: parent
         color: Colors.bgDim
         radius: 10
@@ -48,12 +49,7 @@ PanelWindow {
 
                 MixerEntry {
                     node: Pipewire.defaultAudioSink
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    color: palette.active.text
-                    implicitHeight: 1
+                    width: rect.width - Styles.margin * 2
                 }
 
                 Repeater {
@@ -64,6 +60,7 @@ PanelWindow {
                         // Each link group contains a source and a target.
                         // Since the target is the default sink, we want the source.
                         node: modelData.source
+                        width: rect.width - Styles.margin * 2
                     }
                 }
             }
