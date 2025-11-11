@@ -16,7 +16,7 @@ PanelWindow {
     margins.right: 20
 
     width: 650
-    height: 600
+    height: rect.implicitHeight
     color: "transparent"
     visible: false
 
@@ -30,38 +30,40 @@ PanelWindow {
 
     Rectangle {
         id: rect
-        anchors.fill: parent
+        implicitWidth: width
+        implicitHeight: column.implicitHeight + 20
+        width: parent.width
+        height: parent.height
         color: Colors.bgDim
         radius: 10
-        ScrollView {
-            anchors.fill: parent
-            contentWidth: availableWidth
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 10
+        ColumnLayout {
+            id: column
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: 10
 
-                // get a list of nodes that output to the default sink
-                PwNodeLinkTracker {
-                    id: linkTracker
-                    node: Pipewire.defaultAudioSink
-                }
+            // get a list of nodes that output to the default sink
+            PwNodeLinkTracker {
+                id: linkTracker
+                node: Pipewire.defaultAudioSink
+            }
+
+            MixerEntry {
+                node: Pipewire.defaultAudioSink
+                Layout.fillWidth: true
+            }
+
+            Repeater {
+                model: linkTracker.linkGroups
 
                 MixerEntry {
-                    node: Pipewire.defaultAudioSink
-                    width: rect.width - Styles.margin * 2
-                }
-
-                Repeater {
-                    model: linkTracker.linkGroups
-
-                    MixerEntry {
-                        required property PwLinkGroup modelData
-                        // Each link group contains a source and a target.
-                        // Since the target is the default sink, we want the source.
-                        node: modelData.source
-                        width: rect.width - Styles.margin * 2
-                    }
+                    required property PwLinkGroup modelData
+                    // Each link group contains a source and a target.
+                    // Since the target is the default sink, we want the source.
+                    node: modelData.source
+                    Layout.fillWidth: true
                 }
             }
         }

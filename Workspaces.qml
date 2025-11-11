@@ -10,10 +10,8 @@ PanelWindow {
 
     visible: false
 
-    anchors.bottom: true
-
     implicitWidth: 1000
-    implicitHeight: 260
+    implicitHeight: gridView.contentHeight + 20
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
@@ -25,7 +23,8 @@ PanelWindow {
     }
 
     Rectangle {
-        anchors.fill: parent
+        width: parent.width
+        height: parent.height
         color: Colors.bgDim
         radius: 10
         focus: true
@@ -50,10 +49,14 @@ PanelWindow {
         GridView {
             id: gridView
 
-            anchors.fill: parent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: 10
+            height: contentHeight
 
             cellHeight: 125
-            cellWidth: parent.width / Math.min(Hyprland.workspaces.values.filter(workspace => workspace.id > 0).length, 4)
+            cellWidth: width / Math.min(Hyprland.workspaces.values.filter(workspace => workspace.id > 0).length, 4)
 
             model: Hyprland.workspaces.values.filter(workspace => workspace.id > 0)
 
