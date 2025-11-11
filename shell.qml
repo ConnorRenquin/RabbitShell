@@ -6,4 +6,5 @@ ShellRoot {
     NotificationPopup {}
     ClockBackground {}
     AppSearch {}
+    Workspaces {}
 }
