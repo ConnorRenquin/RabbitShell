@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell.Services.Pipewire
+import Quickshell.Hyprland
 
 import qs.Components
 import qs.Constants
@@ -14,8 +15,29 @@ Rectangle {
 
     clip: true
 
-    color: Colors.bg0
+    color: activeFocus ? Colors.bgGreen : Colors.bg0
     radius: 10
+
+    focus: true
+
+    Behavior on color {
+        ColorAnimation {
+            duration: 200
+        }
+    }
+
+    Keys.onPressed: function (event) {
+        if (event.key === Qt.Key_Left) {
+            volumeSlider.value = Math.max(0, volumeSlider.value - 0.05);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Right) {
+            volumeSlider.value = Math.min(1.5, volumeSlider.value + 0.05);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_M) {
+            node.audio.muted = !node.audio.muted;
+            event.accepted = true;
+        }
+    }
 
     PwObjectTracker {
         objects: [node]
@@ -45,7 +67,7 @@ Rectangle {
                 width: 15 + Styles.margin * 2
                 height: 15 + Styles.margin * 2
                 radius: 20
-                color: mouseArea.containsMouse ? Colors.bg2 : Colors.bg2
+                color: mouseArea.containsMouse ? Colors.bg2 : Colors.bg1
 
                 Behavior on color {
                     ColorAnimation {
@@ -73,6 +95,7 @@ Rectangle {
             }
 
             Slider {
+                id: volumeSlider
                 Layout.fillWidth: true
                 value: node.audio.volume
                 onValueChanged: node.audio.volume = value
