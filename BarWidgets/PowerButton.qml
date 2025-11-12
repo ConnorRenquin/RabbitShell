@@ -5,12 +5,22 @@ import Quickshell.Hyprland
 import qs.Components
 import qs.Constants
 
-BarWidget {
+ButtonWidget {
     id: root
+    icon: "⏻"
+
+    GlobalShortcut {
+        name: "powermenu"
+        onPressed: {
+            root.showMenu = !root.showMenu;
+        }
+    }
+
+    onClicked: {
+        root.showMenu = !root.showMenu;
+    }
     property bool showMenu: false
     property int currentFocusIndex: 0
-
-    width: parent.height
 
     onShowMenuChanged: {
         if (showMenu) {
@@ -27,35 +37,43 @@ BarWidget {
 
     function executeCurrentItem() {
         if (currentFocusIndex >= 0 && currentFocusIndex < buttons.children.length) {
-            buttons.children[currentFocusIndex].clicked();
+            buttons.children[currentFocusIndex].clicked(null);
         }
     }
 
-    GlobalShortcut {
-        name: "powermenu"
-        onPressed: {
-            root.showMenu = !root.showMenu;
-        }
-    }
-
-    TextStyled {
-        text: "⏻"
-        anchors.centerIn: parent
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            root.showMenu = !root.showMenu;
-        }
-    }
-
-    function menuAction(commandArray) {
+    function menuAction(command) {
         root.showMenu = false;
-        Quickshell.execDetached(commandArray);
+        Quickshell.execDetached(["bash", "-c", command]);
     }
 
+    component PowerMenuButton: ButtonStyled {
+        id: menuButton
+        radius: Styles.radius0
+
+        property string label: ""
+        property string command: ""
+
+        property bool isFocused: false
+        height: text.implicitHeight + 20
+        implicitWidth: parent.width
+
+        color: {
+            if (isFocused || containsMouse) {
+                return Colors.bgGreen;
+            } else {
+                return Colors.bg0;
+            }
+        }
+
+        TextStyled {
+            id: text
+            anchors.centerIn: parent
+            text: isFocused || containsMouse ? "> " + menuButton.label : menuButton.label
+            color: Colors.yellow
+        }
+    }
+
+    // Menu
     PopupWindow {
         id: popupWindow
         anchor {
@@ -77,8 +95,8 @@ BarWidget {
 
         Rectangle {
             id: menuBackground
-            color: Colors.bgDim
-            radius: 10
+            color: Colors.bgRed
+            radius: Styles.margin
             implicitWidth: 220
             implicitHeight: buttons.implicitHeight + 10
             focus: true
@@ -86,18 +104,14 @@ BarWidget {
             Keys.onPressed: event => {
                 if (event.key === Qt.Key_Escape) {
                     root.showMenu = false;
-                    event.accepted = true;
                 } else if (event.key === Qt.Key_J || event.key === Qt.Key_Down) {
                     currentFocusIndex = Math.min(currentFocusIndex + 1, buttons.children.length - 1);
                     updateButtonFocus();
-                    event.accepted = true;
                 } else if (event.key === Qt.Key_K || event.key === Qt.Key_Up) {
                     currentFocusIndex = Math.max(currentFocusIndex - 1, 0);
                     updateButtonFocus();
-                    event.accepted = true;
                 } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                     executeCurrentItem();
-                    event.accepted = true;
                 }
             }
 
@@ -110,25 +124,25 @@ BarWidget {
                 PowerMenuButton {
                     label: "Logout"
                     command: "logout"
-                    onClicked: root.menuAction(["bash", "-c", "hyprctl dispatch exit"])
+                    onClicked: root.menuAction("hyprctl dispatch exit")
                 }
 
                 PowerMenuButton {
                     label: "Lock"
                     command: "lock"
-                    onClicked: root.menuAction(["hyprlock"])
+                    onClicked: root.menuAction("hyprlock")
                 }
 
                 PowerMenuButton {
                     label: "Reboot"
                     command: "reboot"
-                    onClicked: root.menuAction(["reboot"])
+                    onClicked: root.menuAction("reboot")
                 }
 
                 PowerMenuButton {
                     label: "Shutdown"
                     command: "shutdown"
-                    onClicked: root.menuAction(["shutdown"])
+                    onClicked: root.menuAction("shutdown")
                 }
             }
         }
