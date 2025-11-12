@@ -4,21 +4,15 @@ import QtQuick
 import qs.Components
 import qs.Constants
 
-BarWidget {
+ButtonStyled {
     id: root
+
+    radius: Styles.radius0
+    height: parent.height
+    width: parent.height
 
     property string icon: "*"
     property string command
-
-    width: parent.height
-
-    color: mouseArea.containsMouse ? Colors.bgGreen : Colors.bgDim
-
-    Behavior on color {
-        ColorAnimation {
-            duration: 125
-        }
-    }
 
     // TODO Switch over to svg at some point?
     TextStyled {
@@ -27,13 +21,7 @@ BarWidget {
         anchors.centerIn: parent
     }
 
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
-        hoverEnabled: true
-        onClicked: {
-            Quickshell.execDetached(["bash", "-c", root.command]);
-        }
+    onClicked: {
+        Quickshell.execDetached(["bash", "-c", root.command]);
     }
 }
