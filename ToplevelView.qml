@@ -44,7 +44,7 @@ PanelWindow {
         id: rect
         anchors.fill: parent
         anchors.margins: 10
-        color: Colors.bgDim
+        color: "transparent"
         radius: 10
         focus: true
 
@@ -98,7 +98,7 @@ PanelWindow {
                     color: Colors.bg0
                     radius: 8
                     border.color: Colors.green
-                    border.width: 2
+                    border.width: modelData.wayland.activated ? 2 : 0
 
                     // Helper property to get the key label
                     property string keyLabel: {
@@ -137,7 +137,7 @@ PanelWindow {
                                     id: labelText
                                     anchors.centerIn: parent
                                     text: windowCard.keyLabel
-                                    color: "black"
+                                    color: Colors.bg2
                                     font.pixelSize: 18
                                     font.bold: true
                                 }
@@ -147,21 +147,11 @@ PanelWindow {
                         // Title
                         Text {
                             Layout.fillWidth: true
-                            text: windowCard.modelData.title || "Untitled"
+                            text: windowCard.modelData.wayland.appId + " - " + windowCard.modelData.wayland.title || "Untitled"
                             color: Colors.fg
                             elide: Text.ElideRight
                             horizontalAlignment: Text.AlignHCenter
                             font.pixelSize: 14
-                        }
-
-                        // App name
-                        Text {
-                            Layout.fillWidth: true
-                            text: windowCard.modelData.appId || ""
-                            color: Colors.bgDim
-                            elide: Text.ElideRight
-                            horizontalAlignment: Text.AlignHCenter
-                            font.pixelSize: 11
                         }
                     }
                 }
