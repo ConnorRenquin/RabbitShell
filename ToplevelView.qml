@@ -11,8 +11,8 @@ PanelWindow {
 
     exclusionMode: ExclusionMode.Ignore
 
-    width: 1200
-    height: Math.min(600, grid.implicitHeight + 40)
+    implicitWidth: 1200
+    implicitHeight: Math.min(600, grid.implicitHeight + 40)
     color: "transparent"
     visible: false
 
@@ -127,8 +127,8 @@ PanelWindow {
                                 anchors.top: parent.top
                                 anchors.left: parent.left
                                 anchors.margins: 5
-                                width: labelText.width + 16
-                                height: labelText.height + 12
+                                implicitWidth: labelText.width + 16
+                                implicitHeight: labelText.height + 12
                                 color: Colors.green
                                 radius: 6
                                 z: 10
@@ -158,7 +158,7 @@ PanelWindow {
                         Text {
                             Layout.fillWidth: true
                             text: windowCard.modelData.appId || ""
-                            color: Colors.fgDim
+                            color: Colors.bgDim
                             elide: Text.ElideRight
                             horizontalAlignment: Text.AlignHCenter
                             font.pixelSize: 11
