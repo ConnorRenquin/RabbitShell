@@ -16,7 +16,7 @@ Rectangle {
     clip: true
 
     color: activeFocus ? Colors.bgGreen : Colors.bg0
-    radius: 10
+    radius: Styles.margin
 
     focus: true
 
@@ -29,13 +29,10 @@ Rectangle {
     Keys.onPressed: function (event) {
         if (event.key === Qt.Key_Left) {
             volumeSlider.value = Math.max(0, volumeSlider.value - 0.05);
-            event.accepted = true;
         } else if (event.key === Qt.Key_Right) {
             volumeSlider.value = Math.min(1.5, volumeSlider.value + 0.05);
-            event.accepted = true;
         } else if (event.key === Qt.Key_M) {
             node.audio.muted = !node.audio.muted;
-            event.accepted = true;
         }
     }
 
@@ -50,9 +47,10 @@ Rectangle {
         anchors.leftMargin: Styles.margin
         width: parent.width - Styles.margin * 2
 
+        // Title
         TextStyled {
             text: {
-                const app = node.properties["application.name"] ?? (node.description != "" ? node.description : node.name);
+                const app = node.properties["media.name"];
                 return app;
             }
             elide: Text.ElideRight
@@ -61,29 +59,16 @@ Rectangle {
         RowLayout {
             width: parent.width
 
-            Rectangle {
+            // Mute Button
+            ButtonStyled {
                 width: 15 + Styles.margin * 2
                 height: 15 + Styles.margin * 2
-                radius: 20
-                color: mouseArea.containsMouse ? Colors.bg2 : Colors.bg1
-
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 250
-                    }
-                }
-
+                radius: 100
                 TextStyled {
                     anchors.centerIn: parent
                     text: node.audio.muted ? "" : ""
                 }
-
-                MouseArea {
-                    id: mouseArea
-                    hoverEnabled: true
-                    anchors.fill: parent
-                    onClicked: node.audio.muted = !node.audio.muted
-                }
+                onClicked: node.audio.muted = !node.audio.muted
             }
 
             // TODO Refact into StyledSlider
@@ -100,14 +85,14 @@ Rectangle {
                     implicitHeight: 6
                     width: volumeSlider.availableWidth
                     height: implicitHeight
-                    radius: 3
-                    color: Colors.bgDim  // Unfilled portion
+                    radius: Styles.margin
+                    color: Colors.bgDim
 
                     Rectangle {
                         width: volumeSlider.visualPosition * parent.width
                         height: parent.height
-                        color: Colors.green  // Filled portion
-                        radius: 3
+                        color: Colors.green
+                        radius: Styles.margin
                     }
                 }
 
@@ -116,7 +101,14 @@ Rectangle {
                     y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
                     implicitWidth: textPercent.width + 16
                     implicitHeight: 16
-                    radius: 8
+                    radius: Styles.margin
+                    color: mouseArea.containsMouse ? Colors.blue : Colors.green
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 200
+                        }
+                    }
 
                     TextStyled {
                         id: textPercent
@@ -125,7 +117,12 @@ Rectangle {
                         font.pixelSize: 12
                         text: `${Math.floor(node.audio.volume * 100)}%`
                     }
-                    color: Colors.green
+
+                    MouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                    }
                 }
             }
         }
