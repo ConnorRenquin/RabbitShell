@@ -51,11 +51,9 @@ Rectangle {
         width: parent.width - Styles.margin * 2
 
         TextStyled {
-            width: parent.width - Styles.margin * 2
             text: {
                 const app = node.properties["application.name"] ?? (node.description != "" ? node.description : node.name);
-                const media = node.properties["media.name"];
-                return media != undefined ? `${app} - ${media}` : app;
+                return app;
             }
             elide: Text.ElideRight
         }
@@ -88,17 +86,47 @@ Rectangle {
                 }
             }
 
-            TextStyled {
-                Layout.preferredWidth: 60
-                horizontalAlignment: Text.Center
-                text: `${Math.floor(node.audio.volume * 100)}%`
-            }
-
+            // TODO Refact into StyledSlider
             Slider {
                 id: volumeSlider
                 Layout.fillWidth: true
                 value: node.audio.volume
                 onValueChanged: node.audio.volume = value
+
+                background: Rectangle {
+                    x: volumeSlider.leftPadding
+                    y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
+                    implicitWidth: 200
+                    implicitHeight: 6
+                    width: volumeSlider.availableWidth
+                    height: implicitHeight
+                    radius: 3
+                    color: Colors.bgDim  // Unfilled portion
+
+                    Rectangle {
+                        width: volumeSlider.visualPosition * parent.width
+                        height: parent.height
+                        color: Colors.green  // Filled portion
+                        radius: 3
+                    }
+                }
+
+                handle: Rectangle {
+                    x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
+                    y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
+                    implicitWidth: textPercent.width + 16
+                    implicitHeight: 16
+                    radius: 8
+
+                    TextStyled {
+                        id: textPercent
+                        anchors.centerIn: parent
+                        color: Colors.bg1
+                        font.pixelSize: 12
+                        text: `${Math.floor(node.audio.volume * 100)}%`
+                    }
+                    color: Colors.green
+                }
             }
         }
     }

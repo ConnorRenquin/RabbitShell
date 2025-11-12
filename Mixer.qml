@@ -82,9 +82,8 @@ PanelWindow {
         }
 
         onVisibleChanged: {
-            if (visible) {
+            if (visible)
                 rect.forceActiveFocus();
-            }
         }
 
         ColumnLayout {
@@ -108,12 +107,9 @@ PanelWindow {
 
             Repeater {
                 model: linkTracker.linkGroups
-
                 MixerEntry {
                     objectName: "mixerEntry"
                     required property PwLinkGroup modelData
-                    // Each link group contains a source and a target.
-                    // Since the target is the default sink, we want the source.
                     node: modelData.source
                     Layout.fillWidth: true
                 }
