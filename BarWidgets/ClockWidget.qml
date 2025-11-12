@@ -5,7 +5,7 @@ import qs.Constants
 import qs.Services
 
 BarWidget {
-    implicitWidth: contentRow.implicitWidth + Styles.margin
+    implicitWidth: contentRow.implicitWidth + Styles.margin * 2
 
     Row {
         id: contentRow
