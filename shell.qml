@@ -8,4 +8,5 @@ ShellRoot {
     AppSearch {}
     Workspaces {}
     Mixer {}
+    ToplevelView {}
 }
