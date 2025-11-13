@@ -134,6 +134,12 @@ ButtonWidget {
                 }
 
                 PowerMenuButton {
+                    label: "Sleep"
+                    command: "systemctl suspend"
+                    onClicked: root.menuAction("systemctl suspend")
+                }
+
+                PowerMenuButton {
                     label: "Reboot"
                     command: "reboot"
                     onClicked: root.menuAction("reboot")
