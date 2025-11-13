@@ -6,26 +6,18 @@ import qs.Components
 import qs.Constants
 import qs.Services
 
-BarWidget {
+ButtonStyled {
     id: root
+
     width: parent.height
+    height: parent.height
+    radius: Styles.radius0
     color: IdleInhibitorSingleton.enabled ? Colors.orange : Colors.bgDim
 
-    property bool inhibitIdle: false
-
     TextStyled {
-        id: textIcon
         anchors.centerIn: parent
         text: IdleInhibitorSingleton.enabled ? "󰅶" : "󰛊"
-        color: Colors.fg
     }
 
-    MouseArea {
-        anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            console.log("Clicked");
-            IdleInhibitorSingleton.enabled = !IdleInhibitorSingleton.enabled;
-        }
-    }
+    onClicked: IdleInhibitorSingleton.enabled = !IdleInhibitorSingleton.enabled
 }

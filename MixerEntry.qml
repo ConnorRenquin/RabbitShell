@@ -50,7 +50,7 @@ Rectangle {
         // Title
         TextStyled {
             text: {
-                const app = node.properties["media.name"];
+                const app = node.properties["media.name"] ?? "Speaker";
                 return app;
             }
             elide: Text.ElideRight

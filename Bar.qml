@@ -30,24 +30,24 @@ Variants {
             right: margin
         }
 
+        // Left
         BarRow {
             anchors.left: parent.left
-
             WorkspacesWidget {
                 monitorName: modelData.name
             }
             WindowTitleWidget {}
         }
 
+        // Center
         BarRow {
             anchors.centerIn: parent
-
             ClockWidget {}
         }
 
+        // Right
         BarRow {
             anchors.right: parent.right
-
             SystemTray {}
             IdleInhibitorWidget {}
             ButtonWidget {
