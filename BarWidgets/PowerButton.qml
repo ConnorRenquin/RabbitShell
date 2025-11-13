@@ -11,9 +11,7 @@ ButtonWidget {
 
     GlobalShortcut {
         name: "powermenu"
-        onPressed: {
-            root.showMenu = !root.showMenu;
-        }
+        onPressed: root.showMenu = !root.showMenu
     }
 
     onClicked: {
@@ -48,14 +46,13 @@ ButtonWidget {
 
     component PowerMenuButton: ButtonStyled {
         id: menuButton
+
         radius: Styles.radius0
-
-        property string label: ""
-        property string command: ""
-
-        property bool isFocused: false
         height: text.implicitHeight + 20
         implicitWidth: parent.width
+
+        property string label: ""
+        property bool isFocused: false
 
         color: {
             if (isFocused || containsMouse) {
@@ -123,31 +120,26 @@ ButtonWidget {
 
                 PowerMenuButton {
                     label: "Logout"
-                    command: "logout"
                     onClicked: root.menuAction("hyprctl dispatch exit")
                 }
 
                 PowerMenuButton {
                     label: "Lock"
-                    command: "lock"
                     onClicked: root.menuAction("hyprlock")
                 }
 
                 PowerMenuButton {
                     label: "Sleep"
-                    command: "systemctl suspend"
                     onClicked: root.menuAction("systemctl suspend")
                 }
 
                 PowerMenuButton {
                     label: "Reboot"
-                    command: "reboot"
                     onClicked: root.menuAction("reboot")
                 }
 
                 PowerMenuButton {
                     label: "Shutdown"
-                    command: "shutdown"
                     onClicked: root.menuAction("shutdown")
                 }
             }
