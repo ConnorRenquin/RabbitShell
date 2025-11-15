@@ -2,40 +2,36 @@ import Quickshell
 import Quickshell.Widgets
 import QtQuick
 import Quickshell.Services.SystemTray
+
+import qs.Components
 import qs.Constants
 
 BarWidget {
     id: root
-
     property int iconSize: 20
-    property int itemPadding: 6
-    property int baseMargin: 15
 
-    implicitWidth: row.implicitWidth + baseMargin
-
+    implicitWidth: row.implicitWidth + Styles.marginSm * 2
     Row {
         id: row
         anchors.centerIn: parent
-        spacing: 10
+        spacing: Styles.marginSm
 
         Repeater {
             id: trayRow
             model: SystemTray.items
 
-            Rectangle {
+            delegate: ButtonStyled {
                 id: menuItem
-                property bool menuVisible: false
 
-                width: root.iconSize + (root.itemPadding * 2)
-                height: root.iconSize + (root.itemPadding * 2)
+                defaultColor: Colors.bg0
+                hoverColor: Colors.bg1
 
-                color: mouseArea.containsMouse ? Colors.bg1 : Colors.bg0
-                radius: 5
+                implicitWidth: root.iconSize + Styles.marginSm
+                implicitHeight: root.iconSize + Styles.marginSm
+                radius: Styles.radiusSm
 
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 250
-                    }
+                onClicked: event => {
+                    trayMenu.visible = !trayMenu.visible;
                 }
 
                 IconImage {
@@ -46,19 +42,8 @@ BarWidget {
                     source: modelData.icon
 
                     SystemTrayMenu {
-                        parentItem: menuItem
-                        visible: menuItem.menuVisible
+                        id: trayMenu
                         trayMenu: modelData.menu
-                    }
-                }
-
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
-                    onClicked: event => {
-                        menuItem.menuVisible = !menuItem.menuVisible;
                     }
                 }
             }

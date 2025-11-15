@@ -9,20 +9,17 @@ import qs.Constants
 PopupWindow {
     id: root
 
-    required property Item parentItem
     property QsMenuHandle trayMenu
 
-    property int baseMargin: 15
-
     anchor {
-        item: parentItem
-        rect.y: parentItem.height + 15
-        rect.x: parentItem.implicitWidth / 2 - implicitWidth / 2
+        item: parent
+        rect.y: parent.height + 15
+        rect.x: parent.implicitWidth / 2 - implicitWidth / 2
     }
 
     color: "transparent"
-    implicitHeight: menuBackground.implicitHeight + root.baseMargin
-    implicitWidth: menuBackground.implicitWidth + root.baseMargin
+    implicitHeight: menuBackground.implicitHeight + Styles.marginSm
+    implicitWidth: menuBackground.implicitWidth + Styles.marginSm
 
     QsMenuOpener {
         id: menuOpener
@@ -31,8 +28,8 @@ PopupWindow {
 
     Rectangle {
         id: menuBackground
-        color: Colors.bgDim
-        radius: 10
+        color: Colors.bg0
+        radius: Styles.radiusSm
         anchors.fill: parent
         implicitHeight: contentColumn.implicitHeight
         implicitWidth: contentColumn.implicitWidth
@@ -48,38 +45,24 @@ PopupWindow {
             spacing: 10
             Repeater {
                 model: menuOpener.children.values
-                delegate: Rectangle {
-                    id: menuItem
-
-                    property bool hovered: false
-                    property bool pressed: false
-
+                delegate: ButtonStyled {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: Colors.bg1
-                    radius: 5
+                    radius: Styles.radiusSm
                     implicitWidth: 200
+
                     implicitHeight: modelData.isSeperator || modelData.text == "" ? 2 : (textContent.implicitHeight + 10)
 
                     TextStyled {
                         id: textContent
                         anchors.centerIn: parent
                         text: modelData.text
-                        width: parent.width - root.baseMargin
+                        width: parent.width - Styles.marginSm
                         wrapMode: Text.WordWrap
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onPressed: {
-                            menuItem.pressed = true;
-                        }
-                        onReleased: {
-                            menuItem.pressed = false;
-                        }
-                        onClicked: event => {
-                            modelData.triggered();
-                        }
+                    onClicked: event => {
+                        modelData.triggered();
+                        root.visible = !root.visible;
                     }
                 }
             }
