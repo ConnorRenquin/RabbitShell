@@ -9,30 +9,30 @@ import qs.Constants
 
 BarWidget {
     id: root
-    property int margin: 5
+    property int margin: Styles.margin
     required property string monitorName
 
-    width: row.implicitWidth + 10
+    width: row.implicitWidth + Styles.margin
+
     Behavior on width {
         NumberAnimation {
-            duration: 350
-            easing.type: Easing.OutQuad
+            duration: 150
         }
     }
+
     Row {
         id: row
         spacing: 10
         anchors.left: parent.left
-        anchors.leftMargin: 5
+        anchors.leftMargin: Styles.marginSm / 2
         anchors.verticalCenter: parent.verticalCenter
 
         Repeater {
             model: Hyprland.workspaces.values.filter(workspace => workspace.id != -99 && workspace.monitor?.name == monitorName)
             Rectangle {
-                implicitHeight: root.height - (margin * 2)
-                implicitWidth: text.width + 25
-                radius: modelData.focused ? 15 : 5
-
+                implicitHeight: root.height - Styles.marginSm
+                implicitWidth: text.implicitWidth + Styles.marginSm
+                radius: modelData.focused ? Styles.radiusLg : Styles.radiusSm
                 color: modelData.focused ? Colors.green : Colors.bg0
 
                 Behavior on color {
@@ -50,8 +50,8 @@ BarWidget {
 
                 TextStyled {
                     id: text
-                    text: modelData.focused ? "󰜋 " + modelData.id : "󰜌 " + modelData.id
                     anchors.centerIn: parent
+                    text: modelData.focused ? "󰜋" : "󰜌"
                     color: modelData.focused ? Colors.bgRed : Colors.fg
                 }
 
