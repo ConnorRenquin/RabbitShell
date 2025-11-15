@@ -8,22 +8,29 @@ import qs.Services
 
 PanelWindow {
 
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
-    }
+    implicitWidth: clockText.implicitWidth
+    implicitHeight: clockText.implicitHeight
+
     exclusionMode: ExclusionMode.Normal
     color: Colors.transparent
     aboveWindows: false
 
     TextStyled {
+        id: clockText
         antialiasing: true
-        anchors.bottomMargin: parent.height / 2
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        font.pixelSize: parent.height / 10
+        anchors.bottomMargin: 5
+        font.pixelSize: 142
+        color: Colors.bgVisual
+        text: Time.timeShort
+    }
+
+    TextStyled {
+        antialiasing: true
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        font.pixelSize: 140
         color: Colors.fg
         text: Time.timeShort
     }
