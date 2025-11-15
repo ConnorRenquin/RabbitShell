@@ -5,8 +5,10 @@ import qs.Constants
 
 Rectangle {
     id: root
-    color: mouseArea.containsMouse ? Colors.bg2 : Colors.bgDim
-    scale: mouseArea.pressed ? 0.95 : 1
+    property string hoverColor: Colors.bg2
+    property string defaultColor: Colors.bgDim
+    color: mouseArea.containsMouse ? hoverColor : defaultColor
+    scale: mouseArea.pressed ? 0.90 : 1
 
     property bool containsMouse: mouseArea.containsMouse
     default property alias content: contentItem.data
@@ -20,8 +22,7 @@ Rectangle {
 
     Behavior on scale {
         NumberAnimation {
-            duration: 100
-            easing.type: Easing.OutQuad
+            duration: 50
         }
     }
 
