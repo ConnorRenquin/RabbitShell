@@ -6,32 +6,39 @@ import qs.Constants
 import qs.Components
 import qs.Services
 
-PanelWindow {
+Variants {
 
-    implicitWidth: clockText.implicitWidth
-    implicitHeight: clockText.implicitHeight
+    model: Quickshell.screens
+    delegate: PanelWindow {
 
-    exclusionMode: ExclusionMode.Normal
-    color: Colors.transparent
-    aboveWindows: false
+        required property var modelData
 
-    TextStyled {
-        id: clockText
-        antialiasing: true
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 5
-        font.pixelSize: 142
-        color: Colors.bgVisual
-        text: Time.timeShort
-    }
+        implicitWidth: clockText.implicitWidth
+        implicitHeight: clockText.implicitHeight
 
-    TextStyled {
-        antialiasing: true
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-        font.pixelSize: 140
-        color: Colors.fg
-        text: Time.timeShort
+        exclusionMode: ExclusionMode.Normal
+        color: Colors.transparent
+        aboveWindows: false
+        screen: modelData
+
+        TextStyled {
+            id: clockText
+            antialiasing: true
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 5
+            font.pixelSize: 140
+            color: Colors.bgVisual
+            text: Time.timeShort
+        }
+
+        TextStyled {
+            antialiasing: true
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            font.pixelSize: 140
+            color: Colors.fg
+            text: Time.timeShort
+        }
     }
 }
