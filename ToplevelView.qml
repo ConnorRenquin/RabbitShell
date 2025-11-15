@@ -5,22 +5,21 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Constants
+import qs.Components
 
 PanelWindow {
     id: root
 
     exclusionMode: ExclusionMode.Ignore
 
-    implicitWidth: 1200
-    implicitHeight: Math.min(600, grid.implicitHeight + 40)
+    implicitWidth: rect.implicitWidth
+    implicitHeight: rect.implicitHeight
     color: "transparent"
     visible: false
 
     GlobalShortcut {
         name: "toplevelview"
-        onPressed: {
-            root.visible = !root.visible;
-        }
+        onPressed: root.visible = !root.visible
     }
 
     HyprlandFocusGrab {
@@ -28,25 +27,23 @@ PanelWindow {
         windows: [root]
     }
 
-    property var filteredToplevels: {
-        var toplevels = Hyprland.toplevels.values;
-        var result = [];
-        for (var i = 0; i < toplevels.length; i++) {
-            var toplevel = toplevels[i];
-            if (toplevel.workspace && toplevel.workspace.focused) {
-                result.push(toplevel);
-            }
-        }
-        return result;
+    property var toplevels: Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0)
+    property string keyMap: "qwertyuiopasdfghjklzxcvbnm"
+
+    onVisibleChanged: {
+        if (visible)
+            rect.forceActiveFocus();
     }
 
     Rectangle {
         id: rect
-        anchors.fill: parent
-        anchors.margins: 10
-        color: "transparent"
-        radius: 10
+
+        color: Colors.bgDim
+        radius: Styles.radiusSm
         focus: true
+
+        implicitWidth: grid.width + 20
+        implicitHeight: grid.height + 20
 
         Keys.onPressed: function (event) {
             if (event.key === Qt.Key_Escape) {
@@ -54,105 +51,90 @@ PanelWindow {
                 event.accepted = true;
                 return;
             }
-            console.log("Key pressed:", event.key);
 
-            // Map keys to indices
-            var keyMap = "123456789abcdefghijklmnopqrstuvwxyz";
             var pressedChar = event.text.toLowerCase();
-            var index = keyMap.indexOf(pressedChar);
+            if (pressedChar === "")
+                return;
+            var index = root.keyMap.indexOf(pressedChar);
 
-            if (index !== -1 && index < root.filteredToplevels.length) {
-                var toplevel = root.filteredToplevels[index];
-                toplevel.wayland.activate();
-                root.visible = false;
-                event.accepted = true;
-            }
+            if (index === -1 && !root.toplevels[index])
+                return;
+            root.toplevels[index].wayland.activate();
         }
 
-        onVisibleChanged: {
-            if (visible)
-                rect.forceActiveFocus();
-        }
-
-        GridLayout {
+        Grid {
             id: grid
-            anchors.fill: parent
-            anchors.margins: 20
-            columns: Math.min(4, root.filteredToplevels.length)
-            columnSpacing: 15
-            rowSpacing: 15
+            anchors.centerIn: parent
+            spacing: 10
+            columns: 4
 
             Repeater {
-                model: root.filteredToplevels
+                model: root.toplevels
 
-                Rectangle {
+                // MenuCard
+                delegate: Rectangle {
                     id: windowCard
                     required property var modelData
                     required property int index
 
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: 250
-                    Layout.preferredHeight: 180
-
-                    color: Colors.bg0
-                    radius: 8
-                    border.color: Colors.green
-                    border.width: modelData.wayland.activated ? 2 : 0
+                    radius: Styles.radiusSm
+                    width: 400
+                    height: 200
+                    color: Colors.bgDim
+                    clip: true
 
                     // Helper property to get the key label
                     property string keyLabel: {
-                        var keyMap = "123456789abcdefghijklmnopqrstuvwxyz";
-                        return index < keyMap.length ? keyMap[index] : "";
+                        return index < root.keyMap.length ? root.keyMap[index] : "";
                     }
 
-                    ColumnLayout {
-                        anchors.fill: parent
-                        anchors.margins: 8
-                        spacing: 8
+                    // Overlay label
+                    Rectangle {
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.margins: Styles.margin
+                        implicitWidth: column.width + Styles.margin
+                        implicitHeight: column.height + Styles.margin
+                        color: Colors.bg2
+                        radius: 6
+                        z: 10
 
-                        // Thumbnail
-                        Item {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-
-                            ScreencopyView {
-                                anchors.fill: parent
-                                live: false
-                                captureSource: windowCard.modelData.wayland
+                        Column {
+                            id: column
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                                verticalCenter: parent.verticalCenter
+                                margins: Styles.margin
                             }
-
-                            // Overlay label
-                            Rectangle {
-                                anchors.top: parent.top
-                                anchors.left: parent.left
-                                anchors.margins: 5
-                                implicitWidth: labelText.width + 16
-                                implicitHeight: labelText.height + 12
-                                color: Colors.green
-                                radius: 6
-                                z: 10
-
-                                Text {
-                                    id: labelText
-                                    anchors.centerIn: parent
-                                    text: windowCard.keyLabel
-                                    color: Colors.bg2
-                                    font.pixelSize: 18
-                                    font.bold: true
+                            TextStyled {
+                                id: labelText
+                                anchors {
+                                    left: parent.left
+                                    right: parent.right
                                 }
+                                text: windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland.appId
+                                color: Colors.fg
+                            }
+                            TextStyled {
+                                anchors {
+                                    left: parent.left
+                                    right: parent.right
+                                }
+                                text: windowCard.modelData.wayland.title
+                                color: Colors.green
+                                font.pixelSize: 14
                             }
                         }
+                    }
 
-                        // Title
-                        Text {
-                            Layout.fillWidth: true
-                            text: windowCard.modelData.wayland.appId + " - " + windowCard.modelData.wayland.title || "Untitled"
-                            color: Colors.fg
-                            elide: Text.ElideRight
-                            horizontalAlignment: Text.AlignHCenter
-                            font.pixelSize: 14
-                        }
+                    ScreencopyView {
+                        id: screencopyView
+                        anchors.centerIn: parent
+                        width: sourceSize.width
+                        height: sourceSize.height
+                        captureSource: modelData.wayland
                     }
                 }
             }
@@ -161,7 +143,7 @@ PanelWindow {
         // Empty state
         Text {
             anchors.centerIn: parent
-            visible: root.filteredToplevels.length === 0
+            visible: root.toplevels.length === 0
             text: "No windows on this workspace"
             color: Colors.fg
             font.pixelSize: 16
