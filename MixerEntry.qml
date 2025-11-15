@@ -61,11 +61,16 @@ Rectangle {
 
             // Mute Button
             ButtonStyled {
-                width: 15 + Styles.margin * 2
-                height: 15 + Styles.margin * 2
+                width: muteIcon.implicitWidth + Styles.marginMd
+                height: muteIcon.implicitHeight + Styles.marginMd
                 radius: 100
+
+                defaultColor: node.audio.muted ? Colors.bgDim : Colors.orange
                 TextStyled {
+                    id: muteIcon
                     anchors.centerIn: parent
+                    font.pixelSize: 12
+                    color: node.audio.muted ? Colors.orange : Colors.bgDim
                     text: node.audio.muted ? "" : ""
                 }
                 onClicked: node.audio.muted = !node.audio.muted

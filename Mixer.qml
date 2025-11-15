@@ -13,7 +13,7 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
 
     anchors.right: true
-    margins.right: 20
+    margins.right: Styles.marginMd
 
     implicitWidth: 650
     implicitHeight: rect.implicitHeight
@@ -22,10 +22,7 @@ PanelWindow {
 
     GlobalShortcut {
         name: "mixer"
-        onPressed: {
-            console.log("Mixer shortcut pressed");
-            root.visible = !root.visible;
-        }
+        onPressed: root.visible = !root.visible
     }
 
     HyprlandFocusGrab {
@@ -36,14 +33,14 @@ PanelWindow {
     Rectangle {
         id: rect
         implicitWidth: width
-        implicitHeight: column.implicitHeight + 20
+        implicitHeight: column.implicitHeight + Styles.marginSm * 2
         width: parent.width
         height: parent.height
         color: Colors.bgDim
-        radius: 10
+        radius: Styles.radiusSm
         focus: true
 
-        Keys.onPressed: function (event) {
+        Keys.onPressed: event => {
             if (event.key === Qt.Key_Escape) {
                 root.visible = false;
                 event.accepted = true;
@@ -70,14 +67,12 @@ PanelWindow {
                 if (currentIndex < entries.length - 1) {
                     entries[currentIndex + 1].forceActiveFocus();
                 }
-                event.accepted = true;
             } else if (event.key === Qt.Key_Up) {
                 if (currentIndex > 0) {
                     entries[currentIndex - 1].forceActiveFocus();
                 } else if (currentIndex === -1 && entries.length > 0) {
                     entries[0].forceActiveFocus();
                 }
-                event.accepted = true;
             }
         }
 
@@ -91,9 +86,9 @@ PanelWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.margins: 10
+            spacing: Styles.marginSm
+            anchors.margins: Styles.marginSm
 
-            // get a list of nodes that output to the default sink
             PwNodeLinkTracker {
                 id: linkTracker
                 node: Pipewire.defaultAudioSink
