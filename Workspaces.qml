@@ -12,6 +12,8 @@ PanelWindow {
 
     implicitWidth: 1000
     implicitHeight: gridView.contentHeight + 20
+    anchors.top: true
+    margins.top: 80
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
@@ -25,8 +27,8 @@ PanelWindow {
     Rectangle {
         width: parent.width
         height: parent.height
-        color: Colors.bgDim
-        radius: 10
+        color: Colors.bgGreen
+        radius: Styles.radiusSm
         focus: true
 
         Keys.onPressed: function (event) {
@@ -73,7 +75,7 @@ PanelWindow {
                     width: parent.width - Styles.margin
                     height: parent.height - Styles.margin
                     anchors.centerIn: parent
-                    radius: modelData.focused ? 15 : 5
+                    radius: modelData.focused ? 15 : Styles.radiusSm // 15 is about the max you can go, not sure why
 
                     color: modelData.focused ? Colors.green : Colors.bg0
 
