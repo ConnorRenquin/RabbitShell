@@ -59,7 +59,13 @@ PanelWindow {
 
             if (index === -1 && !root.toplevels[index])
                 return;
-            root.toplevels[index].wayland.activate();
+            var toplevel = root.toplevels[index].wayland;
+            if (toplevel.activated) {
+                root.visible = false;
+                event.accepted = true;
+            } else {
+                toplevel.activate();
+            }
         }
 
         Grid {
@@ -114,7 +120,7 @@ PanelWindow {
                                     left: parent.left
                                     right: parent.right
                                 }
-                                text: windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland.appId
+                                text: windowCard.modelData.wayland.title
                                 color: Colors.fg
                             }
                             TextStyled {
@@ -122,7 +128,7 @@ PanelWindow {
                                     left: parent.left
                                     right: parent.right
                                 }
-                                text: windowCard.modelData.wayland.title
+                                text: windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland.appId
                                 color: Colors.green
                                 font.pixelSize: 14
                             }
@@ -131,6 +137,7 @@ PanelWindow {
 
                     ScreencopyView {
                         id: screencopyView
+                        live: true
                         anchors.centerIn: parent
                         width: sourceSize.width
                         height: sourceSize.height
