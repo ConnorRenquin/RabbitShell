@@ -138,18 +138,12 @@ PanelWindow {
                     }
 
                     // Screenshot
-                    ClippingRectangle {
-                        id: clippingRectangle
-                        anchors.fill: parent
-                        radius: Styles.radiusMd
-
-                        ScreencopyView {
-                            id: screencopyView
-                            live: true
-                            width: sourceSize.width
-                            height: sourceSize.height
-                            captureSource: modelData.wayland
-                        }
+                    ScreencopyView {
+                        id: screencopyView
+                        live: true
+                        width: sourceSize.width
+                        height: sourceSize.height
+                        captureSource: modelData.wayland
                     }
                 }
             }
