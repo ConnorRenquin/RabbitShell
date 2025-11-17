@@ -24,7 +24,7 @@ Rectangle {
         Image {
             width: root.height
             height: root.height
-            source: root.player.trackArtUrl
+            source: root.player !== null ? root.player.trackArtUrl : ""
         }
         ButtonStyled {
             width: prev.width + Styles.marginSm * 2
