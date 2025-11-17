@@ -15,6 +15,7 @@ Variants {
 
         required property var modelData
 
+        property MprisPlayer player: Mpris.players.values.filter(player => player.identity === "Spotify")[0] || null
         property int clockMargin: 20
 
         implicitWidth: Math.max(clockText.implicitWidth, albumArt.implicitWidth)
@@ -28,25 +29,27 @@ Variants {
         ClippingRectangle {
             id: albumArt
             z: 0
-            visible: Mpris.players.values[0].isPlaying
+            visible: root.player.isPlaying
             color: Colors.bgDim
-            property int size: Mpris.players.values[0].trackArtUrl ? 900 : 0
             anchors.top: parent.top
+            radius: Styles.radiusMd
+
+            readonly property int size: root.player.isPlaying ? 900 : 0
             implicitHeight: size
             implicitWidth: size
-            radius: Styles.radiusMd
+
             Image {
                 anchors.fill: parent
-                source: Mpris.players.values[0].trackArtUrl
+                source: root.player.trackArtUrl
             }
 
             TextStyled {
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: root.clockMargin + 8
+                anchors.bottomMargin: root.clockMargin + Styles.marginSm
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pixelSize: 24
                 color: Colors.fg
-                text: Mpris.players.values[0].trackTitle + " - " + Mpris.players.values[0].trackArtist
+                text: root.player.trackTitle + " - " + root.player.identity
             }
         }
 

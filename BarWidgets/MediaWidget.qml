@@ -11,6 +11,9 @@ Rectangle {
     height: parent.height
     color: Colors.bgDim
     radius: Styles.radiusSm
+    visible: root.player !== null
+
+    property MprisPlayer player: Mpris.players.values.filter(player => player.identity === "Spotify")[0] || null
 
     Row {
         id: row
@@ -21,7 +24,7 @@ Rectangle {
         Image {
             width: root.height
             height: root.height
-            source: Mpris.players.values[0].trackArtUrl
+            source: root.player.trackArtUrl
         }
         ButtonStyled {
             width: prev.width + Styles.marginSm * 2
@@ -35,7 +38,7 @@ Rectangle {
                 anchors.centerIn: parent
                 text: "󰒮"
             }
-            onClicked: Mpris.players.values[0].previous()
+            onClicked: root.player.previous()
         }
         ButtonStyled {
             width: next.width + Styles.marginSm * 2
@@ -46,7 +49,7 @@ Rectangle {
                 anchors.centerIn: parent
                 text: "󰐎"
             }
-            onClicked: Mpris.players.values[0].togglePlaying()
+            onClicked: root.player.togglePlaying()
         }
         ButtonStyled {
             width: next.width + Styles.marginSm * 2
@@ -60,7 +63,7 @@ Rectangle {
                 anchors.centerIn: parent
                 text: "󰒭"
             }
-            onClicked: Mpris.players.values[0].next()
+            onClicked: root.player.next()
         }
     }
 }
