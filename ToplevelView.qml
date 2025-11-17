@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick
@@ -27,7 +28,8 @@ PanelWindow {
         windows: [root]
     }
 
-    property var toplevels: Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0)
+    // property var toplevels: Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0)
+    property var toplevels: Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0).sort((a, b) => a.wayland.appId.localeCompare(b.wayland.appId))
     property string keyMap: "qwertyuiopasdfghjklzxcvbnm"
 
     onVisibleChanged: {
@@ -39,11 +41,11 @@ PanelWindow {
         id: rect
 
         color: Colors.bgDim
-        radius: Styles.radiusSm
+        radius: Styles.radiusMd
         focus: true
 
-        implicitWidth: grid.width + 20
-        implicitHeight: grid.height + 20
+        implicitWidth: grid.width + Styles.marginSm
+        implicitHeight: grid.height + Styles.marginSm
 
         Keys.onPressed: function (event) {
             if (event.key === Qt.Key_Escape) {
@@ -71,7 +73,7 @@ PanelWindow {
         Grid {
             id: grid
             anchors.centerIn: parent
-            spacing: 10
+            spacing: Styles.marginSm
             columns: 4
 
             Repeater {
@@ -96,14 +98,14 @@ PanelWindow {
 
                     // Overlay label
                     Rectangle {
-                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.margins: Styles.margin
                         implicitWidth: column.width + Styles.margin
                         implicitHeight: column.height + Styles.margin
                         color: Colors.bg2
-                        radius: 6
+                        radius: Styles.radiusMd
                         z: 10
 
                         Column {
@@ -135,13 +137,19 @@ PanelWindow {
                         }
                     }
 
-                    ScreencopyView {
-                        id: screencopyView
-                        live: true
-                        anchors.centerIn: parent
-                        width: sourceSize.width
-                        height: sourceSize.height
-                        captureSource: modelData.wayland
+                    // Screenshot
+                    ClippingRectangle {
+                        id: clippingRectangle
+                        anchors.fill: parent
+                        radius: Styles.radiusMd
+
+                        ScreencopyView {
+                            id: screencopyView
+                            live: true
+                            width: sourceSize.width
+                            height: sourceSize.height
+                            captureSource: modelData.wayland
+                        }
                     }
                 }
             }
