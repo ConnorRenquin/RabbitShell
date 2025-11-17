@@ -48,6 +48,7 @@ Variants {
         // Right
         BarRow {
             anchors.right: parent.right
+            MediaWidget {}
             SystemTray {}
             IdleInhibitorWidget {}
             ButtonWidget {
