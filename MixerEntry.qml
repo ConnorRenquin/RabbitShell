@@ -10,14 +10,11 @@ import qs.Constants
 Rectangle {
     id: root
 
-    height: menu.implicitHeight + Styles.margin * 2
     required property PwNode node
 
-    clip: true
-
+    height: menu.implicitHeight + Styles.margin * 2
     color: activeFocus ? Colors.bgGreen : Colors.bg0
-    radius: Styles.margin
-
+    radius: Styles.radiusSm
     focus: true
 
     Behavior on color {
@@ -53,7 +50,6 @@ Rectangle {
                 const app = node.properties["media.name"] ?? "Speaker";
                 return app;
             }
-            elide: Text.ElideRight
         }
 
         RowLayout {
