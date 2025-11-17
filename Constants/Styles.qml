@@ -8,5 +8,6 @@ QtObject {
     readonly property int marginLg: 30
     readonly property int radius0: radiusSm
     readonly property int radiusSm: 5
-    readonly property int radiusLg: 5
+    readonly property int radiusMd: 10
+    readonly property int radiusLg: 15
 }
