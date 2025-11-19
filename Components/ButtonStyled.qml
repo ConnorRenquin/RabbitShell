@@ -5,11 +5,22 @@ import qs.Constants
 
 Rectangle {
     id: root
+
     property string hoverColor: Colors.bg2
     property string defaultColor: Colors.bgDim
-    color: mouseArea.containsMouse ? hoverColor : defaultColor
+    property string focusedColor: Colors.orange
+
+    color: {
+        if (mouseArea.containsMouse)
+            return hoverColor;
+        if (isFocused)
+            return focusedColor;
+        else
+            return defaultColor;
+    }
     scale: mouseArea.pressed ? 0.90 : 1
 
+    property bool isFocused: false
     property bool containsMouse: mouseArea.containsMouse
     default property alias content: contentItem.data
     signal clicked(var mouse)
