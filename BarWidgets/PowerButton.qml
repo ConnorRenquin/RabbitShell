@@ -52,15 +52,10 @@ ButtonWidget {
         implicitWidth: parent.width
 
         property string label: ""
-        property bool isFocused: false
 
-        color: {
-            if (isFocused || containsMouse) {
-                return Colors.bgGreen;
-            } else {
-                return Colors.bg0;
-            }
-        }
+        defaultColor: Colors.bg0
+        hoverColor: Colors.bgGreen
+        focusedColor: Colors.orange
 
         TextStyled {
             id: text
