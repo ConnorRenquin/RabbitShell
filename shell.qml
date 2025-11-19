@@ -12,4 +12,5 @@ ShellRoot {
     Workspaces {}
     Mixer {}
     ToplevelView {}
+    Clipboard {}
 }
