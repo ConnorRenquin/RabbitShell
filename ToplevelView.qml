@@ -1,9 +1,7 @@
 import Quickshell
-import Quickshell.Widgets
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick
-import QtQuick.Layouts
 
 import qs.Constants
 import qs.Components
@@ -20,7 +18,10 @@ PanelWindow {
 
     GlobalShortcut {
         name: "toplevelview"
-        onPressed: root.visible = !root.visible
+        onPressed: {
+            root.visible = !root.visible;
+            updateToplevels();
+        }
     }
 
     HyprlandFocusGrab {
@@ -29,7 +30,20 @@ PanelWindow {
     }
 
     // property var toplevels: Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0)
-    property var toplevels: Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0).sort((a, b) => a.wayland.appId.localeCompare(b.wayland.appId))
+    property var toplevels: []
+
+    function updateToplevels() {
+        toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0);
+    }
+
+    Component.onCompleted: updateToplevels()
+
+    Connections {
+        target: Hyprland.toplevels
+        function onValuesChanged() {
+            updateToplevels();
+        }
+    }
     property string keyMap: "qwertyuiopasdfghjklzxcvbnm"
 
     onVisibleChanged: {
