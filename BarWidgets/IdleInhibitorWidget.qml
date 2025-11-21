@@ -13,13 +13,13 @@ ButtonStyled {
     height: parent.height
     radius: Styles.radiusSm
 
-    defaultColor: IdleInhibitorSingleton.enabled ? Colors.orange : Colors.bgDim
-    hoverColor: IdleInhibitorSingleton.enabled ? Colors.bgGreen : Colors.bg2
+    defaultColor: IdleInhibitorSingleton.enabled() ? Colors.orange : Colors.bgDim
+    hoverColor: IdleInhibitorSingleton.enabled() ? Colors.bgGreen : Colors.bg2
 
     TextStyled {
         anchors.centerIn: parent
-        text: IdleInhibitorSingleton.enabled ? "󰅶" : "󰛊"
+        text: IdleInhibitorSingleton.enabled() ? "󰅶" : "󰛊"
     }
 
-    onClicked: IdleInhibitorSingleton.enabled = !IdleInhibitorSingleton.enabled
+    onClicked: IdleInhibitorSingleton.toggle()
 }
