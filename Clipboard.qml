@@ -20,6 +20,7 @@ PanelWindow {
     color: "transparent"
 
     property var clipboard: []
+    property string currentClipboard: ""
 
     GlobalShortcut {
         name: 'clipboard'
@@ -42,6 +43,7 @@ PanelWindow {
             base.selectedEntryIndex = 0;
             cliphistList.running = true;
             scrollView.ScrollBar.vertical.position = 0;
+            currentClipboardProcess.running = true;
         }
     }
 
@@ -75,6 +77,18 @@ PanelWindow {
             }
         }
         onExited: root.clipboard = this.buffer
+    }
+
+    Process {
+        id: currentClipboardProcess
+        running: false
+        command: ["wl-paste", "-n"]
+
+        stdout: SplitParser {
+            onRead: line => {
+                root.currentClipboard = line.replace(/^\s+/, '');
+            }
+        }
     }
 
     Rectangle {
@@ -131,9 +145,34 @@ PanelWindow {
             }
         }
 
+        Rectangle {
+            id: currentClipboardDisplay
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: Styles.marginSm
+            height: currentClipboardText.implicitHeight + 2 * Styles.marginMd
+            color: Colors.bgRed
+            radius: Styles.radiusMd
+
+            TextStyled {
+                id: currentClipboardText
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width - Styles.marginMd * 2
+                anchors.margins: Styles.marginMd
+                text: root.currentClipboard
+                font.pixelSize: 24
+                color: Colors.fg
+            }
+        }
+
         ScrollView {
             id: scrollView
-            anchors.fill: parent
+            anchors.top: currentClipboardDisplay.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
             contentWidth: parent.implicitWidth
 
             ScrollBar.vertical: ScrollBar {
