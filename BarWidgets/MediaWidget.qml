@@ -37,13 +37,10 @@ Rectangle {
         }
     }
 
-    PopupWindow {
+    PopupWindowAnimated {
         id: popup
-        visible: albumArtMouse.containsMouse
         width: 400
         height: 400
-
-        color: "transparent"
 
         anchor {
             item: albumArt
@@ -51,13 +48,24 @@ Rectangle {
             rect.y: albumArt.height + Styles.marginSm
         }
 
+        Connections {
+            target: albumArtMouse
+            function onContainsMouseChanged() {
+                if (albumArtMouse.containsMouse) {
+                    popup.show();
+                } else {
+                    popup.hide();
+                }
+            }
+        }
+
         ClippingRectangle {
             radius: Styles.radiusLg
             height: parent.height
             width: parent.width
 
-            opacity: popup.visible ? 1 : 0
-            scale: popup.visible ? 1 : 0
+            opacity: popup.isOpen ? 1 : 0
+            scale: popup.isOpen ? 1 : 0
 
             Behavior on opacity {
                 NumberAnimation {
@@ -68,8 +76,7 @@ Rectangle {
 
             Behavior on scale {
                 NumberAnimation {
-                    duration: 75
-                    easing: Easing.InOutBounce
+                    duration: 200
                 }
             }
 
