@@ -38,6 +38,7 @@ Rectangle {
     }
 
     PopupWindow {
+        id: popup
         visible: albumArtMouse.containsMouse
         width: 400
         height: 400
@@ -51,8 +52,27 @@ Rectangle {
         }
 
         ClippingRectangle {
-            anchors.fill: parent
             radius: Styles.radiusLg
+            height: parent.height
+            width: parent.width
+
+            opacity: popup.visible ? 1 : 0
+            scale: popup.visible ? 1 : 0
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 200
+                    easing: Easing.InOutCubic
+                }
+            }
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: 75
+                    easing: Easing.InOutBounce
+                }
+            }
+
             Image {
                 z: 0
                 anchors.fill: parent
