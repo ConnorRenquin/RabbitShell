@@ -11,10 +11,32 @@ PanelWindow {
 
     exclusionMode: ExclusionMode.Ignore
 
-    implicitWidth: rect.implicitWidth
-    implicitHeight: rect.implicitHeight
+    implicitWidth: base.implicitWidth
+    implicitHeight: base.implicitHeight
     color: "transparent"
     visible: false
+
+    property string keyMap: "qwertyuiopasdfghjklzxcvbnm"
+
+    property var toplevels: []
+
+    function updateToplevels() {
+        toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0);
+    }
+
+    Component.onCompleted: updateToplevels()
+
+    onVisibleChanged: {
+        if (visible)
+            base.forceActiveFocus();
+    }
+
+    Connections {
+        target: Hyprland.toplevels
+        function onValuesChanged() {
+            updateToplevels();
+        }
+    }
 
     GlobalShortcut {
         name: "toplevelview"
@@ -29,30 +51,8 @@ PanelWindow {
         windows: [root]
     }
 
-    // property var toplevels: Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0)
-    property var toplevels: []
-
-    function updateToplevels() {
-        toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0);
-    }
-
-    Component.onCompleted: updateToplevels()
-
-    Connections {
-        target: Hyprland.toplevels
-        function onValuesChanged() {
-            updateToplevels();
-        }
-    }
-    property string keyMap: "qwertyuiopasdfghjklzxcvbnm"
-
-    onVisibleChanged: {
-        if (visible)
-            rect.forceActiveFocus();
-    }
-
     Rectangle {
-        id: rect
+        id: base
 
         color: Colors.bgDim
         radius: Styles.radiusMd
@@ -96,8 +96,6 @@ PanelWindow {
                 // MenuCard
                 delegate: Rectangle {
                     id: windowCard
-                    required property var modelData
-                    required property int index
 
                     radius: Styles.radiusSm
                     width: 400
@@ -105,48 +103,49 @@ PanelWindow {
                     color: Colors.bgDim
                     clip: true
 
-                    // Helper property to get the key label
+                    required property var modelData
+                    required property int index
                     property string keyLabel: {
+                        // Helper property to get the key label
                         return index < root.keyMap.length ? root.keyMap[index] : "";
                     }
 
-                    // Overlay label
                     Rectangle {
-                        anchors.bottom: parent.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.margins: Styles.margin
-                        implicitWidth: column.width + Styles.margin
-                        implicitHeight: column.height + Styles.margin
+                        id: overlayLabel
+                        z: 1
+
+                        implicitWidth: column.width + Styles.marginMd
+                        implicitHeight: column.height + Styles.marginMd
+
                         color: Colors.bg2
                         radius: Styles.radiusMd
-                        z: 10
+
+                        anchors {
+                            bottom: parent.bottom
+                            left: parent.left
+                            right: parent.right
+                            margins: Styles.margin
+                        }
 
                         Column {
                             id: column
+
                             anchors {
                                 left: parent.left
                                 right: parent.right
                                 verticalCenter: parent.verticalCenter
                                 margins: Styles.margin
                             }
+
                             TextStyled {
-                                id: labelText
-                                anchors {
-                                    left: parent.left
-                                    right: parent.right
-                                }
+                                id: windowTitle
                                 text: windowCard.modelData.wayland.title
-                                color: Colors.fg
                             }
+
                             TextStyled {
-                                anchors {
-                                    left: parent.left
-                                    right: parent.right
-                                }
+                                id: windowShortcutAndId
                                 text: windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland.appId
                                 color: Colors.green
-                                font.pixelSize: 14
                             }
                         }
                     }
@@ -163,13 +162,10 @@ PanelWindow {
             }
         }
 
-        // Empty state
-        Text {
+        TextStyled {
             anchors.centerIn: parent
             visible: root.toplevels.length === 0
             text: "No windows on this workspace"
-            color: Colors.fg
-            font.pixelSize: 16
         }
     }
 }

@@ -14,10 +14,9 @@ ButtonStyled {
     property string icon: "*"
     property string command
 
-    // TODO Switch over to svg at some point?
     TextStyled {
         id: text
-        text: icon
+        text: root.icon
         anchors.centerIn: parent
     }
 
