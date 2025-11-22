@@ -30,12 +30,12 @@ BarWidget {
         }
     }
 
-    TextStyled {
+    DoubleText {
         id: title
+        offset: 4
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         anchors.leftMargin: Styles.margin
-        elide: Text.ElideRight
         text: getTitle()
     }
 }

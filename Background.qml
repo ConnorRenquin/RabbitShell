@@ -47,37 +47,20 @@ Variants {
                 source: root.player !== null ? root.player.trackArtUrl : ""
             }
 
-            TextStyled {
+            DoubleText {
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: root.clockMargin + Styles.marginSm
                 anchors.horizontalCenter: parent.horizontalCenter
-                font.pixelSize: 24
-                color: Colors.fg
+                pixelSize: 34
+                offset: 4
                 text: root.player?.trackTitle + " - " + root.player?.trackArtist
             }
         }
 
-        TextStyled {
+        DoubleText {
             id: clockText
-            z: 1
-            antialiasing: true
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: root.clockMargin + 8
-            font.pixelSize: 140
-            color: Colors.bgVisual
-            text: Time.timeShort
-        }
-
-        TextStyled {
-            z: 2
-            antialiasing: true
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: root.clockMargin
-
-            font.pixelSize: 140
-            color: Colors.fg
+            pixelSize: 140
             text: Time.timeShort
         }
     }

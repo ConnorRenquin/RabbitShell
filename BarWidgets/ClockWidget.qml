@@ -12,16 +12,22 @@ BarWidget {
         anchors.centerIn: parent
         spacing: Styles.margin
 
-        TextStyled {
+        DoubleText {
+            offset: 4
+            anchors.verticalCenter: parent.verticalCenter
             text: Time.time
         }
 
-        TextStyled {
+        DoubleText {
+            anchors.verticalCenter: parent.verticalCenter
             text: ""
+            offset: 4
         }
 
-        TextStyled {
+        DoubleText {
+            anchors.verticalCenter: parent.verticalCenter
             text: Time.date
+            offset: 4
         }
     }
 }
