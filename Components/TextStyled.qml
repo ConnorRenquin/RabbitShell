@@ -7,7 +7,7 @@ Text {
     color: Colors.fg
     elide: Text.ElideRight
     font {
-        pixelSize: 18
+        pixelSize: Styles.textMd
         family: "RobotoMono Nerd Font Propo"
         bold: true
     }
