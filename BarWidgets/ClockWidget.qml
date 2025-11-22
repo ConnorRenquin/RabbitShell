@@ -6,28 +6,24 @@ import qs.Services
 
 BarWidget {
     implicitWidth: contentRow.implicitWidth + Styles.margin * 2
-
     Row {
         id: contentRow
         anchors.centerIn: parent
         spacing: Styles.margin
-
         DoubleText {
-            offset: 4
+            offset: Styles.barTextOffset
             anchors.verticalCenter: parent.verticalCenter
             text: Time.time
         }
-
         DoubleText {
             anchors.verticalCenter: parent.verticalCenter
             text: ""
-            offset: 4
+            offset: Styles.barTextOffset
         }
-
         DoubleText {
             anchors.verticalCenter: parent.verticalCenter
             text: Time.date
-            offset: 4
+            offset: Styles.barTextOffset
         }
     }
 }

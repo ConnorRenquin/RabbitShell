@@ -32,7 +32,7 @@ BarWidget {
 
     DoubleText {
         id: title
-        offset: 4
+        offset: Styles.barTextOffset
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         anchors.leftMargin: Styles.margin

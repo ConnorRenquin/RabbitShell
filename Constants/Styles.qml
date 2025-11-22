@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 
 QtObject {
+    readonly property int barTextOffset: 2
     readonly property int margin: marginSm
     readonly property int marginSm: 10
     readonly property int marginMd: 20
