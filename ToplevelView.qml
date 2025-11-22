@@ -11,8 +11,8 @@ PanelWindow {
 
     exclusionMode: ExclusionMode.Ignore
 
-    implicitWidth: base.implicitWidth
-    implicitHeight: base.implicitHeight
+    implicitWidth: toplevels.length > 0 ? base.implicitWidth : noContent.implicitWidth + Styles.marginSm
+    implicitHeight: toplevels.length > 0 ? base.implicitHeight : noContent.implicitHeight + Styles.marginSm
     color: "transparent"
     visible: false
 
@@ -21,7 +21,13 @@ PanelWindow {
     property var toplevels: []
 
     function updateToplevels() {
-        toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel.workspace.id > 0);
+        if (!Hyprland.toplevels)
+            return;
+        toplevels = Hyprland.toplevels.values.filter(toplevel => {
+            if (!toplevel || !toplevel.workspace || !toplevel.workspace.id)
+                return false;
+            return toplevel.workspace.id > 0;
+        });
     }
 
     Component.onCompleted: updateToplevels()
@@ -58,8 +64,9 @@ PanelWindow {
         radius: Styles.radiusMd
         focus: true
 
-        implicitWidth: grid.width + Styles.marginSm
-        implicitHeight: grid.height + Styles.marginSm
+        anchors.centerIn: parent
+        implicitWidth: root.toplevels.length > 0 ? grid.width + Styles.marginSm : noContent.implicitWidth + Styles.marginSm
+        implicitHeight: root.toplevels.length > 0 ? grid.height + Styles.marginSm : noContent.implicitHeight + Styles.marginSm
 
         Keys.onPressed: function (event) {
             if (event.key === Qt.Key_Escape) {
@@ -139,12 +146,20 @@ PanelWindow {
 
                             TextStyled {
                                 id: windowTitle
-                                text: windowCard.modelData.wayland.title
+                                text: {
+                                    if (!windowCard.modelData.wayland)
+                                        return "";
+                                    return windowCard.modelData.wayland.title;
+                                }
                             }
 
                             TextStyled {
                                 id: windowShortcutAndId
-                                text: windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland.appId
+                                text: {
+                                    if (!windowCard.keyLabel || !windowCard.modelData.wayland || !windowCard.modelData.wayland.appId)
+                                        return "";
+                                    return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland.appId;
+                                }
                                 color: Colors.green
                             }
                         }
@@ -163,6 +178,7 @@ PanelWindow {
         }
 
         TextStyled {
+            id: noContent
             anchors.centerIn: parent
             visible: root.toplevels.length === 0
             text: "No windows on this workspace"
