@@ -16,6 +16,27 @@ Rectangle {
 
     property MprisPlayer player: Mpris.players.values.filter(player => player.identity === "Spotify")[0] || null
 
+    component ButtonStyledLocal: ButtonStyled {
+        id: buttonLocal
+
+        property string iconText: ""
+        property color iconColor: Colors.bgDim
+        property color backgroundColor: Colors.green
+
+        width: iconTextItem.width + Styles.marginSm * 2
+        height: root.height - Styles.marginSm
+        radius: Styles.radiusSm
+        defaultColor: backgroundColor
+        anchors.verticalCenter: parent.verticalCenter
+
+        TextStyled {
+            id: iconTextItem
+            color: iconColor
+            anchors.centerIn: parent
+            text: buttonLocal.iconText
+        }
+    }
+
     PopupWindow {
         visible: albumArtMouse.containsMouse
         width: 400
@@ -79,46 +100,18 @@ Rectangle {
                 hoverEnabled: true
             }
         }
-        ButtonStyled {
-            width: prev.width + Styles.marginSm * 2
-            height: root.height - Styles.marginSm
-            radius: Styles.radiusSm
-            defaultColor: Colors.green
-            anchors.verticalCenter: parent.verticalCenter
-            TextStyled {
-                id: prev
-                color: Colors.bgDim
-                anchors.centerIn: parent
-                text: "󰒮"
-            }
+        ButtonStyledLocal {
+            iconText: "󰒮"
             onClicked: root.player.previous()
         }
-        ButtonStyled {
-            width: next.width + Styles.marginSm * 2
-            height: root.height - Styles.marginSm
-            anchors.verticalCenter: parent.verticalCenter
-            defaultColor: root.player.isPlaying ? Colors.orange : Colors.bg1
-            radius: Styles.radiusSm
-            TextStyled {
-                id: play
-                anchors.centerIn: parent
-                color: root.player.isPlaying ? Colors.bgDim : Colors.fg
-                text: "󰐎"
-            }
+        ButtonStyledLocal {
+            backgroundColor: root.player.isPlaying ? Colors.orange : Colors.bg1
+            iconColor: root.player.isPlaying ? Colors.bgDim : Colors.fg
+            iconText: "󰐎"
             onClicked: root.player.togglePlaying()
         }
-        ButtonStyled {
-            width: next.width + Styles.marginSm * 2
-            height: root.height - Styles.marginSm
-            defaultColor: Colors.green
-            radius: Styles.radiusSm
-            anchors.verticalCenter: parent.verticalCenter
-            TextStyled {
-                id: next
-                color: Colors.bgDim
-                anchors.centerIn: parent
-                text: "󰒭"
-            }
+        ButtonStyledLocal {
+            iconText: "󰒭"
             onClicked: root.player.next()
         }
     }
