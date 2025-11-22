@@ -38,30 +38,29 @@ PanelWindow {
     }
 
     onVisibleChanged: {
-        if (visible) {
-            cliphistList.buffer = [];
-            base.selectedEntryIndex = 0;
-            cliphistList.running = true;
-            scrollView.ScrollBar.vertical.position = 0;
-            currentClipboardProcess.running = true;
-        }
+        if (!visible)
+            return;
+        cliphistList.buffer = [];
+        base.selectedEntryIndex = 0;
+        cliphistList.running = true;
+        scrollView.ScrollBar.vertical.position = 0;
+        currentClipboardProcess.running = true;
     }
 
     function scrollToIndex(index) {
         var item = column.children[index];
-        if (item) {
-            var itemY = item.y;
-            var itemHeight = item.height;
-            var viewHeight = scrollView.height;
-            var contentHeight = column.height;
+        if (!item)
+            return;
 
-            // Calculate position to center the item
-            var targetY = itemY - (viewHeight - itemHeight) / 2;
-            targetY = Math.max(0, Math.min(targetY, contentHeight - viewHeight));
+        var itemY = item.y;
+        var itemHeight = item.height;
+        var viewHeight = scrollView.height;
+        var contentHeight = column.height;
+        var targetY = itemY - (viewHeight - itemHeight) / 2;
 
-            // Set the content position directly
-            scrollView.contentItem.contentY = targetY;
-        }
+        targetY = Math.max(0, Math.min(targetY, contentHeight - viewHeight));
+
+        scrollView.contentItem.contentY = targetY;
     }
 
     Process {
@@ -101,16 +100,13 @@ PanelWindow {
 
         property int selectedEntryIndex: 0
 
+        // TODO Stopped cleaning here.
         Keys.onPressed: event => {
             if (repeater.count === 0)
                 return;
 
             var newIndex = selectedEntryIndex;
-
-            if (event.key === Qt.Key_N) {
-                scrollBar.position += 0.001;
-                return;
-            } else if (event.key === Qt.Key_Escape) {
+            if (event.key === Qt.Key_Escape) {
                 root.visible = false;
                 return;
             } else if (event.key === Qt.Key_J || event.key === Qt.Key_Down) {
