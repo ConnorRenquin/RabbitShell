@@ -149,7 +149,6 @@ PanelWindow {
         updateFilteredApplications();
     }
 
-    // Searchbar
     Rectangle {
         id: searchBar
         readonly property int textSize: 25
@@ -221,7 +220,6 @@ PanelWindow {
         }
     }
 
-    // Applications Grid
     GridView {
         id: appGridView
         anchors {
@@ -259,13 +257,17 @@ PanelWindow {
                 spacing: 10
 
                 IconImage {
+                    id: appIcon
                     implicitWidth: 32
                     implicitHeight: 32
                     source: Quickshell.iconPath(modelData.icon)
                 }
 
                 TextStyled {
+                    id: appName
                     text: modelData.name
+                    anchors.left: appIcon.right
+                    anchors.margins: Styles.margin
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
