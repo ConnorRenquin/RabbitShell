@@ -41,13 +41,13 @@ Rectangle {
         visible: albumArtMouse.containsMouse
         width: 400
         height: 400
+
         color: "transparent"
+
         anchor {
             item: albumArt
-            rect {
-                x: albumArt.x - root.width
-                y: albumArt.height + Styles.marginMd
-            }
+            rect.x: albumArt.x - root.width
+            rect.y: albumArt.height + Styles.marginSm
         }
 
         ClippingRectangle {
