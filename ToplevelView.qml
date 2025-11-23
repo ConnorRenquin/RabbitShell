@@ -151,7 +151,6 @@ PanelWindow {
                                 offset: 2
                             }
 
-                            // TextStyled {
                             DoubleText {
                                 id: windowShortcutAndId
                                 text: {
