@@ -140,23 +140,28 @@ PanelWindow {
                                 margins: Styles.margin
                             }
 
-                            TextStyled {
+                            DoubleText {
                                 id: windowTitle
                                 text: {
                                     if (!windowCard.modelData.wayland)
                                         return "";
                                     return windowCard.modelData.wayland.title;
                                 }
+                                secondaryColor: Colors.bgDim
+                                offset: 2
                             }
 
-                            TextStyled {
+                            // TextStyled {
+                            DoubleText {
                                 id: windowShortcutAndId
                                 text: {
                                     if (!windowCard.keyLabel || !windowCard.modelData.wayland || !windowCard.modelData.wayland.appId)
                                         return "";
                                     return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland.appId;
                                 }
-                                color: Colors.green
+                                primaryColor: Colors.green
+                                secondaryColor: Colors.bgDim
+                                offset: 2
                             }
                         }
                     }
