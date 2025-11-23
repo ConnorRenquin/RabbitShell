@@ -3,7 +3,7 @@ import QtQuick
 
 PopupWindow {
     id: root
-    visible: false
+
     color: "transparent"
 
     property bool isOpen: false

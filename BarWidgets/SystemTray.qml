@@ -30,9 +30,7 @@ BarWidget {
                 implicitHeight: root.iconSize + Styles.marginSm
                 radius: Styles.radiusSm
 
-                onClicked: event => {
-                    trayMenu.visible = !trayMenu.visible;
-                }
+                onClicked: trayMenu.toggleVisible()
 
                 IconImage {
                     id: icon

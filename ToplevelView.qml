@@ -9,15 +9,14 @@ import qs.Components
 PanelWindow {
     id: root
 
-    exclusionMode: ExclusionMode.Ignore
-
     implicitWidth: toplevels.length > 0 ? base.implicitWidth : noContent.implicitWidth + Styles.marginSm
     implicitHeight: toplevels.length > 0 ? base.implicitHeight : noContent.implicitHeight + Styles.marginSm
     color: "transparent"
     visible: false
 
-    property string keyMap: "qwertyuiopasdfghjklzxcvbnm"
+    onVisibleChanged: visible ? base.forceActiveFocus() : null
 
+    property string keyMap: "wertyuiopasdfghjklzxcvbnm"
     property var toplevels: []
 
     function updateToplevels() {
@@ -28,13 +27,6 @@ PanelWindow {
                 return false;
             return toplevel.workspace.id > 0;
         });
-    }
-
-    Component.onCompleted: updateToplevels()
-
-    onVisibleChanged: {
-        if (visible)
-            base.forceActiveFocus();
     }
 
     Connections {
@@ -55,6 +47,7 @@ PanelWindow {
     HyprlandFocusGrab {
         active: root.visible
         windows: [root]
+        onCleared: root.visible = false
     }
 
     Rectangle {
@@ -64,12 +57,13 @@ PanelWindow {
         radius: Styles.radiusMd
         focus: true
 
-        anchors.centerIn: parent
         implicitWidth: root.toplevels.length > 0 ? grid.width + Styles.marginSm : noContent.implicitWidth + Styles.marginSm
         implicitHeight: root.toplevels.length > 0 ? grid.height + Styles.marginSm : noContent.implicitHeight + Styles.marginSm
 
+        anchors.centerIn: parent
+
         Keys.onPressed: function (event) {
-            if (event.key === Qt.Key_Escape) {
+            if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                 root.visible = false;
                 event.accepted = true;
                 return;
@@ -78,11 +72,14 @@ PanelWindow {
             var pressedChar = event.text.toLowerCase();
             if (pressedChar === "")
                 return;
+
             var index = root.keyMap.indexOf(pressedChar);
 
             if (index === -1 && !root.toplevels[index])
                 return;
+
             var toplevel = root.toplevels[index].wayland;
+
             if (toplevel.activated) {
                 root.visible = false;
                 event.accepted = true;
@@ -95,18 +92,16 @@ PanelWindow {
             id: grid
             anchors.centerIn: parent
             spacing: Styles.marginSm
-            columns: 4
+            columns: 3
 
             Repeater {
                 model: root.toplevels
-
-                // MenuCard
                 delegate: Rectangle {
                     id: windowCard
 
-                    radius: Styles.radiusSm
                     width: 400
                     height: 200
+                    radius: Styles.radiusSm
                     color: Colors.bgDim
                     clip: true
 
@@ -119,14 +114,14 @@ PanelWindow {
 
                     Rectangle {
                         id: overlayLabel
-                        z: 1
 
-                        implicitWidth: column.width + Styles.marginMd
-                        implicitHeight: column.height + Styles.marginMd
+                        implicitWidth: windowContent.width + Styles.marginMd
+                        implicitHeight: windowContent.height + Styles.marginMd
 
                         color: Colors.bg2
                         radius: Styles.radiusMd
 
+                        z: 1
                         anchors {
                             bottom: parent.bottom
                             left: parent.left
@@ -135,7 +130,7 @@ PanelWindow {
                         }
 
                         Column {
-                            id: column
+                            id: windowContent
 
                             anchors {
                                 left: parent.left
@@ -165,9 +160,8 @@ PanelWindow {
                         }
                     }
 
-                    // Screenshot
                     ScreencopyView {
-                        id: screencopyView
+                        id: windowPreview
                         live: true
                         width: sourceSize.width
                         height: sourceSize.height

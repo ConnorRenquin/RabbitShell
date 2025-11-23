@@ -173,9 +173,7 @@ PanelWindow {
     HyprlandFocusGrab {
         active: root.showing
         windows: [root]
-        onCleared: {
-            root.showing = false;
-        }
+        onCleared: root.showing = false
     }
 
     Rectangle {

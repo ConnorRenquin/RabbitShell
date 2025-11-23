@@ -6,10 +6,11 @@ import Quickshell.Services.SystemTray
 import qs.Components
 import qs.Constants
 
-PopupWindow {
+PopupWindowAnimated {
     id: root
 
-    property QsMenuHandle trayMenu
+    implicitHeight: menuBackground.implicitHeight + Styles.marginSm
+    implicitWidth: menuBackground.implicitWidth + Styles.marginSm
 
     anchor {
         item: parent
@@ -17,9 +18,7 @@ PopupWindow {
         rect.x: parent.implicitWidth / 2 - implicitWidth / 2
     }
 
-    color: "transparent"
-    implicitHeight: menuBackground.implicitHeight + Styles.marginSm
-    implicitWidth: menuBackground.implicitWidth + Styles.marginSm
+    property QsMenuHandle trayMenu
 
     QsMenuOpener {
         id: menuOpener
@@ -28,35 +27,51 @@ PopupWindow {
 
     Rectangle {
         id: menuBackground
-        color: Colors.bg0
-        radius: Styles.radiusSm
-        anchors.fill: parent
+
         implicitHeight: contentColumn.implicitHeight
         implicitWidth: contentColumn.implicitWidth
 
+        color: Colors.bg0
+        opacity: root.visible ? 1 : 0
+        radius: Styles.radiusLg
+
+        anchors.fill: parent
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 250
+            }
+        }
+
         Column {
             id: contentColumn
+
+            spacing: 5
+
             anchors {
                 left: parent.left
                 right: parent.right
                 top: parent.top
                 centerIn: parent
             }
-            spacing: 10
-            Repeater {
-                model: menuOpener.children.values
-                delegate: ButtonStyled {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    radius: Styles.radiusSm
-                    implicitWidth: 200
 
-                    implicitHeight: modelData.isSeperator || modelData.text == "" ? 2 : (textContent.implicitHeight + 10)
+            Repeater {
+                model: menuOpener.children.values.filter(modelData => !modelData.text == "")
+                delegate: ButtonStyled {
+                    implicitWidth: 200
+                    implicitHeight: textContent.implicitHeight + Styles.marginSm * 2
+                    isFocused: modelData.isSeperator
+
+                    radius: Styles.radiusMd
+
+                    anchors.horizontalCenter: parent.horizontalCenter
 
                     TextStyled {
                         id: textContent
-                        anchors.centerIn: parent
                         text: modelData.text
-                        width: parent.width - Styles.marginSm
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.margins: Styles.marginSm
+                        font.pixelSize: 14
                         wrapMode: Text.WordWrap
                     }
 
