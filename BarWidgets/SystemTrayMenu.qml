@@ -60,7 +60,6 @@ PopupWindowAnimated {
                 delegate: ButtonStyled {
                     implicitWidth: 200
                     implicitHeight: textContent.implicitHeight + Styles.marginSm * 2
-                    isFocused: modelData.isSeperator
 
                     radius: Styles.radiusMd
 
