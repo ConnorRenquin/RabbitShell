@@ -6,6 +6,7 @@ import QtQuick.Layouts
 
 import qs.Constants
 import qs.Components
+import qs.Services
 
 PanelWindow {
     id: root
@@ -16,27 +17,11 @@ PanelWindow {
     color: "transparent"
     visible: showing
 
+    Component.onCompleted: updateFilteredApplications()
+
     property bool showing: false
     property var filteredApplications: []
     property int currentFocusIndex: -1
-
-    GlobalShortcut {
-        name: "appsearch"
-        onPressed: {
-            root.showing = !root.showing;
-            if (root.showing) {
-                textInput.forceActiveFocus();
-            }
-        }
-    }
-
-    HyprlandFocusGrab {
-        active: root.showing
-        windows: [root]
-        onCleared: {
-            root.showing = false;
-        }
-    }
 
     function calculateRelevance(app, searchText) {
         if (searchText === "")
@@ -145,29 +130,72 @@ PanelWindow {
         }
     }
 
-    Component.onCompleted: {
-        updateFilteredApplications();
+    function gridNavigationController(event) {
+        console.log();
+        if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+            text = "";
+            root.showing = false;
+            event.accepted = true;
+        } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
+            if (currentFocusIndex >= 0) {
+                executeCurrentItem();
+            } else if (filteredApplications.length > 0) {
+                Quickshell.execDetached(["bash", "-c", filteredApplications[0].execString]);
+                text = "";
+                root.showing = false;
+            }
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Down) {
+            navigateGrid("down");
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Up) {
+            navigateGrid("up");
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Left) {
+            navigateGrid("left");
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Right) {
+            navigateGrid("right");
+            event.accepted = true;
+        }
+    }
+
+    GlobalShortcut {
+        name: "appsearch"
+        onPressed: {
+            root.showing = !root.showing;
+            if (root.showing) {
+                textInput.forceActiveFocus();
+            }
+        }
+    }
+
+    HyprlandFocusGrab {
+        active: root.showing
+        windows: [root]
+        onCleared: {
+            root.showing = false;
+        }
     }
 
     Rectangle {
         id: searchBar
-        readonly property int textSize: 25
+
+        implicitHeight: textInput.implicitHeight + 30
+
+        color: Colors.bgDim
+        radius: Styles.radius0
+
         anchors {
             left: parent.left
             right: parent.right
             top: parent.top
         }
-        implicitHeight: textInput.implicitHeight + 30
-        color: Colors.bgDim
-        radius: Styles.radius0
+
+        readonly property int textSize: 25
 
         TextInput {
             id: textInput
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.leftMargin: Styles.margin
-            anchors.rightMargin: Styles.margin
 
             font.pixelSize: searchBar.textSize
             color: Colors.fg
@@ -176,82 +204,63 @@ PanelWindow {
             cursorVisible: true
             verticalAlignment: TextInput.AlignVCenter
 
-            onTextChanged: updateFilteredApplications()
-
-            Keys.onPressed: function (event) {
-                if (event.key === Qt.Key_Escape) {
-                    text = "";
-                    root.showing = false;
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                    if (currentFocusIndex >= 0) {
-                        executeCurrentItem();
-                    } else if (filteredApplications.length > 0) {
-                        Quickshell.execDetached(["bash", "-c", filteredApplications[0].execString]);
-                        text = "";
-                        root.showing = false;
-                    }
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Down) {
-                    navigateGrid("down");
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Up) {
-                    navigateGrid("up");
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Left) {
-                    navigateGrid("left");
-                    event.accepted = true;
-                } else if (event.key === Qt.Key_Right) {
-                    navigateGrid("right");
-                    event.accepted = true;
-                }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                left: parent.left
+                right: parent.right
+                leftMargin: Styles.margin
+                rightMargin: Styles.margin
             }
+
+            onTextChanged: root.updateFilteredApplications()
+
+            Keys.onPressed: root.gridNavigationController(event)
         }
 
-        Text {
+        TextStyled {
             anchors.left: textInput.left
             anchors.verticalCenter: textInput.verticalCenter
             text: "Search"
-            font.pixelSize: searchBar.textSize
-            color: Colors.fg
             opacity: 0.4
             visible: textInput.text === ""
-            verticalAlignment: Text.AlignVCenter
         }
     }
 
     GridView {
         id: appGridView
+
+        width: parent.width + Styles.margin
+        clip: true
+
+        cellWidth: width / 3
+        cellHeight: 60
+        snapMode: GridView.SnapToRow
+
         anchors {
             top: searchBar.bottom
             bottom: parent.bottom
             topMargin: Styles.margin
         }
-        width: parent.width + Styles.margin
 
         model: filteredApplications
-        clip: true
+        delegate: ButtonStyled {
+            id: menuButton
 
-        cellWidth: width / 3
-        cellHeight: 60
+            implicitWidth: appGridView.cellWidth - Styles.margin
+            implicitHeight: appGridView.cellHeight - Styles.margin
 
-        snapMode: GridView.SnapToRow
+            radius: Styles.radiusSm
 
-        delegate: Rectangle {
-            id: menuItemBackground
-            width: appGridView.cellWidth - Styles.margin
-            height: appGridView.cellHeight - Styles.margin
-            color: (mouseArea.containsMouse || index === currentFocusIndex) ? Colors.bg1 : Colors.bg0
-            radius: Styles.radius0
+            isFocused: index === currentFocusIndex
 
-            Behavior on color {
-                ColorAnimation {
-                    duration: 250
-                }
+            onClicked: {
+                Quickshell.execDetached(["bash", "-c", modelData.execString]);
+                textInput.text = "";
+                root.showing = false;
             }
 
-            RowLayout {
-                id: menuItem
+            Row {
+                id: menuContent
                 anchors.fill: parent
                 anchors.margins: Styles.margin
                 spacing: 10
@@ -270,19 +279,6 @@ PanelWindow {
                     anchors.margins: Styles.margin
                     elide: Text.ElideRight
                     Layout.fillWidth: true
-                }
-            }
-
-            MouseArea {
-                id: mouseArea
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                hoverEnabled: true
-
-                onClicked: {
-                    Quickshell.execDetached(["bash", "-c", modelData.execString]);
-                    textInput.text = "";
-                    root.showing = false;
                 }
             }
         }
