@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick
@@ -166,6 +167,23 @@ PanelWindow {
                         width: sourceSize.width
                         height: sourceSize.height
                         captureSource: modelData.wayland
+
+                        Rectangle {
+                            anchors.left: parent.left
+                            anchors.top: parent.top
+                            implicitWidth: appIcon.implicitWidth + Styles.marginSm
+                            implicitHeight: appIcon.implicitHeight + Styles.marginSm
+                            radius: Styles.radiusSm
+                            color: Colors.bg3
+                            anchors.margins: Styles.marginSm
+                            IconImage {
+                                id: appIcon
+                                anchors.centerIn: parent
+                                implicitHeight: 40
+                                implicitWidth: 40
+                                source: Quickshell.iconPath(DesktopEntries.byId(modelData.wayland.appId).icon)
+                            }
+                        }
                     }
                 }
             }
