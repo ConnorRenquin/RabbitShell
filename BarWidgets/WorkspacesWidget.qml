@@ -29,17 +29,12 @@ BarWidget {
 
         Repeater {
             model: Hyprland.workspaces.values.filter(workspace => workspace.id != -99 && workspace.monitor?.name == monitorName)
-            Rectangle {
+            delegate: ButtonStyled {
                 implicitHeight: root.height - Styles.marginSm
-                implicitWidth: text.implicitWidth + Styles.marginSm
+                implicitWidth: workspaceIcon.implicitWidth + Styles.marginSm
                 radius: modelData.focused ? Styles.radiusLg : Styles.radiusSm
-                color: modelData.focused ? Colors.green : Colors.bg0
 
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 400
-                    }
-                }
+                onClicked: Hyprland.dispatch(`workspace ${modelData.id}`)
 
                 Behavior on radius {
                     NumberAnimation {
@@ -48,19 +43,12 @@ BarWidget {
                     }
                 }
 
-                TextStyled {
-                    id: text
+                DoubleText {
+                    id: workspaceIcon
+                    elide: Text.ElideNone
+                    primaryColor: Colors.green
                     anchors.centerIn: parent
                     text: modelData.focused ? "󰜋" : "󰜌"
-                    color: modelData.focused ? Colors.bgRed : Colors.fg
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        Hyprland.dispatch(`workspace ${modelData.id}`);
-                    }
                 }
             }
         }
