@@ -14,6 +14,7 @@ Item {
     property string primaryColor: Colors.fg
     property string secondaryColor: Colors.bg2
     property int offset: 8
+    property var elide: Text.ElideRight
 
     TextStyled {
         z: 2
@@ -22,6 +23,7 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: root.clockMargin
         font.pixelSize: root.pixelSize
+        elide: root.elide
         color: root.primaryColor
         text: root.text
     }
@@ -29,6 +31,7 @@ Item {
     TextStyled {
         id: clockText
         z: 1
+        elide: root.elide
         antialiasing: true
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
