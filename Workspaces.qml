@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Hyprland
 import QtQuick
 
@@ -11,7 +12,7 @@ PanelWindow {
     visible: false
 
     implicitWidth: 1000
-    implicitHeight: gridView.contentHeight + 20
+    implicitHeight: gridView.contentHeight + Styles.marginSm * 2
     anchors.top: true
     margins.top: 80
     color: "transparent"
@@ -19,24 +20,20 @@ PanelWindow {
 
     GlobalShortcut {
         name: "workspaces"
-        onPressed: {
-            root.visible = !root.visible;
-        }
+        onPressed: root.visible = !root.visible
     }
 
     Rectangle {
         width: parent.width
         height: parent.height
         color: Colors.bgGreen
-        radius: Styles.radiusSm
+        radius: Styles.radiusLg
         focus: true
 
         Keys.onPressed: function (event) {
-            if (event.key === Qt.Key_Escape) {
+            if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                 root.visible = false;
-                return;
             }
-
             var workspaceId = parseInt(event.text);
             if (isNaN(workspaceId))
                 return;
@@ -54,8 +51,7 @@ PanelWindow {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.margins: 10
-            height: contentHeight
+            anchors.margins: Styles.marginSm
 
             cellHeight: 125
             cellWidth: width / Math.min(Hyprland.workspaces.values.filter(workspace => workspace.id > 0).length, 4)
@@ -70,43 +66,50 @@ PanelWindow {
             delegate: Item {
                 width: gridView.cellWidth
                 height: gridView.cellHeight
-                Rectangle {
+                ButtonStyled {
                     id: gridItem
-                    width: parent.width - Styles.margin
-                    height: parent.height - Styles.margin
                     anchors.centerIn: parent
+
+                    width: parent.width - Styles.marginSm
+                    height: parent.height
                     radius: modelData.focused ? 15 : Styles.radiusSm // 15 is about the max you can go, not sure why
 
-                    color: modelData.focused ? Colors.green : Colors.bg0
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 400
-                        }
-                    }
+                    isFocused: modelData.focused
 
                     Behavior on radius {
                         NumberAnimation {
                             duration: 400
-                            easing.type: Easing.OutQuad
                         }
                     }
 
-                    TextStyled {
-                        id: text
-                        text: modelData.focused ? "󰜋 " + modelData.id : "󰜌 " + modelData.id
+                    Column {
                         anchors.centerIn: parent
-                        color: modelData.focused ? Colors.bgRed : Colors.fg
+                        spacing: Styles.marginSm
+                        DoubleText {
+                            id: text
+                            text: modelData.focused ? "󰜋 " + modelData.id : "󰜌 " + modelData.id
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            pixelSize: 30
+                            offset: 3
+                            elide: Text.ElideNone
+                        }
+                        Row {
+                            spacing: 20
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            Repeater {
+                                model: modelData.toplevels
+                                delegate: IconImage {
+                                    height: 40
+                                    width: 40
+                                    source: Quickshell.iconPath(DesktopEntries.byId(modelData.wayland.appId).icon)
+                                }
+                            }
+                        }
                     }
 
-                    MouseArea {
-                        id: mouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: {
-                            modelData.activate();
-                            root.visible = !root.visible;
-                        }
+                    onClicked: {
+                        modelData.activate();
+                        root.visible = !root.visible;
                     }
                 }
             }
