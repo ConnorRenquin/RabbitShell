@@ -18,9 +18,18 @@ PanelWindow {
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
+    property string keyMap: "wertyuiopasdfghjklzxcvbnm"
+    property var workspaces: Hyprland.workspaces.values.filter(workspace => workspace.id > 0)
+
     GlobalShortcut {
         name: "workspaces"
         onPressed: root.visible = !root.visible
+    }
+
+    HyprlandFocusGrab {
+        active: root.visible
+        windows: [root]
+        onCleared: root.visible = false
     }
 
     Rectangle {
@@ -34,14 +43,18 @@ PanelWindow {
             if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                 root.visible = false;
             }
-            var workspaceId = parseInt(event.text);
-            if (isNaN(workspaceId))
+
+            var pressedChar = event.text.toLowerCase();
+            if (pressedChar === "")
                 return;
-            for (var i = 0; i < Hyprland.workspaces.values.length; i++) {
-                if (Hyprland.workspaces.values[i].id === workspaceId) {
-                    Hyprland.workspaces.values[i].activate();
-                    break;
-                }
+            var index = root.keyMap.indexOf(pressedChar);
+
+            var workspace = root.workspaces[index];
+            if (workspace.focused) {
+                root.visible = false;
+                event.accepted = true;
+            } else {
+                workspace.activate();
             }
         }
 
@@ -54,14 +67,9 @@ PanelWindow {
             anchors.margins: Styles.marginSm
 
             cellHeight: 125
-            cellWidth: width / Math.min(Hyprland.workspaces.values.filter(workspace => workspace.id > 0).length, 4)
+            cellWidth: width / Math.min(root.workspaces.length, 4)
 
-            model: Hyprland.workspaces.values.filter(workspace => workspace.id > 0)
-
-            HyprlandFocusGrab {
-                active: root.visible
-                windows: [root]
-            }
+            model: root.workspaces
 
             delegate: Item {
                 width: gridView.cellWidth
@@ -87,7 +95,8 @@ PanelWindow {
                         spacing: Styles.marginSm
                         DoubleText {
                             id: text
-                            text: modelData.focused ? "󰜋 " + modelData.id : "󰜌 " + modelData.id
+                            property string key: root.keyMap[index].toUpperCase()
+                            text: modelData.focused ? "󰜋 " + key : "󰜌 " + key
                             anchors.horizontalCenter: parent.horizontalCenter
                             pixelSize: 30
                             offset: 3
