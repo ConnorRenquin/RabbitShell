@@ -11,12 +11,15 @@ PanelWindow {
 
     visible: false
 
-    implicitWidth: 1000
-    implicitHeight: gridView.contentHeight + Styles.marginSm * 2
-    anchors.top: true
-    margins.top: 80
+    property int columns: 5
+    implicitWidth: workspaceGrid.count > columns ? workspaceGrid.cellWidth * columns : workspaceGrid.cellWidth * workspaceGrid.count
+    implicitHeight: workspaceGrid.cellHeight * Math.ceil(workspaceGrid.count / columns)
+
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
+
+    anchors.top: true
+    margins.top: 80
 
     property string keyMap: "wertyuiopasdfghjklzxcvbnm"
     property var workspaces: Hyprland.workspaces.values.filter(workspace => workspace.id > 0)
@@ -33,11 +36,13 @@ PanelWindow {
     }
 
     Rectangle {
-        width: parent.width
-        height: parent.height
+        id: base
+
         color: Colors.bgGreen
-        radius: Styles.radiusLg
+        radius: Styles.radiusSm
         focus: true
+
+        anchors.fill: parent
 
         Keys.onPressed: function (event) {
             if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
@@ -59,30 +64,30 @@ PanelWindow {
         }
 
         GridView {
-            id: gridView
+            id: workspaceGrid
 
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: Styles.marginSm
-
-            cellHeight: 125
-            cellWidth: width / Math.min(root.workspaces.length, 4)
+            anchors.fill: parent
+            cellHeight: 100
+            cellWidth: 200
 
             model: root.workspaces
 
             delegate: Item {
-                width: gridView.cellWidth
-                height: gridView.cellHeight
+                id: wrapper
+                width: workspaceGrid.cellWidth
+                height: workspaceGrid.cellHeight
                 ButtonStyled {
-                    id: gridItem
-                    anchors.centerIn: parent
+                    id: workspace
 
-                    width: parent.width - Styles.marginSm
-                    height: parent.height
+                    width: workspaceGrid.cellWidth - Styles.marginSm
+                    height: workspaceGrid.cellHeight - Styles.marginSm
+
                     radius: modelData.focused ? 15 : Styles.radiusSm // 15 is about the max you can go, not sure why
+                    clip: true
 
                     isFocused: modelData.focused
+
+                    anchors.centerIn: parent
 
                     Behavior on radius {
                         NumberAnimation {
@@ -95,22 +100,24 @@ PanelWindow {
                         spacing: Styles.marginSm
                         DoubleText {
                             id: text
-                            property string key: root.keyMap[index].toUpperCase()
                             text: modelData.focused ? "󰜋 " + key : "󰜌 " + key
                             anchors.horizontalCenter: parent.horizontalCenter
-                            pixelSize: 30
+                            pixelSize: 26
                             offset: 3
                             elide: Text.ElideNone
+                            property string key: root.keyMap[index].toUpperCase()
                         }
                         Row {
-                            spacing: 20
-                            anchors.horizontalCenter: parent.horizontalCenter
+                            id: iconRow
                             Repeater {
-                                model: modelData.toplevels
+                                model: modelData.toplevels.values.slice(0, 5) // Setting the max icons here so it doesn't overun.
                                 delegate: IconImage {
-                                    height: 40
-                                    width: 40
-                                    source: Quickshell.iconPath(DesktopEntries.byId(modelData.wayland.appId).icon)
+                                    height: 32
+                                    width: 32
+                                    source: {
+                                        var source = Quickshell.iconPath(DesktopEntries.byId(modelData.wayland.appId)?.icon, "image-missing"); // TODO Pick a better default icon?
+                                        return source;
+                                    }
                                 }
                             }
                         }
