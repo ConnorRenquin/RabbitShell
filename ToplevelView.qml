@@ -10,8 +10,10 @@ import qs.Components
 PanelWindow {
     id: root
 
-    implicitWidth: toplevels.length > 0 ? base.implicitWidth : noContent.implicitWidth + Styles.marginSm
-    implicitHeight: toplevels.length > 0 ? base.implicitHeight : noContent.implicitHeight + Styles.marginSm
+    property int columns: 4
+    implicitWidth: toplevelGrid.count > columns ? toplevelGrid.cellWidth * columns : toplevelGrid.cellWidth * toplevelGrid.count
+    implicitHeight: toplevelGrid.cellHeight * Math.ceil(toplevelGrid.count / columns)
+
     color: "transparent"
     visible: false
 
@@ -58,10 +60,7 @@ PanelWindow {
         radius: Styles.radiusMd
         focus: true
 
-        implicitWidth: root.toplevels.length > 0 ? grid.width + Styles.marginSm : noContent.implicitWidth + Styles.marginSm
-        implicitHeight: root.toplevels.length > 0 ? grid.height + Styles.marginSm : noContent.implicitHeight + Styles.marginSm
-
-        anchors.centerIn: parent
+        anchors.fill: parent
 
         Keys.onPressed: function (event) {
             if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
@@ -89,115 +88,102 @@ PanelWindow {
             }
         }
 
-        Grid {
-            id: grid
-            anchors.centerIn: parent
-            spacing: Styles.marginSm
-            columns: 3
+        GridView {
+            id: toplevelGrid
 
-            Repeater {
-                model: root.toplevels
-                delegate: Rectangle {
-                    id: windowCard
+            cellHeight: 100
+            cellWidth: 350
 
-                    width: 400
-                    height: 200
-                    radius: Styles.radiusSm
-                    color: Colors.bgDim
-                    clip: true
+            anchors.fill: parent
 
-                    required property var modelData
-                    required property int index
-                    property string keyLabel: {
-                        // Helper property to get the key label
-                        return index < root.keyMap.length ? root.keyMap[index] : "";
+            model: root.toplevels
+            delegate: Item {
+                id: windowCard
+
+                width: toplevelGrid.cellWidth
+                height: toplevelGrid.cellHeight
+                clip: true
+
+                required property var modelData
+                required property int index
+                property string keyLabel: {
+                    // Helper property to get the key label
+                    return index < root.keyMap.length ? root.keyMap[index] : "";
+                }
+
+                ButtonStyled {
+                    id: toplevelButton
+
+                    implicitHeight: toplevelGrid.cellHeight - Styles.marginSm
+                    implicitWidth: toplevelGrid.cellWidth - Styles.marginSm
+
+                    radius: Styles.radiusMd
+
+                    z: 1
+                    anchors {
+                        centerIn: parent
+                        margins: Styles.margin
                     }
 
-                    Rectangle {
-                        id: overlayLabel
+                    onClicked: {
+                        modelData.wayland.activate();
+                    }
 
-                        implicitWidth: windowContent.width + Styles.marginMd
-                        implicitHeight: windowContent.height + Styles.marginMd
+                    IconImage {
+                        id: appIcon
+                        implicitHeight: 40
+                        implicitWidth: 40
+                        source: Quickshell.iconPath(DesktopEntries.byId(modelData.wayland.appId).icon)
+                        anchors {
+                            top: parent.top
+                            left: parent.left
+                            margins: Styles.marginSm
+                        }
+                    }
 
-                        color: Colors.bg2
-                        radius: Styles.radiusMd
+                    DoubleText {
+                        id: windowTitle
+                        anchors {
+                            top: parent.top
+                            left: appIcon.right
+                            right: parent.right
+                            margins: Styles.marginSm
+                        }
+                        text: {
+                            if (!windowCard.modelData.wayland)
+                                return "";
+                            return windowCard.modelData.wayland.title;
+                        }
+                        secondaryColor: Colors.bgDim
+                        offset: 2
+                    }
 
-                        z: 1
+                    DoubleText {
+                        id: windowShortcutAndId
                         anchors {
                             bottom: parent.bottom
-                            left: parent.left
                             right: parent.right
-                            margins: Styles.margin
+                            left: parent.left
+                            margins: Styles.marginSm
                         }
-
-                        Column {
-                            id: windowContent
-
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                                verticalCenter: parent.verticalCenter
-                                margins: Styles.margin
-                            }
-
-                            DoubleText {
-                                id: windowTitle
-                                text: {
-                                    if (!windowCard.modelData.wayland)
-                                        return "";
-                                    return windowCard.modelData.wayland.title;
-                                }
-                                secondaryColor: Colors.bgDim
-                                offset: 2
-                            }
-
-                            DoubleText {
-                                id: windowShortcutAndId
-                                text: {
-                                    if (!windowCard.keyLabel || !windowCard.modelData.wayland || !windowCard.modelData.wayland.appId)
-                                        return "";
-                                    return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland.appId;
-                                }
-                                primaryColor: Colors.green
-                                secondaryColor: Colors.bgDim
-                                offset: 2
-                            }
+                        text: {
+                            if (!windowCard.keyLabel || !windowCard.modelData.wayland || !windowCard.modelData.wayland.appId)
+                                return "";
+                            return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland.appId;
                         }
-                    }
-
-                    ScreencopyView {
-                        id: windowPreview
-                        live: true
-                        width: sourceSize.width
-                        height: sourceSize.height
-                        captureSource: modelData.wayland
-
-                        Rectangle {
-                            anchors.left: parent.left
-                            anchors.top: parent.top
-                            implicitWidth: appIcon.implicitWidth + Styles.marginSm
-                            implicitHeight: appIcon.implicitHeight + Styles.marginSm
-                            radius: Styles.radiusSm
-                            color: Colors.bg3
-                            anchors.margins: Styles.marginSm
-                            IconImage {
-                                id: appIcon
-                                anchors.centerIn: parent
-                                implicitHeight: 40
-                                implicitWidth: 40
-                                source: Quickshell.iconPath(DesktopEntries.byId(modelData.wayland.appId).icon)
-                            }
-                        }
+                        primaryColor: Colors.green
+                        secondaryColor: Colors.bgDim
+                        offset: 2
                     }
                 }
             }
         }
+    }
 
-        TextStyled {
-            id: noContent
-            anchors.centerIn: parent
-            visible: root.toplevels.length === 0
-            text: "No windows on this workspace"
-        }
+    TextStyled {
+        id: noContent
+        anchors.centerIn: parent
+        visible: root.toplevels.length === 0
+        text: "No windows on this workspace"
     }
 }
