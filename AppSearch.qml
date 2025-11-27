@@ -15,11 +15,10 @@ PanelWindow {
     implicitHeight: 305
     focusable: true
     color: "transparent"
-    visible: showing
+    visible: false
 
     Component.onCompleted: updateFilteredApplications()
 
-    property bool showing: false
     property var filteredApplications: []
     property int currentFocusIndex: -1
 
@@ -83,14 +82,6 @@ PanelWindow {
         currentFocusIndex = -1;
     }
 
-    function executeCurrentItem() {
-        if (currentFocusIndex >= 0 && currentFocusIndex < filteredApplications.length) {
-            Quickshell.execDetached(["bash", "-c", filteredApplications[currentFocusIndex].execString]);
-            textInput.text = "";
-            root.showing = false;
-        }
-    }
-
     function navigateGrid(direction) {
         var maxIndex = filteredApplications.length - 1;
 
@@ -131,20 +122,20 @@ PanelWindow {
     }
 
     function gridNavigationController(event) {
-        console.log();
-        if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+        if ([Qt.Key_Escape].includes(event.key)) {
             text = "";
-            root.showing = false;
+            root.visible = false;
             event.accepted = true;
         } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
-            if (currentFocusIndex >= 0) {
-                executeCurrentItem();
+            if (currentFocusIndex >= 0 && currentFocusIndex < filteredApplications.length) {
+                Quickshell.execDetached(["bash", "-c", filteredApplications[currentFocusIndex].execString]);
             } else if (filteredApplications.length > 0) {
                 Quickshell.execDetached(["bash", "-c", filteredApplications[0].execString]);
-                text = "";
-                root.showing = false;
             }
+            text = "";
+            root.visible = false;
             event.accepted = true;
+            return;
         } else if (event.key === Qt.Key_Down) {
             navigateGrid("down");
             event.accepted = true;
@@ -163,17 +154,17 @@ PanelWindow {
     GlobalShortcut {
         name: "appsearch"
         onPressed: {
-            root.showing = !root.showing;
-            if (root.showing) {
+            root.visible = !root.visible;
+            if (root.visible) {
                 textInput.forceActiveFocus();
             }
         }
     }
 
     HyprlandFocusGrab {
-        active: root.showing
+        active: root.visible
         windows: [root]
-        onCleared: root.showing = false
+        onCleared: root.visible = false
     }
 
     Rectangle {
@@ -254,7 +245,7 @@ PanelWindow {
             onClicked: {
                 Quickshell.execDetached(["bash", "-c", modelData.execString]);
                 textInput.text = "";
-                root.showing = false;
+                root.visible = false;
             }
 
             Row {
