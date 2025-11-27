@@ -82,72 +82,24 @@ PanelWindow {
         currentFocusIndex = -1;
     }
 
-    function navigateGrid(direction) {
-        var maxIndex = filteredApplications.length - 1;
-
-        if (currentFocusIndex === -1) {
-            currentFocusIndex = 0;
-            appGridView.positionViewAtIndex(0, GridView.Beginning);
-            return;
-        }
-
-        var columns = 3;
-        var row = Math.floor(currentFocusIndex / columns);
-        var col = currentFocusIndex % columns;
-
-        if (direction === "up") {
-            if (row > 0) {
-                currentFocusIndex = Math.max(0, currentFocusIndex - columns);
-                appGridView.positionViewAtIndex(currentFocusIndex, GridView.Contain);
-            }
-        } else if (direction === "down") {
-            var newIndex = currentFocusIndex + columns;
-            if (newIndex <= maxIndex) {
-                currentFocusIndex = newIndex;
-            } else if (currentFocusIndex < maxIndex) {
-                currentFocusIndex = maxIndex;
-            }
-            appGridView.positionViewAtIndex(currentFocusIndex, GridView.Contain);
-        } else if (direction === "left") {
-            if (col > 0) {
-                currentFocusIndex = Math.max(0, currentFocusIndex - 1);
-                appGridView.positionViewAtIndex(currentFocusIndex, GridView.Contain);
-            }
-        } else if (direction === "right") {
-            if (col < columns - 1 && currentFocusIndex < maxIndex) {
-                currentFocusIndex = Math.min(maxIndex, currentFocusIndex + 1);
-                appGridView.positionViewAtIndex(currentFocusIndex, GridView.Contain);
-            }
-        }
+    function reset() {
+        text = "";
+        root.visible = false;
     }
 
     function gridNavigationController(event) {
         if ([Qt.Key_Escape].includes(event.key)) {
-            text = "";
-            root.visible = false;
-            event.accepted = true;
+            reset();
         } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
-            if (currentFocusIndex >= 0 && currentFocusIndex < filteredApplications.length) {
-                Quickshell.execDetached(["bash", "-c", filteredApplications[currentFocusIndex].execString]);
-            } else if (filteredApplications.length > 0) {
-                Quickshell.execDetached(["bash", "-c", filteredApplications[0].execString]);
-            }
-            text = "";
-            root.visible = false;
-            event.accepted = true;
-            return;
+            appGridView.currentItem.clicked(null);
         } else if (event.key === Qt.Key_Down) {
-            navigateGrid("down");
-            event.accepted = true;
+            appGridView.moveCurrentIndexDown();
         } else if (event.key === Qt.Key_Up) {
-            navigateGrid("up");
-            event.accepted = true;
+            appGridView.moveCurrentIndexUp();
         } else if (event.key === Qt.Key_Left) {
-            navigateGrid("left");
-            event.accepted = true;
+            appGridView.moveCurrentIndexLeft();
         } else if (event.key === Qt.Key_Right) {
-            navigateGrid("right");
-            event.accepted = true;
+            appGridView.moveCurrentIndexRight();
         }
     }
 
@@ -240,7 +192,7 @@ PanelWindow {
 
             radius: Styles.radiusSm
 
-            isFocused: index === currentFocusIndex
+            isFocused: index === appGridView.currentIndex
 
             onClicked: {
                 Quickshell.execDetached(["bash", "-c", modelData.execString]);
