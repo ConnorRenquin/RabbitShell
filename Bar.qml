@@ -43,6 +43,7 @@ Variants {
         BarRow {
             anchors.centerIn: parent
             ClockWidget {}
+            BatteryWidget {}
         }
 
         // Right
