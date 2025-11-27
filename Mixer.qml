@@ -28,20 +28,22 @@ PanelWindow {
     HyprlandFocusGrab {
         active: root.visible
         windows: [root]
+        onCleared: root.visible = false
     }
 
     Rectangle {
         id: rect
-        implicitWidth: width
-        implicitHeight: column.implicitHeight + Styles.marginSm * 2
-        width: parent.width
-        height: parent.height
-        color: Colors.bgDim
-        radius: Styles.radiusSm
+
         focus: true
 
+        implicitWidth: parent.width
+        implicitHeight: column.implicitHeight + Styles.marginSm * 2
+
+        color: Colors.bgDim
+        radius: Styles.radiusSm
+
         Keys.onPressed: event => {
-            if (event.key === Qt.Key_Escape) {
+            if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                 root.visible = false;
                 event.accepted = true;
                 return;
@@ -63,11 +65,12 @@ PanelWindow {
                 }
             }
 
-            if (event.key === Qt.Key_Down) {
+            if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
                 if (currentIndex < entries.length - 1) {
                     entries[currentIndex + 1].forceActiveFocus();
                 }
-            } else if (event.key === Qt.Key_Up) {
+            }
+            if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
                 if (currentIndex > 0) {
                     entries[currentIndex - 1].forceActiveFocus();
                 } else if (currentIndex === -1 && entries.length > 0) {
@@ -83,11 +86,15 @@ PanelWindow {
 
         ColumnLayout {
             id: column
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
+
             spacing: Styles.marginSm
-            anchors.margins: Styles.marginSm
+
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+                margins: Styles.marginSm
+            }
 
             PwNodeLinkTracker {
                 id: linkTracker
@@ -102,7 +109,7 @@ PanelWindow {
 
             Repeater {
                 model: linkTracker.linkGroups
-                MixerEntry {
+                delegate: MixerEntry {
                     objectName: "mixerEntry"
                     required property PwLinkGroup modelData
                     node: modelData.source
