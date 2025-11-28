@@ -38,8 +38,8 @@ PanelWindow {
             return;
         cliphistList.buffer = [];
         base.selectedEntryIndex = 0;
-        cliphistList.running = true;
         scrollView.ScrollBar.vertical.position = 0;
+        cliphistList.running = true;
         currentClipboardProcess.running = true;
     }
 
@@ -88,28 +88,29 @@ PanelWindow {
 
     Rectangle {
         id: base
+
         implicitWidth: 500
         implicitHeight: 800
+
         color: Colors.bgDim
         radius: Styles.radiusLg
         focus: true
 
         property int selectedEntryIndex: 0
 
-        // TODO Stopped cleaning here.
         Keys.onPressed: event => {
             if (repeater.count === 0)
                 return;
 
             var newIndex = selectedEntryIndex;
-            if (event.key === Qt.Key_Escape) {
+            if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                 root.visible = false;
                 return;
-            } else if (event.key === Qt.Key_J || event.key === Qt.Key_Down) {
+            } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
                 newIndex += 1;
-            } else if (event.key === Qt.Key_K || event.key === Qt.Key_Up) {
+            } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
                 newIndex -= 1;
-            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
                 var item = repeater.itemAt(selectedEntryIndex);
                 if (item) {
                     item.clicked(null);
@@ -139,33 +140,38 @@ PanelWindow {
 
         Rectangle {
             id: currentClipboardDisplay
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: Styles.marginSm
-            height: currentClipboardText.implicitHeight + 2 * Styles.marginMd
+
+            implicitHeight: currentClipboardText.implicitHeight + Styles.marginMd
             color: Colors.bgRed
             radius: Styles.radiusMd
 
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+                margins: Styles.marginSm
+            }
+
             TextStyled {
                 id: currentClipboardText
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - Styles.marginMd * 2
-                anchors.margins: Styles.marginMd
-                text: root.currentClipboard
+                text: " " + root.currentClipboard
                 font.pixelSize: 24
-                color: Colors.fg
+                anchors.margins: Styles.marginMd
+                anchors.verticalCenter: parent.verticalCenter
             }
         }
 
         ScrollView {
             id: scrollView
-            anchors.top: currentClipboardDisplay.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
+
             contentWidth: parent.implicitWidth
+
+            anchors {
+                top: currentClipboardDisplay.bottom
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+            }
 
             ScrollBar.vertical: ScrollBar {
                 id: scrollBar
@@ -184,20 +190,22 @@ PanelWindow {
 
             Column {
                 id: column
-                width: parent.width - 2 * Styles.marginMd
-                x: Styles.marginMd
-                y: Styles.marginMd
+
                 spacing: Styles.marginSm
-                bottomPadding: Styles.marginMd
+
+                anchors {
+                    fill: parent
+                    margins: Styles.marginMd
+                }
 
                 Repeater {
                     id: repeater
                     model: root.clipboard
-
-                    ButtonStyled {
+                    delegate: ButtonStyled {
                         id: button
+
                         width: column.width
-                        height: text.implicitHeight + 2 * Styles.marginSm
+                        height: text.implicitHeight + Styles.marginSm
                         radius: Styles.radiusMd
 
                         defaultColor: Colors.bg0
@@ -212,14 +220,14 @@ PanelWindow {
 
                         TextStyled {
                             id: text
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: parent.width - Styles.marginMd * 2
-                            anchors.margins: Styles.marginMd
+
                             wrapMode: Text.WordWrap
-                            elide: Text.ElideNone
-                            text: modelData
                             color: button.isFocused ? Colors.bgDim : Colors.fg
+
+                            anchors.margins: Styles.marginMd
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            text: modelData
                         }
 
                         onClicked: {
