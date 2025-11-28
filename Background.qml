@@ -8,39 +8,35 @@ import qs.Components
 import qs.Services
 
 Variants {
-
     model: Quickshell.screens
     delegate: PanelWindow {
         id: root
 
-        required property var modelData
+        exclusionMode: ExclusionMode.Normal
+        aboveWindows: false
+        screen: modelData
 
+        implicitWidth: 900
+        implicitHeight: !albumArt?.visible ? clockText.implicitHeight : 900
+
+        color: "transparent"
+
+        property int clockMargin: 20
         property MprisPlayer player: {
             var filtered = Mpris.players.values.filter(player => player.identity === "Spotify");
             return filtered.length > 0 ? filtered[0] : null;
         }
 
-        property int clockMargin: 20
-
-        implicitWidth: Math.max(clockText.implicitWidth, albumArt.implicitWidth)
-        implicitHeight: !albumArt.visible ? clockText.implicitHeight : albumArt.implicitHeight
-
-        exclusionMode: ExclusionMode.Normal
-        color: "transparent"
-        aboveWindows: false
-        screen: modelData
-
         ClippingRectangle {
             id: albumArt
-            z: 0
             visible: root.player === null || root.player.isPlaying
-            color: Colors.bgDim
-            anchors.top: parent.top
-            radius: Styles.radiusMd
+            z: 0
 
-            readonly property int size: root.player !== null && root.player.isPlaying ? 900 : 0
-            implicitHeight: size
-            implicitWidth: size
+            radius: Styles.radiusMd
+            color: "transparent"
+
+            anchors.fill: parent
+            anchors.top: parent.top
 
             Image {
                 anchors.fill: parent
@@ -48,19 +44,22 @@ Variants {
             }
 
             DoubleText {
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: root.clockMargin + Styles.marginSm
-                anchors.horizontalCenter: parent.horizontalCenter
                 pixelSize: 34
                 offset: 4
-                text: root.player?.trackTitle + " - " + root.player?.trackArtist
+                text: "󰎄 " + root.player?.trackTitle + " - " + root.player?.trackArtist
+
+                anchors {
+                    bottom: parent.bottom
+                    bottomMargin: root.clockMargin + Styles.marginSm
+                    horizontalCenter: parent.horizontalCenter
+                }
             }
         }
 
         DoubleText {
             id: clockText
             anchors.horizontalCenter: parent.horizontalCenter
-            pixelSize: 140
+            pixelSize: 160
             text: Time.timeShort
         }
     }
