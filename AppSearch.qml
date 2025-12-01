@@ -2,7 +2,6 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Hyprland
 import QtQuick
-import QtQuick.Layouts
 
 import qs.Constants
 import qs.Components
@@ -12,7 +11,7 @@ PanelWindow {
     id: root
 
     implicitWidth: 1000
-    implicitHeight: 305
+    implicitHeight: 345
     focusable: true
     color: "transparent"
     visible: false
@@ -167,59 +166,70 @@ PanelWindow {
         }
     }
 
-    GridView {
-        id: appGridView
-
-        width: parent.width + Styles.margin
-        clip: true
-
-        cellWidth: width / 3
-        cellHeight: 60
-        snapMode: GridView.SnapToRow
+    Rectangle {
+        color: Colors.bgDim
+        radius: Styles.radiusSm
+        implicitWidth: parent.width
 
         anchors {
             top: searchBar.bottom
             bottom: parent.bottom
-            topMargin: Styles.margin
+            margins: Styles.marginSm
         }
 
-        model: filteredApplications
-        delegate: ButtonStyled {
-            id: menuButton
+        TextStyled {
+            anchors.centerIn: parent
+            visible: root.filteredApplications.length === 0
+            text: "No results found."
+        }
 
-            implicitWidth: appGridView.cellWidth - Styles.margin
-            implicitHeight: appGridView.cellHeight - Styles.margin
+        GridView {
+            id: appGridView
 
-            radius: Styles.radiusSm
+            clip: true
+            anchors.fill: parent
+            anchors.margins: Styles.marginSm
+            anchors.centerIn: parent
 
-            isFocused: index === appGridView.currentIndex
+            cellWidth: width / 3
+            cellHeight: 60
+            snapMode: GridView.SnapToRow
 
-            onClicked: {
-                Quickshell.execDetached(["bash", "-c", modelData.execString]);
-                textInput.text = "";
-                root.visible = false;
-            }
+            model: filteredApplications
+            delegate: ButtonStyled {
+                id: menuButton
 
-            Row {
-                id: menuContent
-                anchors.fill: parent
-                anchors.margins: Styles.margin
-                spacing: 10
+                implicitWidth: appGridView.cellWidth - Styles.margin
+                implicitHeight: appGridView.cellHeight - Styles.margin
+
+                radius: Styles.radiusSm
+
+                isFocused: index === appGridView.currentIndex
+
+                onClicked: {
+                    Quickshell.execDetached(["bash", "-c", modelData.execString]);
+                    textInput.text = "";
+                    root.visible = false;
+                }
 
                 IconImage {
                     id: appIcon
                     implicitWidth: 32
                     implicitHeight: 32
-                    source: Quickshell.iconPath(modelData.icon)
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.margins: Styles.marginSm
+                    source: Quickshell.iconPath(modelData.icon) ?? ""
                 }
 
                 TextStyled {
                     id: appName
-                    text: modelData.name
                     anchors.left: appIcon.right
-                    anchors.margins: Styles.margin
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.margins: Styles.marginSm
+                    anchors.right: parent.right
+                    text: modelData.name
                     elide: Text.ElideRight
-                    Layout.fillWidth: true
                 }
             }
         }
