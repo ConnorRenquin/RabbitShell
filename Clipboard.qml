@@ -19,20 +19,6 @@ PanelWindow {
     implicitHeight: base.implicitHeight
     color: "transparent"
 
-    property var clipboard: []
-    property string currentClipboard: ""
-
-    GlobalShortcut {
-        name: 'clipboard'
-        onPressed: root.visible = !root.visible
-    }
-
-    HyprlandFocusGrab {
-        active: root.visible
-        windows: [root]
-        onCleared: root.visible = false
-    }
-
     onVisibleChanged: {
         if (!visible)
             return;
@@ -42,6 +28,9 @@ PanelWindow {
         cliphistList.running = true;
         currentClipboardProcess.running = true;
     }
+
+    property var clipboard: []
+    property string currentClipboard: ""
 
     function scrollToIndex(index) {
         var item = column.children[index];
@@ -57,6 +46,17 @@ PanelWindow {
         targetY = Math.max(0, Math.min(targetY, contentHeight - viewHeight));
 
         scrollView.contentItem.contentY = targetY;
+    }
+
+    GlobalShortcut {
+        name: 'clipboard'
+        onPressed: root.visible = !root.visible
+    }
+
+    HyprlandFocusGrab {
+        active: root.visible
+        windows: [root]
+        onCleared: root.visible = false
     }
 
     Process {
