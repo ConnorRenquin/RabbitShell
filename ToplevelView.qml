@@ -28,7 +28,7 @@ PanelWindow {
         toplevels = Hyprland.toplevels.values.filter(toplevel => {
             if (!toplevel || !toplevel.workspace || !toplevel.workspace.id)
                 return false;
-            return toplevel.workspace.id > 0;
+            return toplevel.workspace.id > 0 && toplevel?.workspace?.focused;
         });
     }
 
