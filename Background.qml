@@ -12,6 +12,8 @@ Variants {
     delegate: PanelWindow {
         id: root
 
+        property var modelData: null
+
         exclusionMode: ExclusionMode.Normal
         aboveWindows: false
         screen: modelData

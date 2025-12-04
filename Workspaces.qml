@@ -115,7 +115,7 @@ PanelWindow {
                                     height: 32
                                     width: 32
                                     source: {
-                                        var source = Quickshell.iconPath(DesktopEntries.byId(modelData.wayland.appId)?.icon, "image-missing"); // TODO Pick a better default icon?
+                                        var source = Quickshell.iconPath(DesktopEntries.byId(modelData.wayland?.appId)?.icon, "image-missing"); // TODO Pick a better default icon?
                                         return source;
                                     }
                                 }

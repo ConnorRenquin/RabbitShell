@@ -26,9 +26,7 @@ PanelWindow {
         if (!Hyprland.toplevels)
             return;
         toplevels = Hyprland.toplevels.values.filter(toplevel => {
-            if (!toplevel || !toplevel.workspace || !toplevel.workspace.id)
-                return false;
-            return toplevel.workspace.id > 0 && toplevel?.workspace?.focused;
+            return toplevel?.workspace?.id > 0 && toplevel?.workspace?.focused;
         });
     }
 
@@ -133,7 +131,7 @@ PanelWindow {
                         id: appIcon
                         implicitHeight: 40
                         implicitWidth: 40
-                        source: Quickshell.iconPath(DesktopEntries.byId(modelData.wayland.appId).icon)
+                        source: Quickshell.iconPath(DesktopEntries.byId(modelData.wayland?.appId)?.icon)
                         anchors {
                             top: parent.top
                             left: parent.left
@@ -167,9 +165,9 @@ PanelWindow {
                             margins: Styles.marginSm
                         }
                         text: {
-                            if (!windowCard.keyLabel || !windowCard.modelData.wayland || !windowCard.modelData.wayland.appId)
+                            if (!windowCard.keyLabel || !windowCard.modelData.wayland || !windowCard.modelData.wayland?.appId)
                                 return "";
-                            return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland.appId;
+                            return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland?.appId;
                         }
                         primaryColor: Colors.green
                         secondaryColor: Colors.bgDim

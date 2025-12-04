@@ -39,8 +39,8 @@ Rectangle {
 
     PopupWindowAnimated {
         id: popup
-        width: 400
-        height: 400
+        implicitWidth: 400
+        implicitHeight: 400
 
         anchor {
             item: albumArt
@@ -92,7 +92,6 @@ Rectangle {
                 implicitHeight: popupText.implicitHeight * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.horizontalCenter: parent.horizontalCenter
                 DoubleText {
                     id: popupText
                     anchors.centerIn: parent
@@ -132,8 +131,8 @@ Rectangle {
             onClicked: root.player.previous()
         }
         ButtonStyledLocal {
-            backgroundColor: root.player.isPlaying ? Colors.orange : Colors.bg1
-            iconColor: root.player.isPlaying ? Colors.bgDim : Colors.fg
+            backgroundColor: root.player?.isPlaying ? Colors.orange : Colors.bg1
+            iconColor: root.player?.isPlaying ? Colors.bgDim : Colors.fg
             iconText: "󰐎"
             onClicked: root.player.togglePlaying()
         }
