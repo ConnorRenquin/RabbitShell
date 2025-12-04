@@ -82,7 +82,7 @@ PanelWindow {
     }
 
     function reset() {
-        text = "";
+        textInput.text = "";
         root.visible = false;
     }
 
@@ -106,14 +106,12 @@ PanelWindow {
         name: "appsearch"
         onPressed: {
             root.visible = !root.visible;
-            if (root.visible) {
-                textInput.forceActiveFocus();
-            }
+            grab.active = !root.visible;
         }
     }
 
     HyprlandFocusGrab {
-        active: root.visible
+        id: grab
         windows: [root]
         onCleared: root.visible = false
     }

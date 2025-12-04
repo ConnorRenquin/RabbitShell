@@ -50,11 +50,14 @@ PanelWindow {
 
     GlobalShortcut {
         name: 'clipboard'
-        onPressed: root.visible = !root.visible
+        onPressed: {
+            root.visible = !root.visible;
+            grab.active = true;
+        }
     }
 
     HyprlandFocusGrab {
-        active: root.visible
+        id: grab
         windows: [root]
         onCleared: root.visible = false
     }
