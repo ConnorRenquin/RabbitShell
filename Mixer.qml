@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Services.Pipewire
 import Quickshell.Hyprland
 
+import qs.Components
 import qs.Constants
 
 PanelWindow {
@@ -16,7 +17,7 @@ PanelWindow {
     margins.right: Styles.marginMd
 
     implicitWidth: 650
-    implicitHeight: rect.implicitHeight
+    implicitHeight: column.implicitHeight + Styles.marginSm * 2
     color: "transparent"
     visible: false
 
@@ -32,15 +33,16 @@ PanelWindow {
     }
 
     Rectangle {
-        id: rect
+        id: base
 
         focus: true
 
-        implicitWidth: parent.width
-        implicitHeight: column.implicitHeight + Styles.marginSm * 2
+        anchors.fill: parent
 
         color: Colors.bgDim
         radius: Styles.radiusSm
+
+        property int currentIndex: 0
 
         Keys.onPressed: event => {
             if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
@@ -49,71 +51,182 @@ PanelWindow {
                 return;
             }
 
-            var entries = [];
-            for (var i = 0; i < column.children.length; i++) {
-                var child = column.children[i];
-                if (child.objectName === "mixerEntry") {
-                    entries.push(child);
-                }
-            }
-
-            var currentIndex = -1;
-            for (var j = 0; j < entries.length; j++) {
-                if (entries[j].activeFocus) {
-                    currentIndex = j;
-                    break;
-                }
-            }
-
             if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
-                if (currentIndex < entries.length - 1) {
-                    entries[currentIndex + 1].forceActiveFocus();
-                }
+                moveFocusNext();
             }
             if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
-                if (currentIndex > 0) {
-                    entries[currentIndex - 1].forceActiveFocus();
-                } else if (currentIndex === -1 && entries.length > 0) {
-                    entries[0].forceActiveFocus();
-                }
+                moveFocusPrevious();
             }
+
+            column.children[currentIndex].forceActiveFocus();
         }
 
-        onVisibleChanged: {
-            if (visible)
-                rect.forceActiveFocus();
+        function moveFocusNext() {
+            currentIndex = (base.currentIndex + 1) % column.children.length;
         }
 
-        ColumnLayout {
+        function moveFocusPrevious() {
+            currentIndex = (base.currentIndex - 1 + column.children.length) % column.children.length;
+        }
+
+        Column {
             id: column
 
             spacing: Styles.marginSm
 
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                margins: Styles.marginSm
-            }
+            anchors.fill: parent
+            anchors.margins: Styles.marginSm
 
             PwNodeLinkTracker {
                 id: linkTracker
-                node: Pipewire.defaultAudioSink
-            }
-
-            MixerEntry {
-                objectName: "mixerEntry"
-                node: Pipewire.defaultAudioSink
-                Layout.fillWidth: true
+                node: Pipewire?.defaultAudioSink
             }
 
             Repeater {
                 model: linkTracker.linkGroups
-                delegate: MixerEntry {
-                    objectName: "mixerEntry"
-                    required property PwLinkGroup modelData
-                    node: modelData.source
-                    Layout.fillWidth: true
+                delegate: Rectangle {
+                    id: mixerEntry
+
+                    property PwNode node: modelData?.source ?? null
+
+                    implicitHeight: 100
+                    implicitWidth: 400
+
+                    color: index === base.currentIndex ? Colors.bgGreen : Colors.bg0
+                    radius: Styles.radiusSm
+                    focus: true
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 200
+                        }
+                    }
+
+                    Keys.onPressed: function (event) {
+                        if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
+                            volumeSlider.decrease();
+                        } else if ([Qt.Key_Right, Qt.Key_L].includes(event.key)) {
+                            volumeSlider.increase();
+                        } else if ([Qt.Key_M].includes(event.key)) {
+                            node.audio.muted = !node?.audio?.muted;
+                        }
+                    }
+
+                    PwObjectTracker {
+                        objects: [node]
+                    }
+
+                    TextStyled {
+                        id: deviceName
+                        text: node?.description
+                        anchors {
+                            left: parent.left
+                            top: parent.top
+                            right: parent.right
+                            margins: Styles.marginSm
+                        }
+                    }
+
+                    Item {
+                        height: 30
+
+                        anchors {
+                            left: parent.left
+                            bottom: parent.bottom
+                            right: parent.right
+                            margins: Styles.marginSm
+                        }
+
+                        ButtonStyled {
+                            id: muteButton
+                            implicitWidth: muteIcon.implicitWidth + Styles.marginLg
+                            implicitHeight: muteIcon.implicitHeight + Styles.marginMd
+                            radius: 100
+                            defaultColor: node?.audio.muted ? Colors.bgDim : Colors.orange
+
+                            anchors {
+                                right: volumeSlider.left
+                                left: parent.left
+                                verticalCenter: parent.verticalCenter
+                                margins: Styles.marginSm
+                            }
+
+                            onClicked: node.audio.muted = !node?.audio.muted
+                            TextStyled {
+                                id: muteIcon
+                                anchors.centerIn: parent
+                                font.pixelSize: 12
+                                color: node?.audio.muted ? Colors.orange : Colors.bgDim
+                                text: node?.audio.muted ? "" : ""
+                            }
+                        }
+
+                        // TODO Refact into StyledSlider
+                        Slider {
+                            id: volumeSlider
+                            value: node.audio.volume
+                            stepSize: 0.05
+
+                            anchors {
+                                right: parent.right
+                                left: muteButton.right
+                                verticalCenter: parent.verticalCenter
+                                margins: Styles.marginSm
+                            }
+
+                            onValueChanged: node.audio.volume = value
+
+                            // background: Rectangle {
+                            //     x: volumeSlider.leftPadding
+                            //     y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
+
+                            //     implicitWidth: 300
+                            //     implicitHeight: 5
+
+                            //     radius: Styles.margin
+                            //     color: Colors.bgDim
+
+                            //     Rectangle {
+                            //         implicitWidth: volumeSlider.visualPosition * parent.width
+                            //         implicitHeight: parent.height - Styles.marginSm
+                            //         color: Colors.green
+                            //         radius: Styles.margin
+                            //     }
+                            // }
+
+                            handle: Rectangle {
+                                x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
+                                y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
+                                implicitWidth: textPercent.width + 16
+                                implicitHeight: 16
+                                radius: Styles.margin
+                                color: mouseArea.containsMouse ? Colors.blue : Colors.green
+
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 200
+                                    }
+                                }
+
+                                TextStyled {
+                                    id: textPercent
+                                    anchors.centerIn: parent
+                                    color: Colors.bg1
+                                    font.pixelSize: 12
+                                    text: `${Math.floor(node?.audio.volume * 100)}%`
+                                }
+
+                                MouseArea {
+                                    id: mouseArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
