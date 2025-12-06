@@ -80,7 +80,7 @@ ButtonWidget {
             color: Colors.bgRed
             radius: Styles.margin
             implicitWidth: 220
-            implicitHeight: buttons.implicitHeight
+            implicitHeight: buttons.implicitHeight + Styles.marginSm * 2
             focus: true
 
             Keys.onPressed: event => {
