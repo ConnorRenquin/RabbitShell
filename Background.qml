@@ -31,7 +31,7 @@ Variants {
 
         ClippingRectangle {
             id: albumArt
-            visible: root.player === null || root.player.isPlaying
+            visible: root.player && root.player.isPlaying
             z: 0
 
             radius: Styles.radiusMd
