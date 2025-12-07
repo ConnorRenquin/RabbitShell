@@ -11,7 +11,10 @@ ButtonWidget {
 
     GlobalShortcut {
         name: "powermenu"
-        onPressed: popupWindow.visible = !popupWindow.visible
+        onPressed: {
+            popupWindow.visible = !popupWindow.visible;
+            grab.active = true;
+        }
     }
 
     onClicked: popupWindow.visible = !popupWindow.visible
@@ -70,7 +73,7 @@ ButtonWidget {
         }
 
         HyprlandFocusGrab {
-            active: popupWindow.visible
+            id: grab
             windows: [popupWindow]
             onCleared: popupWindow.visible = false
         }

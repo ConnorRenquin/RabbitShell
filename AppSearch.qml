@@ -12,7 +12,7 @@ PanelWindow {
 
     implicitWidth: 1000
     implicitHeight: 345
-    focusable: true
+
     color: "transparent"
     visible: false
 
@@ -106,7 +106,7 @@ PanelWindow {
         name: "appsearch"
         onPressed: {
             root.visible = !root.visible;
-            grab.active = !root.visible;
+            grab.active = true;
         }
     }
 
