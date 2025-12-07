@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
+import Quickshell.Widgets
 import Quickshell.Hyprland
 
 import qs.Components
@@ -116,21 +117,41 @@ PanelWindow {
                     }
 
                     PwObjectTracker {
+                        id: tracker
                         objects: [node]
                     }
 
-                    TextStyled {
-                        id: deviceName
-                        text: node?.description
+                    Item {
+                        id: info
+
                         anchors {
                             left: parent.left
                             top: parent.top
                             right: parent.right
                             margins: Styles.marginSm
                         }
+
+                        IconImage {
+                            id: icon
+                            source: Quickshell.iconPath(node.name).toLowerCase() ?? "audio-volume-high-symbolic"
+                            implicitWidth: 32
+                            implicitHeight: 32
+                        }
+
+                        TextStyled {
+                            id: deviceName
+                            text: node?.name
+                            anchors {
+                                left: icon.right
+                                top: parent.top
+                                right: parent.right
+                                margins: Styles.marginSm
+                            }
+                        }
                     }
 
                     Item {
+                        id: controls
                         height: 30
 
                         anchors {
