@@ -120,7 +120,6 @@ PanelWindow {
                     z: 1
                     anchors {
                         centerIn: parent
-                        margins: Styles.margin
                     }
 
                     onClicked: {
@@ -129,18 +128,20 @@ PanelWindow {
 
                     IconImage {
                         id: appIcon
-                        implicitHeight: 40
-                        implicitWidth: 40
+                        implicitHeight: 60
+                        implicitWidth: 60
                         source: Quickshell.iconPath(DesktopEntries.byId(modelData.wayland?.appId)?.icon)
                         anchors {
                             top: parent.top
                             left: parent.left
+                            verticalCenter: parent.verticalCenter
                             margins: Styles.marginSm
                         }
                     }
 
                     DoubleText {
                         id: windowTitle
+                        pixelSize: 25
                         anchors {
                             top: parent.top
                             left: appIcon.right
@@ -161,7 +162,8 @@ PanelWindow {
                         anchors {
                             bottom: parent.bottom
                             right: parent.right
-                            left: parent.left
+                            left: appIcon.right
+                            top: windowTitle.bottom
                             margins: Styles.marginSm
                         }
                         text: {
