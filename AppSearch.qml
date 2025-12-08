@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Hyprland
 import QtQuick
+import QtQuick.Layouts
 
 import qs.Constants
 import qs.Components
@@ -11,7 +12,7 @@ PanelWindow {
     id: root
 
     implicitWidth: 1000
-    implicitHeight: 345
+    implicitHeight: 320
 
     color: "transparent"
     visible: false
@@ -81,16 +82,13 @@ PanelWindow {
         currentFocusIndex = -1;
     }
 
-    function reset() {
-        textInput.text = "";
-        root.visible = false;
-    }
-
     function gridNavigationController(event) {
         if ([Qt.Key_Escape].includes(event.key)) {
-            reset();
+            textInput.text = "";
+            root.visible = false;
         } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
             appGridView.currentItem.clicked(null);
+            root.visible = false;
         } else if (event.key === Qt.Key_Down) {
             appGridView.moveCurrentIndexDown();
         } else if (event.key === Qt.Key_Up) {
@@ -116,118 +114,116 @@ PanelWindow {
         onCleared: root.visible = false
     }
 
-    Rectangle {
-        id: searchBar
+    ColumnLayout {
+        id: base
+        anchors.fill: parent
+        Rectangle {
+            id: searchBar
 
-        implicitHeight: textInput.implicitHeight + 30
+            implicitHeight: textInput.implicitHeight + 30
 
-        color: Colors.bgDim
-        radius: Styles.radius0
+            color: Colors.bgDim
+            radius: Styles.radius0
 
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: parent.top
-        }
+            Layout.fillWidth: true
 
-        readonly property int textSize: 25
+            readonly property int textSize: 25
 
-        TextInput {
-            id: textInput
+            TextInput {
+                id: textInput
 
-            font.pixelSize: searchBar.textSize
-            color: Colors.fg
-            focus: true
-            selectByMouse: true
-            cursorVisible: true
-            verticalAlignment: TextInput.AlignVCenter
+                font.pixelSize: searchBar.textSize
+                color: Colors.fg
+                focus: true
+                selectByMouse: true
+                cursorVisible: true
+                verticalAlignment: TextInput.AlignVCenter
 
-            anchors {
-                verticalCenter: parent.verticalCenter
-                left: parent.left
-                right: parent.right
-                leftMargin: Styles.margin
-                rightMargin: Styles.margin
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: Styles.margin
+                    rightMargin: Styles.margin
+                }
+
+                onTextChanged: root.updateFilteredApplications()
+
+                Keys.onPressed: root.gridNavigationController(event)
             }
 
-            onTextChanged: root.updateFilteredApplications()
-
-            Keys.onPressed: root.gridNavigationController(event)
+            TextStyled {
+                anchors.left: textInput.left
+                anchors.verticalCenter: textInput.verticalCenter
+                text: "Search"
+                opacity: 0.4
+                visible: textInput.text === ""
+            }
         }
 
-        TextStyled {
-            anchors.left: textInput.left
-            anchors.verticalCenter: textInput.verticalCenter
-            text: "Search"
-            opacity: 0.4
-            visible: textInput.text === ""
-        }
-    }
+        Rectangle {
+            color: Colors.bgDim
+            radius: Styles.radiusSm
 
-    Rectangle {
-        color: Colors.bgDim
-        radius: Styles.radiusSm
-        implicitWidth: parent.width
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-        anchors {
-            top: searchBar.bottom
-            bottom: parent.bottom
-            margins: Styles.marginSm
-        }
+            TextStyledNoAnchors {
+                anchors.centerIn: parent
+                visible: root.filteredApplications.length === 0
+                text: "No results found."
+            }
 
-        TextStyled {
-            anchors.centerIn: parent
-            visible: root.filteredApplications.length === 0
-            text: "No results found."
-        }
+            GridView {
+                id: appGridView
 
-        GridView {
-            id: appGridView
+                clip: true
+                anchors.fill: parent
+                anchors.margins: Styles.marginSm
 
-            clip: true
-            anchors.fill: parent
-            anchors.margins: Styles.marginSm
-            anchors.centerIn: parent
+                cellWidth: width / 3
+                cellHeight: 60
+                snapMode: GridView.SnapToRow
 
-            cellWidth: width / 3
-            cellHeight: 60
-            snapMode: GridView.SnapToRow
+                model: filteredApplications
+                delegate: ButtonStyled {
+                    id: menuButton
 
-            model: filteredApplications
-            delegate: ButtonStyled {
-                id: menuButton
+                    implicitWidth: appGridView.cellWidth - Styles.marginSm
+                    implicitHeight: appGridView.cellHeight - Styles.marginSm
 
-                implicitWidth: appGridView.cellWidth - Styles.margin
-                implicitHeight: appGridView.cellHeight - Styles.margin
+                    radius: Styles.radiusSm
 
-                radius: Styles.radiusSm
+                    isFocused: index === appGridView.currentIndex
 
-                isFocused: index === appGridView.currentIndex
+                    onClicked: {
+                        Quickshell.execDetached(["bash", "-c", modelData.execString]);
+                        textInput.text = "";
+                        root.visible = false;
+                    }
 
-                onClicked: {
-                    Quickshell.execDetached(["bash", "-c", modelData.execString]);
-                    textInput.text = "";
-                    root.visible = false;
-                }
+                    RowLayout {
+                        spacing: Styles.marginSm
 
-                IconImage {
-                    id: appIcon
-                    implicitWidth: 32
-                    implicitHeight: 32
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    anchors.margins: Styles.marginSm
-                    source: Quickshell.iconPath(modelData.icon) ?? ""
-                }
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                            left: parent.left
+                            margins: Styles.marginSm
+                        }
 
-                TextStyled {
-                    id: appName
-                    anchors.left: appIcon.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.margins: Styles.marginSm
-                    anchors.right: parent.right
-                    text: modelData.name
-                    elide: Text.ElideRight
+                        IconImage {
+                            id: appIcon
+                            implicitWidth: 32
+                            implicitHeight: 32
+                            source: Quickshell.iconPath(modelData.icon) ?? ""
+                        }
+
+                        TextStyledNoAnchors {
+                            id: appName
+                            text: modelData.name
+                            elide: Text.ElideRight
+                        }
+                    }
                 }
             }
         }
