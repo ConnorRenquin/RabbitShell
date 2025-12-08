@@ -3,6 +3,7 @@ import Quickshell.Io
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 import qs.Constants
 import qs.Components
@@ -32,22 +33,6 @@ PanelWindow {
     property var clipboard: []
     property string currentClipboard: ""
 
-    function scrollToIndex(index) {
-        var item = column.children[index];
-        if (!item)
-            return;
-
-        var itemY = item.y;
-        var itemHeight = item.height;
-        var viewHeight = scrollView.height;
-        var contentHeight = column.height;
-        var targetY = itemY - (viewHeight - itemHeight) / 2;
-
-        targetY = Math.max(0, Math.min(targetY, contentHeight - viewHeight));
-
-        scrollView.contentItem.contentY = targetY;
-    }
-
     GlobalShortcut {
         name: 'clipboard'
         onPressed: {
@@ -70,9 +55,7 @@ PanelWindow {
         property var buffer: []
 
         stdout: SplitParser {
-            onRead: line => {
-                cliphistList.buffer.push(line);
-            }
+            onRead: line => cliphistList.buffer.push(line)
         }
         onExited: root.clipboard = this.buffer
     }
@@ -83,9 +66,7 @@ PanelWindow {
         command: ["wl-paste", "-n"]
 
         stdout: SplitParser {
-            onRead: line => {
-                root.currentClipboard = line.replace(/^\s+/, '');
-            }
+            onRead: line => root.currentClipboard = line.replace(/^\s+/, '')
         }
     }
 
@@ -102,134 +83,73 @@ PanelWindow {
         property int selectedEntryIndex: 0
 
         Keys.onPressed: event => {
-            if (repeater.count === 0)
+            if (clipboardItems.count === 0)
                 return;
-
-            var newIndex = selectedEntryIndex;
             if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                 root.visible = false;
                 return;
             } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
-                newIndex += 1;
+                clipboardItems.incrementCurrentIndex();
             } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
-                newIndex -= 1;
+                clipboardItems.decrementCurrentIndex();
             } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
-                var item = repeater.itemAt(selectedEntryIndex);
-                if (item) {
-                    item.clicked(null);
-                }
+                clipboardItems.currentItem.clicked(null);
                 root.visible = false;
-                return;
-            }
-
-            if (newIndex >= repeater.count) {
-                newIndex = 0;
-            } else if (newIndex < 0) {
-                newIndex = repeater.count - 1;
-            }
-
-            var oldItem = repeater.itemAt(selectedEntryIndex);
-            if (oldItem)
-                oldItem.isFocused = false;
-
-            selectedEntryIndex = newIndex;
-            root.scrollToIndex(selectedEntryIndex);
-
-            var newItem = repeater.itemAt(selectedEntryIndex);
-            if (newItem) {
-                newItem.isFocused = true;
             }
         }
 
-        Rectangle {
-            id: currentClipboardDisplay
+        ColumnLayout {
+            anchors.fill: parent
 
-            implicitHeight: currentClipboardText.implicitHeight + Styles.marginMd
-            color: Colors.bgRed
-            radius: Styles.radiusMd
+            Rectangle {
+                id: currentClipboardDisplay
+                z: 1
 
-            anchors {
-                top: parent.top
-                left: parent.left
-                right: parent.right
-                margins: Styles.marginSm
-            }
+                Layout.fillWidth: true
+                Layout.margins: Styles.marginSm
 
-            TextStyled {
-                id: currentClipboardText
-                text: " " + root.currentClipboard
-                font.pixelSize: 24
-                anchors.margins: Styles.marginMd
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
+                implicitHeight: currentClipboardText.implicitHeight + Styles.marginMd
+                color: Colors.bgRed
+                radius: Styles.radiusMd
 
-        ScrollView {
-            id: scrollView
-
-            contentWidth: parent.implicitWidth
-
-            anchors {
-                top: currentClipboardDisplay.bottom
-                left: parent.left
-                right: parent.right
-                bottom: parent.bottom
-            }
-
-            ScrollBar.vertical: ScrollBar {
-                id: scrollBar
-                interactive: true
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-
-                Behavior on position {
-                    NumberAnimation {
-                        duration: 100
-                        easing.type: Easing.InOutQuad
-                    }
+                TextStyled {
+                    id: currentClipboardText
+                    text: " " + root.currentClipboard
+                    font.pixelSize: 24
+                    anchors.margins: Styles.marginMd
+                    anchors.verticalCenter: parent.verticalCenter
                 }
             }
 
-            Column {
-                id: column
+            ScrollView {
+                id: scrollView
+                z: 0
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.margins: Styles.marginSm
 
-                spacing: Styles.marginSm
-
-                anchors {
-                    fill: parent
-                    margins: Styles.marginMd
-                }
-
-                Repeater {
-                    id: repeater
+                ListView {
+                    id: clipboardItems
+                    spacing: Styles.marginSm
                     model: root.clipboard
                     delegate: ButtonStyled {
                         id: button
 
-                        width: column.width
-                        height: text.implicitHeight + Styles.marginSm
+                        implicitHeight: text.implicitHeight + Styles.marginSm
+                        implicitWidth: scrollView.width
                         radius: Styles.radiusMd
 
                         defaultColor: Colors.bg0
                         focusedColor: Colors.aqua
 
-                        isFocused: index === 0
-
-                        Component.onCompleted: {
-                            if (index === 0)
-                                isFocused = true;
-                        }
+                        isFocused: ListView.isCurrentItem
 
                         TextStyled {
                             id: text
-
                             wrapMode: Text.WordWrap
                             color: button.isFocused ? Colors.bgDim : Colors.fg
-
                             anchors.margins: Styles.marginMd
                             anchors.verticalCenter: parent.verticalCenter
-
                             text: modelData
                         }
 
