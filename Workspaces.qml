@@ -6,126 +6,127 @@ import QtQuick
 import qs.Constants
 import qs.Components
 
-PanelWindow {
-    id: root
-
-    visible: false
-
-    property int columns: 5
-    implicitWidth: workspaceGrid.count > columns ? workspaceGrid.cellWidth * columns : workspaceGrid.cellWidth * workspaceGrid.count
-    implicitHeight: workspaceGrid.cellHeight * Math.ceil(workspaceGrid.count / columns)
-
-    color: "transparent"
-    exclusionMode: ExclusionMode.Ignore
-
-    anchors.top: true
-    margins.top: 80
-
-    property string keyMap: "wertyuiopasdfghjklzxcvbnm"
-    property var workspaces: Hyprland.workspaces.values.filter(workspace => workspace.id > 0)
-
+Loader {
+    id: loader
+    active: false
     GlobalShortcut {
         name: "workspaces"
-        onPressed: root.visible = !root.visible
+        onPressed: active = !active
     }
+    sourceComponent: PanelWindow {
+        id: root
 
-    HyprlandFocusGrab {
-        active: root.visible
-        windows: [root]
-        onCleared: root.visible = false
-    }
+        property int columns: 5
+        implicitWidth: workspaceGrid.count > columns ? workspaceGrid.cellWidth * columns : workspaceGrid.cellWidth * workspaceGrid.count
+        implicitHeight: workspaceGrid.cellHeight * Math.ceil(workspaceGrid.count / columns)
 
-    Rectangle {
-        id: base
+        color: "transparent"
+        exclusionMode: ExclusionMode.Ignore
 
-        color: Colors.bgGreen
-        radius: Styles.radiusSm
-        focus: true
+        anchors.top: true
+        margins.top: 80
 
-        anchors.fill: parent
+        property string keyMap: "wertyuiopasdfghjklzxcvbnm"
+        property var workspaces: Hyprland.workspaces.values.filter(workspace => workspace.id > 0)
 
-        Keys.onPressed: function (event) {
-            if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
-                root.visible = false;
-            }
-
-            var pressedChar = event.text.toLowerCase();
-            if (pressedChar === "")
-                return;
-            var index = root.keyMap.indexOf(pressedChar);
-
-            var workspace = root.workspaces[index];
-            if (workspace.focused) {
-                root.visible = false;
-                event.accepted = true;
-            } else {
-                workspace.activate();
-            }
+        HyprlandFocusGrab {
+            active: loader.active
+            windows: [root]
+            onCleared: loader.active = false
         }
 
-        GridView {
-            id: workspaceGrid
+        Rectangle {
+            id: base
+
+            color: Colors.bgGreen
+            radius: Styles.radiusSm
+            focus: true
 
             anchors.fill: parent
-            cellHeight: 100
-            cellWidth: 200
 
-            model: root.workspaces
+            Keys.onPressed: function (event) {
+                if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+                    loader.active = false;
+                }
 
-            delegate: Item {
-                id: wrapper
-                width: workspaceGrid.cellWidth
-                height: workspaceGrid.cellHeight
-                ButtonStyled {
-                    id: workspace
+                var pressedChar = event.text.toLowerCase();
+                if (pressedChar === "")
+                    return;
+                var index = root.keyMap.indexOf(pressedChar);
 
-                    width: workspaceGrid.cellWidth - Styles.marginSm
-                    height: workspaceGrid.cellHeight - Styles.marginSm
+                var workspace = root.workspaces[index];
+                if (workspace.focused) {
+                    loader.active = false;
+                    event.accepted = true;
+                } else {
+                    workspace.activate();
+                }
+            }
 
-                    radius: modelData.focused ? 15 : Styles.radiusSm // 15 is about the max you can go, not sure why
-                    clip: true
+            GridView {
+                id: workspaceGrid
 
-                    isFocused: modelData.focused
+                anchors.fill: parent
+                cellHeight: 100
+                cellWidth: 200
 
-                    anchors.centerIn: parent
+                model: root.workspaces
 
-                    Behavior on radius {
-                        NumberAnimation {
-                            duration: 400
-                        }
-                    }
+                delegate: Item {
+                    id: wrapper
+                    width: workspaceGrid.cellWidth
+                    height: workspaceGrid.cellHeight
+                    ButtonStyled {
+                        id: workspace
 
-                    Column {
+                        width: workspaceGrid.cellWidth - Styles.marginSm
+                        height: workspaceGrid.cellHeight - Styles.marginSm
+
+                        radius: modelData.focused ? 15 : Styles.radiusSm // 15 is about the max you can go, not sure why
+                        clip: true
+
+                        isFocused: modelData.focused
+
                         anchors.centerIn: parent
-                        spacing: Styles.marginSm
-                        DoubleText {
-                            id: text
-                            text: modelData.focused ? "󰜋 " + key : "󰜌 " + key
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            pixelSize: 26
-                            offset: 3
-                            elide: Text.ElideNone
-                            property string key: root.keyMap[index].toUpperCase()
+
+                        Behavior on radius {
+                            NumberAnimation {
+                                duration: 400
+                            }
                         }
-                        Row {
-                            id: iconRow
-                            Repeater {
-                                model: modelData.toplevels.values.slice(0, 5) // Setting the max icons here so it doesn't overun.
-                                delegate: IconImage {
-                                    height: 32
-                                    width: 32
-                                    source: {
-                                        var source = Quickshell.iconPath(DesktopEntries.byId(modelData.wayland?.appId)?.icon, "image-missing"); // TODO Pick a better default icon?
-                                        return source;
+
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: Styles.marginSm
+                            DoubleText {
+                                id: text
+                                text: modelData.focused ? "󰜋 " + key : "󰜌 " + key
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                pixelSize: 26
+                                offset: 3
+                                elide: Text.ElideNone
+                                property string key: root.keyMap[index].toUpperCase()
+                            }
+                            Row {
+                                id: iconRow
+                                Repeater {
+                                    model: modelData.toplevels.values.slice(0, 5) // Setting the max icons here so it doesn't overun.
+                                    delegate: IconImage {
+                                        height: 32
+                                        width: 32
+                                        source: {
+                                            var source = Quickshell.iconPath(DesktopEntries.byId(modelData.wayland?.appId)?.icon, "image-missing"); // TODO Pick a better default icon?
+                                            return source;
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    onClicked: {
-                        modelData.activate();
-                        root.visible = !root.visible;
+                        onClicked: {
+                            modelData.activate();
+                            loader.active = false;
+                        }
                     }
                 }
             }
