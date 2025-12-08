@@ -70,12 +70,14 @@ PanelWindow {
             currentIndex = (base.currentIndex - 1 + column.children.length) % column.children.length;
         }
 
-        Column {
+        ColumnLayout {
             id: column
 
             spacing: Styles.marginSm
 
-            anchors.fill: parent
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
             anchors.margins: Styles.marginSm
 
             PwNodeLinkTracker {
@@ -88,17 +90,15 @@ PanelWindow {
                 delegate: Rectangle {
                     id: mixerEntry
 
-                    property PwNode node: modelData?.source ?? null
-
-                    implicitHeight: 100
-                    implicitWidth: 400
+                    Layout.preferredHeight: mixerColum.implicitHeight + Styles.marginMd
+                    Layout.minimumHeight: 100
+                    Layout.fillWidth: true
 
                     color: index === base.currentIndex ? Colors.bgGreen : Colors.bg0
                     radius: Styles.radiusSm
                     focus: true
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    property PwNode node: modelData?.source ?? null
 
                     Behavior on color {
                         ColorAnimation {
@@ -121,129 +121,110 @@ PanelWindow {
                         objects: [node]
                     }
 
-                    Item {
-                        id: info
+                    ColumnLayout {
+                        id: mixerColum
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.margins: Styles.marginSm
+                        spacing: Styles.marginLg
+                        RowLayout {
+                            id: info
 
-                        anchors {
-                            left: parent.left
-                            top: parent.top
-                            right: parent.right
-                            margins: Styles.marginSm
-                        }
+                            spacing: Styles.marginSm
 
-                        IconImage {
-                            id: icon
-                            source: Quickshell.iconPath(node.name).toLowerCase() ?? "audio-volume-high-symbolic"
-                            implicitWidth: 32
-                            implicitHeight: 32
-                        }
+                            Layout.leftMargin: Styles.marginSm
+                            Layout.rightMargin: Styles.marginSm
+                            Layout.preferredHeight: 20
 
-                        TextStyled {
-                            id: deviceName
-                            text: node?.name
-                            anchors {
-                                left: icon.right
-                                top: parent.top
-                                right: parent.right
-                                margins: Styles.marginSm
-                            }
-                        }
-                    }
-
-                    Item {
-                        id: controls
-                        height: 30
-
-                        anchors {
-                            left: parent.left
-                            bottom: parent.bottom
-                            right: parent.right
-                            margins: Styles.marginSm
-                        }
-
-                        ButtonStyled {
-                            id: muteButton
-                            implicitWidth: muteIcon.implicitWidth + Styles.marginLg
-                            implicitHeight: muteIcon.implicitHeight + Styles.marginMd
-                            radius: 100
-                            defaultColor: node?.audio.muted ? Colors.bgDim : Colors.orange
-
-                            anchors {
-                                right: volumeSlider.left
-                                left: parent.left
-                                verticalCenter: parent.verticalCenter
-                                margins: Styles.marginSm
+                            IconImage {
+                                id: icon
+                                source: Quickshell.iconPath(node.name).toLowerCase() ?? "audio-volume-high-symbolic"
+                                implicitWidth: 40
+                                implicitHeight: 40
                             }
 
-                            onClicked: node.audio.muted = !node?.audio.muted
-                            TextStyled {
-                                id: muteIcon
-                                anchors.centerIn: parent
-                                font.pixelSize: 12
-                                color: node?.audio.muted ? Colors.orange : Colors.bgDim
-                                text: node?.audio.muted ? "" : ""
+                            TextStyledNoAnchors {
+                                text: node?.name
                             }
                         }
+                        RowLayout {
+                            id: controlRow
+                            Layout.fillWidth: true
+                            Layout.leftMargin: Styles.marginSm
+                            Layout.rightMargin: Styles.marginSm
+                            ButtonStyled {
+                                id: muteButton
+                                implicitWidth: muteIcon.implicitWidth + Styles.marginLg
+                                implicitHeight: muteIcon.implicitHeight + Styles.marginSm
+                                radius: 100
+                                defaultColor: node?.audio.muted ? Colors.bgDim : Colors.orange
 
-                        // TODO Refact into StyledSlider
-                        Slider {
-                            id: volumeSlider
-                            value: node.audio.volume
-                            stepSize: 0.05
-
-                            anchors {
-                                right: parent.right
-                                left: muteButton.right
-                                verticalCenter: parent.verticalCenter
-                                margins: Styles.marginSm
+                                onClicked: node.audio.muted = !node?.audio.muted
+                                TextStyled {
+                                    id: muteIcon
+                                    anchors.centerIn: parent
+                                    font.pixelSize: 14
+                                    color: node?.audio.muted ? Colors.orange : Colors.bgDim
+                                    text: node?.audio.muted ? "" : ""
+                                }
                             }
 
-                            onValueChanged: node.audio.volume = value
+                            // TODO Refact into StyledSlider
+                            Slider {
+                                id: volumeSlider
+                                value: node.audio.volume
+                                stepSize: 0.05
+                                Layout.fillWidth: true
 
-                            // background: Rectangle {
-                            //     x: volumeSlider.leftPadding
-                            //     y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
+                                onValueChanged: node.audio.volume = value
 
-                            //     implicitWidth: 300
-                            //     implicitHeight: 5
+                                background: Rectangle {
+                                    x: volumeSlider.leftPadding
+                                    y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
 
-                            //     radius: Styles.margin
-                            //     color: Colors.bgDim
+                                    implicitWidth: 100
 
-                            //     Rectangle {
-                            //         implicitWidth: volumeSlider.visualPosition * parent.width
-                            //         implicitHeight: parent.height - Styles.marginSm
-                            //         color: Colors.green
-                            //         radius: Styles.margin
-                            //     }
-                            // }
+                                    radius: Styles.margin
+                                    color: Colors.bgDim
 
-                            handle: Rectangle {
-                                x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
-                                y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
-                                implicitWidth: textPercent.width + 16
-                                implicitHeight: 16
-                                radius: Styles.margin
-                                color: mouseArea.containsMouse ? Colors.blue : Colors.green
-
-                                Behavior on color {
-                                    ColorAnimation {
-                                        duration: 200
+                                    Rectangle {
+                                        implicitWidth: volumeSlider.visualPosition * parent.width
+                                        implicitHeight: parent.height
+                                        color: Colors.green
+                                        radius: Styles.margin
                                     }
                                 }
 
-                                TextStyled {
-                                    id: textPercent
-                                    anchors.centerIn: parent
-                                    color: Colors.bg1
-                                    font.pixelSize: 12
-                                    text: `${Math.floor(node?.audio.volume * 100)}%`
-                                }
+                                handle: Rectangle {
+                                    x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
+                                    y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
 
-                                MouseArea {
-                                    id: mouseArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
+                                    implicitWidth: textPercent.width + Styles.marginSm
+                                    implicitHeight: muteButton.implicitHeight
+
+                                    radius: Styles.radiusSm
+                                    color: mouseArea.containsMouse ? Colors.blue : Colors.orange
+
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 200
+                                        }
+                                    }
+
+                                    TextStyled {
+                                        id: textPercent
+                                        anchors.centerIn: parent
+                                        color: Colors.bg1
+                                        font.pixelSize: 14
+                                        text: `${Math.floor(node?.audio.volume * 100)}%`
+                                    }
+                                    MouseArea {
+                                        id: mouseArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        acceptedButtons: Qt.NoButton
+                                    }
                                 }
                             }
                         }
