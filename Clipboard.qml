@@ -16,8 +16,8 @@ PanelWindow {
     margins.right: Styles.marginMd
     exclusionMode: ExclusionMode.Ignore
 
-    implicitWidth: base.implicitWidth
-    implicitHeight: base.implicitHeight
+    implicitWidth: 400
+    implicitHeight: 900
     color: "transparent"
 
     onVisibleChanged: {
@@ -38,6 +38,7 @@ PanelWindow {
         onPressed: {
             root.visible = !root.visible;
             grab.active = true;
+            base.focus = !base.focus;
         }
     }
 
@@ -73,12 +74,10 @@ PanelWindow {
     Rectangle {
         id: base
 
-        implicitWidth: 500
-        implicitHeight: 800
+        anchors.fill: parent
 
         color: Colors.bgDim
-        radius: Styles.radiusLg
-        focus: true
+        radius: Styles.radiusSm
 
         property int selectedEntryIndex: 0
 
@@ -99,6 +98,7 @@ PanelWindow {
         }
 
         ColumnLayout {
+            id: mainContent
             anchors.fill: parent
 
             Rectangle {
@@ -117,6 +117,7 @@ PanelWindow {
                     text: " " + root.currentClipboard
                     font.pixelSize: 24
                     anchors.margins: Styles.marginMd
+                    anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                 }
             }
@@ -124,6 +125,7 @@ PanelWindow {
             ScrollView {
                 id: scrollView
                 z: 0
+
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
@@ -135,22 +137,61 @@ PanelWindow {
                     delegate: ButtonStyled {
                         id: button
 
-                        implicitHeight: text.implicitHeight + Styles.marginSm
-                        implicitWidth: scrollView.width
+                        implicitHeight: clipboardItemContent.implicitHeight
+                        // TODO Bug? Sometimes parent is null?
+                        implicitWidth: parent.width
                         radius: Styles.radiusMd
 
                         defaultColor: Colors.bg0
-                        focusedColor: Colors.aqua
+
+                        focusedColor: Colors.bgGreen
 
                         isFocused: ListView.isCurrentItem
 
-                        TextStyled {
-                            id: text
-                            wrapMode: Text.WordWrap
-                            color: button.isFocused ? Colors.bgDim : Colors.fg
-                            anchors.margins: Styles.marginMd
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: modelData
+                        ColumnLayout {
+                            id: clipboardItemContent
+                            anchors {
+                                top: parent.top
+                                left: parent.left
+                                right: parent.right
+                            }
+
+                            // TODO Bug? What if there's 2/1/5?
+                            property string keyValue: modelData.substring(0, 4)
+                            property string clipboardValue: modelData.substring(5)
+
+                            Rectangle {
+                                id: clipboardItemKey
+                                Layout.preferredWidth: 80
+                                implicitHeight: 20
+                                color: Colors.orange
+                                radius: Styles.radiusSm
+                                TextStyled {
+                                    id: clipboardItemKeyText
+                                    wrapMode: Text.WordWrap
+                                    color: Colors.bgDim
+                                    anchors.centerIn: parent
+                                    text: clipboardItemContent.keyValue
+                                }
+                            }
+
+                            Rectangle {
+                                color: Colors.bgDim
+                                radius: Styles.radiusMd
+
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: clipboardText.implicitHeight + Styles.marginSm * 2
+                                Layout.margins: Styles.marginSm
+
+                                TextStyled {
+                                    id: clipboardText
+                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                    width: parent.width - Styles.marginSm
+                                    anchors.centerIn: parent
+                                    color: Colors.blue
+                                    text: clipboardItemContent.clipboardValue
+                                }
+                            }
                         }
 
                         onClicked: {
