@@ -26,8 +26,12 @@ Loader {
 
         color: "transparent"
 
-        Component.onCompleted: updateFilteredApplications()
+        Component.onCompleted: {
+            textInput.focus = true;
+            updateFilteredApplications();
+        }
 
+        property var allApps: DesktopEntries.applications.values
         property var filteredApplications: []
         property int currentFocusIndex: -1
 
@@ -58,7 +62,6 @@ Loader {
         }
 
         function updateFilteredApplications() {
-            var allApps = DesktopEntries.applications.values;
             var searchText = textInput.text;
 
             if (searchText === "") {
@@ -121,22 +124,18 @@ Loader {
             Rectangle {
                 id: searchBar
 
-                implicitHeight: textInput.implicitHeight + 30
+                implicitHeight: 60
+                Layout.fillWidth: true
 
                 color: Colors.bgDim
                 radius: Styles.radius0
-
-                Layout.fillWidth: true
 
                 readonly property int textSize: 25
 
                 TextInput {
                     id: textInput
-                    renderType: Text.NativeRendering
-
                     font.pixelSize: searchBar.textSize
                     color: Colors.fg
-                    focus: true
                     selectByMouse: true
                     cursorVisible: true
                     verticalAlignment: TextInput.AlignVCenter
@@ -145,21 +144,46 @@ Loader {
                         verticalCenter: parent.verticalCenter
                         left: parent.left
                         right: parent.right
-                        leftMargin: Styles.margin
-                        rightMargin: Styles.margin
+                        margins: Styles.marginSm
                     }
 
                     onTextChanged: root.updateFilteredApplications()
 
                     Keys.onPressed: event => root.gridNavigationController(event)
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.IBeamCursor
+                        onClicked: {
+                            textInput.forceActiveFocus();
+                        }
+                    }
                 }
 
                 TextStyled {
+                    id: placeholderText
                     anchors.left: textInput.left
                     anchors.verticalCenter: textInput.verticalCenter
                     text: "Search"
                     opacity: 0.4
                     visible: textInput.text === ""
+                }
+
+                Rectangle {
+                    id: clockBackground
+                    implicitHeight: parent.height - Styles.marginLg
+                    implicitWidth: clock.implicitWidth + Styles.marginLg
+                    anchors.margins: Styles.marginMd
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: Colors.orange
+                    radius: Styles.radiusLg
+                    TextStyled {
+                        id: clock
+                        anchors.centerIn: parent
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: Colors.bgDim
+                        text: Time.timeShort
+                    }
                 }
             }
 
@@ -204,12 +228,12 @@ Loader {
                             loader.active = false;
                         }
 
-                        RowLayout {
-                            spacing: Styles.marginSm
+                        FlexboxLayout {
+                            id: appButtonContent
+                            gap: Styles.marginSm
 
                             anchors {
-                                verticalCenter: parent.verticalCenter
-                                left: parent.left
+                                fill: parent
                                 margins: Styles.marginSm
                             }
 
@@ -220,10 +244,10 @@ Loader {
                                 source: Quickshell.iconPath(modelData.icon) ?? ""
                             }
 
-                            TextStyledNoAnchors {
+                            TextStyled {
                                 id: appName
                                 text: modelData.name
-                                elide: Text.ElideRight
+                                color: menuButton.isFocused ? Colors.bg1 : Colors.fg
                             }
                         }
                     }
