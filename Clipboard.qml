@@ -38,7 +38,7 @@ PanelWindow {
         onPressed: {
             root.visible = !root.visible;
             grab.active = true;
-            base.focus = !base.focus;
+            base.focus = true;
         }
     }
 
@@ -108,17 +108,17 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
 
-                implicitHeight: currentClipboardText.implicitHeight + Styles.marginMd
+                Layout.preferredHeight: currentClipboardText.implicitHeight + Styles.marginSm * 2
                 color: Colors.bgRed
                 radius: Styles.radiusMd
 
                 TextStyled {
                     id: currentClipboardText
                     text: " " + root.currentClipboard
-                    font.pixelSize: 24
-                    anchors.margins: Styles.marginMd
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    anchors.centerIn: parent
+                    width: parent.width - Styles.marginSm * 2
+                    anchors.margins: Styles.marginSm
                 }
             }
 
@@ -168,7 +168,7 @@ PanelWindow {
                                 radius: Styles.radiusSm
                                 TextStyled {
                                     id: clipboardItemKeyText
-                                    wrapMode: Text.WordWrap
+                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                     color: Colors.bgDim
                                     anchors.centerIn: parent
                                     text: clipboardItemContent.keyValue
