@@ -1,6 +1,8 @@
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Io
 import Quickshell.Hyprland
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -94,7 +96,10 @@ PanelWindow {
             } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
                 clipboardItems.currentItem.clicked(null);
                 root.visible = false;
+            } else if ([Qt.Key_G].includes(event.key)) {
+                clipboardItems.currentIndex = 0;
             }
+            clipboardItems.positionViewAtIndex(clipboardItems.currentIndex, ListView.Contain);
         }
 
         ColumnLayout {
@@ -122,16 +127,16 @@ PanelWindow {
                 }
             }
 
-            ScrollView {
-                id: scrollView
-                z: 0
-
+            ClippingRectangle {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
+                color: "transparent"
+                radius: Styles.radiusMd
 
                 ListView {
                     id: clipboardItems
+                    anchors.fill: parent
                     spacing: Styles.marginSm
                     model: root.clipboard
                     delegate: ButtonStyled {
