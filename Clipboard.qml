@@ -78,6 +78,7 @@ PanelWindow {
         Keys.onPressed: event => {
             if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                 root.visible = false;
+                grab.active = false;
                 return;
             } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
                 clipboardItems.incrementCurrentIndex();

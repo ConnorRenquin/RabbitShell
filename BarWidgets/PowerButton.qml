@@ -12,12 +12,12 @@ ButtonWidget {
     GlobalShortcut {
         name: "powermenu"
         onPressed: {
-            popupWindow.visible = !popupWindow.visible;
+            dropdown.visible = !dropdown.visible;
             grab.active = true;
         }
     }
 
-    onClicked: popupWindow.visible = !popupWindow.visible
+    onClicked: dropdown.visible = !dropdown.visible
 
     property int currentFocusIndex: 0
 
@@ -28,7 +28,7 @@ ButtonWidget {
     }
 
     function menuAction(command) {
-        popupWindow.visible = false;
+        dropdown.visible = false;
         Quickshell.execDetached(["bash", "-c", command]);
     }
 
@@ -55,9 +55,8 @@ ButtonWidget {
         }
     }
 
-    // Menu
     PopupWindow {
-        id: popupWindow
+        id: dropdown
 
         implicitWidth: menuBackground.implicitWidth
         implicitHeight: menuBackground.implicitHeight
@@ -74,8 +73,8 @@ ButtonWidget {
 
         HyprlandFocusGrab {
             id: grab
-            windows: [popupWindow]
-            onCleared: popupWindow.visible = false
+            windows: [dropdown]
+            onCleared: dropdown.visible = false
         }
 
         Rectangle {
@@ -88,7 +87,8 @@ ButtonWidget {
 
             Keys.onPressed: event => {
                 if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
-                    root.showMenu = false;
+                    dropdown.visible = false;
+                    grab.active = false;
                 } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
                     currentFocusIndex = Math.min(currentFocusIndex + 1, buttons.children.length - 1);
                 } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
