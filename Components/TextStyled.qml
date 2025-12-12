@@ -6,6 +6,7 @@ import qs.Constants
 Text {
     color: Colors.fg
     elide: Text.ElideRight
+    antialiasing: true
     font {
         pixelSize: Styles.textMd
         family: "RobotoMono Nerd Font Propo"
