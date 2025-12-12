@@ -8,7 +8,6 @@ Item {
 
     implicitWidth: clockText.implicitWidth
     implicitHeight: clockText.implicitHeight
-
     property string text
     property int pixelSize: Styles.textMd
     property string primaryColor: Colors.fg
@@ -19,6 +18,9 @@ Item {
     TextStyled {
         z: 2
         antialiasing: true
+        anchors.left: parent.left
+        anchors.right: parent.right
+        y: root.offset / 2 * -1
         font.pixelSize: root.pixelSize
         elide: root.elide
         color: root.primaryColor
@@ -28,6 +30,9 @@ Item {
     TextStyled {
         id: clockText
         z: 1
+        y: root.offset / 2
+        anchors.left: parent.left
+        anchors.right: parent.right
         elide: root.elide
         antialiasing: true
         font.pixelSize: root.pixelSize
