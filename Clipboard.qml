@@ -22,8 +22,7 @@ PanelWindow {
     implicitHeight: 900
     color: "transparent"
 
-    property var clipboard: []
-    property string currentClipboard: ""
+    property var storedClipboard: [null, null, null, null, null, null, null, null, null, null] // Storage for keys 1-0
 
     GlobalShortcut {
         name: 'clipboard'
@@ -51,6 +50,39 @@ PanelWindow {
         property int selectedEntryIndex: 0
 
         Keys.onPressed: event => {
+            // Handle numeric keys for storage/paste
+            const numericKeys = [Qt.Key_1, Qt.Key_2, Qt.Key_3, Qt.Key_4, Qt.Key_5, Qt.Key_6, Qt.Key_7, Qt.Key_8, Qt.Key_9, Qt.Key_0];
+            const keyIndex = numericKeys.indexOf(event.key);
+
+            if (keyIndex !== -1) {
+                const storageIndex = keyIndex; // Keys 1-9,0 map to indices 0-9
+
+                if (event.modifiers & Qt.AltModifier) {
+                    // Alt + Number: Store current selected item's text
+                    if (clipboardItems.currentIndex >= 0 && clipboardItems.currentIndex < clipboardItems.count && clipboardItems.currentItem) {
+                        var newStored = root.storedClipboard.slice();
+                        newStored[storageIndex] = clipboardItems.currentItem.itemText;
+                        root.storedClipboard = newStored;
+                        Quickshell.execDetached(['bash', '-c', 'notify-send -a System "Stored to slot ' + (keyIndex === 9 ? 0 : keyIndex + 1) + '"']);
+                    }
+                    event.accepted = true;
+                    return;
+                } else {
+                    if (root.storedClipboard[storageIndex] !== null && root.storedClipboard[storageIndex] !== "") {
+                        // Use printf %s to safely handle special characters, escape single quotes for shell
+                        const text = root.storedClipboard[storageIndex].replace(/'/g, "'\\''");
+                        Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
+                        Quickshell.execDetached(['bash', '-c', 'notify-send -a System "Pasted from slot ' + (keyIndex === 9 ? 0 : keyIndex + 1) + '"']);
+                        root.visible = false;
+                        grab.active = false;
+                    } else {
+                        Quickshell.execDetached(['bash', '-c', 'notify-send -a System "Slot ' + (keyIndex === 9 ? 0 : keyIndex + 1) + ' is empty"']);
+                    }
+                    event.accepted = true;
+                    return;
+                }
+            }
+
             if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                 root.visible = false;
                 grab.active = false;
@@ -72,6 +104,38 @@ PanelWindow {
         ColumnLayout {
             id: mainContent
             anchors.fill: parent
+
+            // Storage slots indicator
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 50
+                Layout.margins: Styles.marginSm
+                Layout.bottomMargin: 0
+                color: Colors.bg0
+                radius: Styles.radiusSm
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginSm
+                    // spacing: Styles.marginSm
+
+                    Repeater {
+                        model: 10
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            radius: Styles.radiusSm
+                            color: root.storedClipboard[index] !== null && root.storedClipboard[index] !== "" ? Colors.green : Colors.bgDim
+                            TextStyled {
+                                anchors.centerIn: parent
+                                text: index === 9 ? "0" : String(index + 1)
+                                color: root.storedClipboard[index] !== null && root.storedClipboard[index] !== "" ? Colors.bgDim : Colors.fg
+                                font.bold: root.storedClipboard[index] !== null && root.storedClipboard[index] !== ""
+                            }
+                        }
+                    }
+                }
+            }
 
             ClippingRectangle {
                 id: rect
