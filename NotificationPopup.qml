@@ -11,8 +11,8 @@ PanelWindow {
     id: root
 
     anchors.top: true
-    width: notificationList.implicitWidth
-    height: notificationList.implicitHeight + Styles.marginSm * 2
+    implicitWidth: notificationList.implicitWidth
+    implicitHeight: notificationList.implicitHeight + Styles.marginSm * 2
 
     exclusionMode: ExclusionMode.Normal
     color: Colors.transparent
@@ -44,7 +44,7 @@ PanelWindow {
         required property Notification notification
 
         Timer {
-            interval: 5000
+            interval: 4000
             running: true
             onTriggered: notificationBase.destroy()
         }
@@ -78,6 +78,7 @@ PanelWindow {
                 Layout.fillHeight: true
                 visible: notification.body !== ''
                 text: {
+                    // TODO Extract at somepoint.
                     // Ai code to move text over for indented blocks of copied text.
                     let lines = notification.body.split('\n');
                     let minIndent = Math.min(...lines.filter(line => line.trim().length > 0).map(line => line.match(/^\s*/)[0].length));
