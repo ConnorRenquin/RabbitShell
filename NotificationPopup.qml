@@ -62,25 +62,25 @@ PanelWindow {
                 Layout.fillHeight: true
                 font.pixelSize: 25
                 color: Colors.orange
-                text: notification.appName
+                text: notification?.appName
             }
 
             TextStyled {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 color: Colors.yellow
-                text: notification.summary
+                text: notification?.summary
                 wrapMode: Text.WordWrap
             }
 
             TextStyled {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                visible: notification.body !== ''
+                visible: notification?.body !== ''
                 text: {
                     // TODO Extract at somepoint.
                     // Ai code to move text over for indented blocks of copied text.
-                    let lines = notification.body.split('\n');
+                    let lines = notification?.body.split('\n');
                     let minIndent = Math.min(...lines.filter(line => line.trim().length > 0).map(line => line.match(/^\s*/)[0].length));
                     return lines.map(line => line.slice(minIndent)).join('\n');
                 }
