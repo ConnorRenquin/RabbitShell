@@ -221,12 +221,15 @@ PanelWindow {
 
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: clipboardText.implicitHeight + Styles.marginSm * 2
+                                Layout.maximumHeight: 300
                                 Layout.margins: Styles.marginSm
 
                                 TextStyled {
                                     id: clipboardText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                     width: clipboardItemScreen.width - Styles.marginSm * 2
+                                    anchors.fill: parent
+                                    anchors.margins: Styles.marginSm
                                     anchors.centerIn: parent
                                     color: Colors.blue
                                     text: {
