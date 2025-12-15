@@ -1,6 +1,8 @@
 import Quickshell
 import Quickshell.Services.Notifications
+
 import QtQuick
+import QtQuick.Layouts
 
 import qs.Components
 import qs.Constants
@@ -8,12 +10,10 @@ import qs.Constants
 PanelWindow {
     id: root
 
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
-    }
+    anchors.top: true
+    width: notificationList.implicitWidth
+    height: notificationList.implicitHeight + Styles.marginSm * 2
+
     exclusionMode: ExclusionMode.Normal
     color: Colors.transparent
     mask: Region {
@@ -30,62 +30,65 @@ PanelWindow {
         });
     }
 
-    property Component notificationPopupComponent: Rectangle {
+    property Component notificationPopupComponent: ButtonStyled {
         id: notificationBase
-        required property Notification notification
-        width: parent.width
-        height: notificationContent.height + notificationContent.anchors.margins * 2
+
+        implicitHeight: Math.min(notificationContent.implicitHeight + notificationContent.anchors.margins * 2, 300)
+        implicitWidth: parent.width
 
         radius: 5
-        color: Colors.bgDim
+
+        clip: true
+        onClicked: notificationBase.destroy()
+
+        required property Notification notification
 
         Timer {
-            interval: 2000
+            interval: 5000
             running: true
-            onTriggered: {
-                notificationBase.destroy();
-            }
+            onTriggered: notificationBase.destroy()
         }
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                notificationBase.destroy();
-            }
-        }
-
-        Column {
+        ColumnLayout {
             id: notificationContent
 
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                margins: 10
-            }
-            spacing: 5
+            height: parent.height
+            anchors.fill: parent
+            anchors.margins: Styles.marginSm
+            spacing: Styles.marginSm
 
             TextStyled {
-                width: parent.width
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 font.pixelSize: 25
+                color: Colors.orange
                 text: notification.appName
             }
 
             TextStyled {
-                width: parent.width
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: Colors.yellow
                 text: notification.summary
                 wrapMode: Text.WordWrap
             }
 
             TextStyled {
-                width: parent.width
-                text: notification.body
-                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                visible: notification.body !== ''
+                text: {
+                    // Ai code to move text over for indented blocks of copied text.
+                    let lines = notification.body.split('\n');
+                    let minIndent = Math.min(...lines.filter(line => line.trim().length > 0).map(line => line.match(/^\s*/)[0].length));
+                    return lines.map(line => line.slice(minIndent)).join('\n');
+                }
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             }
         }
     }
 
-    Column {
+    ColumnLayout {
         id: notificationList
         spacing: 20
         anchors {
