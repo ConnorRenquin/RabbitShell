@@ -22,18 +22,30 @@ PanelWindow {
     implicitHeight: 900
     color: "transparent"
 
-    property var storedClipboard: [null, null, null, null, null, null, null, null, null, null] // Storage for keys 1-0
+    onStoredClipboardChanged: {
+        if (persistantData.loaded)
+            persistantData.setText(JSON.stringify(storedClipboard));
+    }
+
+    property var storedClipboard: [null, null, null, null, null, null, null, null, null, null]
 
     function notify(summary, body = '') {
         var test = Quickshell.execDetached(['notify-send', '-a', 'Clipboard', summary, body]);
+    }
+
+    FileView {
+        id: persistantData
+        path: Qt.resolvedUrl('./.data/clipboard.json')
+        blockLoading: true
+        onLoaded: storedClipboard = JSON.parse(persistantData.text())
     }
 
     GlobalShortcut {
         name: 'clipboard'
         onPressed: {
             root.visible = !root.visible;
-            grab.active = true;
-            base.focus = true;
+            grab.active = root.visible;
+            base.focus = root.visible;
         }
     }
 
