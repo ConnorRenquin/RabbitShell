@@ -76,8 +76,8 @@ PanelWindow {
                 keyIndex = 9;
             }
 
-            const altHeld = event.modifiers & Qt.AltModifier;
-            if (altHeld) {
+            const ctrlHeld = event.modifiers & Qt.ControlModifier;
+            if (ctrlHeld) {
                 if (keyIndex !== -1 && clipboardItems.currentItem) {
                     notify('Storing to slot ' + (event.key - Qt.Key_0) + '...', clipboardItems.currentItem.itemText);
                     const newStored = root.storedClipboard.slice();
