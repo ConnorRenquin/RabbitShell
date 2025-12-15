@@ -68,36 +68,42 @@ PanelWindow {
 
         property int selectedEntryIndex: 0
 
-        Keys.onPressed: event => {
-            // Handle numeric keys for storage/paste
-            const numericKeys = [Qt.Key_1, Qt.Key_2, Qt.Key_3, Qt.Key_4, Qt.Key_5, Qt.Key_6, Qt.Key_7, Qt.Key_8, Qt.Key_9, Qt.Key_0];
-            const keyIndex = numericKeys.indexOf(event.key);
+        function slotController(event) {
+            let keyIndex = -1;
+            if (event.key >= Qt.Key_1 && event.key <= Qt.Key_9) {
+                keyIndex = event.key - Qt.Key_1;
+            } else if (event.key === Qt.Key_0) {
+                keyIndex = 9;
+            }
 
-            if (keyIndex !== -1) {
-                if (event.modifiers & Qt.AltModifier) {
-                    // Alt + Number: Store current selected item's text
-                    if (clipboardItems.currentIndex >= 0 && clipboardItems.currentIndex < clipboardItems.count && clipboardItems.currentItem) {
-                        var newStored = root.storedClipboard.slice();
-                        newStored[keyIndex] = clipboardItems.currentItem.itemText;
-                        root.storedClipboard = newStored;
-                        notify('Stored to slot', clipboardItems.currentItem.itemText);
-                    }
-                    event.accepted = true;
-                    return;
-                } else {
-                    if (root.storedClipboard[keyIndex] !== null && root.storedClipboard[keyIndex] !== "") {
-                        const text = root.storedClipboard[keyIndex].replace(/'/g, "'\\''");
-                        Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-                        root.visible = false;
-                        grab.active = false;
-                        notify('Copied', text);
-                    } else {
-                        notify('Slot Empty');
-                    }
-                    event.accepted = true;
+            const altHeld = event.modifiers & Qt.AltModifier;
+            if (altHeld) {
+                if (keyIndex !== -1 && clipboardItems.currentItem) {
+                    notify('Storing to slot ' + (event.key - Qt.Key_0) + '...', clipboardItems.currentItem.itemText);
+                    const newStored = root.storedClipboard.slice();
+                    newStored[keyIndex] = clipboardItems.currentItem.itemText;
+                    root.storedClipboard = newStored;
+                } else if (event.key === Qt.Key_C) {
+                    notify('Slots Cleared');
+                    root.storedClipboard = [];
+                }
+            } else if (keyIndex !== -1) {
+                const storedText = root.storedClipboard[keyIndex];
+                if (!storedText) {
+                    notify('Slot Empty');
                     return;
                 }
+                const text = storedText.replace(/'/g, "'\\''");
+                Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
+                root.visible = false;
+                grab.active = false;
+                notify('Copied', text);
             }
+        }
+
+        Keys.onPressed: event => {
+            // Handle numeric keys for storage/paste
+            slotController(event);
 
             if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                 root.visible = false;
@@ -140,12 +146,12 @@ PanelWindow {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             radius: Styles.radiusSm
-                            color: root.storedClipboard[index] !== null && root.storedClipboard[index] !== "" ? Colors.green : Colors.bgDim
+                            color: root.storedClipboard[index] && root.storedClipboard[index] !== "" ? Colors.green : Colors.bgDim
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: index === 9 ? "0" : String(index + 1)
-                                color: root.storedClipboard[index] !== null && root.storedClipboard[index] !== "" ? Colors.bgDim : Colors.fg
-                                font.bold: root.storedClipboard[index] !== null && root.storedClipboard[index] !== ""
+                                color: root.storedClipboard[index] && root.storedClipboard[index] !== "" ? Colors.bgDim : Colors.fg
+                                font.bold: root?.storedClipboard[index] !== undefined && root.storedClipboard[index] !== ""
                             }
                         }
                     }
