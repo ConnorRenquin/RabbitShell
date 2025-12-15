@@ -27,9 +27,10 @@ PanelWindow {
             persistantData.setText(JSON.stringify(storedClipboard));
     }
 
-    property var storedClipboard: [null, null, null, null, null, null, null, null, null, null]
+    property var storedClipboard: []
 
-    function notify(summary, body = '') {
+    function notify(summary = '', body = '') {
+        console.log(summary + body);
         var test = Quickshell.execDetached(['notify-send', '-a', 'Clipboard', summary, body]);
     }
 
@@ -38,6 +39,8 @@ PanelWindow {
         path: Qt.resolvedUrl('./.data/clipboard.json')
         blockLoading: true
         onLoaded: storedClipboard = JSON.parse(persistantData.text())
+        onLoadFailed: Quickshell.execDetached(['touch', '.data/clipboard.json']) & persistantData.reload()
+        onSaveFailed: persistantData.reload()
     }
 
     GlobalShortcut {
