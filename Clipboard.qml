@@ -24,6 +24,10 @@ PanelWindow {
 
     property var storedClipboard: [null, null, null, null, null, null, null, null, null, null] // Storage for keys 1-0
 
+    function notify(summary, body = '') {
+        var test = Quickshell.execDetached(['notify-send', '-a', 'Clipboard', summary, body]);
+    }
+
     GlobalShortcut {
         name: 'clipboard'
         onPressed: {
@@ -55,28 +59,25 @@ PanelWindow {
             const keyIndex = numericKeys.indexOf(event.key);
 
             if (keyIndex !== -1) {
-                const storageIndex = keyIndex; // Keys 1-9,0 map to indices 0-9
-
                 if (event.modifiers & Qt.AltModifier) {
                     // Alt + Number: Store current selected item's text
                     if (clipboardItems.currentIndex >= 0 && clipboardItems.currentIndex < clipboardItems.count && clipboardItems.currentItem) {
                         var newStored = root.storedClipboard.slice();
-                        newStored[storageIndex] = clipboardItems.currentItem.itemText;
+                        newStored[keyIndex] = clipboardItems.currentItem.itemText;
                         root.storedClipboard = newStored;
-                        Quickshell.execDetached(['bash', '-c', 'notify-send -a System "Stored to slot ' + (keyIndex === 9 ? 0 : keyIndex + 1) + '"']);
+                        notify('Stored to slot', clipboardItems.currentItem.itemText);
                     }
                     event.accepted = true;
                     return;
                 } else {
-                    if (root.storedClipboard[storageIndex] !== null && root.storedClipboard[storageIndex] !== "") {
-                        // Use printf %s to safely handle special characters, escape single quotes for shell
-                        const text = root.storedClipboard[storageIndex].replace(/'/g, "'\\''");
+                    if (root.storedClipboard[keyIndex] !== null && root.storedClipboard[keyIndex] !== "") {
+                        const text = root.storedClipboard[keyIndex].replace(/'/g, "'\\''");
                         Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-                        Quickshell.execDetached(['bash', '-c', 'notify-send -a System "Pasted from slot ' + (keyIndex === 9 ? 0 : keyIndex + 1) + '"']);
                         root.visible = false;
                         grab.active = false;
+                        notify('Copied', text);
                     } else {
-                        Quickshell.execDetached(['bash', '-c', 'notify-send -a System "Slot ' + (keyIndex === 9 ? 0 : keyIndex + 1) + ' is empty"']);
+                        notify('Slot Empty');
                     }
                     event.accepted = true;
                     return;
@@ -105,8 +106,8 @@ PanelWindow {
             id: mainContent
             anchors.fill: parent
 
-            // Storage slots indicator
             Rectangle {
+                id: storageSlots
                 Layout.fillWidth: true
                 Layout.preferredHeight: 50
                 Layout.margins: Styles.marginSm
@@ -117,7 +118,6 @@ PanelWindow {
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
-                    // spacing: Styles.marginSm
 
                     Repeater {
                         model: 10
@@ -149,7 +149,7 @@ PanelWindow {
                     id: clipboardItems
                     anchors.fill: parent
                     spacing: Styles.marginSm
-                    model: 100
+                    model: 200
                     delegate: ButtonStyled {
                         id: button
 
@@ -175,6 +175,7 @@ PanelWindow {
 
                         ColumnLayout {
                             id: clipboardItemContent
+
                             anchors {
                                 top: parent.top
                                 left: parent.left
@@ -194,7 +195,7 @@ PanelWindow {
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                     color: Colors.bgDim
                                     anchors.centerIn: parent
-                                    text: String(index) // Equation is to flip from 0 - N to N - 0
+                                    text: index === 0 ? "Now" : clipboardItems.model - index + 1 // Equation is to flip from 0 - N to N - 0
                                 }
                             }
 
@@ -207,7 +208,6 @@ PanelWindow {
                                 Layout.preferredHeight: clipboardText.implicitHeight + Styles.marginSm * 2
                                 Layout.margins: Styles.marginSm
 
-                                // TODO Make scrolling text?
                                 TextStyled {
                                     id: clipboardText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
@@ -227,8 +227,7 @@ PanelWindow {
                         onClicked: {
                             // Assign selection to current clipboard
                             Quickshell.execDetached(['bash', '-c', 'clipvault get --index ' + modelData + ' | wl-copy']);
-                            // Notify
-                            Quickshell.execDetached(['bash', '-c', 'notify-send -a System "Clipboard Copied"']);
+                            notify('Copied Item');
                             root.visible = false;
                         }
                     }
