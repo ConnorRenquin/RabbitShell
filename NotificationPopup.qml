@@ -35,11 +35,15 @@ Variants {
         Component.onCompleted: {
             NotificationService.newNotification.connect(addNotification);
         }
-        function addNotification(notification: Notification) {
+
+        function addNotification(notification) {
+            if (!notification)
+                return;
             notificationPopupComponent.createObject(notificationList, {
                 notification: notification
             });
         }
+
         property Component notificationPopupComponent: ButtonStyled {
             id: notificationBase
 
@@ -70,18 +74,18 @@ Variants {
                 NotificationText {
                     font.pixelSize: Styles.textLg
                     color: Colors.orange
-                    inputText: notification?.appName
+                    inputText: notification.appName
                 }
 
                 NotificationText {
                     color: Colors.yellow
-                    inputText: notification?.summary
+                    inputText: notification.summary
                     wrapMode: Text.WordWrap
                 }
 
                 NotificationText {
                     font.pixelSize: Styles.textSm
-                    inputText: Utils.removeIndentation(notification?.body)
+                    inputText: Utils.removeIndentation(notification.body)
                     wrapMode: Text.NoWrap
                 }
             }
