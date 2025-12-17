@@ -8,6 +8,14 @@ import qs.Components
 import qs.Constants
 
 Variants {
+    component NotificationText: TextStyled {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        visible: inputText !== ''
+        property string inputText: ''
+        text: inputText
+    }
+
     model: Quickshell.screens
     delegate: PanelWindow {
         id: root
@@ -27,13 +35,11 @@ Variants {
         Component.onCompleted: {
             NotificationService.newNotification.connect(addNotification);
         }
-
         function addNotification(notification: Notification) {
             notificationPopupComponent.createObject(notificationList, {
                 notification: notification
             });
         }
-
         property Component notificationPopupComponent: ButtonStyled {
             id: notificationBase
 
@@ -61,34 +67,22 @@ Variants {
                 anchors.margins: Styles.marginSm
                 spacing: Styles.marginSm
 
-                TextStyled {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    font.pixelSize: 25
+                NotificationText {
+                    font.pixelSize: Styles.textLg
                     color: Colors.orange
-                    text: notification?.appName
+                    inputText: notification?.appName
                 }
 
-                TextStyled {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+                NotificationText {
                     color: Colors.yellow
-                    text: notification?.summary
+                    inputText: notification?.summary
                     wrapMode: Text.WordWrap
                 }
 
-                TextStyled {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    visible: notification?.body !== ''
-                    text: {
-                        // TODO Extract at somepoint.
-                        // Ai code to move text over for indented blocks of copied text.
-                        let lines = notification?.body.split('\n');
-                        let minIndent = Math.min(...lines.filter(line => line.trim().length > 0).map(line => line.match(/^\s*/)[0].length));
-                        return lines.map(line => line.slice(minIndent)).join('\n');
-                    }
-                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                NotificationText {
+                    font.pixelSize: Styles.textSm
+                    inputText: Utils.removeIndentation(notification?.body)
+                    wrapMode: Text.NoWrap
                 }
             }
         }
@@ -99,7 +93,7 @@ Variants {
             anchors {
                 top: parent.top
                 horizontalCenter: parent.horizontalCenter
-                margins: 10
+                margins: Styles.marginSm
             }
             width: 400
         }
