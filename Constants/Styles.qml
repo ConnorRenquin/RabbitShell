@@ -11,5 +11,7 @@ QtObject {
     readonly property int radiusSm: 5
     readonly property int radiusMd: 10
     readonly property int radiusLg: 15
+    readonly property int textLg: 26
     readonly property int textMd: 20
+    readonly property int textSm: 18
 }
