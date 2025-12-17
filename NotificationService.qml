@@ -11,11 +11,6 @@ Singleton {
         imageSupported: true
         actionsSupported: true
         actionIconsSupported: true
-
-        onNotification: notification => {
-            console.log("Component");
-            console.log(notification.summary);
-            root.newNotification(notification);
-        }
+        onNotification: notification => root.newNotification(notification)
     }
 }
