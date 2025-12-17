@@ -1,6 +1,8 @@
 import Quickshell
-import QtQuick
 import Quickshell.Hyprland
+
+import QtQuick
+import QtQuick.Layouts
 
 import qs.Components
 import qs.Constants
@@ -13,11 +15,14 @@ ButtonWidget {
         name: "powermenu"
         onPressed: {
             dropdown.visible = !dropdown.visible;
-            grab.active = true;
+            grab.active = dropdown.visible;
         }
     }
 
-    onClicked: dropdown.visible = !dropdown.visible
+    onClicked: {
+        dropdown.visible = !dropdown.visible;
+        grab.active = dropdown.visible;
+    }
 
     property int currentFocusIndex: 0
 
@@ -35,17 +40,17 @@ ButtonWidget {
     component PowerMenuButton: ButtonStyled {
         id: menuButton
 
-        radius: Styles.radius0
-        height: text.implicitHeight + 20
+        radius: Styles.radiusSm
+        implicitHeight: text.implicitHeight + Styles.marginMd
         implicitWidth: parent.width
-
-        property string label: ""
 
         defaultColor: Colors.bg0
         hoverColor: Colors.bgGreen
         focusedColor: Colors.orange
 
         isFocused: index === currentFocusIndex
+
+        property string label: ""
 
         TextStyled {
             id: text
