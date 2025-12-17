@@ -85,7 +85,7 @@ PanelWindow {
 
             if (ctrlHeld) {
                 if (clipboardItems.currentItem) {
-                    Utils.notify('Storing to slot ' + (event.key - Qt.Key_0) + '...', clipboardItems.currentItem.itemText);
+                    Utils.notify('Storing to slot ' + (event.key - Qt.Key_0), clipboardItems.currentItem.itemText);
                     const newStored = root.storedClipboard.slice();
                     newStored[keyIndex] = clipboardItems.currentItem.itemText;
                     root.storedClipboard = newStored;
