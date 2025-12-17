@@ -18,6 +18,6 @@ BarWidget {
     TextStyled {
         id: text
         anchors.centerIn: parent
-        text: "󰁹 " + (UPower.displayDevice.percentage * 100) + "%"
+        text: "󰁹 " + Math.round(UPower.displayDevice.percentage * 100) + "%"
     }
 }
