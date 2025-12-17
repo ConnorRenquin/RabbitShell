@@ -8,7 +8,7 @@ import qs.Components
 
 BarWidget {
     id: root
-    visible: UPower.displayDevice.percentage < 0.95
+    visible: UPower.displayDevice.percentage < 0.95 && UPower.displayDevice.isLaptopBattery
     implicitWidth: text.implicitWidth + Styles.marginSm * 2
 
     readonly property var dischargingGlyphs: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
