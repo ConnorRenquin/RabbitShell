@@ -9,6 +9,7 @@ import QtQuick.Layouts
 
 import qs.Constants
 import qs.Components
+import qs.Services
 
 PanelWindow {
     id: root
@@ -29,9 +30,9 @@ PanelWindow {
 
     property var storedClipboard: []
 
-    function notify(summary = '', body = '') {
-        console.log(summary + body);
-        var test = Quickshell.execDetached(['notify-send', '-a', 'Clipboard', summary, body]);
+    function exit() {
+        root.visible = false;
+        grab.active = false;
     }
 
     FileView {
@@ -76,28 +77,39 @@ PanelWindow {
                 keyIndex = 9;
             }
 
+            if (keyIndex === -1)
+                return;
+
             const ctrlHeld = event.modifiers & Qt.ControlModifier;
+            const altHeld = event.modifiers & Qt.AltModifier;
+
             if (ctrlHeld) {
-                if (keyIndex !== -1 && clipboardItems.currentItem) {
-                    notify('Storing to slot ' + (event.key - Qt.Key_0) + '...', clipboardItems.currentItem.itemText);
+                if (clipboardItems.currentItem) {
+                    Utils.notify('Storing to slot ' + (event.key - Qt.Key_0) + '...', clipboardItems.currentItem.itemText);
                     const newStored = root.storedClipboard.slice();
                     newStored[keyIndex] = clipboardItems.currentItem.itemText;
                     root.storedClipboard = newStored;
                 } else if (event.key === Qt.Key_C) {
-                    notify('Slots Cleared');
+                    Utils.notify('Slots Cleared');
                     root.storedClipboard = [];
                 }
-            } else if (keyIndex !== -1) {
+            } else if (altHeld) {
                 const storedText = root.storedClipboard[keyIndex];
                 if (!storedText) {
-                    notify('Slot Empty');
+                    Utils.notify('Slot Empty');
+                    return;
+                }
+                Utils.notify('', storedText);
+            } else {
+                const storedText = root.storedClipboard[keyIndex];
+                if (!storedText) {
+                    Utils.notify('Slot Empty');
                     return;
                 }
                 const text = storedText.replace(/'/g, "'\\''");
                 Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-                root.visible = false;
-                grab.active = false;
-                notify('Copied', text);
+                Utils.notify('Copied');
+                root.exit();
             }
         }
 
@@ -106,8 +118,7 @@ PanelWindow {
             slotController(event);
 
             if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
-                root.visible = false;
-                grab.active = false;
+                root.exit();
                 return;
             } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
                 clipboardItems.incrementCurrentIndex();
@@ -238,12 +249,7 @@ PanelWindow {
                                     anchors.margins: Styles.marginSm
                                     anchors.centerIn: parent
                                     color: Colors.blue
-                                    text: {
-                                        // Ai code to move text over for indented blocks of copied text.
-                                        let lines = button.itemText.split('\n');
-                                        let minIndent = Math.min(...lines.filter(line => line.trim().length > 0).map(line => line.match(/^\s*/)[0].length));
-                                        return lines.map(line => line.slice(minIndent)).join('\n');
-                                    }
+                                    text: Utils.removeIndentation(button.itemText)
                                 }
                             }
                         }
@@ -251,8 +257,8 @@ PanelWindow {
                         onClicked: {
                             // Assign selection to current clipboard
                             Quickshell.execDetached(['bash', '-c', 'clipvault get --index ' + modelData + ' | wl-copy']);
-                            notify('Copied Item');
-                            root.visible = false;
+                            Utils.notify('Copied Item');
+                            root.exit();
                         }
                     }
                 }
