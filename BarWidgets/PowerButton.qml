@@ -54,9 +54,10 @@ ButtonWidget {
 
         TextStyled {
             id: text
-            anchors.centerIn: parent
-            text: isFocused || containsMouse ? "> " + menuButton.label : menuButton.label
-            color: Colors.yellow
+            anchors.fill: parent
+            anchors.margins: Styles.marginSm
+            text: isFocused || containsMouse ? menuButton.label : menuButton.label
+            color: menuButton.isFocused ? Colors.bgDim : Colors.fg
         }
     }
 
@@ -103,7 +104,7 @@ ButtonWidget {
                 }
             }
 
-            Column {
+            ColumnLayout {
                 id: buttons
 
                 spacing: Styles.marginSm
