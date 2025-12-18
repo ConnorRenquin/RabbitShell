@@ -11,9 +11,6 @@ Variants {
     component NotificationText: TextStyled {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        visible: inputText !== ''
-        property string inputText: ''
-        text: inputText
     }
 
     model: Quickshell.screens
@@ -74,18 +71,21 @@ Variants {
                 NotificationText {
                     font.pixelSize: Styles.textLg
                     color: Colors.orange
-                    inputText: notification.appName
+                    visible: text
+                    text: notification?.appName ?? text
                 }
 
                 NotificationText {
                     color: Colors.yellow
-                    inputText: notification.summary
+                    visible: text
+                    text: notification?.summary ?? text
                     wrapMode: Text.WordWrap
                 }
 
                 NotificationText {
                     font.pixelSize: Styles.textSm
-                    inputText: Utils.removeIndentation(notification.body)
+                    visible: text
+                    text: Utils.removeIndentation(notification?.body) ?? text
                     wrapMode: Text.NoWrap
                 }
             }
