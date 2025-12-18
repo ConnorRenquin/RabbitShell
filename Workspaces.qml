@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Hyprland
@@ -71,9 +72,10 @@ Loader {
                 cellWidth: 200
 
                 model: root.workspaces
-
                 delegate: Item {
                     id: wrapper
+                    required property HyprlandWorkspace modelData
+                    required property int index
                     width: workspaceGrid.cellWidth
                     height: workspaceGrid.cellHeight
                     ButtonStyled {
@@ -82,10 +84,10 @@ Loader {
                         width: workspaceGrid.cellWidth - Styles.marginSm
                         height: workspaceGrid.cellHeight - Styles.marginSm
 
-                        radius: modelData.focused ? 15 : Styles.radiusSm // 15 is about the max you can go, not sure why
+                        radius: wrapper.modelData.focused ? 15 : Styles.radiusSm // 15 is about the max you can go, not sure why
                         clip: true
 
-                        isFocused: modelData.focused
+                        isFocused: wrapper.modelData.focused
 
                         anchors.centerIn: parent
 
@@ -100,18 +102,19 @@ Loader {
                             spacing: Styles.marginSm
                             DoubleText {
                                 id: text
-                                text: modelData.focused ? "󰜋 " + key : "󰜌 " + key
+                                text: wrapper.modelData.focused ? "󰜋 " + key : "󰜌 " + key
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 pixelSize: 26
                                 offset: 3
                                 elide: Text.ElideNone
-                                property string key: root.keyMap[index].toUpperCase()
+                                property string key: root.keyMap[wrapper.index].toUpperCase()
                             }
                             Row {
                                 id: iconRow
                                 Repeater {
-                                    model: modelData.toplevels.values.slice(0, 5) // Setting the max icons here so it doesn't overun.
+                                    model: wrapper.modelData.toplevels.values.slice(0, 5) // Setting the max icons here so it doesn't overun.
                                     delegate: IconImage {
+                                        required property var modelData
                                         height: 32
                                         width: 32
                                         source: {
@@ -124,7 +127,7 @@ Loader {
                         }
 
                         onClicked: {
-                            modelData.activate();
+                            wrapper.modelData.activate();
                             loader.active = false;
                         }
                     }

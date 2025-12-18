@@ -2,8 +2,6 @@ import Quickshell
 import QtQuick
 
 import qs.BarWidgets
-import qs.Components
-import qs.Constants
 
 Variants {
     model: Quickshell.screens
@@ -34,7 +32,7 @@ Variants {
         BarRow {
             anchors.left: parent.left
             WorkspacesWidget {
-                monitorName: modelData.name
+                monitorName: root.modelData.name
             }
             WindowTitleWidget {}
         }

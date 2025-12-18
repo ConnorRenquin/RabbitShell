@@ -1,10 +1,11 @@
+pragma ComponentBehavior: Bound
+
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Io
 import Quickshell.Hyprland
 
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 import qs.Constants
@@ -39,7 +40,7 @@ PanelWindow {
         id: persistantData
         path: Qt.resolvedUrl('./.data/clipboard.json')
         blockLoading: true
-        onLoaded: storedClipboard = JSON.parse(persistantData.text())
+        onLoaded: root.storedClipboard = JSON.parse(persistantData.text())
         onLoadFailed: Quickshell.execDetached(['touch', '.data/clipboard.json']) & persistantData.reload()
         onSaveFailed: persistantData.reload()
     }
@@ -155,16 +156,19 @@ PanelWindow {
 
                     Repeater {
                         model: 10
-                        Rectangle {
+                        delegate: Rectangle {
+
+                            required property int index
+
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             radius: Styles.radiusSm
                             color: root.storedClipboard[index] && root.storedClipboard[index] !== "" ? Colors.green : Colors.bgDim
                             TextStyled {
                                 anchors.centerIn: parent
-                                text: index === 9 ? "0" : String(index + 1)
-                                color: root.storedClipboard[index] && root.storedClipboard[index] !== "" ? Colors.bgDim : Colors.fg
-                                font.bold: root?.storedClipboard[index] !== undefined && root.storedClipboard[index] !== ""
+                                text: parent.index === 9 ? "0" : String(parent.index + 1)
+                                color: root.storedClipboard[parent.index] && root.storedClipboard[parent.index] !== "" ? Colors.bgDim : Colors.fg
+                                font.bold: root?.storedClipboard[parent.index] !== undefined && root.storedClipboard[parent.index] !== ""
                             }
                         }
                     }
@@ -187,6 +191,9 @@ PanelWindow {
                     delegate: ButtonStyled {
                         id: button
 
+                        required property var modelData
+                        required property int index
+
                         implicitHeight: clipboardItemContent.implicitHeight
                         implicitWidth: rect.width
                         radius: Styles.radiusMd
@@ -201,7 +208,7 @@ PanelWindow {
 
                         Process {
                             running: true
-                            command: ["bash", "-c", "clipvault get --index " + modelData]
+                            command: ["bash", "-c", "clipvault get --index " + button.modelData]
                             stdout: StdioCollector {
                                 onStreamFinished: button.itemText = this.text
                             }
@@ -216,7 +223,7 @@ PanelWindow {
                                 right: parent.right
                             }
 
-                            property string clipboardValue: modelData
+                            property string clipboardValue: button.modelData
 
                             Rectangle {
                                 id: clipboardItemKey
@@ -229,7 +236,7 @@ PanelWindow {
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                     color: Colors.bgDim
                                     anchors.centerIn: parent
-                                    text: index === 0 ? "Now" : index
+                                    text: button.index === 0 ? "Now" : button.index
                                 }
                             }
 

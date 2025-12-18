@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
@@ -20,8 +21,8 @@ Rectangle {
         id: buttonLocal
 
         property string iconText: ""
-        property color iconColor: Colors.bgDim
-        property color backgroundColor: Colors.green
+        property string iconColor: Colors.bgDim
+        property string backgroundColor: Colors.green
 
         width: iconTextItem.width + Styles.marginSm * 2
         height: root.height - Styles.marginSm
@@ -31,7 +32,7 @@ Rectangle {
 
         TextStyled {
             id: iconTextItem
-            color: iconColor
+            color: buttonLocal.iconColor
             anchors.centerIn: parent
             text: buttonLocal.iconText
         }

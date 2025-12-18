@@ -1,6 +1,6 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Widgets
-import Quickshell.Wayland
 import Quickshell.Hyprland
 
 import QtQuick
@@ -43,7 +43,7 @@ Loader {
         Connections {
             target: Hyprland.toplevels
             function onValuesChanged() {
-                updateToplevels();
+                root.updateToplevels();
             }
         }
 
@@ -137,7 +137,7 @@ Loader {
                                 id: appIcon
                                 implicitHeight: 60
                                 implicitWidth: 60
-                                source: Quickshell.iconPath(DesktopEntries.byId(modelData.wayland?.appId)?.icon)
+                                source: Quickshell.iconPath(DesktopEntries.byId(windowCard.modelData.wayland?.appId)?.icon)
                             }
 
                             ColumnLayout {

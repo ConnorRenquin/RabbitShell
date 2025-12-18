@@ -1,4 +1,3 @@
-import Quickshell
 import Quickshell.Services.UPower
 
 import QtQuick
@@ -22,6 +21,6 @@ BarWidget {
     TextStyled {
         id: text
         anchors.centerIn: parent
-        text: getBatteryGlyph(UPower.displayDevice.percentage, !UPower.onBattery) + " " + Math.round(UPower.displayDevice.percentage * 100) + "%"
+        text: root.getBatteryGlyph(UPower.displayDevice.percentage, !UPower.onBattery) + " " + Math.round(UPower.displayDevice.percentage * 100) + "%"
     }
 }

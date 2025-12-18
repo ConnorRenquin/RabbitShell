@@ -1,10 +1,12 @@
-import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
+// pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Services.Pipewire
 import Quickshell.Widgets
 import Quickshell.Hyprland
+
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
 import qs.Components
 import qs.Constants
@@ -91,6 +93,8 @@ Loader {
                     model: linkTracker.linkGroups
                     delegate: Rectangle {
                         id: mixerEntry
+                        required property var modelData
+                        required property var index
 
                         Layout.preferredHeight: mixerColum.implicitHeight + Styles.marginMd
                         Layout.minimumHeight: 100
@@ -120,7 +124,7 @@ Loader {
 
                         PwObjectTracker {
                             id: tracker
-                            objects: [node]
+                            objects: [mixerEntry.node]
                         }
 
                         ColumnLayout {
@@ -141,13 +145,13 @@ Loader {
 
                                 IconImage {
                                     id: icon
-                                    source: Quickshell.iconPath(node.name).toLowerCase() ?? "audio-volume-high-symbolic"
+                                    source: Quickshell.iconPath(mixerEntry.node.name).toLowerCase() ?? "audio-volume-high-symbolic"
                                     implicitWidth: 40
                                     implicitHeight: 40
                                 }
 
                                 TextStyledNoAnchors {
-                                    text: node?.name
+                                    text: mixerEntry.node?.name
                                 }
                             }
                             RowLayout {
@@ -160,26 +164,26 @@ Loader {
                                     implicitWidth: muteIcon.implicitWidth + Styles.marginLg
                                     implicitHeight: muteIcon.implicitHeight + Styles.marginSm
                                     radius: 100
-                                    defaultColor: node?.audio.muted ? Colors.bgDim : Colors.orange
+                                    defaultColor: mixerEntry.node?.audio.muted ? Colors.bgDim : Colors.orange
 
-                                    onClicked: node.audio.muted = !node?.audio.muted
+                                    onClicked: mixerEntry.node.audio.muted = !mixerEntry.node?.audio.muted
                                     TextStyled {
                                         id: muteIcon
                                         anchors.centerIn: parent
                                         font.pixelSize: 14
-                                        color: node?.audio.muted ? Colors.orange : Colors.bgDim
-                                        text: node?.audio.muted ? "" : ""
+                                        color: mixerEntry.node?.audio.muted ? Colors.orange : Colors.bgDim
+                                        text: mixerEntry.node?.audio.muted ? "" : ""
                                     }
                                 }
 
                                 // TODO Refact into StyledSlider
                                 Slider {
                                     id: volumeSlider
-                                    value: node.audio.volume
+                                    value: mixerEntry.node.audio.volume
                                     stepSize: 0.05
                                     Layout.fillWidth: true
 
-                                    onValueChanged: node.audio.volume = value
+                                    onValueChanged: mixerEntry.node.audio.volume = value
 
                                     background: Rectangle {
                                         x: volumeSlider.leftPadding
@@ -219,7 +223,7 @@ Loader {
                                             anchors.centerIn: parent
                                             color: Colors.bg1
                                             font.pixelSize: 14
-                                            text: `${Math.floor(node?.audio.volume * 100)}%`
+                                            text: `${Math.floor(mixerEntry.node?.audio.volume * 100)}%`
                                         }
                                         MouseArea {
                                             id: mouseArea

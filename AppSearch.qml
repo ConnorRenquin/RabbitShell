@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Hyprland
@@ -211,9 +212,12 @@ Loader {
                     cellHeight: 60
                     snapMode: GridView.SnapToRow
 
-                    model: filteredApplications
+                    model: root.filteredApplications
                     delegate: ButtonStyled {
                         id: menuButton
+
+                        required property var modelData
+                        required property int index
 
                         implicitWidth: appGridView.cellWidth - Styles.marginSm
                         implicitHeight: appGridView.cellHeight - Styles.marginSm
@@ -241,12 +245,12 @@ Loader {
                                 id: appIcon
                                 implicitWidth: 32
                                 implicitHeight: 32
-                                source: Quickshell.iconPath(modelData.icon) ?? ""
+                                source: Quickshell.iconPath(menuButton.modelData.icon) ?? ""
                             }
 
                             TextStyled {
                                 id: appName
-                                text: modelData.name
+                                text: menuButton.modelData.name
                                 color: menuButton.isFocused ? Colors.bg1 : Colors.fg
                             }
                         }

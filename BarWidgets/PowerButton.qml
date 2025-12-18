@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Hyprland
 
@@ -40,6 +41,9 @@ ButtonWidget {
     component PowerMenuButton: ButtonStyled {
         id: menuButton
 
+        required property int index
+        required property string label
+
         radius: Styles.radiusSm
         implicitHeight: text.implicitHeight + Styles.marginMd
         implicitWidth: parent.width
@@ -48,15 +52,13 @@ ButtonWidget {
         hoverColor: Colors.bgGreen
         focusedColor: Colors.orange
 
-        isFocused: index === currentFocusIndex
-
-        property string label: ""
+        isFocused: index === root.currentFocusIndex
 
         TextStyled {
             id: text
             anchors.fill: parent
             anchors.margins: Styles.marginSm
-            text: isFocused || containsMouse ? menuButton.label : menuButton.label
+            text: menuButton.isFocused || menuButton.containsMouse ? menuButton.label : menuButton.label
             color: menuButton.isFocused ? Colors.bgDim : Colors.fg
         }
     }
@@ -96,11 +98,11 @@ ButtonWidget {
                     dropdown.visible = false;
                     grab.active = false;
                 } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
-                    currentFocusIndex = Math.min(currentFocusIndex + 1, buttons.children.length - 1);
+                    root.currentFocusIndex = Math.min(root.currentFocusIndex + 1, buttons.children.length - 1);
                 } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
-                    currentFocusIndex = Math.max(currentFocusIndex - 1, 0);
+                    root.currentFocusIndex = Math.max(root.currentFocusIndex - 1, 0);
                 } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
-                    executeCurrentItem();
+                    root.executeCurrentItem();
                 }
             }
 

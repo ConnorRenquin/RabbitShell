@@ -72,20 +72,20 @@ Variants {
                     font.pixelSize: Styles.textLg
                     color: Colors.orange
                     visible: text
-                    text: notification?.appName ?? text
+                    text: notificationBase.notification?.appName ?? text
                 }
 
                 NotificationText {
                     color: Colors.yellow
                     visible: text
-                    text: notification?.summary ?? text
+                    text: notificationBase.notification?.summary ?? text
                     wrapMode: Text.WordWrap
                 }
 
                 NotificationText {
                     font.pixelSize: Styles.textSm
                     visible: text
-                    text: Utils.removeIndentation(notification?.body) ?? text
+                    text: Utils.removeIndentation(notificationBase.notification?.body) ?? text
                     wrapMode: Text.NoWrap
                 }
             }
