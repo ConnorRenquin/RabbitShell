@@ -1,4 +1,3 @@
-import Quickshell
 import QtQuick
 
 import qs.Constants
@@ -9,7 +8,8 @@ Text {
     antialiasing: true
     font {
         pixelSize: Styles.textMd
-        family: "RobotoMono Nerd Font Propo"
+        family: "Noto Sans RobotoMono Nerd Font Propo"
+        contextFontMerging: true
         bold: true
     }
 }
