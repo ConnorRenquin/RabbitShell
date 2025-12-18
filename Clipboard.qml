@@ -77,30 +77,32 @@ PanelWindow {
                 keyIndex = 9;
             }
 
-            if (keyIndex === -1)
-                return;
+            const isNumberKey = keyIndex !== -1 && clipboardItems.currentItem;
 
             const ctrlHeld = event.modifiers & Qt.ControlModifier;
             const altHeld = event.modifiers & Qt.AltModifier;
 
             if (ctrlHeld) {
-                if (clipboardItems.currentItem) {
+                if (isNumberKey) {
                     Utils.notify('Storing to slot ' + (event.key - Qt.Key_0), clipboardItems.currentItem.itemText);
                     const newStored = root.storedClipboard.slice();
                     newStored[keyIndex] = clipboardItems.currentItem.itemText;
                     root.storedClipboard = newStored;
-                } else if (event.key === Qt.Key_C) {
-                    Utils.notify('Slots Cleared');
-                    root.storedClipboard = [];
                 }
             } else if (altHeld) {
-                const storedText = root.storedClipboard[keyIndex];
-                if (!storedText) {
-                    Utils.notify('Slot Empty');
-                    return;
+                if (event.key === Qt.Key_D) {
+                    console.log('2');
+                    Utils.notify('Slots Cleared');
+                    root.storedClipboard = [];
+                } else if (isNumberKey) {
+                    const storedText = root.storedClipboard[keyIndex];
+                    if (!storedText) {
+                        Utils.notify('Slot Empty');
+                        return;
+                    }
+                    Utils.notify('', storedText);
                 }
-                Utils.notify('', storedText);
-            } else {
+            } else if (isNumberKey) {
                 const storedText = root.storedClipboard[keyIndex];
                 if (!storedText) {
                     Utils.notify('Slot Empty');
@@ -227,7 +229,7 @@ PanelWindow {
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                     color: Colors.bgDim
                                     anchors.centerIn: parent
-                                    text: index === 0 ? "Now" : clipboardItems.model - index + 1 // Equation is to flip from 0 - N to N - 0
+                                    text: index === 0 ? "Now" : index
                                 }
                             }
 
@@ -249,7 +251,7 @@ PanelWindow {
                                     anchors.margins: Styles.marginSm
                                     anchors.centerIn: parent
                                     color: Colors.blue
-                                    text: Utils.removeIndentation(button.itemText)
+                                    text: Utils.removeIndentation(button.itemText) ?? ''
                                 }
                             }
                         }
