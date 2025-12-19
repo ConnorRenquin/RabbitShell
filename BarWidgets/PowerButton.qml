@@ -117,31 +117,31 @@ ButtonWidget {
                 PowerMenuButton {
                     label: "Logout"
                     onClicked: root.menuAction("hyprctl dispatch exit")
-                    property int index: 0
+                    index: 0
                 }
 
                 PowerMenuButton {
                     label: "Lock"
                     onClicked: root.menuAction("hyprlock")
-                    property int index: 1
+                    index: 1
                 }
 
                 PowerMenuButton {
                     label: "Sleep"
                     onClicked: root.menuAction("systemctl suspend")
-                    property int index: 2
+                    index: 2
                 }
 
                 PowerMenuButton {
                     label: "Reboot"
                     onClicked: root.menuAction("reboot")
-                    property int index: 3
+                    index: 3
                 }
 
                 PowerMenuButton {
                     label: "Shutdown"
                     onClicked: root.menuAction("shutdown")
-                    property int index: 4
+                    index: 4
                 }
             }
         }
