@@ -195,7 +195,7 @@ Loader {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                TextStyledNoAnchors {
+                TextStyled {
                     anchors.centerIn: parent
                     visible: root.filteredApplications.length === 0
                     text: "No results found."

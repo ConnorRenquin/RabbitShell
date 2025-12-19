@@ -150,7 +150,7 @@ Loader {
                                     implicitHeight: 40
                                 }
 
-                                TextStyledNoAnchors {
+                                TextStyled {
                                     text: mixerEntry.node?.name
                                 }
                             }
