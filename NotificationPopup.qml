@@ -1,3 +1,5 @@
+// pragma ComponentBehavior: Bound
+
 import Quickshell
 import Quickshell.Services.Notifications
 
@@ -6,6 +8,7 @@ import QtQuick.Layouts
 
 import qs.Components
 import qs.Constants
+import qs.Services
 
 Variants {
     component NotificationText: TextStyled {
@@ -44,6 +47,8 @@ Variants {
         property Component notificationPopupComponent: ButtonStyled {
             id: notificationBase
 
+            required property Notification notification
+
             implicitHeight: Math.min(notificationContent.implicitHeight + notificationContent.anchors.margins * 2, 300)
             implicitWidth: parent.width
 
@@ -51,8 +56,6 @@ Variants {
 
             clip: true
             onClicked: notificationBase.destroy()
-
-            required property Notification notification
 
             Timer {
                 interval: 4000
@@ -82,10 +85,14 @@ Variants {
                     wrapMode: Text.WordWrap
                 }
 
+                Utils {
+                    id: utils
+                }
+
                 NotificationText {
                     font.pixelSize: Styles.textSm
                     visible: text
-                    text: Utils.removeIndentation(notificationBase.notification?.body) ?? text
+                    text: utils.removeIndentation(notificationBase.notification?.body) ?? text
                     wrapMode: Text.NoWrap
                 }
             }

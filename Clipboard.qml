@@ -15,6 +15,10 @@ import qs.Services
 PanelWindow {
     id: root
 
+    Utils {
+        id: utils
+    }
+
     visible: false
     anchors.right: true
     margins.right: Styles.marginLg
@@ -85,7 +89,7 @@ PanelWindow {
 
             if (ctrlHeld) {
                 if (isNumberKey) {
-                    Utils.notify('Storing to slot ' + (event.key - Qt.Key_0), clipboardItems.currentItem.itemText);
+                    utils.notify('Storing to slot ' + (event.key - Qt.Key_0), clipboardItems.currentItem.itemText);
                     const newStored = root.storedClipboard.slice();
                     newStored[keyIndex] = clipboardItems.currentItem.itemText;
                     root.storedClipboard = newStored;
@@ -93,25 +97,25 @@ PanelWindow {
             } else if (altHeld) {
                 if (event.key === Qt.Key_D) {
                     console.log('2');
-                    Utils.notify('Slots Cleared');
+                    utils.notify('Slots Cleared');
                     root.storedClipboard = [];
                 } else if (isNumberKey) {
                     const storedText = root.storedClipboard[keyIndex];
                     if (!storedText) {
-                        Utils.notify('Slot Empty');
+                        utils.notify('Slot Empty');
                         return;
                     }
-                    Utils.notify('', storedText);
+                    utils.notify('', storedText);
                 }
             } else if (isNumberKey) {
                 const storedText = root.storedClipboard[keyIndex];
                 if (!storedText) {
-                    Utils.notify('Slot Empty');
+                    utils.notify('Slot Empty');
                     return;
                 }
                 const text = storedText.replace(/'/g, "'\\''");
                 Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-                Utils.notify('Copied');
+                utils.notify('Copied');
                 root.exit();
             }
         }
@@ -258,7 +262,7 @@ PanelWindow {
                                     anchors.margins: Styles.marginSm
                                     anchors.centerIn: parent
                                     color: Colors.blue
-                                    text: Utils.removeIndentation(button.itemText) ?? ''
+                                    text: utils.removeIndentation(button.itemText) ?? ''
                                 }
                             }
                         }
@@ -266,7 +270,7 @@ PanelWindow {
                         onClicked: {
                             // Assign selection to current clipboard
                             Quickshell.execDetached(['bash', '-c', 'clipvault get --index ' + modelData + ' | wl-copy']);
-                            Utils.notify('Copied Item');
+                            utils.notify('Copied Item');
                             root.exit();
                         }
                     }

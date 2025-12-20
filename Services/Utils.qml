@@ -1,8 +1,8 @@
-pragma Singleton
-
 import Quickshell
 
-Singleton {
+import QtQuick
+
+Item {
     // TODO Implement AppName/Icon
     function notify(summary = '', body = '') {
         var test = Quickshell.execDetached(['notify-send', '-a', 'Clipboard', summary, body]);
