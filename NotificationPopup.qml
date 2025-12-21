@@ -33,7 +33,7 @@ Variants {
         }
 
         Component.onCompleted: {
-            NotificationService.newNotification.connect(addNotification);
+            Notifications.newNotification.connect(addNotification);
         }
 
         function addNotification(notification) {

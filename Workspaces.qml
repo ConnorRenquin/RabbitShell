@@ -10,10 +10,12 @@ import qs.Components
 Loader {
     id: loader
     active: false
+
     GlobalShortcut {
         name: "workspaces"
         onPressed: active = !active
     }
+
     sourceComponent: PanelWindow {
         id: root
 
