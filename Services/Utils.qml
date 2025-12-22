@@ -4,6 +4,8 @@ import QtQuick
 
 Item {
     // TODO Implement AppName/Icon
+    width: 0
+    height: 0
     function notify(summary = '', body = '') {
         var test = Quickshell.execDetached(['notify-send', '-a', 'Clipboard', summary, body]);
     }
