@@ -20,6 +20,10 @@ Variants {
     delegate: PanelWindow {
         id: root
 
+        Utils {
+            id: utils
+        }
+
         property var modelData: null
         anchors.top: true
         implicitWidth: notificationList.implicitWidth
@@ -33,7 +37,7 @@ Variants {
         }
 
         Component.onCompleted: {
-            Notifications.newNotification.connect(addNotification);
+            Notifications.onNotify.connect(addNotification);
         }
 
         function addNotification(notification) {
@@ -83,10 +87,6 @@ Variants {
                     visible: text
                     text: notificationBase.notification?.summary ?? text
                     wrapMode: Text.WordWrap
-                }
-
-                Utils {
-                    id: utils
                 }
 
                 NotificationText {

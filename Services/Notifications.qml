@@ -5,12 +5,17 @@ import QtQuick
 
 Singleton {
     id: root
-    signal newNotification(notification: Notification)
+    signal onNotify(notification: Notification)
+    readonly property NotificationServer server: notificationServer
 
     NotificationServer {
+        id: notificationServer
         imageSupported: true
         actionsSupported: true
         actionIconsSupported: true
-        onNotification: notification => root.newNotification(notification)
+        onNotification: notification => {
+            notification.tracked = true;
+            root.onNotify(notification);
+        }
     }
 }
