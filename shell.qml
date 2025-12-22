@@ -1,4 +1,5 @@
 import Quickshell
+
 import QtQuick
 
 ShellRoot {
@@ -10,4 +11,5 @@ ShellRoot {
     Mixer {}
     ToplevelView {}
     Clipboard {}
+    NotificationManager {}
 }
