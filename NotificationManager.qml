@@ -17,9 +17,15 @@ Loader {
 
     active: false
 
+    function toggle() {
+        loader.active = !loader.active;
+    }
+
+    Component.onCompleted: PatchBay.openNotificationsManager.connect(toggle)
+
     GlobalShortcut {
         name: "notification-manager"
-        onPressed: loader.active = !loader.active
+        onPressed: loader.toggle()
     }
 
     sourceComponent: PanelWindow {
