@@ -23,6 +23,7 @@ Rectangle {
     property bool containsMouse: mouseArea.containsMouse
 
     default property alias content: contentItem.data
+    // TODO Have size effected by clicked.
     signal clicked(var mouse)
 
     Behavior on color {
