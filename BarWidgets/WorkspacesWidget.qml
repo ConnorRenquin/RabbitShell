@@ -1,7 +1,7 @@
-import Quickshell
-import Quickshell.Widgets
+pragma ComponentBehavior: Bound
+
 import Quickshell.Hyprland
-import Quickshell.Io
+
 import QtQuick
 
 import qs.Components
@@ -9,47 +9,72 @@ import qs.Constants
 
 BarWidget {
     id: root
-    property int margin: Styles.margin
     required property string monitorName
 
-    width: row.implicitWidth + Styles.margin
+    implicitWidth: workspacesListView.width + Styles.marginSm
 
-    Behavior on width {
+    Behavior on implicitWidth {
         NumberAnimation {
             duration: 150
         }
     }
 
-    Row {
-        id: row
+    ListView {
+        id: workspacesListView
+        orientation: ListView.Horizontal
         spacing: 10
         anchors.left: parent.left
         anchors.leftMargin: Styles.marginSm / 2
         anchors.verticalCenter: parent.verticalCenter
+        implicitHeight: root.height - Styles.marginSm
+        implicitWidth: Math.min(212, contentWidth)
+        interactive: true
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
 
-        Repeater {
-            model: Hyprland.workspaces.values.filter(workspace => workspace.id != -99 && workspace.monitor?.name == monitorName)
-            delegate: ButtonStyled {
-                implicitHeight: root.height - Styles.marginSm
-                implicitWidth: workspaceIcon.implicitWidth + Styles.marginSm
-                radius: modelData.focused ? Styles.radiusLg : Styles.radiusSm
+        model: Hyprland.workspaces.values.filter(workspace => workspace.id != -99 && workspace.monitor?.name == root.monitorName)
 
-                onClicked: Hyprland.dispatch(`workspace ${modelData.id}`)
-
-                Behavior on radius {
-                    NumberAnimation {
-                        duration: 400
-                        easing.type: Easing.OutQuad
-                    }
+        // Track the focused workspace and position view to show it
+        property int focusedIndex: {
+            for (let i = 0; i < count; i++) {
+                let item = model[i];
+                if (item && item.focused) {
+                    return i;
                 }
+            }
+            return -1;
+        }
 
-                DoubleText {
-                    id: workspaceIcon
-                    elide: Text.ElideNone
-                    primaryColor: Colors.green
-                    anchors.centerIn: parent
-                    text: modelData.focused ? "󰜋" : "󰜌"
+        onFocusedIndexChanged: {
+            if (focusedIndex !== -1) {
+                currentIndex = focusedIndex;
+                positionViewAtIndex(focusedIndex, ListView.Contain);
+            }
+        }
+
+        delegate: ButtonStyled {
+            id: workspaceButton
+            required property HyprlandWorkspace modelData
+
+            implicitHeight: root.height - Styles.marginSm
+            implicitWidth: workspaceIcon.implicitWidth + Styles.marginSm
+            radius: modelData.focused ? Styles.radiusLg : Styles.radiusSm
+
+            onClicked: Hyprland.dispatch(`workspace ${modelData.id}`)
+
+            Behavior on radius {
+                NumberAnimation {
+                    duration: 400
+                    easing.type: Easing.OutQuad
                 }
+            }
+
+            DoubleText {
+                id: workspaceIcon
+                elide: Text.ElideNone
+                primaryColor: Colors.green
+                anchors.centerIn: parent
+                text: workspaceButton.modelData.focused ? "󰜋" : "󰜌"
             }
         }
     }
