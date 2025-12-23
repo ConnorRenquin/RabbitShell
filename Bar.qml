@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 
 import qs.BarWidgets
+import qs.Services
 
 Variants {
     model: Quickshell.screens
@@ -40,6 +41,11 @@ Variants {
         // Center
         BarRow {
             anchors.centerIn: parent
+            ButtonWidget {
+                visible: Notifications.notifications.length > 0
+                icon: " " + Notifications.notifications.length
+                onClicked: PatchBay.openNotificationsManager()
+            }
             ClockWidget {}
             BatteryWidget {}
         }
