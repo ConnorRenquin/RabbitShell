@@ -9,7 +9,7 @@ ButtonStyled {
 
     radius: Styles.radius0
     height: parent.height
-    width: parent.height
+    width: text.implicitWidth + Styles.marginMd
 
     property string icon: "*"
     property string command
