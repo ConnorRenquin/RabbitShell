@@ -133,40 +133,17 @@ Loader {
 
                 readonly property int textSize: 25
 
-                TextInput {
+                TextFieldStyled {
                     id: textInput
-                    font.pixelSize: searchBar.textSize
-                    color: Colors.fg
-                    selectByMouse: true
-                    cursorVisible: true
-                    verticalAlignment: TextInput.AlignVCenter
-
+                    placeholderText: 'Search'
                     anchors {
                         verticalCenter: parent.verticalCenter
                         left: parent.left
                         right: parent.right
                         margins: Styles.marginSm
                     }
-
                     onTextChanged: root.updateFilteredApplications()
-
                     Keys.onPressed: event => root.gridNavigationController(event)
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.IBeamCursor
-                        onClicked: {
-                            textInput.forceActiveFocus();
-                        }
-                    }
-                }
-
-                TextStyled {
-                    id: placeholderText
-                    anchors.left: textInput.left
-                    anchors.verticalCenter: textInput.verticalCenter
-                    text: "Search"
-                    opacity: 0.4
-                    visible: textInput.text === ""
                 }
 
                 Rectangle {
