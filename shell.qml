@@ -12,4 +12,5 @@ ShellRoot {
     ToplevelView {}
     Clipboard {}
     NotificationManager {}
+    LockScreen {}
 }

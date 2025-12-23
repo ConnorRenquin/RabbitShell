@@ -6,4 +6,5 @@ import QtQuick
 
 Singleton {
     signal openNotificationsManager
+    signal lockScreen
 }

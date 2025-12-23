@@ -7,6 +7,7 @@ import QtQuick.Layouts
 
 import qs.Components
 import qs.Constants
+import qs.Services
 
 ButtonWidget {
     id: root
@@ -122,7 +123,7 @@ ButtonWidget {
 
                 PowerMenuButton {
                     label: "Lock"
-                    onClicked: root.menuAction("hyprlock")
+                    onClicked: PatchBay.lockScreen()
                     index: 1
                 }
 
