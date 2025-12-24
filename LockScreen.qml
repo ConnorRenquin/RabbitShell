@@ -15,11 +15,14 @@ import qs.Services
 Scope {
     id: root
 
+    Component.onCompleted: PatchBay.lockScreen.connect(lockScreen)
+
+    property string wallpaperPath: ""
+
     function lockScreen() {
         lock.locked = true;
+        swwwQueryProcess.running = true;
     }
-
-    Component.onCompleted: PatchBay.lockScreen.connect(lockScreen)
 
     LockContext {
         id: lockContext
@@ -28,13 +31,29 @@ Scope {
 
     GlobalShortcut {
         name: 'lockscreen'
-        onPressed: lock.locked = true
+        onPressed: root.lockScreen()
     }
 
     IpcHandler {
         target: 'lock'
         function lockScreen() {
-            root.lockScreen()
+            root.lockScreen();
+        }
+    }
+
+    Process {
+        id: swwwQueryProcess
+        running: true
+        command: ["swww", "query"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                var output = this.text;
+                var match = output.match(/image: ([^\s]+)/);
+                console.log(match[1]);
+                if (match && match[1]) {
+                    root.wallpaperPath = match[1];
+                }
+            }
         }
     }
 
@@ -43,10 +62,16 @@ Scope {
         locked: false
         surface: WlSessionLockSurface {
             Rectangle {
-                id: root
+                id: lockScreenBackground
                 anchors.fill: parent
-
                 color: Colors.bgDim
+
+                Image {
+                    id: wallpaper
+                    anchors.fill: parent
+                    source: root.wallpaperPath
+                    fillMode: Image.PreserveAspectCrop
+                }
 
                 // // For testing
                 // ButtonStyled {
@@ -63,8 +88,9 @@ Scope {
                 // }
 
                 Rectangle {
-                    implicitWidth: clock.implicitWidth + Styles.marginSm * 2
-                    implicitHeight: clock.implicitHeight
+                    id: clock
+                    implicitWidth: clockText.implicitWidth + Styles.marginSm * 2
+                    implicitHeight: clockText.implicitHeight
                     color: Colors.orange
                     radius: Styles.radiusMd
 
@@ -74,7 +100,7 @@ Scope {
                         margins: Styles.marginMd
                     }
                     TextStyled {
-                        id: clock
+                        id: clockText
                         anchors.centerIn: parent
                         color: Colors.bgDim
                         font.pixelSize: 80
