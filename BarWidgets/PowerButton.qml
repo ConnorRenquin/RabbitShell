@@ -11,6 +11,7 @@ import qs.Services
 
 ButtonWidget {
     id: root
+    width: parent.height
     icon: "⏻"
 
     GlobalShortcut {
@@ -129,7 +130,7 @@ ButtonWidget {
 
                 PowerMenuButton {
                     label: "Sleep"
-                    onClicked: root.menuAction("systemctl suspend")
+                    onClicked: root.menuAction("hyprctl dispatch global quickshell:lockscreen && systemctl suspend")
                     index: 2
                 }
 
