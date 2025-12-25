@@ -27,59 +27,48 @@ Scope {
 
     GlobalShortcut {
         name: 'lockscreen'
-        onPressed: root.lockScreen()
+        onPressed: {
+            root.lockScreen();
+        }
     }
 
     PamContext {
         id: lockContext
+
         signal unlocked
         signal failed
 
-        // These properties are in the context and not individual lock surfaces
-        // so all surfaces can share the same state.
+        configDirectory: "pam"
+        config: "password.conf"
+
+        onCurrentTextChanged: showFailure = false
+
+        onPamMessage: {
+            if (this.responseRequired)
+                this.respond(currentText);
+        }
+
+        onCompleted: result => {
+            if (result == PamResult.Success) {
+                lockContext.unlocked();
+            } else {
+                lockContext.currentText = "";
+                lockContext.showFailure = true;
+            }
+            lockContext.unlockInProgress = false;
+        }
+
+        onUnlocked: lock.locked = false
+
         property string currentText: ""
         property bool unlockInProgress: false
         property bool showFailure: false
-
-        // Clear the failure text once the user starts typing.
-        onCurrentTextChanged: showFailure = false
 
         function tryUnlock() {
             if (currentText !== "") {
                 unlockInProgress = true;
                 start();
             }
-        }
-        // Its best to have a custom pam config for quickshell, as the system one
-        // might not be what your interface expects, and break in some way.
-        // This particular example only supports passwords.
-        configDirectory: "pam"
-        config: "password.conf"
-
-        // pam_unix will ask for a response for the password prompt
-        onPamMessage: {
-            if (this.responseRequired)
-                this.respond(currentText);
-        }
-
-        // pam_unix won't send any important messages so all we need is the completion status.
-        onCompleted: result => {
-            if (result == PamResult.Success) {
-                lockContext.unlocked();
-            } else {
-                root.currentText = "";
-                root.showFailure = true;
-            }
-
-            root.unlockInProgress = false;
-        }
-        onUnlocked: lock.locked = false
-    }
-
-    IpcHandler {
-        target: 'lock'
-        function lockScreen() {
-            root.lockScreen();
         }
     }
 
@@ -115,20 +104,6 @@ Scope {
                     fillMode: Image.PreserveAspectCrop
                 }
 
-                // // For testing
-                // ButtonStyled {
-                //     id: emergencyExit
-                //     implicitHeight: exitText.implicitHeight
-                //     implicitWidth: exitText.implicitWidth
-                //     TextStyled {
-                //         id: exitText
-                //         text: "Its not working, let me out"
-                //     }
-                //     onClicked: {
-                //         lockContext.unlocked();
-                //     }
-                // }
-
                 Rectangle {
                     id: clock
                     implicitWidth: clockText.implicitWidth + Styles.marginSm * 2
@@ -146,7 +121,7 @@ Scope {
                         anchors.centerIn: parent
                         color: Colors.bgDim
                         font.pixelSize: 80
-                        text: Time.timeShort + ' - ' + Time.date
+                        text: Time.time + '  ' + Time.date
                     }
                 }
 
@@ -156,10 +131,7 @@ Scope {
                     implicitHeight: 40
                     RowLayout {
                         TextFieldStyled {
-                            id: passwordBox
-                            HyprlandFocusGrab {
-                                active: lockContext.is
-                            }
+                            id: passwordTextField
                             Layout.preferredWidth: 400
                             Layout.fillHeight: true
                             backgroundColor: Colors.bg0
@@ -169,11 +141,11 @@ Scope {
                             inputMethodHints: Qt.ImhSensitiveData
                             onTextChanged: lockContext.currentText = this.text
                             onAccepted: lockContext.tryUnlock()
-                            // This makes sure multiple monitors have the same text.
                             Connections {
+                                id: contextShare
                                 target: lockContext
                                 function onCurrentTextChanged() {
-                                    passwordBox.text = lockContext.currentText;
+                                    passwordTextField.text = lockContext.currentText;
                                 }
                             }
                         }
@@ -183,10 +155,9 @@ Scope {
                             implicitWidth: unlockButtonText.implicitWidth + Styles.marginMd
                             Layout.fillHeight: true
                             radius: Styles.radiusSm
-                            focusPolicy: Qt.NoFocus
-                            enabled: !lockContext.unlockInProgress && lockContext.currentText !== ""
                             defaultColor: Colors.orange
                             onClicked: lockContext.tryUnlock()
+                            enabled: !lockContext.unlockInProgress
                             TextStyled {
                                 id: unlockButtonText
                                 anchors.centerIn: parent
@@ -194,9 +165,25 @@ Scope {
                                 text: ""
                             }
                         }
+
+                        ButtonStyled {
+                            id: emergencyExit
+                            Layout.fillHeight: true
+                            implicitWidth: exitText.implicitWidth * 2
+                            defaultColor: Colors.orange
+                            TextStyled {
+                                id: exitText
+                                anchors.centerIn: parent
+                                text: "X"
+                            }
+                            onClicked: {
+                                lockContext.unlocked();
+                            }
+                        }
                     }
 
                     TextStyled {
+                        id: failureText
                         visible: lockContext.showFailure
                         text: "Incorrect password"
                     }
