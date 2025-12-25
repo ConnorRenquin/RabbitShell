@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
 import Quickshell.Wayland
+import Quickshell.Services.Pam
 
 import QtQuick
 import QtQuick.Layouts
@@ -24,14 +25,55 @@ Scope {
         swwwQueryProcess.running = true;
     }
 
-    LockContext {
-        id: lockContext
-        onUnlocked: lock.locked = false
-    }
-
     GlobalShortcut {
         name: 'lockscreen'
         onPressed: root.lockScreen()
+    }
+
+    PamContext {
+        id: lockContext
+        signal unlocked
+        signal failed
+
+        // These properties are in the context and not individual lock surfaces
+        // so all surfaces can share the same state.
+        property string currentText: ""
+        property bool unlockInProgress: false
+        property bool showFailure: false
+
+        // Clear the failure text once the user starts typing.
+        onCurrentTextChanged: showFailure = false
+
+        function tryUnlock() {
+            if (currentText !== "") {
+                unlockInProgress = true;
+                start();
+            }
+        }
+        // Its best to have a custom pam config for quickshell, as the system one
+        // might not be what your interface expects, and break in some way.
+        // This particular example only supports passwords.
+        configDirectory: "pam"
+        config: "password.conf"
+
+        // pam_unix will ask for a response for the password prompt
+        onPamMessage: {
+            if (this.responseRequired)
+                this.respond(currentText);
+        }
+
+        // pam_unix won't send any important messages so all we need is the completion status.
+        onCompleted: result => {
+            if (result == PamResult.Success) {
+                lockContext.unlocked();
+            } else {
+                root.currentText = "";
+                root.showFailure = true;
+            }
+
+            root.unlockInProgress = false;
+        }
+        onUnlocked: lock.locked = false
     }
 
     IpcHandler {
@@ -115,6 +157,9 @@ Scope {
                     RowLayout {
                         TextFieldStyled {
                             id: passwordBox
+                            HyprlandFocusGrab {
+                                active: lockContext.is
+                            }
                             Layout.preferredWidth: 400
                             Layout.fillHeight: true
                             backgroundColor: Colors.bg0
