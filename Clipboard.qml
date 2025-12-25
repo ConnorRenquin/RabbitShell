@@ -108,16 +108,20 @@ PanelWindow {
                     utils.notify('', storedText);
                 }
             } else if (isNumberKey) {
-                const storedText = root.storedClipboard[keyIndex];
-                if (!storedText) {
-                    utils.notify('Slot Empty');
-                    return;
-                }
-                const text = storedText.replace(/'/g, "'\\''");
-                Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-                utils.notify('Copied');
-                root.exit();
+                copySlotToClipboard(keyIndex);
             }
+        }
+
+        function copySlotToClipboard(index) {
+            const storedText = root.storedClipboard[index];
+            if (!storedText) {
+                utils.notify('Slot Empty');
+                return;
+            }
+            const text = storedText.replace(/'/g, "'\\''");
+            Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
+            utils.notify('Copied');
+            root.exit();
         }
 
         Keys.onPressed: event => {
@@ -160,19 +164,21 @@ PanelWindow {
 
                     Repeater {
                         model: 10
-                        delegate: Rectangle {
+                        delegate: ButtonStyled {
+                            id: slotButton
 
-                            required property int index
+                            required property var modelData
 
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             radius: Styles.radiusSm
-                            color: root.storedClipboard[index] && root.storedClipboard[index] !== "" ? Colors.green : Colors.bgDim
+                            color: root.storedClipboard[modelData] && root.storedClipboard[modelData] !== "" ? Colors.green : Colors.bgDim
+
+                            onClicked: base.copySlotToClipboard(modelData)
                             TextStyled {
                                 anchors.centerIn: parent
-                                text: parent.index === 9 ? "0" : String(parent.index + 1)
-                                color: root.storedClipboard[parent.index] && root.storedClipboard[parent.index] !== "" ? Colors.bgDim : Colors.fg
-                                font.bold: root?.storedClipboard[parent.index] !== undefined && root.storedClipboard[parent.index] !== ""
+                                text: slotButton.modelData === 9 ? "0" : String(slotButton.modelData + 1)
+                                color: root.storedClipboard[slotButton.modelData] && root.storedClipboard[slotButton.modelData] !== "" ? Colors.bgDim : Colors.fg
                             }
                         }
                     }
