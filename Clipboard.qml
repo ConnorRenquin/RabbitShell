@@ -116,6 +116,39 @@ PanelWindow {
             utils.notify('', storedText);
         }
 
+        function findNextEmptySlot() {
+            for (let i = 0; i < 10; i++) {
+                if (!root.storedClipboard[i] || root.storedClipboard[i] === "") {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function storeToNextAvailableSlot(text) {
+            const nextSlot = findNextEmptySlot();
+            if (nextSlot === -1) {
+                utils.notify('No Empty Slots Available');
+                return;
+            }
+
+            const newStored = root.storedClipboard.slice();
+            newStored[nextSlot] = text;
+            root.storedClipboard = newStored;
+            utils.notify('Stored to slot ' + (nextSlot === 9 ? 0 : nextSlot + 1), text);
+        }
+
+        function clearSlot(index) {
+            if (!root.storedClipboard[index]) {
+                utils.notify('Slot Already Empty');
+                return;
+            }
+            const newStored = root.storedClipboard.slice();
+            newStored[index] = "";
+            root.storedClipboard = newStored;
+            utils.notify('Slot ' + (index === 9 ? 0 : index + 1) + ' Cleared');
+        }
+
         function copySlotToClipboard(index) {
             const storedText = root.storedClipboard[index];
             if (!storedText) {
@@ -168,27 +201,68 @@ PanelWindow {
 
                     Repeater {
                         model: 10
-                        delegate: ButtonStyled {
-                            id: slotButton
+                        delegate: Item {
+                            id: slotButtonContainer
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
 
                             required property var modelData
 
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            radius: Styles.radiusSm
-                            color: root.storedClipboard[modelData] && root.storedClipboard[modelData] !== "" ? Colors.green : Colors.bgDim
+                            ButtonStyled {
+                                id: slotButton
+                                anchors.fill: parent
+                                radius: Styles.radiusSm
+                                color: root.storedClipboard[slotButtonContainer.modelData] && root.storedClipboard[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.bgDim
 
-                            onClicked: mouse => {
-                                if (mouse.button === Qt.RightButton) {
-                                    base.checkSlot(modelData);
-                                } else {
-                                    base.copySlotToClipboard(modelData);
+                                onClicked: mouse => {
+                                    if (mouse.button === Qt.RightButton) {
+                                        base.clearSlot(slotButtonContainer.modelData);
+                                    } else {
+                                        base.copySlotToClipboard(slotButtonContainer.modelData);
+                                    }
+                                }
+
+                                onContainsMouseChanged: {
+                                    if (containsMouse && root.storedClipboard[slotButtonContainer.modelData]) {
+                                        slotTooltip.visible = true;
+                                    } else {
+                                        slotTooltip.visible = false;
+                                    }
+                                }
+
+                                TextStyled {
+                                    anchors.centerIn: parent
+                                    text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
+                                    color: root.storedClipboard[slotButtonContainer.modelData] && root.storedClipboard[slotButtonContainer.modelData] !== "" ? Colors.bgDim : Colors.fg
                                 }
                             }
-                            TextStyled {
-                                anchors.centerIn: parent
-                                text: slotButton.modelData === 9 ? "0" : String(slotButton.modelData + 1)
-                                color: root.storedClipboard[slotButton.modelData] && root.storedClipboard[slotButton.modelData] !== "" ? Colors.bgDim : Colors.fg
+
+                            PopupWindow {
+                                id: slotTooltip
+                                visible: false
+                                implicitWidth: Math.min(tooltipContent.implicitWidth + Styles.marginSm * 2, 400)
+                                implicitHeight: tooltipContent.implicitHeight + Styles.marginSm * 2
+                                color: 'transparent'
+
+                                anchor {
+                                    item: slotButton
+                                    rect.y: slotButton.height + Styles.marginMd
+                                    rect.x: slotButton.width / 2 - implicitWidth / 2
+                                }
+
+                                Rectangle {
+                                    anchors.fill: parent
+                                    color: Colors.bg0
+                                    radius: Styles.radiusMd
+                                    TextStyled {
+                                        id: tooltipContent
+                                        anchors.fill: parent
+                                        anchors.margins: Styles.marginSm
+                                        text: utils.removeIndentation(root.storedClipboard[slotButtonContainer.modelData]) || "Empty"
+                                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                        color: Colors.fg
+                                    }
+                                }
                             }
                         }
                     }
@@ -283,11 +357,16 @@ PanelWindow {
                             }
                         }
 
-                        onClicked: {
-                            // Assign selection to current clipboard
-                            Quickshell.execDetached(['bash', '-c', 'clipvault get --index ' + modelData + ' | wl-copy']);
-                            utils.notify('Copied Item');
-                            root.exit();
+                        onClicked: function (mouse) {
+                            const ctrlHeld = mouse.modifiers & Qt.ControlModifier;
+
+                            if (ctrlHeld) {
+                                base.storeToNextAvailableSlot(button.itemText);
+                            } else {
+                                Quickshell.execDetached(['bash', '-c', 'clipvault get --index ' + modelData + ' | wl-copy']);
+                                utils.notify('Copied Item');
+                                root.exit();
+                            }
                         }
                     }
                 }
