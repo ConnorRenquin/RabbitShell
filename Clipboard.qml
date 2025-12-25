@@ -100,16 +100,20 @@ PanelWindow {
                     utils.notify('Slots Cleared');
                     root.storedClipboard = [];
                 } else if (isNumberKey) {
-                    const storedText = root.storedClipboard[keyIndex];
-                    if (!storedText) {
-                        utils.notify('Slot Empty');
-                        return;
-                    }
-                    utils.notify('', storedText);
+                    checkSlot(keyIndex);
                 }
             } else if (isNumberKey) {
                 copySlotToClipboard(keyIndex);
             }
+        }
+
+        function checkSlot(index) {
+            const storedText = root.storedClipboard[index];
+            if (!storedText) {
+                utils.notify('Slot Empty');
+                return;
+            }
+            utils.notify('', storedText);
         }
 
         function copySlotToClipboard(index) {
@@ -174,7 +178,13 @@ PanelWindow {
                             radius: Styles.radiusSm
                             color: root.storedClipboard[modelData] && root.storedClipboard[modelData] !== "" ? Colors.green : Colors.bgDim
 
-                            onClicked: base.copySlotToClipboard(modelData)
+                            onClicked: mouse => {
+                                if (mouse.button === Qt.RightButton) {
+                                    base.checkSlot(modelData);
+                                } else {
+                                    base.copySlotToClipboard(modelData);
+                                }
+                            }
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: slotButton.modelData === 9 ? "0" : String(slotButton.modelData + 1)
