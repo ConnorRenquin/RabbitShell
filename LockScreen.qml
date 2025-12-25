@@ -174,7 +174,7 @@ Scope {
                             TextStyled {
                                 id: exitText
                                 anchors.centerIn: parent
-                                text: "X"
+                                text: "󰩈"
                             }
                             onClicked: {
                                 lockContext.unlocked();
