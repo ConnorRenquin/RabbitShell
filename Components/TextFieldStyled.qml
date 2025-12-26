@@ -5,9 +5,11 @@ import qs.Constants
 
 TextField {
     id: root
+
+    property string backgroundColor: Colors.bgDim
+
     font.pixelSize: Styles.textMd
     color: Colors.fg
-    property string backgroundColor: Colors.bgDim
     selectByMouse: true
     cursorVisible: true
     focus: true

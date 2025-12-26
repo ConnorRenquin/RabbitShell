@@ -170,14 +170,13 @@ Scope {
                             id: emergencyExit
                             Layout.fillHeight: true
                             implicitWidth: exitText.implicitWidth * 2
+                            radius: Styles.radiusSm
                             defaultColor: Colors.orange
+                            onClicked: lockContext.unlocked()
                             TextStyled {
                                 id: exitText
                                 anchors.centerIn: parent
                                 text: "󰩈"
-                            }
-                            onClicked: {
-                                lockContext.unlocked();
                             }
                         }
                     }
