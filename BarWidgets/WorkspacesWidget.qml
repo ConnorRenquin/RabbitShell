@@ -48,7 +48,7 @@ BarWidget {
         onFocusedIndexChanged: {
             if (focusedIndex !== -1) {
                 currentIndex = focusedIndex;
-                positionViewAtIndex(focusedIndex, ListView.Contain);
+                positionViewAtIndex(focusedIndex, ListView.Center);
             }
         }
 
