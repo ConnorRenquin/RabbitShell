@@ -382,20 +382,25 @@ PanelWindow {
                 }
             }
 
-            TextFieldStyled {
-                id: searchField
-                placeholderText: 'search (press / to focus)'
+            Rectangle {
+                Layout.preferredHeight: 50
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
-                backgroundColor: Colors.bg0
-                onTextChanged: {
-                    mainContent.searchText = text;
-                }
-                Keys.onPressed: event => {
-                    if (event.key === Qt.Key_Escape) {
-                        searchField.focus = false;
-                        base.focus = true;
-                        event.accepted = true;
+                color: Colors.bg0
+                radius: Styles.radiusSm
+                TextFieldStyled {
+                    id: searchField
+                    placeholderText: 'search (press / to focus)'
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginSm
+                    backgroundColor: Colors.bg0
+                    onTextChanged: mainContent.searchText = text
+                    Keys.onPressed: event => {
+                        if (event.key === Qt.Key_Escape) {
+                            searchField.focus = false;
+                            base.focus = true;
+                            event.accepted = true;
+                        }
                     }
                 }
             }
