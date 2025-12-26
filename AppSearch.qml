@@ -36,28 +36,39 @@ Loader {
         property var filteredApplications: []
         property int currentFocusIndex: -1
 
+        Utils {
+            id: utils
+        }
+
         function calculateRelevance(app, searchText) {
             if (searchText === "")
                 return 1;
 
-            var search = searchText.toLowerCase();
-            var name = app.name.toLowerCase();
+            // Use fuzzy search on app name (highest weight)
+            var nameResult = utils.fuzzySearch(searchText, app.name);
+            var score = nameResult.matches ? nameResult.score * 3 : 0;
 
-            if (name === search)
-                return 1000;
-            if (name.startsWith(search))
-                return 500;
+            // Add fuzzy search on generic name (medium weight)
+            if (app.genericName) {
+                var genericResult = utils.fuzzySearch(searchText, app.genericName);
+                if (genericResult.matches)
+                    score += genericResult.score * 2;
+            }
 
-            var score = 0;
-            if (name.indexOf(search) !== -1)
-                score = 300;
+            // Add fuzzy search on description (lower weight)
+            if (app.description) {
+                var descResult = utils.fuzzySearch(searchText, app.description);
+                if (descResult.matches)
+                    score += descResult.score * 1;
+            }
 
-            if (app.genericName && app.genericName.toLowerCase().indexOf(search) !== -1)
-                score += 200;
-            if (app.description && app.description.toLowerCase().indexOf(search) !== -1)
-                score += 100;
-            if (app.keywords && app.keywords.join(" ").toLowerCase().indexOf(search) !== -1)
-                score += 150;
+            // Add fuzzy search on keywords (medium weight)
+            if (app.keywords) {
+                var keywordsText = app.keywords.join(" ");
+                var keywordsResult = utils.fuzzySearch(searchText, keywordsText);
+                if (keywordsResult.matches)
+                    score += keywordsResult.score * 1.5;
+            }
 
             return score;
         }
