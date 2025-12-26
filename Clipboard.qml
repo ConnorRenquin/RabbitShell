@@ -24,20 +24,29 @@ PanelWindow {
     implicitHeight: 900
     color: "transparent"
 
+    property var clipboardData: {
+        "slots": [],
+        "clipboardText": []
+    }
+
     onClipboardDataChanged: {
         if (persistantData.loaded) {
             persistantData.setText(JSON.stringify(root.clipboardData));
         }
     }
 
-    property var clipboardData: {
-        "slots": [],
-        "clipboardText": []
-    }
-
     function exit() {
         root.visible = false;
         grab.active = false;
+    }
+
+    function removeEntry(index) {
+        const newClipboardText = root.clipboardData.clipboardText.filter((_, i) => i !== index);
+        root.clipboardData = {
+            "slots": root.clipboardData.slots,
+            "clipboardText": newClipboardText
+        };
+        utils.notify('Entry Removed');
     }
 
     Utils {
@@ -47,9 +56,19 @@ PanelWindow {
     IpcHandler {
         target: "clip"
         function save(text: string) {
+            // Ignore whitespace-only entries
+            if (text.trim() === "") {
+                return;
+            }
+
+            // Check for duplicates and don't add if already exists at index 0
+            if (root.clipboardData.clipboardText.length > 0 && root.clipboardData.clipboardText[0] === text) {
+                return;
+            }
+
             root.clipboardData = {
                 "slots": root.clipboardData.slots,
-                "clipboardText": [...root.clipboardData.clipboardText, text]
+                "clipboardText": [text, ...root.clipboardData.clipboardText]
             };
         }
     }
@@ -57,14 +76,27 @@ PanelWindow {
     FileView {
         id: persistantData
         path: Qt.resolvedUrl('./.data/clipboard.json')
-        blockLoading: true
+        blockLoading: false
         onLoaded: {
-            const parsedFile = JSON.parse(persistantData.text());
-            root.storedClipboard = parsedFile.storedClipboard;
-            root.clipboard = paresdFile.clipboard;
+            try {
+                const parsedFile = JSON.parse(persistantData.text());
+                root.clipboardData = {
+                    "slots": parsedFile.slots || [],
+                    "clipboardText": parsedFile.clipboardText || []
+                };
+            } catch (e) {
+                console.log('Failed to parse clipboard data:', e);
+                root.clipboardData = {
+                    "slots": [],
+                    "clipboardText": []
+                };
+            }
         }
-        onLoadFailed: Quickshell.execDetached(['touch', '.data/clipboard.json']) & persistantData.reload()
-        onSaveFailed: persistantData.reload()
+        onLoadFailed: {
+            Quickshell.execDetached(['touch', '.data/clipboard.json']);
+            persistantData.setText(JSON.stringify(root.clipboardData));
+        }
+        onSaveFailed: console.log('Failed to save clipboard data')
     }
 
     GlobalShortcut {
@@ -106,17 +138,26 @@ PanelWindow {
             const altHeld = event.modifiers & Qt.AltModifier;
 
             if (ctrlHeld) {
-                if (isNumberKey) {
-                    utils.notify('Storing to slot ' + (event.key - Qt.Key_0), clipboardItems.currentItem.itemText);
-                    const newStored = root.storedClipboard.slice();
-                    newStored[keyIndex] = clipboardItems.currentItem.itemText;
-                    root.storedClipboard = newStored;
+                if (isNumberKey && clipboardItems.currentItem) {
+                    const itemText = clipboardItems.currentItem.itemText;
+                    utils.notify('Storing to slot ' + (keyIndex === 9 ? 0 : keyIndex + 1), itemText);
+                    const newSlots = root.clipboardData.slots.slice();
+                    while (newSlots.length <= keyIndex) {
+                        newSlots.push("");
+                    }
+                    newSlots[keyIndex] = itemText;
+                    root.clipboardData = {
+                        "slots": newSlots,
+                        "clipboardText": root.clipboardData.clipboardText
+                    };
                 }
             } else if (altHeld) {
                 if (event.key === Qt.Key_D) {
-                    console.log('2');
                     utils.notify('Slots Cleared');
-                    root.storedClipboard = [];
+                    root.clipboardData = {
+                        "slots": [],
+                        "clipboardText": root.clipboardData.clipboardText
+                    };
                 } else if (isNumberKey) {
                     checkSlot(keyIndex);
                 }
@@ -126,7 +167,7 @@ PanelWindow {
         }
 
         function checkSlot(index) {
-            const storedText = root.storedClipboard[index];
+            const storedText = root.clipboardData.slots[index];
             if (!storedText) {
                 utils.notify('Slot Empty');
                 return;
@@ -136,7 +177,7 @@ PanelWindow {
 
         function findNextEmptySlot() {
             for (let i = 0; i < 10; i++) {
-                if (!root.storedClipboard[i] || root.storedClipboard[i] === "") {
+                if (!root.clipboardData.slots[i] || root.clipboardData.slots[i] === "") {
                     return i;
                 }
             }
@@ -150,25 +191,34 @@ PanelWindow {
                 return;
             }
 
-            const newStored = root.storedClipboard.slice();
-            newStored[nextSlot] = text;
-            root.storedClipboard = newStored;
+            const newSlots = root.clipboardData.slots.slice();
+            while (newSlots.length <= nextSlot) {
+                newSlots.push("");
+            }
+            newSlots[nextSlot] = text;
+            root.clipboardData = {
+                "slots": newSlots,
+                "clipboardText": root.clipboardData.clipboardText
+            };
             utils.notify('Stored to slot ' + (nextSlot === 9 ? 0 : nextSlot + 1), text);
         }
 
         function clearSlot(index) {
-            if (!root.storedClipboard[index]) {
+            if (!root.clipboardData.slots[index]) {
                 utils.notify('Slot Already Empty');
                 return;
             }
-            const newStored = root.storedClipboard.slice();
-            newStored[index] = "";
-            root.storedClipboard = newStored;
+            const newSlots = root.clipboardData.slots.slice();
+            newSlots[index] = "";
+            root.clipboardData = {
+                "slots": newSlots,
+                "clipboardText": root.clipboardData.clipboardText
+            };
             utils.notify('Slot ' + (index === 9 ? 0 : index + 1) + ' Cleared');
         }
 
         function copySlotToClipboard(index) {
-            const storedText = root.storedClipboard[index];
+            const storedText = root.clipboardData.slots[index];
             if (!storedText) {
                 utils.notify('Slot Empty');
                 return;
@@ -191,11 +241,20 @@ PanelWindow {
             } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
                 clipboardItems.decrementCurrentIndex();
             } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
-                clipboardItems.currentItem.clicked(null);
-                root.visible = false;
+                if (clipboardItems.currentItem) {
+                    clipboardItems.currentItem.clicked(null);
+                }
                 return;
             } else if ([Qt.Key_G].includes(event.key)) {
                 clipboardItems.currentIndex = 0;
+            } else if ([Qt.Key_D].includes(event.key)) {
+                if (clipboardItems.currentItem) {
+                    const currentIndex = clipboardItems.currentIndex;
+                    root.removeEntry(currentIndex);
+                    if (clipboardItems.count > 0) {
+                        clipboardItems.currentIndex = Math.min(currentIndex, clipboardItems.count - 1);
+                    }
+                }
             }
             clipboardItems.positionViewAtIndex(clipboardItems.currentIndex, ListView.Contain);
         }
@@ -232,7 +291,7 @@ PanelWindow {
                                 id: slotButton
                                 anchors.fill: parent
                                 radius: Styles.radiusSm
-                                color: root.storedClipboard[slotButtonContainer.modelData] && root.storedClipboard[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.bgDim
+                                color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.bgDim
 
                                 onClicked: mouse => {
                                     if (mouse.button === Qt.RightButton) {
@@ -243,7 +302,7 @@ PanelWindow {
                                 }
 
                                 onContainsMouseChanged: {
-                                    if (containsMouse && root.storedClipboard[slotButtonContainer.modelData]) {
+                                    if (containsMouse && root.clipboardData.slots[slotButtonContainer.modelData]) {
                                         slotTooltip.visible = true;
                                     } else {
                                         slotTooltip.visible = false;
@@ -253,7 +312,7 @@ PanelWindow {
                                 TextStyled {
                                     anchors.centerIn: parent
                                     text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
-                                    color: root.storedClipboard[slotButtonContainer.modelData] && root.storedClipboard[slotButtonContainer.modelData] !== "" ? Colors.bgDim : Colors.fg
+                                    color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.bgDim : Colors.fg
                                 }
                             }
 
@@ -278,7 +337,7 @@ PanelWindow {
                                         id: tooltipContent
                                         anchors.fill: parent
                                         anchors.margins: Styles.marginSm
-                                        text: utils.removeIndentation(root.storedClipboard[slotButtonContainer.modelData]) || "Empty"
+                                        text: utils.removeIndentation(root.clipboardData.slots[slotButtonContainer.modelData]) || "Empty"
                                         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                         color: Colors.fg
                                     }
@@ -311,11 +370,11 @@ PanelWindow {
                     id: clipboardItems
                     anchors.fill: parent
                     spacing: Styles.marginSm
-                    model: root.clipboardData["clipboardText"]
+                    model: root.clipboardData.clipboardText
                     delegate: ButtonStyled {
                         id: button
 
-                        required property var modelData
+                        required property string modelData
                         required property int index
 
                         implicitHeight: clipboardItemContent.implicitHeight
@@ -328,15 +387,7 @@ PanelWindow {
 
                         isFocused: ListView.isCurrentItem
 
-                        property string itemText
-
-                        Process {
-                            running: true
-                            command: ["bash", "-c", "clipvault get --index " + button.modelData]
-                            stdout: StdioCollector {
-                                onStreamFinished: button.itemText = this.text
-                            }
-                        }
+                        property string itemText: modelData
 
                         ColumnLayout {
                             id: clipboardItemContent
@@ -346,8 +397,6 @@ PanelWindow {
                                 left: parent.left
                                 right: parent.right
                             }
-
-                            property string clipboardValue: button.modelData
 
                             Rectangle {
                                 id: clipboardItemKey
@@ -382,18 +431,22 @@ PanelWindow {
                                     anchors.margins: Styles.marginSm
                                     anchors.centerIn: parent
                                     color: Colors.blue
-                                    text: utils.removeIndentation(button.modelData) ?? ''
+                                    text: utils.removeIndentation(button.itemText) ?? ''
                                 }
                             }
                         }
 
                         onClicked: function (mouse) {
                             const ctrlHeld = mouse.modifiers & Qt.ControlModifier;
+                            const shiftHeld = mouse.modifiers & Qt.ShiftModifier;
 
-                            if (ctrlHeld) {
+                            if (shiftHeld) {
+                                root.removeEntry(button.index);
+                            } else if (ctrlHeld) {
                                 base.storeToNextAvailableSlot(button.itemText);
                             } else {
-                                Quickshell.execDetached(['bash', '-c', 'clipvault get --index ' + modelData + ' | wl-copy']);
+                                const text = button.itemText.replace(/'/g, "'\\''");
+                                Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
                                 utils.notify('Copied Item');
                                 root.exit();
                             }
