@@ -56,12 +56,9 @@ PanelWindow {
     IpcHandler {
         target: "clip"
         function save(text: string) {
-            // Ignore whitespace-only entries
             if (text.trim() === "") {
                 return;
             }
-
-            // Check for duplicates and don't add if already exists at index 0
             if (root.clipboardData.clipboardText.length > 0 && root.clipboardData.clipboardText[0] === text) {
                 return;
             }
@@ -230,6 +227,13 @@ PanelWindow {
         }
 
         Keys.onPressed: event => {
+            // Handle search activation
+            if (event.key === Qt.Key_Slash) {
+                searchField.focus = true;
+                event.accepted = true;
+                return;
+            }
+
             // Handle numeric keys for storage/paste
             slotController(event);
 
@@ -250,7 +254,8 @@ PanelWindow {
             } else if ([Qt.Key_D].includes(event.key)) {
                 if (clipboardItems.currentItem) {
                     const currentIndex = clipboardItems.currentIndex;
-                    root.removeEntry(currentIndex);
+                    const originalIndex = clipboardItems.currentItem.originalIndex;
+                    root.removeEntry(originalIndex);
                     if (clipboardItems.count > 0) {
                         clipboardItems.currentIndex = Math.min(currentIndex, clipboardItems.count - 1);
                     }
@@ -263,7 +268,36 @@ PanelWindow {
             id: mainContent
             anchors.fill: parent
 
-            property string searchText
+            property string searchText: ""
+            property var filteredItems: {
+                if (!searchText || searchText.trim() === "") {
+                    // Return items with their original indices
+                    return root.clipboardData.clipboardText.map((text, index) => ({
+                                text: text,
+                                originalIndex: index
+                            }));
+                }
+
+                // Create array of items with search scores
+                let scoredItems = [];
+                for (let i = 0; i < root.clipboardData.clipboardText.length; i++) {
+                    let item = root.clipboardData.clipboardText[i];
+                    let result = utils.fuzzySearch(searchText, item);
+                    if (result.matches) {
+                        scoredItems.push({
+                            text: item,
+                            score: result.score,
+                            originalIndex: i
+                        });
+                    }
+                }
+
+                // Sort by score (higher is better)
+                scoredItems.sort((a, b) => b.score - a.score);
+
+                // Return items with text and original index
+                return scoredItems;
+            }
 
             Rectangle {
                 id: storageSlots
@@ -349,12 +383,20 @@ PanelWindow {
             }
 
             TextFieldStyled {
-                placeholderText: 'search'
+                id: searchField
+                placeholderText: 'search (press / to focus)'
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
                 backgroundColor: Colors.bg0
                 onTextChanged: {
                     mainContent.searchText = text;
+                }
+                Keys.onPressed: event => {
+                    if (event.key === Qt.Key_Escape) {
+                        searchField.focus = false;
+                        base.focus = true;
+                        event.accepted = true;
+                    }
                 }
             }
 
@@ -370,11 +412,11 @@ PanelWindow {
                     id: clipboardItems
                     anchors.fill: parent
                     spacing: Styles.marginSm
-                    model: root.clipboardData.clipboardText
+                    model: mainContent.filteredItems
                     delegate: ButtonStyled {
                         id: button
 
-                        required property string modelData
+                        required property var modelData
                         required property int index
 
                         implicitHeight: clipboardItemContent.implicitHeight
@@ -387,7 +429,8 @@ PanelWindow {
 
                         isFocused: ListView.isCurrentItem
 
-                        property string itemText: modelData
+                        property string itemText: modelData.text
+                        property int originalIndex: modelData.originalIndex
 
                         ColumnLayout {
                             id: clipboardItemContent
@@ -409,7 +452,7 @@ PanelWindow {
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                     color: Colors.bgDim
                                     anchors.centerIn: parent
-                                    text: button.index === 0 ? "Now" : button.index
+                                    text: button.originalIndex === 0 ? "Now" : button.originalIndex
                                 }
                             }
 
@@ -441,7 +484,7 @@ PanelWindow {
                             const shiftHeld = mouse.modifiers & Qt.ShiftModifier;
 
                             if (shiftHeld) {
-                                root.removeEntry(button.index);
+                                root.removeEntry(button.originalIndex);
                             } else if (ctrlHeld) {
                                 base.storeToNextAvailableSlot(button.itemText);
                             } else {
