@@ -15,10 +15,6 @@ import qs.Services
 PanelWindow {
     id: root
 
-    Utils {
-        id: utils
-    }
-
     visible: false
     anchors.right: true
     margins.right: Styles.marginLg
@@ -28,23 +24,45 @@ PanelWindow {
     implicitHeight: 900
     color: "transparent"
 
-    onStoredClipboardChanged: {
-        if (persistantData.loaded)
-            persistantData.setText(JSON.stringify(storedClipboard));
+    onClipboardDataChanged: {
+        if (persistantData.loaded) {
+            persistantData.setText(JSON.stringify(root.clipboardData));
+        }
     }
 
-    property var storedClipboard: []
+    property var clipboardData: {
+        "slots": [],
+        "clipboardText": []
+    }
 
     function exit() {
         root.visible = false;
         grab.active = false;
     }
 
+    Utils {
+        id: utils
+    }
+
+    IpcHandler {
+        target: "clip"
+        function save(text: string) {
+            root.clipboardData = {
+                "slots": root.clipboardData.slots,
+                "clipboardText": [...root.clipboardData.clipboardText, text]
+            };
+        }
+    }
+
     FileView {
         id: persistantData
         path: Qt.resolvedUrl('./.data/clipboard.json')
         blockLoading: true
-        onLoaded: root.storedClipboard = JSON.parse(persistantData.text())
+        onLoaded: {
+            const parsedFile = JSON.parse(persistantData.text());
+            root.storedClipboard = parsedFile.storedClipboard;
+            root.clipboard = paresdFile.clipboard;
+        }
         onLoadFailed: Quickshell.execDetached(['touch', '.data/clipboard.json']) & persistantData.reload()
         onSaveFailed: persistantData.reload()
     }
@@ -186,6 +204,8 @@ PanelWindow {
             id: mainContent
             anchors.fill: parent
 
+            property string searchText
+
             Rectangle {
                 id: storageSlots
                 Layout.fillWidth: true
@@ -269,6 +289,16 @@ PanelWindow {
                 }
             }
 
+            TextFieldStyled {
+                placeholderText: 'search'
+                Layout.fillWidth: true
+                Layout.margins: Styles.marginSm
+                backgroundColor: Colors.bg0
+                onTextChanged: {
+                    mainContent.searchText = text;
+                }
+            }
+
             ClippingRectangle {
                 id: rect
                 Layout.fillHeight: true
@@ -281,7 +311,7 @@ PanelWindow {
                     id: clipboardItems
                     anchors.fill: parent
                     spacing: Styles.marginSm
-                    model: 200
+                    model: root.clipboardData["clipboardText"]
                     delegate: ButtonStyled {
                         id: button
 
@@ -352,7 +382,7 @@ PanelWindow {
                                     anchors.margins: Styles.marginSm
                                     anchors.centerIn: parent
                                     color: Colors.blue
-                                    text: utils.removeIndentation(button.itemText) ?? ''
+                                    text: utils.removeIndentation(button.modelData) ?? ''
                                 }
                             }
                         }
