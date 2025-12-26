@@ -44,25 +44,21 @@ Loader {
             if (searchText === "")
                 return 1;
 
-            // Use fuzzy search on app name (highest weight)
             var nameResult = utils.fuzzySearch(searchText, app.name);
             var score = nameResult.matches ? nameResult.score * 3 : 0;
 
-            // Add fuzzy search on generic name (medium weight)
             if (app.genericName) {
                 var genericResult = utils.fuzzySearch(searchText, app.genericName);
                 if (genericResult.matches)
                     score += genericResult.score * 2;
             }
 
-            // Add fuzzy search on description (lower weight)
             if (app.description) {
                 var descResult = utils.fuzzySearch(searchText, app.description);
                 if (descResult.matches)
                     score += descResult.score * 1;
             }
 
-            // Add fuzzy search on keywords (medium weight)
             if (app.keywords) {
                 var keywordsText = app.keywords.join(" ");
                 var keywordsResult = utils.fuzzySearch(searchText, keywordsText);
