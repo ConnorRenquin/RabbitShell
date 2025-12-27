@@ -13,4 +13,5 @@ ShellRoot {
     Clipboard {}
     NotificationManager {}
     LockScreen {}
+    JavascriptTester {}
 }
