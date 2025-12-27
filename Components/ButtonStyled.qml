@@ -44,7 +44,6 @@ Rectangle {
 
     TextStyled {
         id: buttonText
-        anchors.fill: parent
         anchors.centerIn: parent
         visible: root.text
         text: root.text

@@ -4,7 +4,6 @@ import Quickshell.Hyprland
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 
 import qs.Components
 import qs.Constants
@@ -19,9 +18,8 @@ PanelWindow {
 
     visible: polkitAgent.isActive
 
-
     component Spacer: Rectangle {
-        Layout.preferredWidth: 800
+        Layout.preferredWidth: 500
         Layout.fillHeight: true
         color: Colors.bgDim
     }
@@ -113,7 +111,7 @@ PanelWindow {
                         enabled: polkitAgent.flow && (passwordInput.text.length > 0 || !polkitAgent.flow.isResponseRequired)
                         text: "Submit"
                         radius: Styles.radiusSm
-                       defaultColor: Colors.bg0
+                        defaultColor: Colors.bg0
                         onClicked: {
                             if (polkitAgent.flow) {
                                 polkitAgent.flow.submit(passwordInput.text);
