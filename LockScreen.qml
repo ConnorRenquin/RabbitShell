@@ -129,22 +129,28 @@ Scope {
                     anchors.centerIn: parent
                     implicitHeight: 40
                     RowLayout {
-                        TextFieldStyled {
-                            id: passwordTextField
+                        Rectangle {
                             Layout.preferredWidth: 400
                             Layout.fillHeight: true
-                            backgroundColor: Colors.bg0
-                            padding: Styles.marginSm
-                            enabled: !lockContext.unlockInProgress
-                            echoMode: TextInput.Password
-                            inputMethodHints: Qt.ImhSensitiveData
-                            onTextChanged: lockContext.currentText = this.text
-                            onAccepted: lockContext.tryUnlock()
-                            Connections {
-                                id: contextShare
-                                target: lockContext
-                                function onCurrentTextChanged() {
-                                    passwordTextField.text = lockContext.currentText;
+                            color: Colors.bgDim
+                            radius: Styles.radiusSm
+                            TextFieldStyled { id: passwordTextField
+                                anchors.fill: parent
+                                anchors.centerIn: parent
+                                backgroundColor: Colors.bg0
+                                padding: Styles.marginSm
+                                enabled: !lockContext.unlockInProgress
+                                echoMode: TextInput.Password
+                                inputMethodHints: Qt.ImhSensitiveData
+                                placeholderText: 'Password'
+                                onTextChanged: lockContext.currentText = this.text
+                                onAccepted: lockContext.tryUnlock()
+                                Connections {
+                                    id: contextShare
+                                    target: lockContext
+                                    function onCurrentTextChanged() {
+                                        passwordTextField.text = lockContext.currentText;
+                                    }
                                 }
                             }
                         }
