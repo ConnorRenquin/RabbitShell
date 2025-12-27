@@ -1,17 +1,13 @@
 pragma Singleton
 
 import Quickshell
-import QtQuick
+import Quickshell.Hyprland
 import Quickshell.Wayland
+
+import QtQuick
 
 Singleton {
     id: root
-
-    PersistentProperties {
-        id: persist
-        reloadableId: "persistedStates"
-        property bool isEnabled: false
-    }
 
     function enabled() {
         return persist.isEnabled;
@@ -19,6 +15,17 @@ Singleton {
 
     function toggle() {
         persist.isEnabled = !persist.isEnabled;
+    }
+
+    PersistentProperties {
+        id: persist
+        reloadableId: "persistedStates"
+        property bool isEnabled: false
+    }
+
+    GlobalShortcut {
+        name: "idleToggle"
+        onPressed: root.toggle()
     }
 
     IdleInhibitor {
