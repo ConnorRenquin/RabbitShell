@@ -234,6 +234,7 @@ Loader {
 
                             TextStyled {
                                 id: appName
+                                Layout.fillWidth: true
                                 text: menuButton.modelData.name
                                 color: menuButton.isFocused ? Colors.bg1 : Colors.fg
                             }

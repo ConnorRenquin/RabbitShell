@@ -134,7 +134,8 @@ Scope {
                             Layout.fillHeight: true
                             color: Colors.bgDim
                             radius: Styles.radiusSm
-                            TextFieldStyled { id: passwordTextField
+                            TextFieldStyled {
+                                id: passwordTextField
                                 anchors.fill: parent
                                 anchors.centerIn: parent
                                 backgroundColor: Colors.bg0
