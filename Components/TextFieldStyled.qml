@@ -16,8 +16,7 @@ TextField {
     verticalAlignment: TextInput.AlignVCenter
     placeholderTextColor: Colors.fg
     background: Rectangle {
-        color: root.backgroundColor
-        radius: Styles.radiusSm
+        color: "transparent"
     }
     MouseArea {
         anchors.fill: parent

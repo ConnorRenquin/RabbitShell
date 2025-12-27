@@ -80,7 +80,6 @@ Scope {
             onStreamFinished: {
                 var output = this.text;
                 var match = output.match(/image: ([^\s]+)/);
-                console.log(match[1]);
                 if (match && match[1]) {
                     root.wallpaperPath = match[1];
                 }
