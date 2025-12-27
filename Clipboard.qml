@@ -246,9 +246,9 @@ PanelWindow {
                 clipboardItems.decrementCurrentIndex();
             } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
                 if (clipboardItems.currentItem) {
+                    console.log('hey');
                     clipboardItems.currentItem.clicked(null);
                 }
-                return;
             } else if ([Qt.Key_G].includes(event.key)) {
                 clipboardItems.currentIndex = 0;
             } else if ([Qt.Key_D].includes(event.key)) {
@@ -484,9 +484,9 @@ PanelWindow {
                             }
                         }
 
-                        onClicked: function (mouse) {
-                            const ctrlHeld = mouse.modifiers & Qt.ControlModifier;
-                            const shiftHeld = mouse.modifiers & Qt.ShiftModifier;
+                        onClicked: event => {
+                            const ctrlHeld = event?.modifiers & Qt.ControlModifier;
+                            const shiftHeld = event?.modifiers & Qt.ShiftModifier;
 
                             if (shiftHeld) {
                                 root.removeEntry(button.originalIndex);
