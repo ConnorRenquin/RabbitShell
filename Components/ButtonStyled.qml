@@ -15,6 +15,10 @@ Rectangle {
     }
 
     scale: mouseArea.pressed ? 0.90 : 1
+    implicitWidth: buttonText.implicitWidth + Styles.marginMd
+    implicitHeight: buttonText.implicitHeight + Styles.marginMd
+
+    property string text
 
     property string hoverColor: Colors.bg2
     property string defaultColor: Colors.bgDim
@@ -38,6 +42,13 @@ Rectangle {
         }
     }
 
+    TextStyled {
+        id: buttonText
+        anchors.centerIn: parent
+        visible: root.text
+        text: root.text
+    }
+
     Item {
         id: contentItem
         anchors.fill: parent
@@ -48,6 +59,7 @@ Rectangle {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
+        // propagateComposedEvents: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onClicked: mouse => root.clicked(mouse)
     }
