@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import Quickshell
 import Quickshell.Widgets
 import QtQuick
@@ -11,6 +13,7 @@ BarWidget {
     property int iconSize: 20
 
     implicitWidth: row.implicitWidth + Styles.marginSm * 2
+
     Row {
         id: row
         anchors.centerIn: parent
@@ -20,28 +23,67 @@ BarWidget {
             id: trayRow
             model: SystemTray.items
 
-            delegate: ButtonStyled {
-                id: menuItem
+            delegate: Item {
+                id: trayItem
+                required property SystemTrayItem modelData
+                required property int index
 
-                defaultColor: Colors.bg0
-                hoverColor: Colors.bg1
+                property int iconSize: root.iconSize
+                property bool menuOpen: false
 
-                implicitWidth: root.iconSize + Styles.marginSm
-                implicitHeight: root.iconSize + Styles.marginSm
-                radius: Styles.radiusSm
+                implicitWidth: trayItem.iconSize + Styles.marginSm
+                implicitHeight: trayItem.iconSize + Styles.marginSm
 
-                onClicked: trayMenu.toggleVisible()
+                ButtonStyled {
+                    id: iconButton
 
-                IconImage {
-                    id: icon
-                    anchors.centerIn: parent
-                    width: root.iconSize
-                    height: root.iconSize
-                    source: modelData.icon
+                    anchors.fill: parent
+                    defaultColor: Colors.bg0
+                    hoverColor: Colors.bg2
+                    radius: Styles.radiusSm
+
+                    scale: trayItem.menuOpen ? 0.95 : 1.0
+
+                    Behavior on scale {
+                        NumberAnimation {
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    IconImage {
+                        id: icon
+                        anchors.centerIn: parent
+                        width: trayItem.iconSize
+                        height: trayItem.iconSize
+                        source: trayItem.modelData.icon
+
+                        opacity: iconButton.containsMouse ? 1.0 : 0.8
+
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 150
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
+                    }
 
                     SystemTrayMenu {
                         id: trayMenu
-                        trayMenu: modelData.menu
+                        item: trayItem.modelData
+                        onVisibleChanged: {
+                            trayItem.menuOpen = visible;
+                        }
+                    }
+
+                    onClicked: mouse => {
+                        if (mouse.button === Qt.LeftButton && trayItem.modelData.hasMenu) {
+                            trayMenu.toggleVisible();
+                        } else if (mouse.button === Qt.RightButton) {
+                            trayItem.modelData.activate();
+                        } else if (mouse.button === Qt.MiddleButton) {
+                            trayItem.modelData.secondaryActivate();
+                        }
                     }
                 }
             }
