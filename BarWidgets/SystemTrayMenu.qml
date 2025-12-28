@@ -31,7 +31,7 @@ PopupWindowAnimated {
     // Auto-close timer
     Timer {
         id: autoCloseTimer
-        interval: 3000
+        interval: 500
         repeat: false
         onTriggered: {
             root.hide();
