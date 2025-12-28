@@ -13,6 +13,7 @@ import qs.Constants
 BarWidget {
     id: root
     property int iconSize: 20
+    property var currentOpenMenu: null
 
     implicitWidth: row.implicitWidth + Styles.marginSm * 2
 
@@ -116,8 +117,16 @@ BarWidget {
 
         onIsOpenChanged: {
             if (isOpen) {
+                // Close any other open menu
+                if (root.currentOpenMenu && root.currentOpenMenu !== systemTrayMenu) {
+                    root.currentOpenMenu.hide();
+                }
+                root.currentOpenMenu = systemTrayMenu;
                 autoCloseTimer.timer.restart();
             } else {
+                if (root.currentOpenMenu === systemTrayMenu) {
+                    root.currentOpenMenu = null;
+                }
                 autoCloseTimer.timer.stop();
             }
         }
