@@ -50,7 +50,7 @@ PopupWindowAnimated {
     Rectangle {
         id: menuBackground
         anchors.fill: parent
-        color: Colors.bgDim
+        color: Colors.backgroundDim
         radius: Styles.radiusLg
 
         opacity: root.isOpen ? 1 : 0
@@ -162,7 +162,7 @@ PopupWindowAnimated {
                                         font.pixelSize: 14
                                         Layout.fillWidth: true
                                         horizontalAlignment: Text.AlignLeft
-                                        color: menuLoader.modelData.enabled ? Colors.fg : Colors.grey0
+                                        color: menuLoader.modelData.enabled ? Colors.foreground : Colors.gray
                                     }
 
                                     // Checkbox/Radio indicator
@@ -229,7 +229,7 @@ PopupWindowAnimated {
 
                                     Rectangle {
                                         anchors.fill: parent
-                                        color: Colors.bgDim
+                                        color: Colors.backgroundDim
                                         radius: Styles.radiusLg
                                         opacity: submenuPopup.isOpen ? 1 : 0
                                         scale: submenuPopup.isOpen ? 1 : 0.95
@@ -287,7 +287,7 @@ PopupWindowAnimated {
                                                         text: submenuButton.modelData.text || ""
                                                         font.pixelSize: 14
                                                         anchors.centerIn: parent
-                                                        color: submenuButton.modelData.enabled ? Colors.fg : Colors.grey0
+                                                        color: submenuButton.modelData.enabled ? Colors.foreground : Colors.gray
                                                     }
 
                                                     onClicked: {

@@ -1,31 +1,75 @@
 pragma Singleton
+
 import QtQuick
 
 QtObject {
-    readonly property string transparent: "transparent"
-    readonly property string bgDim: "#232A2E"
-    readonly property string fg: "#D3C6AA"
-    readonly property string bg0: "#2D353B"
-    readonly property string bg1: "#343F44"
-    readonly property string bg2: "#3D484D"
-    readonly property string bg3: "#475258"
-    readonly property string bg4: "#4F585E"
-    readonly property string bg5: "#56635f"
-    readonly property string bgVisual: "#543A48"
-    readonly property string bgRed: "#514045"
-    readonly property string bgGreen: "#425047"
-    readonly property string bgBlue: "#3A515D"
-    readonly property string bgYellow: "#4D4C43"
-    readonly property string orange: "#E69875"
-    readonly property string yellow: "#DBBC7F"
-    readonly property string green: "#A7C080"
-    readonly property string aqua: "#83C092"
-    readonly property string blue: "#7FBBB3"
-    readonly property string purple: "#D699B6"
-    readonly property string grey0: "#7A8478"
-    readonly property string grey1: "#859289"
-    readonly property string grey2: "#9DA9A0"
-    readonly property string statusline1: "#A7C080"
-    readonly property string statusline2: "#D3C6AA"
-    readonly property string statusline3: "#E67E80"
+    id: root
+
+    property var currentTheme: ThemeManager.theme
+
+    // Base colors
+    readonly property string transparent: currentTheme.transparent
+    readonly property string background: currentTheme.background
+    readonly property string backgroundDim: currentTheme.backgroundDim
+    readonly property string backgroundAlt: currentTheme.backgroundAlt
+    readonly property string foreground: currentTheme.foreground
+
+    // Background levels (for layering UI elements)
+    readonly property string bg0: currentTheme.bg0
+    readonly property string bg1: currentTheme.bg1
+    readonly property string bg2: currentTheme.bg2
+    readonly property string bg3: currentTheme.bg3
+    readonly property string bg4: currentTheme.bg4
+    readonly property string bg5: currentTheme.bg5
+
+    // Semantic backgrounds
+    readonly property string backgroundVisual: currentTheme.backgroundVisual
+    readonly property string backgroundError: currentTheme.backgroundError
+    readonly property string backgroundSuccess: currentTheme.backgroundSuccess
+    readonly property string backgroundInfo: currentTheme.backgroundInfo
+    readonly property string backgroundWarning: currentTheme.backgroundWarning
+
+    // Primary accent colors
+    readonly property string primary: currentTheme.primary
+    readonly property string secondary: currentTheme.secondary
+    readonly property string accent: currentTheme.accent
+
+    // Semantic colors (use these for consistency)
+    readonly property string success: currentTheme.success
+    readonly property string error: currentTheme.error
+    readonly property string warning: currentTheme.warning
+    readonly property string info: currentTheme.info
+
+    // Extended color palette
+    readonly property string orange: currentTheme.orange
+    readonly property string yellow: currentTheme.yellow
+    readonly property string green: currentTheme.green
+    readonly property string aqua: currentTheme.aqua
+    readonly property string blue: currentTheme.blue
+    readonly property string purple: currentTheme.purple
+
+    // Grays
+    readonly property string gray: currentTheme.gray
+    readonly property string grayLight: currentTheme.grayLight
+    readonly property string grayLighter: currentTheme.grayLighter
+
+    function withOpacity(color, opacity) {
+        return Qt.rgba(Qt.colorFromString(color).r, Qt.colorFromString(color).g, Qt.colorFromString(color).b, opacity);
+    }
+
+    function lighten(color, amount) {
+        var c = Qt.colorFromString(color);
+        return Qt.rgba(Math.min(1, c.r + amount), Math.min(1, c.g + amount), Math.min(1, c.b + amount), c.a);
+    }
+
+    function darken(color, amount) {
+        var c = Qt.colorFromString(color);
+        return Qt.rgba(Math.max(0, c.r - amount), Math.max(0, c.g - amount), Math.max(0, c.b - amount), c.a);
+    }
+
+    function mix(color1, color2, ratio) {
+        var c1 = Qt.colorFromString(color1);
+        var c2 = Qt.colorFromString(color2);
+        return Qt.rgba(c1.r * ratio + c2.r * (1 - ratio), c1.g * ratio + c2.g * (1 - ratio), c1.b * ratio + c2.b * (1 - ratio), c1.a * ratio + c2.a * (1 - ratio));
+    }
 }

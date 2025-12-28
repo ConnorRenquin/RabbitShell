@@ -29,7 +29,7 @@ PanelWindow {
         Layout.preferredWidth: 300
         Layout.fillHeight: true
         radius: Styles.radiusLg
-        color: Colors.bgDim
+        color: Colors.backgroundDim
         Timer {
             repeat: true
             running: true
@@ -41,7 +41,7 @@ PanelWindow {
 
             anchors.centerIn: parent
             text: ''
-            color: Colors.bgRed
+            color: Colors.backgroundError
             font.pixelSize: 160
         }
     }
@@ -85,7 +85,7 @@ PanelWindow {
                 anchors.margins: Styles.marginMd
                 Rectangle {
                     id: polkitMonitor
-                    color: Colors.bgDim
+                    color: Colors.backgroundDim
                     Layout.fillWidth: true
                     Layout.preferredHeight: 90
                     radius: Styles.radiusMd
@@ -103,13 +103,13 @@ PanelWindow {
                             Layout.preferredWidth: 20
                             radius: Styles.radiusLg
                             color: {
-                                if( polkitAgent.flow?.failed) {
-                                    return   "red"
-                                } else if (polkitAgent.flow?.isSuccessful){
-                                    console.log('hi')
-                                    return Colors.green
+                                if (polkitAgent.flow?.failed) {
+                                    return "red";
+                                } else if (polkitAgent.flow?.isSuccessful) {
+                                    console.log('hi');
+                                    return Colors.green;
                                 } else {
-                                    return Colors.bgRed
+                                    return Colors.backgroundError;
                                 }
                             }
                         }
@@ -146,7 +146,7 @@ PanelWindow {
                     ButtonStyled {
                         text: "Cancel"
                         radius: Styles.radiusSm
-                        defaultColor: Colors.bgRed
+                        defaultColor: Colors.backgroundError
                         onClicked: root.cancel()
                     }
 
@@ -156,7 +156,7 @@ PanelWindow {
                         enabled: polkitAgent.flow && (passwordInput.text.length > 0 || !polkitAgent.flow.isResponseRequired)
                         text: "Submit"
                         radius: Styles.radiusSm
-                        defaultColor: Colors.bgGreen
+                        defaultColor: Colors.backgroundSuccess
                         onClicked: {
                             if (polkitAgent.flow) {
                                 polkitAgent.flow.submit(passwordInput.text);

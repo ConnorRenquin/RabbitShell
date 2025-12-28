@@ -46,7 +46,7 @@ Loader {
 
             anchors.fill: parent
 
-            color: Colors.bgDim
+            color: Colors.backgroundDim
             radius: Styles.radiusSm
 
             property int currentIndex: 0
@@ -100,7 +100,7 @@ Loader {
                         Layout.minimumHeight: 100
                         Layout.fillWidth: true
 
-                        color: index === base.currentIndex ? Colors.bgGreen : Colors.bg0
+                        color: index === base.currentIndex ? Colors.backgroundSuccess : Colors.bg0
                         radius: Styles.radiusSm
                         focus: true
 
@@ -164,14 +164,14 @@ Loader {
                                     implicitWidth: muteIcon.implicitWidth + Styles.marginLg
                                     implicitHeight: muteIcon.implicitHeight + Styles.marginSm
                                     radius: 100
-                                    defaultColor: mixerEntry.node?.audio.muted ? Colors.bgDim : Colors.orange
+                                    defaultColor: mixerEntry.node?.audio.muted ? Colors.backgroundDim : Colors.orange
 
                                     onClicked: mixerEntry.node.audio.muted = !mixerEntry.node?.audio.muted
                                     TextStyled {
                                         id: muteIcon
                                         anchors.centerIn: parent
                                         font.pixelSize: 14
-                                        color: mixerEntry.node?.audio.muted ? Colors.orange : Colors.bgDim
+                                        color: mixerEntry.node?.audio.muted ? Colors.orange : Colors.backgroundDim
                                         text: mixerEntry.node?.audio.muted ? "" : ""
                                     }
                                 }
@@ -192,7 +192,7 @@ Loader {
                                         implicitWidth: 100
 
                                         radius: Styles.margin
-                                        color: Colors.bgDim
+                                        color: Colors.backgroundDim
 
                                         Rectangle {
                                             implicitWidth: volumeSlider.visualPosition * parent.width

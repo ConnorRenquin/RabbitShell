@@ -1,4 +1,3 @@
-import Quickshell
 import QtQuick
 
 import qs.Components
@@ -13,14 +12,11 @@ ButtonStyled {
 
     property string icon: "*"
     property string command
+    property string altCommand
 
     TextStyled {
         id: text
         text: root.icon
         anchors.centerIn: parent
-    }
-
-    onClicked: {
-        Quickshell.execDetached(["bash", "-c", root.command]);
     }
 }

@@ -116,7 +116,7 @@ PanelWindow {
 
         anchors.fill: parent
 
-        color: Colors.bgDim
+        color: Colors.backgroundDim
         radius: Styles.radiusSm
 
         property int selectedEntryIndex: 0
@@ -325,7 +325,7 @@ PanelWindow {
                                 id: slotButton
                                 anchors.fill: parent
                                 radius: Styles.radiusSm
-                                color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.bgDim
+                                color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.backgroundDim
 
                                 onClicked: mouse => {
                                     if (mouse.button === Qt.RightButton) {
@@ -346,7 +346,7 @@ PanelWindow {
                                 TextStyled {
                                     anchors.centerIn: parent
                                     text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
-                                    color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.bgDim : Colors.fg
+                                    color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.backgroundDim : Colors.foreground
                                 }
                             }
 
@@ -373,7 +373,7 @@ PanelWindow {
                                         anchors.margins: Styles.marginSm
                                         text: utils.removeIndentation(root.clipboardData.slots[slotButtonContainer.modelData]) || "Empty"
                                         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                        color: Colors.fg
+                                        color: Colors.foreground
                                     }
                                 }
                             }
@@ -430,7 +430,7 @@ PanelWindow {
 
                         defaultColor: Colors.bg0
 
-                        focusedColor: Colors.bgGreen
+                        focusedColor: Colors.backgroundSuccess
 
                         isFocused: ListView.isCurrentItem
 
@@ -455,7 +455,7 @@ PanelWindow {
                                 TextStyled {
                                     id: clipboardItemKeyText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: Colors.bgDim
+                                    color: Colors.backgroundDim
                                     anchors.centerIn: parent
                                     text: button.originalIndex === 0 ? "Now" : button.originalIndex
                                 }
@@ -463,7 +463,7 @@ PanelWindow {
 
                             Rectangle {
                                 id: clipboardItemScreen
-                                color: Colors.bgDim
+                                color: Colors.backgroundDim
                                 radius: Styles.radiusMd
 
                                 Layout.fillWidth: true

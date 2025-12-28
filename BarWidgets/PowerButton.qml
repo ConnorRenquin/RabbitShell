@@ -51,7 +51,7 @@ ButtonWidget {
         implicitWidth: parent.width
 
         defaultColor: Colors.bg0
-        hoverColor: Colors.bgGreen
+        hoverColor: Colors.backgroundSuccess
         focusedColor: Colors.orange
 
         isFocused: index === root.currentFocusIndex
@@ -61,7 +61,7 @@ ButtonWidget {
             anchors.fill: parent
             anchors.margins: Styles.marginSm
             text: menuButton.isFocused || menuButton.containsMouse ? menuButton.label : menuButton.label
-            color: menuButton.isFocused ? Colors.bgDim : Colors.fg
+            color: menuButton.isFocused ? Colors.backgroundDim : Colors.foreground
         }
     }
 
@@ -89,7 +89,7 @@ ButtonWidget {
 
         Rectangle {
             id: menuBackground
-            color: Colors.bgRed
+            color: Colors.backgroundError
             radius: Styles.margin
             implicitWidth: 220
             implicitHeight: buttons.implicitHeight + Styles.marginSm * 2

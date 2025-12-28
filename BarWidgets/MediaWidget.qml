@@ -11,7 +11,7 @@ Rectangle {
     id: root
     width: row.implicitWidth + Styles.marginMd
     height: parent.height
-    color: Colors.bgDim
+    color: Colors.backgroundDim
     radius: Styles.radiusSm
     visible: root.player !== null
 
@@ -21,7 +21,7 @@ Rectangle {
         id: buttonLocal
 
         property string iconText: ""
-        property string iconColor: Colors.bgDim
+        property string iconColor: Colors.backgroundDim
         property string backgroundColor: Colors.green
 
         width: iconTextItem.width + Styles.marginSm * 2
@@ -89,7 +89,7 @@ Rectangle {
 
             Rectangle {
                 z: 1
-                color: Colors.bgDim
+                color: Colors.backgroundDim
                 implicitHeight: popupText.implicitHeight * 2
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -133,7 +133,7 @@ Rectangle {
         }
         ButtonStyledLocal {
             backgroundColor: root.player?.isPlaying ? Colors.orange : Colors.bg1
-            iconColor: root.player?.isPlaying ? Colors.bgDim : Colors.fg
+            iconColor: root.player?.isPlaying ? Colors.backgroundDim : Colors.foreground
             iconText: "󰐎"
             onClicked: root.player.togglePlaying()
         }

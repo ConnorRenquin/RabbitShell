@@ -14,4 +14,5 @@ ShellRoot {
     NotificationManager {}
     LockScreen {}
     Polkit {}
+    ThemeSwitcher {}
 }

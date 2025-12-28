@@ -56,7 +56,7 @@ Loader {
         Rectangle {
             id: base
 
-            color: Colors.bgDim
+            color: Colors.backgroundDim
             radius: Styles.radiusMd
             focus: true
 
@@ -150,7 +150,7 @@ Loader {
                                             return "";
                                         return windowCard.modelData.wayland.title;
                                     }
-                                    secondaryColor: Colors.bgDim
+                                    secondaryColor: Colors.backgroundDim
                                     offset: 2
                                 }
 
@@ -163,7 +163,7 @@ Loader {
                                         return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland?.appId;
                                     }
                                     primaryColor: Colors.green
-                                    secondaryColor: Colors.bgDim
+                                    secondaryColor: Colors.backgroundDim
                                     offset: 2
                                 }
                             }

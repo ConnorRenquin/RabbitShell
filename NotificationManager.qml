@@ -45,7 +45,7 @@ Loader {
         Rectangle {
             id: base
             anchors.fill: parent
-            color: Colors.bgDim
+            color: Colors.backgroundDim
             radius: Styles.radiusMd
             focus: true
 
@@ -99,7 +99,7 @@ Loader {
                                 anchors.centerIn: parent
                                 textFormat: Text.MarkdownText
                                 text: '<u>C</u>lear All'
-                                color: Colors.bgDim
+                                color: Colors.backgroundDim
                             }
                         }
                     }
@@ -178,7 +178,7 @@ Loader {
                                     visible: text
                                     text: notificationItem.modelData.body ?? ""
                                     Layout.fillWidth: true
-                                    color: Colors.fg
+                                    color: Colors.foreground
                                     font.pixelSize: Styles.textSm
                                 }
                             }
@@ -195,7 +195,7 @@ Loader {
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: "No notifications"
-                                color: Colors.fg
+                                color: Colors.foreground
                                 opacity: 0.5
                                 font.pixelSize: 16
                             }

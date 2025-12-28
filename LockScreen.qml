@@ -94,7 +94,7 @@ Scope {
             Rectangle {
                 id: lockScreenBackground
                 anchors.fill: parent
-                color: Colors.bgDim
+                color: Colors.backgroundDim
 
                 Image {
                     id: wallpaper
@@ -118,7 +118,7 @@ Scope {
                     TextStyled {
                         id: clockText
                         anchors.centerIn: parent
-                        color: Colors.bgDim
+                        color: Colors.backgroundDim
                         font.pixelSize: 80
                         text: Time.time + '  ' + Time.date
                     }
@@ -132,7 +132,7 @@ Scope {
                         Rectangle {
                             Layout.preferredWidth: 400
                             Layout.fillHeight: true
-                            color: Colors.bgDim
+                            color: Colors.backgroundDim
                             radius: Styles.radiusSm
                             TextFieldStyled {
                                 id: passwordTextField
@@ -167,7 +167,7 @@ Scope {
                             TextStyled {
                                 id: unlockButtonText
                                 anchors.centerIn: parent
-                                color: Colors.bgDim
+                                color: Colors.backgroundDim
                                 text: ""
                             }
                         }

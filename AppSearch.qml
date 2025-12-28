@@ -135,7 +135,7 @@ Loader {
                 implicitHeight: 60
                 Layout.fillWidth: true
 
-                color: Colors.bgDim
+                color: Colors.backgroundDim
                 radius: Styles.radius0
 
                 readonly property int textSize: 25
@@ -166,14 +166,14 @@ Loader {
                         id: clock
                         anchors.centerIn: parent
                         anchors.verticalCenter: parent.verticalCenter
-                        color: Colors.bgDim
+                        color: Colors.backgroundDim
                         text: Time.timeShort
                     }
                 }
             }
 
             Rectangle {
-                color: Colors.bgDim
+                color: Colors.backgroundDim
                 radius: Styles.radiusSm
 
                 Layout.fillWidth: true
@@ -236,7 +236,7 @@ Loader {
                                 id: appName
                                 Layout.fillWidth: true
                                 text: menuButton.modelData.name
-                                color: menuButton.isFocused ? Colors.bg1 : Colors.fg
+                                color: menuButton.isFocused ? Colors.bg1 : Colors.foreground
                             }
                         }
                     }

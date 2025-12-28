@@ -58,7 +58,13 @@ Variants {
             IdleInhibitorWidget {}
             ButtonWidget {
                 icon: "󱪵"
-                command: "waypaper --random"
+                onClicked: mouse => {
+                    if (mouse.button === Qt.LeftButton) {
+                        Quickshell.execDetached(["bash", "-c", "waypaper --random"]);
+                    } else if (mouse.button === Qt.RightButton) {
+                        PatchBay.openThemeSelector();
+                    }
+                }
             }
             PowerButton {}
         }
