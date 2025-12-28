@@ -38,9 +38,6 @@ Scope {
         signal unlocked
         signal failed
 
-        configDirectory: "pam"
-        config: "password.conf"
-
         onCurrentTextChanged: showFailure = false
 
         onPamMessage: {
