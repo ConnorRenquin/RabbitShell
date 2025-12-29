@@ -38,10 +38,11 @@ Rectangle {
         }
     }
 
-    PopupWindowAnimated {
+    PopupWindow {
         id: popup
         implicitWidth: 400
         implicitHeight: 400
+        color: "transparent"
 
         anchor {
             item: albumArt
@@ -53,9 +54,9 @@ Rectangle {
             target: albumArtMouse
             function onContainsMouseChanged() {
                 if (albumArtMouse.containsMouse) {
-                    popup.show();
+                    popup.visible = true;
                 } else {
-                    popup.hide();
+                    popup.visible = false;
                 }
             }
         }
@@ -65,8 +66,8 @@ Rectangle {
             height: parent.height
             width: parent.width
 
-            opacity: popup.isOpen ? 1 : 0
-            scale: popup.isOpen ? 1 : 0
+            opacity: popup.visible ? 1 : 0
+            scale: popup.visible ? 1 : 0
 
             Behavior on opacity {
                 NumberAnimation {

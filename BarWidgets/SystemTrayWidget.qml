@@ -103,7 +103,7 @@ Rectangle {
         }
     }
 
-    component SystemTrayMenu: PopupWindowAnimated {
+    component SystemTrayMenu: PopupWindow {
         id: systemTrayMenu
 
         required property SystemTrayItem item
@@ -111,17 +111,19 @@ Rectangle {
         implicitHeight: menuContent.implicitHeight + Styles.marginSm * 2
         implicitWidth: menuContent.implicitWidth + Styles.marginSm * 2
 
+        color: "transparent"
+
         anchor {
             item: parent
             rect.y: parent.height + 10
             rect.x: parent.width / 2 - implicitWidth / 2
         }
 
-        onIsOpenChanged: {
-            if (isOpen) {
+        onVisibleChanged: {
+            if (visible) {
                 // Close any other open menu
                 if (root.currentOpenMenu && root.currentOpenMenu !== systemTrayMenu) {
-                    root.currentOpenMenu.hide();
+                    root.currentOpenMenu.visible = false;
                 }
                 root.currentOpenMenu = systemTrayMenu;
                 autoCloseTimer.timer.restart();
@@ -141,14 +143,14 @@ Rectangle {
         AutoCloseTimerManager {
             id: autoCloseTimer
             onTimeout: function () {
-                systemTrayMenu.hide();
+                systemTrayMenu.visible = false;
             }
         }
 
         AnimatedMenuBackground {
             id: menuBackground
             anchors.fill: parent
-            isVisible: systemTrayMenu.isOpen
+            isVisible: systemTrayMenu.visible
 
             ColumnLayout {
                 id: menuContent
@@ -254,7 +256,7 @@ Rectangle {
                                                 menuItemWrapper.submenuExpanded = !menuItemWrapper.submenuExpanded;
                                             } else {
                                                 menuLoader.modelData.triggered();
-                                                systemTrayMenu.hide();
+                                                systemTrayMenu.visible = false;
                                             }
                                         }
                                     }
@@ -269,12 +271,13 @@ Rectangle {
                                 Loader {
                                     id: submenuLoader
                                     active: menuItemWrapper.submenuExpanded && menuLoader.modelData.hasChildren
-                                    sourceComponent: PopupWindowAnimated {
+                                    sourceComponent: PopupWindow {
                                         id: submenuPopup
 
                                         implicitHeight: submenuContent.implicitHeight + Styles.marginSm * 2
                                         implicitWidth: submenuContent.implicitWidth + Styles.marginSm * 2
 
+                                        color: "transparent"
                                         visible: menuItemWrapper.submenuExpanded
 
                                         anchor {
@@ -290,7 +293,7 @@ Rectangle {
 
                                         AnimatedMenuBackground {
                                             anchors.fill: parent
-                                            isVisible: submenuPopup.isOpen
+                                            isVisible: submenuPopup.visible
 
                                             ColumnLayout {
                                                 id: submenuContent
@@ -313,16 +316,12 @@ Rectangle {
                                                             if (submenuButton.modelData.enabled) {
                                                                 submenuButton.modelData.triggered();
                                                                 menuItemWrapper.submenuExpanded = false;
-                                                                systemTrayMenu.hide();
+                                                                systemTrayMenu.visible = false;
                                                             }
                                                         }
                                                     }
                                                 }
                                             }
-                                        }
-
-                                        Component.onCompleted: {
-                                            submenuPopup.show();
                                         }
                                     }
                                 }
@@ -398,7 +397,7 @@ Rectangle {
 
                     onClicked: mouse => {
                         if (mouse.button === Qt.LeftButton && trayItem.modelData.hasMenu) {
-                            trayMenu.toggleVisible();
+                            trayMenu.visible = !trayMenu.visible;
                         } else if (mouse.button === Qt.RightButton) {
                             trayItem.modelData.activate();
                         } else if (mouse.button === Qt.MiddleButton) {
