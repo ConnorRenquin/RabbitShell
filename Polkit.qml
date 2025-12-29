@@ -106,7 +106,6 @@ PanelWindow {
                                 if (polkitAgent.flow?.failed) {
                                     return "red";
                                 } else if (polkitAgent.flow?.isSuccessful) {
-                                    console.log('hi');
                                     return Colors.green;
                                 } else {
                                     return Colors.backgroundError;

@@ -60,7 +60,7 @@ Rectangle {
 
             implicitHeight: root.height - Styles.marginSm
             implicitWidth: workspaceIcon.implicitWidth + Styles.marginSm
-            radius: modelData.focused ? Styles.radiusLg : Styles.radiusSm
+            radius: modelData?.focused ? Styles.radiusLg : Styles.radiusSm
 
             onClicked: Hyprland.dispatch(`workspace ${modelData.id}`)
 
@@ -76,7 +76,7 @@ Rectangle {
                 elide: Text.ElideNone
                 primaryColor: Colors.green
                 anchors.centerIn: parent
-                text: workspaceButton.modelData.focused ? "󰜋" : "󰜌"
+                text: workspaceButton.modelData?.focused ? "󰜋" : "󰜌"
             }
         }
     }

@@ -11,12 +11,7 @@ FloatingWindow {
     id: root
     visible: false
 
-    Component.onCompleted: PatchBay.openThemeSelector.connect(toggle)
-
-    function toggle() {
-        console.log('hi');
-        root.visible = !root.visible;
-    }
+    Component.onCompleted: PatchBay.openThemeSelector.connect(() => root.visible = !root.visible)
 
     Rectangle {
         id: base
