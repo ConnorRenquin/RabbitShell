@@ -57,7 +57,7 @@ Variants {
         BarRow {
             anchors.right: parent.right
             MediaWidget {}
-            SystemTray {}
+            SystemTrayWidget {}
             IdleInhibitorWidget {}
             ButtonStyled {
                 text: "󱪵"
@@ -70,7 +70,7 @@ Variants {
                     }
                 }
             }
-            PowerButton {}
+            PowerButtonWidget {}
         }
     }
 
