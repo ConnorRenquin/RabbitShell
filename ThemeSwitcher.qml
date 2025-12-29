@@ -70,24 +70,10 @@ FloatingWindow {
                             anchors.centerIn: parent
                             text: themeButton.modelData.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
                             color: themeButton.isActive ? Colors.background : Colors.foreground
-                            font.pixelSize: 14
+                            font.pixelSize: Styles.textSm
                         }
                     }
                 }
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: 2
-                color: Colors.bg1
-            }
-
-            TextStyled {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.minimumHeight: 40
-                text: "Current: " + ThemeManager.currentTheme
-                font.pixelSize: 12
-                color: Colors.gray
             }
         }
     }
