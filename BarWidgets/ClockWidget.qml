@@ -4,8 +4,11 @@ import qs.Components
 import qs.Constants
 import qs.Services
 
-BarWidget {
+Rectangle {
     implicitWidth: contentRow.implicitWidth + Styles.margin * 2
+    radius: Styles.radiusSm
+    color: Colors.background
+    implicitHeight: parent.height
     Row {
         id: contentRow
         anchors.centerIn: parent

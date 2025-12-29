@@ -9,10 +9,12 @@ import qs.Components
 import qs.Constants
 import qs.Services
 
-ButtonWidget {
+ButtonStyled {
     id: root
+
     width: parent.height
-    icon: "⏻"
+    radius: Styles.radiusSm
+    text: "⏻"
 
     GlobalShortcut {
         name: "powermenu"
@@ -50,7 +52,7 @@ ButtonWidget {
         implicitHeight: text.implicitHeight + Styles.marginMd
         implicitWidth: parent.width
 
-        defaultColor: Colors.bg1
+        defaultColor: Colors.background
         hoverColor: Colors.backgroundSuccess
         focusedColor: Colors.orange
 
@@ -60,6 +62,7 @@ ButtonWidget {
             id: text
             anchors.fill: parent
             anchors.margins: Styles.marginSm
+            font.pixelSize: Styles.textSm
             text: menuButton.isFocused || menuButton.containsMouse ? menuButton.label : menuButton.label
             color: menuButton.isFocused ? Colors.background : Colors.foreground
         }
@@ -89,7 +92,7 @@ ButtonWidget {
 
         Rectangle {
             id: menuBackground
-            color: Colors.backgroundError
+            color: Colors.background
             radius: Styles.margin
             implicitWidth: 220
             implicitHeight: buttons.implicitHeight + Styles.marginSm * 2

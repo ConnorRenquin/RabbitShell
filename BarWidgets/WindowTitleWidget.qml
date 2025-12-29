@@ -1,14 +1,17 @@
-import Quickshell
 import Quickshell.Wayland
 import QtQuick
 
 import qs.Components
 import qs.Constants
 
-BarWidget {
+Rectangle {
+    clip: true
+
+    radius: Styles.radiusSm
+    color: Colors.background
 
     implicitWidth: Math.min(title.implicitWidth + Styles.margin * 2, 600)
-    clip: true
+    implicitHeight: parent.height
 
     function getTitle() {
         var title = ToplevelManager.activeToplevel?.title;

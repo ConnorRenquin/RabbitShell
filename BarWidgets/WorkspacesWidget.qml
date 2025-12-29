@@ -7,10 +7,12 @@ import QtQuick
 import qs.Components
 import qs.Constants
 
-BarWidget {
+Rectangle {
     id: root
     required property string monitorName
-
+    radius: Styles.radiusSm
+    color: Colors.background
+    implicitHeight: parent.height
     implicitWidth: workspacesListView.width + Styles.marginSm
 
     Behavior on implicitWidth {

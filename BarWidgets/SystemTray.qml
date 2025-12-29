@@ -10,11 +10,13 @@ import QtQuick.Layouts
 import qs.Components
 import qs.Constants
 
-BarWidget {
+Rectangle {
     id: root
     property int iconSize: 20
     property var currentOpenMenu: null
-
+    radius: Styles.radiusSm
+    color: Colors.background
+    implicitHeight: parent.height
     implicitWidth: row.implicitWidth + Styles.marginSm * 2
 
     component AutoCloseTimerManager: QtObject {
@@ -95,7 +97,7 @@ BarWidget {
         TextStyled {
             id: buttonTextItem
             text: buttonText
-            font.pixelSize: 14
+            font.pixelSize: Styles.textSm
             anchors.centerIn: parent
             color: isEnabled ? Colors.foreground : Colors.gray
         }
@@ -223,7 +225,7 @@ BarWidget {
                                         TextStyled {
                                             id: itemText
                                             text: menuLoader.modelData.text || ""
-                                            font.pixelSize: 14
+                                            font.pixelSize: Styles.textSm
                                             Layout.fillWidth: true
                                             horizontalAlignment: Text.AlignLeft
                                             color: menuLoader.modelData.enabled ? Colors.foreground : Colors.gray
@@ -232,7 +234,7 @@ BarWidget {
                                         TextStyled {
                                             id: checkBox
                                             text: menuLoader.modelData.checkState === Qt.Checked ? "✓" : ""
-                                            font.pixelSize: 14
+                                            font.pixelSize: Styles.textSm
                                             color: Colors.green
                                             visible: menuLoader.modelData.buttonType !== 0
                                         }
@@ -240,7 +242,7 @@ BarWidget {
                                         TextStyled {
                                             id: submenu
                                             text: "›"
-                                            font.pixelSize: 14
+                                            font.pixelSize: Styles.textSm
                                             color: Colors.gray
                                             visible: menuLoader.modelData.hasChildren
                                         }

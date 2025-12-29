@@ -3,6 +3,8 @@ import QtQuick
 
 import qs.BarWidgets
 import qs.Services
+import qs.Components
+import qs.Constants
 
 Variants {
     model: Quickshell.screens
@@ -41,9 +43,10 @@ Variants {
         // Center
         BarRow {
             anchors.centerIn: parent
-            ButtonWidget {
+            ButtonStyled {
                 visible: Notifications.notifications.length > 0
-                icon: " " + Notifications.notifications.length
+                radius: Styles.radiusSm
+                text: " " + Notifications.notifications.length
                 onClicked: PatchBay.openNotificationsManager()
             }
             ClockWidget {}
@@ -56,8 +59,9 @@ Variants {
             MediaWidget {}
             SystemTray {}
             IdleInhibitorWidget {}
-            ButtonWidget {
-                icon: "󱪵"
+            ButtonStyled {
+                text: "󱪵"
+                radius: Styles.radiusSm
                 onClicked: mouse => {
                     if (mouse.button === Qt.LeftButton) {
                         Quickshell.execDetached(["bash", "-c", "waypaper --random"]);

@@ -5,10 +5,13 @@ import QtQuick
 import qs.Constants
 import qs.Components
 
-BarWidget {
+Rectangle {
     id: root
     visible: UPower.displayDevice.percentage < 0.95 && UPower.displayDevice.isLaptopBattery
     implicitWidth: text.implicitWidth + Styles.marginSm * 2
+    implicitHeight: parent.height
+    radius: Styles.radiusSm
+    color: Colors.background
 
     readonly property var dischargingGlyphs: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
     readonly property var chargingGlyphs: ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
