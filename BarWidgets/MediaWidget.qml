@@ -24,9 +24,9 @@ Rectangle {
         property string iconColor: Colors.background
         property string backgroundColor: Colors.green
 
-        width: iconTextItem.width + Styles.marginSm * 2
-        height: root.height - Styles.marginSm
-        radius: Styles.radiusSm
+        implicitWidth: iconTextItem.width + Styles.marginSm * 2
+        implicitHeight: root.height - Styles.marginSm
+
         defaultColor: backgroundColor
         anchors.verticalCenter: parent.verticalCenter
 

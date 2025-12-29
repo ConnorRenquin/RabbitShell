@@ -83,10 +83,11 @@ Loader {
                     ButtonStyled {
                         id: workspace
 
-                        width: workspaceGrid.cellWidth - Styles.marginSm
-                        height: workspaceGrid.cellHeight - Styles.marginSm
+                        implicitWidth: workspaceGrid.cellWidth - Styles.marginSm
+                        implicitHeight: workspaceGrid.cellHeight - Styles.marginSm
 
-                        radius: wrapper.modelData.focused ? 15 : Styles.radiusSm // 15 is about the max you can go, not sure why
+                        radius: wrapper.modelData.focused ? Styles.radiusLg : Styles.radiusSm // 15 is about the max you can go, not sure why
+
                         clip: true
 
                         isFocused: wrapper.modelData.focused

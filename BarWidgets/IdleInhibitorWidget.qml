@@ -7,9 +7,8 @@ import qs.Services
 ButtonStyled {
     id: root
 
-    width: parent.height
-    height: parent.height
-    radius: Styles.radiusSm
+    implicitWidth: parent.height
+    implicitHeight: parent.height
 
     defaultColor: IdleInhibitorSingleton.enabled() ? Colors.orange : Colors.background
     hoverColor: IdleInhibitorSingleton.enabled() ? Colors.backgroundSuccess : Colors.bg2

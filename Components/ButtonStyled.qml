@@ -14,6 +14,7 @@ Rectangle {
             return defaultColor;
     }
 
+    radius: Styles.radiusSm
     scale: mouseArea.pressed ? 0.90 : 1
     implicitWidth: buttonText.implicitWidth + Styles.marginMd
     implicitHeight: buttonText.implicitHeight + Styles.marginMd
@@ -21,7 +22,7 @@ Rectangle {
     property string text
 
     property string hoverColor: Colors.bg2
-    property string defaultColor: Colors.background
+    property string defaultColor: Colors.bg1
     property string focusedColor: Colors.orange
     property bool isFocused: false
     property bool containsMouse: mouseArea.containsMouse

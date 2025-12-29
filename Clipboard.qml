@@ -324,7 +324,7 @@ PanelWindow {
                             ButtonStyled {
                                 id: slotButton
                                 anchors.fill: parent
-                                radius: Styles.radiusSm
+
                                 color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.background
 
                                 onClicked: mouse => {

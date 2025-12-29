@@ -56,7 +56,6 @@ FloatingWindow {
                         id: themeButton
                         required property string modelData
                         required property int index
-                        radius: Styles.radiusSm
 
                         Layout.margins: Styles.marginSm
                         Layout.fillWidth: true

@@ -45,7 +45,7 @@ Variants {
             anchors.centerIn: parent
             ButtonStyled {
                 visible: Notifications.notifications.length > 0
-                radius: Styles.radiusSm
+
                 text: " " + Notifications.notifications.length
                 onClicked: PatchBay.openNotificationsManager()
             }
@@ -61,7 +61,7 @@ Variants {
             IdleInhibitorWidget {}
             ButtonStyled {
                 text: "󱪵"
-                radius: Styles.radiusSm
+
                 onClicked: mouse => {
                     if (mouse.button === Qt.LeftButton) {
                         Quickshell.execDetached(["bash", "-c", "waypaper --random"]);

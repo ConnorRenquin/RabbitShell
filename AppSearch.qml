@@ -206,8 +206,6 @@ Loader {
                         implicitWidth: appGridView.cellWidth - Styles.marginSm
                         implicitHeight: appGridView.cellHeight - Styles.marginSm
 
-                        radius: Styles.radiusSm
-
                         isFocused: index === appGridView.currentIndex
 
                         onClicked: {

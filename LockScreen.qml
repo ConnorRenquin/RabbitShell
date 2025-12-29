@@ -157,7 +157,7 @@ Scope {
                             id: unlockButton
                             implicitWidth: unlockButtonText.implicitWidth + Styles.marginMd
                             Layout.fillHeight: true
-                            radius: Styles.radiusSm
+
                             defaultColor: Colors.orange
                             onClicked: lockContext.tryUnlock()
                             enabled: !lockContext.unlockInProgress

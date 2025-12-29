@@ -12,8 +12,7 @@ import qs.Services
 ButtonStyled {
     id: root
 
-    width: parent.height
-    radius: Styles.radiusSm
+    implicitWidth: parent.height
     text: "⏻"
 
     GlobalShortcut {
@@ -48,7 +47,6 @@ ButtonStyled {
         required property int index
         required property string label
 
-        radius: Styles.radiusSm
         implicitHeight: text.implicitHeight + Styles.marginMd
         implicitWidth: parent.width
 

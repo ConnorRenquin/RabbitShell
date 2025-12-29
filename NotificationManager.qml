@@ -90,7 +90,7 @@ Loader {
                             id: clearButton
                             implicitHeight: 40
                             implicitWidth: clearAllText.implicitWidth + Styles.marginLg
-                            radius: Styles.radiusSm
+
                             defaultColor: Colors.orange
                             onClicked: Notifications.clear()
 
@@ -154,7 +154,6 @@ Loader {
                                     ButtonStyled {
                                         implicitHeight: 30
                                         implicitWidth: dismissText.implicitWidth + Styles.marginMd
-                                        radius: Styles.radiusSm
                                         defaultColor: Colors.bg1
                                         onClicked: Notifications.dismiss(notificationItem.index)
 

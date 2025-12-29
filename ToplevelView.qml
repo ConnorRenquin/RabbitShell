@@ -113,19 +113,19 @@ Loader {
                     delegate: ButtonStyled {
                         id: windowCard
 
+                        required property var modelData
+                        required property int index
+
                         Layout.preferredWidth: 340
                         Layout.preferredHeight: 80
 
+                        radius: Styles.radiusMd
                         clip: true
 
-                        required property var modelData
-                        required property int index
                         property string keyLabel: {
                             // Helper property to get the key label
                             return index < root.keyMap.length ? root.keyMap[index] : "";
                         }
-
-                        radius: Styles.radiusMd
 
                         onClicked: {
                             modelData.wayland.activate();

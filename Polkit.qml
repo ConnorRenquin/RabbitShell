@@ -145,7 +145,6 @@ PanelWindow {
                     spacing: 8
                     ButtonStyled {
                         text: "Cancel"
-                        radius: Styles.radiusSm
                         defaultColor: Colors.backgroundError
                         onClicked: root.cancel()
                     }
@@ -155,7 +154,6 @@ PanelWindow {
                         Layout.fillWidth: true
                         enabled: polkitAgent.flow && (passwordInput.text.length > 0 || !polkitAgent.flow.isResponseRequired)
                         text: "Submit"
-                        radius: Styles.radiusSm
                         defaultColor: Colors.backgroundSuccess
                         onClicked: {
                             if (polkitAgent.flow) {

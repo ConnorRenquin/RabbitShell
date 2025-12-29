@@ -56,8 +56,6 @@ Variants {
             implicitHeight: Math.min(notificationContent.implicitHeight + notificationContent.anchors.margins * 2, 300)
             implicitWidth: parent.width
 
-            radius: 5
-
             clip: true
             onClicked: notificationBase.destroy()
 
