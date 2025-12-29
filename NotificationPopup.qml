@@ -31,7 +31,7 @@ Variants {
         screen: modelData
 
         exclusionMode: ExclusionMode.Normal
-        color: Colors.transparent
+        color: "transparent"
         mask: Region {
             item: notificationList
         }

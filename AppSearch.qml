@@ -135,7 +135,7 @@ Loader {
                 implicitHeight: 60
                 Layout.fillWidth: true
 
-                color: Colors.backgroundDim
+                color: Colors.background
                 radius: Styles.radius0
 
                 readonly property int textSize: 25
@@ -166,14 +166,14 @@ Loader {
                         id: clock
                         anchors.centerIn: parent
                         anchors.verticalCenter: parent.verticalCenter
-                        color: Colors.backgroundDim
+                        color: Colors.background
                         text: Time.timeShort
                     }
                 }
             }
 
             Rectangle {
-                color: Colors.backgroundDim
+                color: Colors.background
                 radius: Styles.radiusSm
 
                 Layout.fillWidth: true

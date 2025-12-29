@@ -8,26 +8,13 @@ QtObject {
     property var currentTheme: ThemeManager.theme
 
     // Base colors
-    readonly property string transparent: currentTheme.transparent
     readonly property string background: currentTheme.background
-    readonly property string backgroundDim: currentTheme.backgroundDim
-    readonly property string backgroundAlt: currentTheme.backgroundAlt
     readonly property string foreground: currentTheme.foreground
 
     // Background levels (for layering UI elements)
     readonly property string bg0: currentTheme.bg0
     readonly property string bg1: currentTheme.bg1
     readonly property string bg2: currentTheme.bg2
-    readonly property string bg3: currentTheme.bg3
-    readonly property string bg4: currentTheme.bg4
-    readonly property string bg5: currentTheme.bg5
-
-    // Semantic backgrounds
-    readonly property string backgroundVisual: currentTheme.backgroundVisual
-    readonly property string backgroundError: currentTheme.backgroundError
-    readonly property string backgroundSuccess: currentTheme.backgroundSuccess
-    readonly property string backgroundInfo: currentTheme.backgroundInfo
-    readonly property string backgroundWarning: currentTheme.backgroundWarning
 
     // Primary accent colors
     readonly property string primary: currentTheme.primary
@@ -36,9 +23,11 @@ QtObject {
 
     // Semantic colors (use these for consistency)
     readonly property string success: currentTheme.success
+    readonly property string backgroundSuccess: currentTheme.backgroundSuccess
     readonly property string error: currentTheme.error
+    readonly property string backgroundError: currentTheme.backgroundError
     readonly property string warning: currentTheme.warning
-    readonly property string info: currentTheme.info
+    readonly property string backgroundWarning: currentTheme.backgroundWarning
 
     // Extended color palette
     readonly property string orange: currentTheme.orange
@@ -47,11 +36,7 @@ QtObject {
     readonly property string aqua: currentTheme.aqua
     readonly property string blue: currentTheme.blue
     readonly property string purple: currentTheme.purple
-
-    // Grays
     readonly property string gray: currentTheme.gray
-    readonly property string grayLight: currentTheme.grayLight
-    readonly property string grayLighter: currentTheme.grayLighter
 
     function withOpacity(color, opacity) {
         return Qt.rgba(Qt.colorFromString(color).r, Qt.colorFromString(color).g, Qt.colorFromString(color).b, opacity);

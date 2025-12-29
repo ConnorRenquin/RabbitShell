@@ -11,7 +11,7 @@ ButtonStyled {
     height: parent.height
     radius: Styles.radiusSm
 
-    defaultColor: IdleInhibitorSingleton.enabled() ? Colors.orange : Colors.backgroundDim
+    defaultColor: IdleInhibitorSingleton.enabled() ? Colors.orange : Colors.background
     hoverColor: IdleInhibitorSingleton.enabled() ? Colors.backgroundSuccess : Colors.bg2
 
     TextStyled {

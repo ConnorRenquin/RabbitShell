@@ -21,7 +21,7 @@ Rectangle {
     property string text
 
     property string hoverColor: Colors.bg2
-    property string defaultColor: Colors.backgroundDim
+    property string defaultColor: Colors.background
     property string focusedColor: Colors.orange
     property bool isFocused: false
     property bool containsMouse: mouseArea.containsMouse

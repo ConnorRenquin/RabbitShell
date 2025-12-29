@@ -61,7 +61,7 @@ ButtonWidget {
             anchors.fill: parent
             anchors.margins: Styles.marginSm
             text: menuButton.isFocused || menuButton.containsMouse ? menuButton.label : menuButton.label
-            color: menuButton.isFocused ? Colors.backgroundDim : Colors.foreground
+            color: menuButton.isFocused ? Colors.background : Colors.foreground
         }
     }
 

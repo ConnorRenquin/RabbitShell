@@ -45,7 +45,7 @@ Loader {
         Rectangle {
             id: base
             anchors.fill: parent
-            color: Colors.backgroundDim
+            color: Colors.background
             radius: Styles.radiusMd
             focus: true
 
@@ -99,7 +99,7 @@ Loader {
                                 anchors.centerIn: parent
                                 textFormat: Text.MarkdownText
                                 text: '<u>C</u>lear All'
-                                color: Colors.backgroundDim
+                                color: Colors.background
                             }
                         }
                     }

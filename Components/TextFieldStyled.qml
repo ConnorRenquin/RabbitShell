@@ -6,7 +6,7 @@ import qs.Constants
 TextField {
     id: root
 
-    property string backgroundColor: Colors.backgroundDim
+    property string backgroundColor: Colors.background
 
     font.pixelSize: Styles.textMd
     color: Colors.foreground

@@ -47,7 +47,7 @@ BarWidget {
     component AnimatedMenuBackground: Rectangle {
         required property bool isVisible
 
-        color: Colors.backgroundDim
+        color: Colors.background
         radius: Styles.radiusLg
         opacity: isVisible ? 1 : 0
         scale: isVisible ? 1 : 0.95
@@ -78,7 +78,7 @@ BarWidget {
         implicitWidth: Math.max(minWidth, buttonTextItem.implicitWidth + Styles.marginSm * 2)
         implicitHeight: buttonTextItem.implicitHeight + Styles.marginSm
 
-        defaultColor: Colors.transparent
+        defaultColor: "transparent"
         hoverColor: Colors.bg2
         radius: Styles.radiusSm
         enabled: isEnabled
@@ -172,7 +172,7 @@ BarWidget {
                                 implicitHeight: 1
                                 anchors.centerIn: parent
                                 width: parent.width - Styles.marginSm * 2
-                                color: Colors.bg3
+                                color: Colors.bg2
                             }
                         }
 
@@ -193,7 +193,7 @@ BarWidget {
                                     implicitWidth: Math.max(180, itemText.implicitWidth + Styles.marginSm * 2)
                                     implicitHeight: itemText.implicitHeight + Styles.marginSm
 
-                                    defaultColor: Colors.transparent
+                                    defaultColor: "transparent"
                                     hoverColor: Colors.bg2
                                     radius: Styles.radiusSm
 

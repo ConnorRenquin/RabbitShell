@@ -40,7 +40,7 @@ FloatingWindow {
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 2
-                color: Colors.bg3
+                color: Colors.bg2
             }
 
             GridLayout {
@@ -68,7 +68,7 @@ FloatingWindow {
                         readonly property bool isActive: ThemeManager.currentTheme === modelData
 
                         defaultColor: isActive ? Colors.primary : Colors.bg2
-                        hoverColor: isActive ? Colors.primary : Colors.bg3
+                        hoverColor: isActive ? Colors.primary : Colors.bg1
 
                         onClicked: ThemeManager.setTheme(modelData)
 
@@ -85,7 +85,7 @@ FloatingWindow {
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 2
-                color: Colors.bg3
+                color: Colors.bg1
             }
 
             TextStyled {
@@ -93,7 +93,7 @@ FloatingWindow {
                 Layout.minimumHeight: 40
                 text: "Current: " + ThemeManager.currentTheme
                 font.pixelSize: 12
-                color: Colors.grayLight
+                color: Colors.gray
             }
         }
     }

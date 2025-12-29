@@ -116,7 +116,7 @@ PanelWindow {
 
         anchors.fill: parent
 
-        color: Colors.backgroundDim
+        color: Colors.background
         radius: Styles.radiusSm
 
         property int selectedEntryIndex: 0
@@ -325,7 +325,7 @@ PanelWindow {
                                 id: slotButton
                                 anchors.fill: parent
                                 radius: Styles.radiusSm
-                                color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.backgroundDim
+                                color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.background
 
                                 onClicked: mouse => {
                                     if (mouse.button === Qt.RightButton) {
@@ -346,7 +346,7 @@ PanelWindow {
                                 TextStyled {
                                     anchors.centerIn: parent
                                     text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
-                                    color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.backgroundDim : Colors.foreground
+                                    color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.background : Colors.foreground
                                 }
                             }
 
@@ -455,7 +455,7 @@ PanelWindow {
                                 TextStyled {
                                     id: clipboardItemKeyText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: Colors.backgroundDim
+                                    color: Colors.background
                                     anchors.centerIn: parent
                                     text: button.originalIndex === 0 ? "Now" : button.originalIndex
                                 }
@@ -463,7 +463,7 @@ PanelWindow {
 
                             Rectangle {
                                 id: clipboardItemScreen
-                                color: Colors.backgroundDim
+                                color: Colors.background
                                 radius: Styles.radiusMd
 
                                 Layout.fillWidth: true

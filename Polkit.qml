@@ -29,7 +29,7 @@ PanelWindow {
         Layout.preferredWidth: 300
         Layout.fillHeight: true
         radius: Styles.radiusLg
-        color: Colors.backgroundDim
+        color: Colors.background
         Timer {
             repeat: true
             running: true
@@ -85,7 +85,7 @@ PanelWindow {
                 anchors.margins: Styles.marginMd
                 Rectangle {
                     id: polkitMonitor
-                    color: Colors.backgroundDim
+                    color: Colors.background
                     Layout.fillWidth: true
                     Layout.preferredHeight: 90
                     radius: Styles.radiusMd

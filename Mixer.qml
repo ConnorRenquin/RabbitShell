@@ -46,7 +46,7 @@ Loader {
 
             anchors.fill: parent
 
-            color: Colors.backgroundDim
+            color: Colors.background
             radius: Styles.radiusSm
 
             property int currentIndex: 0
@@ -164,14 +164,14 @@ Loader {
                                     implicitWidth: muteIcon.implicitWidth + Styles.marginLg
                                     implicitHeight: muteIcon.implicitHeight + Styles.marginSm
                                     radius: 100
-                                    defaultColor: mixerEntry.node?.audio.muted ? Colors.backgroundDim : Colors.orange
+                                    defaultColor: mixerEntry.node?.audio.muted ? Colors.background : Colors.orange
 
                                     onClicked: mixerEntry.node.audio.muted = !mixerEntry.node?.audio.muted
                                     TextStyled {
                                         id: muteIcon
                                         anchors.centerIn: parent
                                         font.pixelSize: 14
-                                        color: mixerEntry.node?.audio.muted ? Colors.orange : Colors.backgroundDim
+                                        color: mixerEntry.node?.audio.muted ? Colors.orange : Colors.background
                                         text: mixerEntry.node?.audio.muted ? "" : ""
                                     }
                                 }
@@ -192,7 +192,7 @@ Loader {
                                         implicitWidth: 100
 
                                         radius: Styles.margin
-                                        color: Colors.backgroundDim
+                                        color: Colors.background
 
                                         Rectangle {
                                             implicitWidth: volumeSlider.visualPosition * parent.width
