@@ -305,7 +305,7 @@ PanelWindow {
                 Layout.preferredHeight: 50
                 Layout.margins: Styles.marginSm
                 Layout.bottomMargin: 0
-                color: Colors.bg0
+                color: Colors.bg1
                 radius: Styles.radiusSm
 
                 RowLayout {
@@ -365,7 +365,7 @@ PanelWindow {
 
                                 Rectangle {
                                     anchors.fill: parent
-                                    color: Colors.bg0
+                                    color: Colors.bg1
                                     radius: Styles.radiusMd
                                     TextStyled {
                                         id: tooltipContent
@@ -386,14 +386,14 @@ PanelWindow {
                 Layout.preferredHeight: 50
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
-                color: Colors.bg0
+                color: Colors.bg1
                 radius: Styles.radiusSm
                 TextFieldStyled {
                     id: searchField
                     placeholderText: 'search (press / to focus)'
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
-                    backgroundColor: Colors.bg0
+                    backgroundColor: Colors.bg1
                     onTextChanged: mainContent.searchText = text
                     Keys.onPressed: event => {
                         if (event.key === Qt.Key_Escape) {
@@ -428,7 +428,7 @@ PanelWindow {
                         implicitWidth: rect.width
                         radius: Styles.radiusMd
 
-                        defaultColor: Colors.bg0
+                        defaultColor: Colors.bg1
 
                         focusedColor: Colors.backgroundSuccess
 

@@ -356,7 +356,7 @@ BarWidget {
                     id: iconButton
 
                     anchors.fill: parent
-                    defaultColor: Colors.bg0
+                    defaultColor: Colors.bg1
                     hoverColor: Colors.bg2
                     radius: Styles.radiusSm
 

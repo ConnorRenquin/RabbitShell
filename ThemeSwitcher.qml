@@ -21,7 +21,7 @@ FloatingWindow {
     Rectangle {
         id: base
 
-        color: Colors.bg0
+        color: Colors.bg1
         radius: 8
 
         anchors.fill: parent

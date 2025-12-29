@@ -100,7 +100,7 @@ Loader {
                         Layout.minimumHeight: 100
                         Layout.fillWidth: true
 
-                        color: index === base.currentIndex ? Colors.backgroundSuccess : Colors.bg0
+                        color: index === base.currentIndex ? Colors.backgroundSuccess : Colors.bg1
                         radius: Styles.radiusSm
                         focus: true
 

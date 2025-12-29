@@ -64,7 +64,6 @@ Singleton {
         readonly property string foreground: "#D3C6AA"
 
         // Background levels (for layering)
-        readonly property string bg0: "#2D353B"
         readonly property string bg1: "#343F44"
         readonly property string bg2: "#3D484D"
 
@@ -102,7 +101,6 @@ Singleton {
         readonly property string foreground: "#5C6A72"
 
         // Background levels
-        readonly property string bg0: "#FDF6E3"
         readonly property string bg1: "#F4F0D9"
         readonly property string bg2: "#EFEBD4"
 
@@ -140,7 +138,6 @@ Singleton {
         readonly property string foreground: "#ECEFF4"
 
         // Background levels
-        readonly property string bg0: "#2E3440"
         readonly property string bg1: "#3B4252"
         readonly property string bg2: "#434C5E"
 
@@ -178,7 +175,6 @@ Singleton {
         readonly property string foreground: "#F8F8F2"
 
         // Background levels
-        readonly property string bg0: "#282A36"
         readonly property string bg1: "#343746"
         readonly property string bg2: "#3E4153"
 
@@ -216,7 +212,6 @@ Singleton {
         readonly property string foreground: "#EBDBB2"
 
         // Background levels
-        readonly property string bg0: "#282828"
         readonly property string bg1: "#3C3836"
         readonly property string bg2: "#504945"
 
@@ -254,7 +249,6 @@ Singleton {
         readonly property string foreground: "#3C3836"
 
         // Background levels
-        readonly property string bg0: "#FBF1C7"
         readonly property string bg1: "#EBDBB2"
         readonly property string bg2: "#D5C4A1"
 
@@ -292,7 +286,6 @@ Singleton {
         readonly property string foreground: "#CDD6F4"
 
         // Background levels
-        readonly property string bg0: "#1E1E2E"
         readonly property string bg1: "#313244"
         readonly property string bg2: "#45475A"
 
@@ -330,7 +323,6 @@ Singleton {
         readonly property string foreground: "#4C4F69"
 
         // Background levels
-        readonly property string bg0: "#EFF1F5"
         readonly property string bg1: "#E6E9EF"
         readonly property string bg2: "#DCE0E8"
 
@@ -368,7 +360,6 @@ Singleton {
         readonly property string foreground: "#C0CAF5"
 
         // Background levels
-        readonly property string bg0: "#1A1B26"
         readonly property string bg1: "#24283B"
         readonly property string bg2: "#2F3549"
 
@@ -406,7 +397,6 @@ Singleton {
         readonly property string foreground: "#3760BF"
 
         // Background levels
-        readonly property string bg0: "#E1E2E7"
         readonly property string bg1: "#DFE0E5"
         readonly property string bg2: "#D0D1D6"
 
@@ -444,7 +434,6 @@ Singleton {
         readonly property string foreground: "#839496"
 
         // Background levels
-        readonly property string bg0: "#002B36"
         readonly property string bg1: "#073642"
         readonly property string bg2: "#0E4B59"
 
@@ -482,7 +471,6 @@ Singleton {
         readonly property string foreground: "#657B83"
 
         // Background levels
-        readonly property string bg0: "#FDF6E3"
         readonly property string bg1: "#EEE8D5"
         readonly property string bg2: "#DDD6C1"
 
@@ -520,7 +508,6 @@ Singleton {
         readonly property string foreground: "#E0DEF4"
 
         // Background levels
-        readonly property string bg0: "#191724"
         readonly property string bg1: "#1F1D2E"
         readonly property string bg2: "#26233A"
 
@@ -558,7 +545,6 @@ Singleton {
         readonly property string foreground: "#575279"
 
         // Background levels
-        readonly property string bg0: "#FAF4ED"
         readonly property string bg1: "#FFFAF3"
         readonly property string bg2: "#F2E9E1"
 
@@ -596,7 +582,6 @@ Singleton {
         readonly property string foreground: "#E0E0E0"
 
         // Background levels
-        readonly property string bg0: "#0A0A0A"
         readonly property string bg1: "#1A1A1A"
         readonly property string bg2: "#2A2A2A"
 

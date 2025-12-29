@@ -50,7 +50,7 @@ ButtonWidget {
         implicitHeight: text.implicitHeight + Styles.marginMd
         implicitWidth: parent.width
 
-        defaultColor: Colors.bg0
+        defaultColor: Colors.bg1
         hoverColor: Colors.backgroundSuccess
         focusedColor: Colors.orange
 

@@ -135,7 +135,7 @@ Scope {
                                 id: passwordTextField
                                 anchors.fill: parent
                                 anchors.centerIn: parent
-                                backgroundColor: Colors.bg0
+                                backgroundColor: Colors.bg1
                                 padding: Styles.marginSm
                                 enabled: !lockContext.unlockInProgress
                                 echoMode: TextInput.Password
