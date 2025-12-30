@@ -15,4 +15,5 @@ ShellRoot {
     LockScreen {}
     Polkit {}
     ThemeSwitcher {}
+    Cheatsheet {}
 }
