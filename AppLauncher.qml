@@ -15,7 +15,7 @@ Loader {
     active: false
 
     GlobalShortcut {
-        name: "appsearch"
+        name: "applauncher"
         onPressed: active = !active
     }
 

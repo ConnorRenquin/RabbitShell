@@ -6,7 +6,7 @@ ShellRoot {
     Bar {}
     NotificationPopup {}
     Background {}
-    AppSearch {}
+    AppLauncher {}
     Workspaces {}
     Mixer {}
     ToplevelView {}
