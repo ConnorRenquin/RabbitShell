@@ -1,4 +1,5 @@
 pragma ComponentBehavior: Bound
+
 import Quickshell
 import Quickshell.Services.Pipewire
 import Quickshell.Widgets
@@ -157,66 +158,16 @@ Loader {
                                     anchors.centerIn: parent
                                     font.pixelSize: 14
                                     color: mixerEntry.node?.audio.muted ? Colors.orange : Colors.background
-                                    text: mixerEntry.node?.audio.muted ? "" : ""
+                                    text: mixerEntry.node?.audio.muted ? "" : ""
                                 }
                             }
 
-                            // TODO Refact into StyledSlider
-                            Slider {
+                            SliderStyled {
                                 id: volumeSlider
                                 value: mixerEntry.node.audio.volume
-                                stepSize: 0.05
                                 Layout.fillWidth: true
-
+                                handleHeight: muteButton.implicitHeight
                                 onValueChanged: mixerEntry.node.audio.volume = value
-
-                                background: Rectangle {
-                                    x: volumeSlider.leftPadding
-                                    y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
-
-                                    implicitWidth: 100
-
-                                    radius: Styles.radiusSm
-                                    color: Colors.background
-
-                                    Rectangle {
-                                        implicitWidth: volumeSlider.visualPosition * parent.width
-                                        implicitHeight: parent.height
-                                        color: Colors.green
-                                        radius: Styles.radiusSm
-                                    }
-                                }
-
-                                handle: Rectangle {
-                                    x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
-                                    y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
-
-                                    implicitWidth: textPercent.width + Styles.marginSm
-                                    implicitHeight: muteButton.implicitHeight
-
-                                    radius: Styles.radiusSm
-                                    color: mouseArea.containsMouse ? Colors.blue : Colors.orange
-
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: 200
-                                        }
-                                    }
-
-                                    TextStyled {
-                                        id: textPercent
-                                        anchors.centerIn: parent
-                                        color: Colors.bg1
-                                        font.pixelSize: 14
-                                        text: `${Math.floor(mixerEntry.node?.audio.volume * 100)}%`
-                                    }
-                                    MouseArea {
-                                        id: mouseArea
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        acceptedButtons: Qt.NoButton
-                                    }
-                                }
                             }
                         }
                     }
