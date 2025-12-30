@@ -128,7 +128,7 @@ Loader {
 
                             IconImage {
                                 id: icon
-                                source: Quickshell.iconPath(mixerEntry.node.name).toLowerCase() ?? "audio-volume-high-symbolic"
+                                source: Quickshell.iconPath(mixerEntry.node.name, "audio-volume-high-symbolic")
                                 implicitWidth: 40
                                 implicitHeight: 40
                             }
