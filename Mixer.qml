@@ -1,4 +1,4 @@
-// pragma ComponentBehavior: Bound
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Services.Pipewire
 import Quickshell.Widgets
@@ -30,7 +30,7 @@ Loader {
         margins.right: Styles.marginMd
 
         implicitWidth: 650
-        implicitHeight: column.implicitHeight + Styles.marginSm * 2
+        implicitHeight: mixerList.contentHeight + Styles.marginSm * 2
         color: "transparent"
 
         HyprlandFocusGrab {
@@ -49,188 +49,172 @@ Loader {
             color: Colors.background
             radius: Styles.radiusSm
 
-            property int currentIndex: 0
-
             Keys.onPressed: event => {
                 if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                     loader.active = false;
+                } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
+                    mixerList.incrementCurrentIndex();
+                } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
+                    mixerList.decrementCurrentIndex();
+                } else if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
+                    if (mixerList.currentItem && mixerList.currentItem.node) {
+                        mixerList.currentItem.node.audio.volume = Math.max(0, mixerList.currentItem.node.audio.volume - 0.05);
+                    }
+                } else if ([Qt.Key_Right, Qt.Key_L].includes(event.key)) {
+                    if (mixerList.currentItem && mixerList.currentItem.node) {
+                        mixerList.currentItem.node.audio.volume = Math.min(1, mixerList.currentItem.node.audio.volume + 0.05);
+                    }
+                } else if ([Qt.Key_M].includes(event.key)) {
+                    if (mixerList.currentItem && mixerList.currentItem.node) {
+                        mixerList.currentItem.node.audio.muted = !mixerList.currentItem.node.audio.muted;
+                    }
                 }
-
-                if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
-                    moveFocusNext();
-                }
-                if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
-                    moveFocusPrevious();
-                }
-
-                column.children[currentIndex].forceActiveFocus();
+                mixerList.positionViewAtIndex(mixerList.currentIndex, ListView.Contain);
             }
 
-            function moveFocusNext() {
-                currentIndex = (base.currentIndex + 1) % column.children.length;
+            PwNodeLinkTracker {
+                id: linkTracker
+                node: Pipewire?.defaultAudioSink
             }
 
-            function moveFocusPrevious() {
-                currentIndex = (base.currentIndex - 1 + column.children.length) % column.children.length;
-            }
+            ListView {
+                id: mixerList
 
-            ColumnLayout {
-                id: column
-
+                anchors.fill: parent
+                anchors.margins: Styles.marginSm
                 spacing: Styles.marginSm
 
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.margins: Styles.marginSm
+                model: linkTracker.linkGroups
+                delegate: Rectangle {
+                    id: mixerEntry
+                    required property var modelData
+                    required property var index
 
-                PwNodeLinkTracker {
-                    id: linkTracker
-                    node: Pipewire?.defaultAudioSink
-                }
+                    implicitHeight: mixerColum.implicitHeight + Styles.marginMd
+                    width: mixerList.width
 
-                Repeater {
-                    model: linkTracker.linkGroups
-                    delegate: Rectangle {
-                        id: mixerEntry
-                        required property var modelData
-                        required property var index
+                    color: ListView.isCurrentItem ? Colors.backgroundSuccess : Colors.bg1
+                    radius: Styles.radiusSm
+                    focus: true
 
-                        Layout.preferredHeight: mixerColum.implicitHeight + Styles.marginMd
-                        Layout.minimumHeight: 100
-                        Layout.fillWidth: true
+                    property PwNode node: modelData?.source ?? null
 
-                        color: index === base.currentIndex ? Colors.backgroundSuccess : Colors.bg1
-                        radius: Styles.radiusSm
-                        focus: true
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 200
+                        }
+                    }
 
-                        property PwNode node: modelData?.source ?? null
+                    PwObjectTracker {
+                        id: tracker
+                        objects: [mixerEntry.node]
+                    }
 
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
+                    ColumnLayout {
+                        id: mixerColum
+                        anchors.fill: parent
+                        anchors.margins: Styles.marginSm
+                        spacing: Styles.marginLg
+
+                        RowLayout {
+                            id: info
+
+                            spacing: Styles.marginSm
+
+                            Layout.fillWidth: true
+                            Layout.leftMargin: Styles.marginSm
+                            Layout.rightMargin: Styles.marginSm
+                            Layout.preferredHeight: 20
+
+                            IconImage {
+                                id: icon
+                                source: Quickshell.iconPath(mixerEntry.node.name).toLowerCase() ?? "audio-volume-high-symbolic"
+                                implicitWidth: 40
+                                implicitHeight: 40
+                            }
+
+                            TextStyled {
+                                text: mixerEntry.node?.name
                             }
                         }
 
-                        Keys.onPressed: function (event) {
-                            if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
-                                volumeSlider.decrease();
-                            } else if ([Qt.Key_Right, Qt.Key_L].includes(event.key)) {
-                                volumeSlider.increase();
-                            } else if ([Qt.Key_M].includes(event.key)) {
-                                node.audio.muted = !node?.audio?.muted;
-                            }
-                        }
+                        RowLayout {
+                            id: controlRow
+                            Layout.fillWidth: true
+                            Layout.leftMargin: Styles.marginSm
+                            Layout.rightMargin: Styles.marginSm
 
-                        PwObjectTracker {
-                            id: tracker
-                            objects: [mixerEntry.node]
-                        }
+                            ButtonStyled {
+                                id: muteButton
+                                implicitWidth: muteIcon.implicitWidth + Styles.marginLg
+                                implicitHeight: muteIcon.implicitHeight + Styles.marginSm
+                                radius: 100
+                                defaultColor: mixerEntry.node?.audio.muted ? Colors.background : Colors.orange
 
-                        ColumnLayout {
-                            id: mixerColum
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.margins: Styles.marginSm
-                            spacing: Styles.marginLg
-                            RowLayout {
-                                id: info
-
-                                spacing: Styles.marginSm
-
-                                Layout.leftMargin: Styles.marginSm
-                                Layout.rightMargin: Styles.marginSm
-                                Layout.preferredHeight: 20
-
-                                IconImage {
-                                    id: icon
-                                    source: Quickshell.iconPath(mixerEntry.node.name).toLowerCase() ?? "audio-volume-high-symbolic"
-                                    implicitWidth: 40
-                                    implicitHeight: 40
-                                }
-
+                                onClicked: mixerEntry.node.audio.muted = !mixerEntry.node?.audio.muted
                                 TextStyled {
-                                    text: mixerEntry.node?.name
+                                    id: muteIcon
+                                    anchors.centerIn: parent
+                                    font.pixelSize: 14
+                                    color: mixerEntry.node?.audio.muted ? Colors.orange : Colors.background
+                                    text: mixerEntry.node?.audio.muted ? "" : ""
                                 }
                             }
-                            RowLayout {
-                                id: controlRow
-                                Layout.fillWidth: true
-                                Layout.leftMargin: Styles.marginSm
-                                Layout.rightMargin: Styles.marginSm
-                                ButtonStyled {
-                                    id: muteButton
-                                    implicitWidth: muteIcon.implicitWidth + Styles.marginLg
-                                    implicitHeight: muteIcon.implicitHeight + Styles.marginSm
-                                    radius: 100
-                                    defaultColor: mixerEntry.node?.audio.muted ? Colors.background : Colors.orange
 
-                                    onClicked: mixerEntry.node.audio.muted = !mixerEntry.node?.audio.muted
-                                    TextStyled {
-                                        id: muteIcon
-                                        anchors.centerIn: parent
-                                        font.pixelSize: 14
-                                        color: mixerEntry.node?.audio.muted ? Colors.orange : Colors.background
-                                        text: mixerEntry.node?.audio.muted ? "" : ""
+                            // TODO Refact into StyledSlider
+                            Slider {
+                                id: volumeSlider
+                                value: mixerEntry.node.audio.volume
+                                stepSize: 0.05
+                                Layout.fillWidth: true
+
+                                onValueChanged: mixerEntry.node.audio.volume = value
+
+                                background: Rectangle {
+                                    x: volumeSlider.leftPadding
+                                    y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
+
+                                    implicitWidth: 100
+
+                                    radius: Styles.radiusSm
+                                    color: Colors.background
+
+                                    Rectangle {
+                                        implicitWidth: volumeSlider.visualPosition * parent.width
+                                        implicitHeight: parent.height
+                                        color: Colors.green
+                                        radius: Styles.radiusSm
                                     }
                                 }
 
-                                // TODO Refact into StyledSlider
-                                Slider {
-                                    id: volumeSlider
-                                    value: mixerEntry.node.audio.volume
-                                    stepSize: 0.05
-                                    Layout.fillWidth: true
+                                handle: Rectangle {
+                                    x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
+                                    y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
 
-                                    onValueChanged: mixerEntry.node.audio.volume = value
+                                    implicitWidth: textPercent.width + Styles.marginSm
+                                    implicitHeight: muteButton.implicitHeight
 
-                                    background: Rectangle {
-                                        x: volumeSlider.leftPadding
-                                        y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
+                                    radius: Styles.radiusSm
+                                    color: mouseArea.containsMouse ? Colors.blue : Colors.orange
 
-                                        implicitWidth: 100
-
-                                        radius: Styles.radiusSm
-                                        color: Colors.background
-
-                                        Rectangle {
-                                            implicitWidth: volumeSlider.visualPosition * parent.width
-                                            implicitHeight: parent.height
-                                            color: Colors.green
-                                            radius: Styles.radiusSm
+                                    Behavior on color {
+                                        ColorAnimation {
+                                            duration: 200
                                         }
                                     }
 
-                                    handle: Rectangle {
-                                        x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
-                                        y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
-
-                                        implicitWidth: textPercent.width + Styles.marginSm
-                                        implicitHeight: muteButton.implicitHeight
-
-                                        radius: Styles.radiusSm
-                                        color: mouseArea.containsMouse ? Colors.blue : Colors.orange
-
-                                        Behavior on color {
-                                            ColorAnimation {
-                                                duration: 200
-                                            }
-                                        }
-
-                                        TextStyled {
-                                            id: textPercent
-                                            anchors.centerIn: parent
-                                            color: Colors.bg1
-                                            font.pixelSize: 14
-                                            text: `${Math.floor(mixerEntry.node?.audio.volume * 100)}%`
-                                        }
-                                        MouseArea {
-                                            id: mouseArea
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                            acceptedButtons: Qt.NoButton
-                                        }
+                                    TextStyled {
+                                        id: textPercent
+                                        anchors.centerIn: parent
+                                        color: Colors.bg1
+                                        font.pixelSize: 14
+                                        text: `${Math.floor(mixerEntry.node?.audio.volume * 100)}%`
+                                    }
+                                    MouseArea {
+                                        id: mouseArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        acceptedButtons: Qt.NoButton
                                     }
                                 }
                             }
