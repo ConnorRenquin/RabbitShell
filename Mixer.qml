@@ -6,7 +6,6 @@ import Quickshell.Widgets
 import Quickshell.Hyprland
 
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 import qs.Components
@@ -88,17 +87,17 @@ Loader {
                 model: linkTracker.linkGroups
                 delegate: Rectangle {
                     id: mixerEntry
-                    required property var modelData
+
                     required property var index
+                    required property var modelData
+                    property PwNode node: modelData?.source ?? null
 
                     implicitHeight: mixerColum.implicitHeight + Styles.marginMd
-                    width: mixerList.width
+                    implicitWidth: mixerList.width
 
                     color: ListView.isCurrentItem ? Colors.backgroundSuccess : Colors.bg1
                     radius: Styles.radiusSm
                     focus: true
-
-                    property PwNode node: modelData?.source ?? null
 
                     Behavior on color {
                         ColorAnimation {
@@ -156,7 +155,7 @@ Loader {
                                 TextStyled {
                                     id: muteIcon
                                     anchors.centerIn: parent
-                                    font.pixelSize: 14
+                                    font.pixelSize: Styles.textSm
                                     color: mixerEntry.node?.audio.muted ? Colors.orange : Colors.background
                                     text: mixerEntry.node?.audio.muted ? "" : ""
                                 }

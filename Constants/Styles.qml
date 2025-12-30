@@ -12,4 +12,5 @@ QtObject {
     readonly property int textLg: 26
     readonly property int textMd: 20
     readonly property int textSm: 18
+    readonly property int textXS: 12
 }
