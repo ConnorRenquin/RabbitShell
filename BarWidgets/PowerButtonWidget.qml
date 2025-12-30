@@ -50,10 +50,6 @@ ButtonStyled {
         implicitHeight: text.implicitHeight + Styles.marginMd
         implicitWidth: parent.width
 
-        defaultColor: Colors.background
-        hoverColor: Colors.backgroundSuccess
-        focusedColor: Colors.orange
-
         isFocused: index === root.currentFocusIndex
 
         TextStyled {
@@ -62,7 +58,6 @@ ButtonStyled {
             anchors.margins: Styles.marginSm
             font.pixelSize: Styles.textSm
             text: menuButton.isFocused || menuButton.containsMouse ? menuButton.label : menuButton.label
-            color: menuButton.isFocused ? Colors.background : Colors.foreground
         }
     }
 

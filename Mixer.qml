@@ -95,7 +95,7 @@ Loader {
                     implicitHeight: mixerColum.implicitHeight + Styles.marginMd
                     implicitWidth: mixerList.width
 
-                    color: ListView.isCurrentItem ? Colors.backgroundSuccess : Colors.bg1
+                    color: ListView.isCurrentItem ? Colors.bg1 : Colors.background
                     radius: Styles.radiusSm
                     focus: true
 
@@ -149,14 +149,14 @@ Loader {
                                 implicitWidth: muteIcon.implicitWidth + Styles.marginLg
                                 implicitHeight: muteIcon.implicitHeight + Styles.marginSm
                                 radius: 100
-                                defaultColor: mixerEntry.node?.audio.muted ? Colors.background : Colors.orange
+                                defaultColor: mixerEntry.node?.audio.muted ? Colors.background : Colors.foreground
 
                                 onClicked: mixerEntry.node.audio.muted = !mixerEntry.node?.audio.muted
                                 TextStyled {
                                     id: muteIcon
                                     anchors.centerIn: parent
                                     font.pixelSize: Styles.textSm
-                                    color: mixerEntry.node?.audio.muted ? Colors.orange : Colors.background
+                                    color: mixerEntry.node?.audio.muted ? Colors.foreground : Colors.background
                                     text: mixerEntry.node?.audio.muted ? "" : ""
                                 }
                             }

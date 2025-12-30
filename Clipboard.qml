@@ -430,8 +430,6 @@ PanelWindow {
 
                         defaultColor: Colors.bg1
 
-                        focusedColor: Colors.backgroundSuccess
-
                         isFocused: ListView.isCurrentItem
 
                         property string itemText: modelData.text
@@ -450,7 +448,7 @@ PanelWindow {
                                 id: clipboardItemKey
                                 Layout.preferredWidth: 80
                                 implicitHeight: 20
-                                color: Colors.orange
+                                color: Colors.foreground
                                 radius: Styles.radiusSm
                                 TextStyled {
                                     id: clipboardItemKeyText
@@ -478,7 +476,6 @@ PanelWindow {
                                     anchors.fill: parent
                                     anchors.margins: Styles.marginSm
                                     anchors.centerIn: parent
-                                    color: Colors.blue
                                     text: utils.removeIndentation(button.itemText) ?? ''
                                 }
                             }

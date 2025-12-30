@@ -41,7 +41,7 @@ Loader {
         Rectangle {
             id: base
 
-            color: Colors.backgroundSuccess
+            color: Colors.background
             radius: Styles.radiusSm
             focus: true
 

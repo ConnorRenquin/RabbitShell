@@ -162,19 +162,20 @@ Loader {
                     anchors.margins: Styles.marginMd
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    color: Colors.orange
+                    color: Colors.bg2
                     radius: Styles.radiusLg
                     TextStyled {
                         id: clock
                         anchors.centerIn: parent
                         anchors.verticalCenter: parent.verticalCenter
-                        color: Colors.background
                         text: Time.timeShort
                     }
                 }
             }
 
             Rectangle {
+                id: appGridBackground
+
                 color: Colors.background
                 radius: Styles.radiusSm
 
@@ -182,6 +183,7 @@ Loader {
                 Layout.fillHeight: true
 
                 TextStyled {
+                    id: noResultsText
                     anchors.centerIn: parent
                     visible: root.filteredApplications.length === 0
                     text: "No results found."
@@ -200,7 +202,7 @@ Loader {
 
                     model: root.filteredApplications
                     delegate: ButtonStyled {
-                        id: menuButton
+                        id: appLaunchButton
 
                         required property var modelData
                         required property int index
@@ -229,14 +231,13 @@ Loader {
                                 id: appIcon
                                 implicitWidth: 32
                                 implicitHeight: 32
-                                source: Quickshell.iconPath(menuButton.modelData.icon) ?? ""
+                                source: Quickshell.iconPath(appLaunchButton.modelData.icon) ?? ""
                             }
 
                             TextStyled {
                                 id: appName
                                 Layout.fillWidth: true
-                                text: menuButton.modelData.name
-                                color: menuButton.isFocused ? Colors.bg1 : Colors.foreground
+                                text: appLaunchButton.modelData.name
                             }
                         }
                     }

@@ -12,8 +12,8 @@ Slider {
     to: 1
 
     property color backgroundColor: Colors.background
-    property color progressColor: Colors.green
-    property color handleColor: Colors.orange
+    property color progressColor: Colors.foreground
+    property color handleColor: Colors.foreground
     property color handleHoverColor: Colors.blue
     property color handleTextColor: Colors.bg1
     property int handleHeight: 30
@@ -41,7 +41,7 @@ Slider {
         x: root.leftPadding + root.visualPosition * (root.availableWidth - width)
         y: root.topPadding + root.availableHeight / 2 - height / 2
 
-        implicitWidth: root.showPercentage ? handleText.width + Styles.marginSm : 20
+        implicitWidth: root.showPercentage ? handleText.width + Styles.marginLg : 20
         implicitHeight: root.handleHeight
 
         radius: Styles.radiusSm
@@ -58,7 +58,7 @@ Slider {
             visible: root.showPercentage
             anchors.centerIn: parent
             color: root.handleTextColor
-            font.pixelSize: Styles.textXS
+            font.pixelSize: Styles.textSm
             text: `${Math.floor(root.value * 100)}%`
         }
 
