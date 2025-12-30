@@ -34,6 +34,11 @@ Variants {
         // Left
         BarRow {
             anchors.left: parent.left
+            ButtonStyled {
+                id: appsButton
+                text: "󰘳"
+                onClicked: PatchBay.openAppLauncher()
+            }
             WorkspacesWidget {
                 monitorName: root.modelData.name
             }
@@ -44,8 +49,8 @@ Variants {
         BarRow {
             anchors.centerIn: parent
             ButtonStyled {
+                id: notificationsButton
                 visible: Notifications.notifications.length > 0
-
                 text: " " + Notifications.notifications.length
                 onClicked: PatchBay.openNotificationsManager()
             }
@@ -60,8 +65,8 @@ Variants {
             SystemTrayWidget {}
             IdleInhibitorWidget {}
             ButtonStyled {
+                id: themesButton
                 text: "󱪵"
-
                 onClicked: mouse => {
                     if (mouse.button === Qt.LeftButton) {
                         Quickshell.execDetached(["bash", "-c", "waypaper --random"]);

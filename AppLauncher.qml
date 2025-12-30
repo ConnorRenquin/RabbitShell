@@ -14,6 +14,8 @@ Loader {
 
     active: false
 
+    Component.onCompleted: PatchBay.openAppLauncher.connect(() => active = !active)
+
     GlobalShortcut {
         name: "applauncher"
         onPressed: active = !active
