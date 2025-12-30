@@ -10,7 +10,7 @@ Rectangle {
     radius: Styles.radiusSm
     color: Colors.background
 
-    implicitWidth: Math.min(title.implicitWidth + Styles.margin * 2, 600)
+    implicitWidth: Math.min(title.implicitWidth + Styles.marginSm * 2, 600)
     implicitHeight: parent.height
 
     function getTitle() {
@@ -38,7 +38,7 @@ Rectangle {
         offset: Styles.barTextOffset
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: Styles.margin
+        anchors.leftMargin: Styles.marginSm
         text: getTitle()
     }
 }

@@ -136,7 +136,7 @@ Loader {
                 Layout.fillWidth: true
 
                 color: Colors.background
-                radius: Styles.radius0
+                radius: Styles.radiusSm
 
                 readonly property int textSize: 25
 

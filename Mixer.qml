@@ -191,14 +191,14 @@ Loader {
 
                                         implicitWidth: 100
 
-                                        radius: Styles.margin
+                                        radius: Styles.radiusSm
                                         color: Colors.background
 
                                         Rectangle {
                                             implicitWidth: volumeSlider.visualPosition * parent.width
                                             implicitHeight: parent.height
                                             color: Colors.green
-                                            radius: Styles.margin
+                                            radius: Styles.radiusSm
                                         }
                                     }
 

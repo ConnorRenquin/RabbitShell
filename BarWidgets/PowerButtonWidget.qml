@@ -91,7 +91,7 @@ ButtonStyled {
         Rectangle {
             id: menuBackground
             color: Colors.background
-            radius: Styles.margin
+            radius: Styles.marginSm
             implicitWidth: 220
             implicitHeight: buttons.implicitHeight + Styles.marginSm * 2
             focus: true

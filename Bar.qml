@@ -23,7 +23,7 @@ Variants {
             right: true
         }
 
-        property int margin: 8
+        property int margin: Styles.marginSm
         margins {
             top: margin
             bottom: 0 // Hyprland takes care of this margin, so you don't have to.
