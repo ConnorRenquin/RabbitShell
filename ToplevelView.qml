@@ -60,8 +60,8 @@ Loader {
             radius: Styles.radiusMd
             focus: true
 
-            implicitWidth: toplevelGrid.implicitWidth + Styles.marginMd
-            implicitHeight: toplevelGrid.implicitHeight + Styles.marginMd
+            implicitWidth: Math.max(toplevelGrid.implicitWidth, noContent.implicitWidth) + Styles.marginMd * 2
+            implicitHeight: Math.max(toplevelGrid.implicitHeight, noContent.implicitHeight) + Styles.marginMd
 
             Keys.onPressed: function (event) {
                 if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
