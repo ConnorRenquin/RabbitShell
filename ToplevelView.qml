@@ -81,12 +81,9 @@ Loader {
 
                 var toplevel = root.toplevels[index].wayland;
 
-                if (toplevel.activated) {
-                    loader.active = false;
-                    event.accepted = true;
-                } else {
-                    toplevel.activate();
-                }
+                loader.active = false;
+                event.accepted = true;
+                toplevel.activate();
             }
 
             TextStyled {
