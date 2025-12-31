@@ -52,7 +52,7 @@ FloatingWindow {
                 readonly property string name: 'Theme'
                 anchors.fill: parent
             }
-            Rectangle {
+            StyleSettings {
                 readonly property string name: 'Styles'
                 anchors.fill: parent
             }

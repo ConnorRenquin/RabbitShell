@@ -8,7 +8,7 @@ Text {
     antialiasing: true
     font {
         pixelSize: Styles.textMd
-        family: "RobotoMono Nerd Font Propo"
+        family: Styles.defaultFontFamily
         bold: true
     }
 }
