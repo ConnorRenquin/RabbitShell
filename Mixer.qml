@@ -95,7 +95,7 @@ Loader {
                     implicitHeight: mixerColum.implicitHeight + Styles.marginMd
                     implicitWidth: mixerList.width
 
-                    color: ListView.isCurrentItem ? Colors.bg1 : Colors.background
+                    color: ListView.isCurrentItem ? Colors.backgroundLifted : Colors.background
                     radius: Styles.radiusSm
                     focus: true
 

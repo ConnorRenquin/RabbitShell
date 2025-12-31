@@ -11,7 +11,7 @@ ButtonStyled {
     implicitHeight: parent.height
 
     defaultColor: IdleInhibitorSingleton.enabled() ? Colors.orange : Colors.background
-    hoverColor: IdleInhibitorSingleton.enabled() ? Colors.backgroundSuccess : Colors.bg2
+    hoverColor: IdleInhibitorSingleton.enabled() ? Colors.backgroundSuccess : Colors.backgroundHighlighted
 
     TextStyled {
         anchors.centerIn: parent

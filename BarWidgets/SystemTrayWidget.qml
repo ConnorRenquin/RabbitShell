@@ -159,7 +159,7 @@ Rectangle {
                                             implicitHeight: 1
                                             anchors.centerIn: parent
                                             width: parent.width - Styles.marginSm * 2
-                                            color: Colors.bg2
+                                            color: Colors.backgroundHighlighted
                                         }
                                     }
 

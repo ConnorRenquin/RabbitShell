@@ -11,11 +11,9 @@ QtObject {
 
     // Base colors
     readonly property string background: currentTheme.background
+    readonly property string backgroundLifted: currentTheme.backgroundLifted
+    readonly property string backgroundHighlighted: currentTheme.backgroundHighlighted
     readonly property string foreground: currentTheme.foreground
-
-    // Background levels (for layering UI elements)
-    readonly property string bg1: currentTheme.bg1
-    readonly property string bg2: currentTheme.bg2
 
     // Primary accent colors
     readonly property string primary: currentTheme.primary

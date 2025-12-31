@@ -133,7 +133,7 @@ Rectangle {
             onClicked: root.player.previous()
         }
         ButtonStyledLocal {
-            backgroundColor: root.player?.isPlaying ? Colors.orange : Colors.bg1
+            backgroundColor: root.player?.isPlaying ? Colors.orange : Colors.backgroundLifted
             iconColor: root.player?.isPlaying ? Colors.background : Colors.foreground
             iconText: "󰐎"
             onClicked: root.player.togglePlaying()

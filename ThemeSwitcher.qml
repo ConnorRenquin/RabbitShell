@@ -16,7 +16,7 @@ FloatingWindow {
     Rectangle {
         id: base
 
-        color: Colors.bg1
+        color: Colors.backgroundLifted
         radius: 8
 
         anchors.fill: parent
@@ -35,7 +35,7 @@ FloatingWindow {
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 2
-                color: Colors.bg2
+                color: Colors.backgroundHighlighted
             }
 
             GridLayout {
@@ -61,8 +61,8 @@ FloatingWindow {
 
                         readonly property bool isActive: ThemeManager.currentTheme === modelData
 
-                        defaultColor: isActive ? Colors.primary : Colors.bg2
-                        hoverColor: isActive ? Colors.primary : Colors.bg1
+                        defaultColor: isActive ? Colors.primary : Colors.backgroundHighlighted
+                        hoverColor: isActive ? Colors.primary : Colors.backgroundLifted
 
                         onClicked: ThemeManager.setTheme(modelData)
 

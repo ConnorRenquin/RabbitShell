@@ -119,7 +119,7 @@ PanelWindow {
                     id: passwordArea
                     Layout.fillWidth: true
                     Layout.preferredHeight: 50
-                    color: Colors.bg1
+                    color: Colors.backgroundLifted
                     radius: Styles.radiusMd
                     TextFieldStyled {
                         id: passwordInput

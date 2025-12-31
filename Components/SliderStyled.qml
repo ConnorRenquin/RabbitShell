@@ -15,7 +15,7 @@ Slider {
     property color progressColor: Colors.foreground
     property color handleColor: Colors.foreground
     property color handleHoverColor: Colors.blue
-    property color handleTextColor: Colors.bg1
+    property color handleTextColor: Colors.backgroundLifted
     property int handleHeight: 30
     property bool showPercentage: true
 

@@ -64,8 +64,8 @@ Singleton {
         readonly property string foreground: "#D3C6AA"
 
         // Background levels (for layering)
-        readonly property string bg1: "#343F44"
-        readonly property string bg2: "#3D484D"
+        readonly property string backgroundLifted: "#343F44"
+        readonly property string backgroundHighlighted: "#3D484D"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#514045"
@@ -101,8 +101,8 @@ Singleton {
         readonly property string foreground: "#5C6A72"
 
         // Background levels
-        readonly property string bg1: "#F4F0D9"
-        readonly property string bg2: "#EFEBD4"
+        readonly property string backgroundLifted: "#F4F0D9"
+        readonly property string backgroundHighlighted: "#EFEBD4"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#FFEAE9"
@@ -138,8 +138,8 @@ Singleton {
         readonly property string foreground: "#ECEFF4"
 
         // Background levels
-        readonly property string bg1: "#3B4252"
-        readonly property string bg2: "#434C5E"
+        readonly property string backgroundLifted: "#3B4252"
+        readonly property string backgroundHighlighted: "#434C5E"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#5E3D40"
@@ -175,8 +175,8 @@ Singleton {
         readonly property string foreground: "#F8F8F2"
 
         // Background levels
-        readonly property string bg1: "#343746"
-        readonly property string bg2: "#3E4153"
+        readonly property string backgroundLifted: "#343746"
+        readonly property string backgroundHighlighted: "#3E4153"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#50313B"
@@ -212,8 +212,8 @@ Singleton {
         readonly property string foreground: "#EBDBB2"
 
         // Background levels
-        readonly property string bg1: "#3C3836"
-        readonly property string bg2: "#504945"
+        readonly property string backgroundLifted: "#3C3836"
+        readonly property string backgroundHighlighted: "#504945"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#4D3638"
@@ -249,8 +249,8 @@ Singleton {
         readonly property string foreground: "#3C3836"
 
         // Background levels
-        readonly property string bg1: "#EBDBB2"
-        readonly property string bg2: "#D5C4A1"
+        readonly property string backgroundLifted: "#EBDBB2"
+        readonly property string backgroundHighlighted: "#D5C4A1"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#FBDCDB"
@@ -286,8 +286,8 @@ Singleton {
         readonly property string foreground: "#CDD6F4"
 
         // Background levels
-        readonly property string bg1: "#313244"
-        readonly property string bg2: "#45475A"
+        readonly property string backgroundLifted: "#313244"
+        readonly property string backgroundHighlighted: "#45475A"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#4D2E34"
@@ -323,8 +323,8 @@ Singleton {
         readonly property string foreground: "#4C4F69"
 
         // Background levels
-        readonly property string bg1: "#E6E9EF"
-        readonly property string bg2: "#DCE0E8"
+        readonly property string backgroundLifted: "#E6E9EF"
+        readonly property string backgroundHighlighted: "#DCE0E8"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#F7D7DC"
@@ -360,8 +360,8 @@ Singleton {
         readonly property string foreground: "#C0CAF5"
 
         // Background levels
-        readonly property string bg1: "#24283B"
-        readonly property string bg2: "#2F3549"
+        readonly property string backgroundLifted: "#24283B"
+        readonly property string backgroundHighlighted: "#2F3549"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#4D2E34"
@@ -397,8 +397,8 @@ Singleton {
         readonly property string foreground: "#3760BF"
 
         // Background levels
-        readonly property string bg1: "#DFE0E5"
-        readonly property string bg2: "#D0D1D6"
+        readonly property string backgroundLifted: "#DFE0E5"
+        readonly property string backgroundHighlighted: "#D0D1D6"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#F7D7DC"
@@ -434,8 +434,8 @@ Singleton {
         readonly property string foreground: "#839496"
 
         // Background levels
-        readonly property string bg1: "#073642"
-        readonly property string bg2: "#0E4B59"
+        readonly property string backgroundLifted: "#073642"
+        readonly property string backgroundHighlighted: "#0E4B59"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#4D2E34"
@@ -471,8 +471,8 @@ Singleton {
         readonly property string foreground: "#657B83"
 
         // Background levels
-        readonly property string bg1: "#EEE8D5"
-        readonly property string bg2: "#DDD6C1"
+        readonly property string backgroundLifted: "#EEE8D5"
+        readonly property string backgroundHighlighted: "#DDD6C1"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#F7D7DC"
@@ -508,8 +508,8 @@ Singleton {
         readonly property string foreground: "#E0DEF4"
 
         // Background levels
-        readonly property string bg1: "#1F1D2E"
-        readonly property string bg2: "#26233A"
+        readonly property string backgroundLifted: "#1F1D2E"
+        readonly property string backgroundHighlighted: "#26233A"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#4D2E34"
@@ -545,8 +545,8 @@ Singleton {
         readonly property string foreground: "#575279"
 
         // Background levels
-        readonly property string bg1: "#FFFAF3"
-        readonly property string bg2: "#F2E9E1"
+        readonly property string backgroundLifted: "#FFFAF3"
+        readonly property string backgroundHighlighted: "#F2E9E1"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#F7D7DC"
@@ -582,8 +582,8 @@ Singleton {
         readonly property string foreground: "#E0E0E0"
 
         // Background levels
-        readonly property string bg1: "#1A1A1A"
-        readonly property string bg2: "#2A2A2A"
+        readonly property string backgroundLifted: "#1A1A1A"
+        readonly property string backgroundHighlighted: "#2A2A2A"
 
         // Semantic backgrounds
         readonly property string backgroundError: "#3A2A2A"

@@ -162,7 +162,7 @@ Loader {
                     anchors.margins: Styles.marginMd
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    color: Colors.bg2
+                    color: Colors.backgroundHighlighted
                     radius: Styles.radiusLg
                     TextStyled {
                         id: clock

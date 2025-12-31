@@ -67,7 +67,7 @@ Loader {
                     id: controlSection
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
-                    color: Colors.bg1
+                    color: Colors.backgroundLifted
                     radius: Styles.radiusMd
 
                     RowLayout {
@@ -126,7 +126,7 @@ Loader {
 
                             implicitWidth: scrollContainer.width
                             implicitHeight: notificationContent.implicitHeight + Styles.marginMd * 2
-                            color: Colors.bg1
+                            color: Colors.backgroundLifted
                             radius: Styles.radiusMd
 
                             ColumnLayout {
@@ -154,7 +154,7 @@ Loader {
                                     ButtonStyled {
                                         implicitHeight: 30
                                         implicitWidth: dismissText.implicitWidth + Styles.marginMd
-                                        defaultColor: Colors.bg1
+                                        defaultColor: Colors.backgroundLifted
                                         onClicked: Notifications.dismiss(notificationItem.index)
 
                                         TextStyled {

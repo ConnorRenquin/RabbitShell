@@ -249,7 +249,7 @@ FloatingWindow {
                     delegate: Rectangle {
                         width: gridView.cellWidth - Styles.marginSm
                         height: gridView.cellHeight - Styles.marginSm
-                        color: Colors.bg1
+                        color: Colors.backgroundLifted
                         radius: Styles.radiusSm
 
                         ColumnLayout {
@@ -296,7 +296,7 @@ FloatingWindow {
                                             Rectangle {
                                                 Layout.preferredWidth: contentWidth + 12
                                                 Layout.preferredHeight: 24
-                                                color: Colors.bg2
+                                                color: Colors.backgroundHighlighted
                                                 radius: 4
                                                 border.color: Colors.gray
                                                 border.width: 1
