@@ -9,62 +9,38 @@ Rectangle {
     id: base
 
     color: Colors.backgroundLifted
-    radius: 8
-
     anchors.fill: parent
 
-    ColumnLayout {
-        id: layout
-        anchors.centerIn: parent
+    ListView {
         anchors.fill: parent
-        spacing: 12
+        anchors.margins: Styles.marginSm
+        model: ThemeManager.availableThemes
+        spacing: Styles.marginSm
+        delegate: ButtonStyled {
+            id: themeButton
 
-        TextStyled {
-            Layout.alignment: Qt.AlignCenter
-            text: "Choose Theme"
-        }
+            required property string modelData
+            required property int index
 
-        Rectangle {
+            Layout.margins: Styles.marginSm
             Layout.fillWidth: true
-            implicitHeight: 2
-            color: Colors.backgroundHighlighted
-        }
 
-        GridLayout {
-            columns: 2
-            Layout.alignment: Qt.AlignTop
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            implicitWidth: parent.width
+            // Layout.preferredHeight: 40
+            // Layout.maximumHeight: 90
 
-            Repeater {
-                model: ThemeManager.availableThemes
+            readonly property bool isActive: ThemeManager.currentTheme === modelData
 
-                ButtonStyled {
-                    id: themeButton
-                    required property string modelData
-                    required property int index
+            defaultColor: isActive ? Colors.primary : Colors.backgroundHighlighted
+            hoverColor: isActive ? Colors.primary : Colors.backgroundLifted
 
-                    Layout.margins: Styles.marginSm
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+            onClicked: ThemeManager.setTheme(modelData)
 
-                    Layout.preferredHeight: 40
-                    Layout.maximumHeight: 91
-
-                    readonly property bool isActive: ThemeManager.currentTheme === modelData
-
-                    defaultColor: isActive ? Colors.primary : Colors.backgroundHighlighted
-                    hoverColor: isActive ? Colors.primary : Colors.backgroundLifted
-
-                    onClicked: ThemeManager.setTheme(modelData)
-
-                    TextStyled {
-                        anchors.centerIn: parent
-                        text: themeButton.modelData.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
-                        color: themeButton.isActive ? Colors.background : Colors.foreground
-                        font.pixelSize: Styles.textSm
-                    }
-                }
+            TextStyled {
+                anchors.centerIn: parent
+                text: themeButton.modelData.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
+                color: themeButton.isActive ? Colors.background : Colors.foreground
+                font.pixelSize: Styles.textSm
             }
         }
     }
