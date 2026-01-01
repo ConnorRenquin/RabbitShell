@@ -21,7 +21,7 @@ the modules in `shell.qml` and have the rest of it work. Don't like a thing? Rem
   - `PatchBay.qml` - Used to easliy pass signals between components. e.g. NotificationWidget and the 
   NotificationManager.
   - `Utils.qml & Time.qml` - These class have the most dependents.
-`/Constants` - Just basic styling constants. Similarly implemented like TailwindCSS
+`/Settings` - Just basic styling Settings. Similarly implemented like TailwindCSS
 `/Components` - A few basic components to use throughout the project.
 
 # Install

@@ -3,7 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import qs.Constants
+import qs.Settings
 import qs.Components
 
 ListView {

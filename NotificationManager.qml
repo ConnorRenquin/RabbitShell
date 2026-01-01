@@ -9,7 +9,7 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Services
-import qs.Constants
+import qs.Settings
 import qs.Components
 
 Loader {

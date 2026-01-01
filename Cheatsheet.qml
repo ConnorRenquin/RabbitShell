@@ -5,7 +5,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-import qs.Constants
+import qs.Settings
 import qs.Components
 
 FloatingWindow {

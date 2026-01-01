@@ -6,7 +6,7 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
-import qs.Constants
+import qs.Settings
 import qs.Components
 
 Loader {

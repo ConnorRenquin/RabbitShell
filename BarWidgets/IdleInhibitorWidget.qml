@@ -1,7 +1,7 @@
 import QtQuick
 
 import qs.Components
-import qs.Constants
+import qs.Settings
 import qs.Services
 
 ButtonStyled {

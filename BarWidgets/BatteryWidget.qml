@@ -2,7 +2,7 @@ import Quickshell.Services.UPower
 
 import QtQuick
 
-import qs.Constants
+import qs.Settings
 import qs.Components
 
 Rectangle {

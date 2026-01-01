@@ -4,7 +4,7 @@ import QtQuick
 import qs.BarWidgets
 import qs.Services
 import qs.Components
-import qs.Constants
+import qs.Settings
 
 Variants {
     model: Quickshell.screens

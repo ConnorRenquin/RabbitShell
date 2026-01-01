@@ -4,7 +4,7 @@ import Quickshell.Widgets
 import Quickshell.Hyprland
 import QtQuick
 
-import qs.Constants
+import qs.Settings
 import qs.Components
 
 Loader {

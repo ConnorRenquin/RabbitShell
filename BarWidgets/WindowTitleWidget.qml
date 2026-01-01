@@ -2,7 +2,7 @@ import Quickshell.Wayland
 import QtQuick
 
 import qs.Components
-import qs.Constants
+import qs.Settings
 
 Rectangle {
     id: root

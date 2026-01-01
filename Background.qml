@@ -3,7 +3,7 @@ import Quickshell.Widgets
 import Quickshell.Services.Mpris
 import QtQuick
 
-import qs.Constants
+import qs.Settings
 import qs.Components
 import qs.Services
 

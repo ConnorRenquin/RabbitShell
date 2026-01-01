@@ -8,7 +8,7 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Components
-import qs.Constants
+import qs.Settings
 
 Rectangle {
     id: root
