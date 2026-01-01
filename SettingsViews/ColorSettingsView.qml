@@ -1,10 +1,12 @@
 pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Settings
 import qs.Components
+import qs.Services
 
 ListView {
     anchors.fill: parent
@@ -42,15 +44,29 @@ ListView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                // Color preview rectangle
-                Rectangle {
-                    id: colorPreview
-                    Layout.preferredWidth: 40
+                // Color preview rectangle with validation indicator
+                RowLayout {
+                    Layout.preferredWidth: 60
                     Layout.preferredHeight: 40
-                    color: Colors.userColors[colorEntry.modelData] || "#000000"
-                    border.width: 1
-                    border.color: Colors.foreground
-                    radius: Styles.radiusSm
+                    spacing: 5
+
+                    Rectangle {
+                        id: colorPreview
+                        Layout.preferredWidth: 40
+                        Layout.preferredHeight: 40
+                        color: Colors.userColors[colorEntry.modelData] || "#000000"
+                        border.width: Styles.marginSm / 2
+                        border.color: Colors.backgroundLifted
+                        // radius: Styles.radiusSm
+                    }
+
+                    Rectangle {
+                        id: validationIndicator
+                        Layout.preferredWidth: 10
+                        Layout.preferredHeight: 10
+                        radius: 5
+                        color: textField.isValidColor(textField.text) ? Colors.success : Colors.error
+                    }
                 }
 
                 // Color text field
@@ -60,6 +76,7 @@ ListView {
 
                     Component.onCompleted: {
                         text = Colors.userColors[colorEntry.modelData] || "";
+                        colorPreviewUpdate.start();
                     }
 
                     Connections {
@@ -70,17 +87,21 @@ ListView {
                     }
 
                     onTextChanged: {
-                        // Update the preview color as the text changes
-                        if (isValidColor(text)) {
-                            colorPreview.color = text;
-                        }
+                        // Only update the preview color after a short delay
+                        colorPreviewUpdate.restart();
                     }
 
-                    onEditingFinished: {
-                        if (isValidColor(text)) {
-                            var newColors = Object.assign({}, Colors.userColors);
-                            newColors[colorEntry.modelData] = text;
-                            Colors.userColors = newColors;
+                    // Timer to update the preview with a slight delay
+                    Timer {
+                        id: colorPreviewUpdate
+                        interval: 300
+                        onTriggered: {
+                            if (textField.isValidColor(textField.text)) {
+                                colorPreview.color = textField.text;
+                                applyButton.enabled = true;
+                            } else {
+                                applyButton.enabled = false;
+                            }
                         }
                     }
 
@@ -90,9 +111,50 @@ ListView {
                     }
                 }
 
+                // Apply button
+                ButtonStyled {
+                    id: applyButton
+                    text: "Apply"
+                    enabled: textField.isValidColor(textField.text)
+                    onClicked: {
+                        var newColors = Object.assign({}, Colors.userColors);
+                        newColors[colorEntry.modelData] = textField.text;
+                        Colors.userColors = newColors;
+                    }
+                }
+
+                // Reset button
+                ButtonStyled {
+                    id: resetButton
+                    text: "Reset"
+                    onClicked: {
+                        var colorName = toCamelCase(colorEntry.modelData);
+                        var defaultColor = ThemeManager.theme[colorName];
+                        if (defaultColor) {
+                            textField.text = defaultColor;
+                            colorPreview.color = defaultColor;
+                            var newColors = Object.assign({}, Colors.userColors);
+                            newColors[colorEntry.modelData] = defaultColor;
+                            Colors.userColors = newColors;
+                        }
+                    }
+
+                    // Convert "Background Lifted" to "backgroundLifted"
+                    function toCamelCase(text) {
+                        return text.split(' ').map((word, index) => {
+                            if (index === 0) {
+                                return word.toLowerCase();
+                            }
+                            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                        }).join('');
+                    }
+                }
+
                 // Color picker button
                 ButtonStyled {
                     text: "..."
+                    Layout.preferredWidth: 30
+                    Layout.leftMargin: 5
                     onClicked: colorDialog.open()
 
                     Popup {
@@ -137,9 +199,9 @@ ListView {
                                             onClicked: {
                                                 var selectedColor = colorSwatch.modelData;
                                                 textField.text = selectedColor;
-                                                var newColors = Object.assign({}, Colors.userColors);
-                                                newColors[colorEntry.modelData] = selectedColor;
-                                                Colors.userColors = newColors;
+                                                textField.text = selectedColor;
+                                                colorPreview.color = selectedColor;
+                                                applyButton.enabled = true;
                                                 colorDialog.close();
                                             }
                                         }
