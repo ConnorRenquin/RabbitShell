@@ -4,87 +4,137 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 
-import qs.Services
-
 Singleton {
     id: root
 
-    property var currentTheme: ThemeManager.theme
+    property string currentTheme: GlobalSettings.currentTheme ?? "default.json"
+    readonly property string directory: '.data/colors/'
+    property string themePath: directory + currentTheme
+    property list<string> availableThemes: []
+    property bool isLoadingTheme: false
 
     property var userColors: {
-        "Background": currentTheme.background,
-        "Background Lifted": currentTheme.backgroundLifted,
-        "Background Highlighted": currentTheme.backgroundHighlighted,
-        "Foreground": currentTheme.foreground,
-        "Primary": currentTheme.primary,
-        "Secondary": currentTheme.secondary,
-        "Accent": currentTheme.accent,
-        "Success": currentTheme.success,
-        "Background Success": currentTheme.backgroundSuccess,
-        "Error": currentTheme.error,
-        "Background Error": currentTheme.backgroundError,
-        "Warning": currentTheme.warning,
-        "Background Warning": currentTheme.backgroundWarning,
-        "Orange": currentTheme.orange,
-        "Yellow": currentTheme.yellow,
-        "Green": currentTheme.green,
-        "Aqua": currentTheme.aqua,
-        "Blue": currentTheme.blue,
-        "Purple": currentTheme.purple,
-        "Gray": currentTheme.gray
+        "Background": "#2D353B",
+        "Background Lifted": "#343F44",
+        "Background Highlighted": "#3D484D",
+        "Foreground": "#D3C6AA",
+        "Primary": "#A7C080",
+        "Secondary": "#7FBBB3",
+        "Accent": "#E69875",
+        "Success": "#A7C080",
+        "Background Success": "#425047",
+        "Error": "#E67E80",
+        "Background Error": "#514045",
+        "Warning": "#DBBC7F",
+        "Background Warning": "#4D4C43",
+        "Orange": "#E69875",
+        "Yellow": "#DBBC7F",
+        "Green": "#A7C080",
+        "Aqua": "#83C092",
+        "Blue": "#7FBBB3",
+        "Purple": "#D699B6",
+        "Gray": "#7A8478"
     }
 
     // Base colors
-    readonly property string background: userColors["Background"] ?? currentTheme.background
-    readonly property string backgroundLifted: userColors["Background Lifted"] ?? currentTheme.backgroundLifted
-    readonly property string backgroundHighlighted: userColors["Background Highlighted"] ?? currentTheme.backgroundHighlighted
-    readonly property string foreground: userColors["Foreground"] ?? currentTheme.foreground
+    property string background: userColors["Background"] ?? "#2D353B"
+    property string backgroundLifted: userColors["Background Lifted"] ?? "#343F44"
+    property string backgroundHighlighted: userColors["Background Highlighted"] ?? "#3D484D"
+    property string foreground: userColors["Foreground"] ?? "#D3C6AA"
 
     // Primary accent colors
-    readonly property string primary: userColors["Primary"] ?? currentTheme.primary
-    readonly property string secondary: userColors["Secondary"] ?? currentTheme.secondary
-    readonly property string accent: userColors["Accent"] ?? currentTheme.accent
+    property string primary: userColors["Primary"] ?? "#A7C080"
+    property string secondary: userColors["Secondary"] ?? "#7FBBB3"
+    property string accent: userColors["Accent"] ?? "#E69875"
 
     // Semantic colors (use these for consistency)
-    readonly property string success: userColors["Success"] ?? currentTheme.success
-    readonly property string backgroundSuccess: userColors["Background Success"] ?? currentTheme.backgroundSuccess
-    readonly property string error: userColors["Error"] ?? currentTheme.error
-    readonly property string backgroundError: userColors["Background Error"] ?? currentTheme.backgroundError
-    readonly property string warning: userColors["Warning"] ?? currentTheme.warning
-    readonly property string backgroundWarning: userColors["Background Warning"] ?? currentTheme.backgroundWarning
+    property string success: userColors["Success"] ?? "#A7C080"
+    property string backgroundSuccess: userColors["Background Success"] ?? "#425047"
+    property string error: userColors["Error"] ?? "#E67E80"
+    property string backgroundError: userColors["Background Error"] ?? "#514045"
+    property string warning: userColors["Warning"] ?? "#DBBC7F"
+    property string backgroundWarning: userColors["Background Warning"] ?? "#4D4C43"
 
     // Extended color palette
-    readonly property string orange: userColors["Orange"] ?? currentTheme.orange
-    readonly property string yellow: userColors["Yellow"] ?? currentTheme.yellow
-    readonly property string green: userColors["Green"] ?? currentTheme.green
-    readonly property string aqua: userColors["Aqua"] ?? currentTheme.aqua
-    readonly property string blue: userColors["Blue"] ?? currentTheme.blue
-    readonly property string purple: userColors["Purple"] ?? currentTheme.purple
-    readonly property string gray: userColors["Gray"] ?? currentTheme.gray
+    property string orange: userColors["Orange"] ?? "#E69875"
+    property string yellow: userColors["Yellow"] ?? "#DBBC7F"
+    property string green: userColors["Green"] ?? "#A7C080"
+    property string aqua: userColors["Aqua"] ?? "#83C092"
+    property string blue: userColors["Blue"] ?? "#7FBBB3"
+    property string purple: userColors["Purple"] ?? "#D699B6"
+    property string gray: userColors["Gray"] ?? "#7A8478"
+
+    function updateColors() {
+        console.log(background);
+        console.log(userColors["Background"]);
+        background = userColors["Background"] ?? "#2D353B";
+        console.log(background);
+
+        backgroundLifted = userColors["Background Lifted"] ?? "#343F44";
+        backgroundHighlighted = userColors["Background Highlighted"] ?? "#3D484D";
+        foreground = userColors["Foreground"] ?? "#D3C6AA";
+        primary = userColors["Primary"] ?? "#A7C080";
+        secondary = userColors["Secondary"] ?? "#7FBBB3";
+        accent = userColors["Accent"] ?? "#E69875";
+        success = userColors["Success"] ?? "#A7C080";
+        backgroundSuccess = userColors["Background Success"] ?? "#425047";
+        error = userColors["Error"] ?? "#E67E80";
+        backgroundError = userColors["Background Error"] ?? "#514045";
+        warning = userColors["Warning"] ?? "#DBBC7F";
+        backgroundWarning = userColors["Background Warning"] ?? "#4D4C43";
+        orange = userColors["Orange"] ?? "#E69875";
+        yellow = userColors["Yellow"] ?? "#DBBC7F";
+        green = userColors["Green"] ?? "#A7C080";
+        aqua = userColors["Aqua"] ?? "#83C092";
+        blue = userColors["Blue"] ?? "#7FBBB3";
+        purple = userColors["Purple"] ?? "#D699B6";
+        gray = userColors["Gray"] ?? "#7A8478";
+    }
 
     onUserColorsChanged: {
-        if (persistantData.loaded) {
-            console.log('colors changed');
+        if (persistantData.loaded && !isLoadingTheme) {
             persistantData.setText(JSON.stringify(root.userColors));
         }
+    }
+
+    onCurrentThemeChanged: {
+        console.log('Theme changed to:', currentTheme);
+        GlobalSettings.currentTheme = currentTheme;
+        persistantData.reload();
     }
 
     FileView {
         id: persistantData
-        path: Qt.resolvedUrl('./.data/user-colors.json')
+        path: Qt.resolvedUrl(root.themePath)
         blockLoading: false
         onLoaded: {
+            root.isLoadingTheme = true;
             try {
-                root.userColors = JSON.parse(persistantData.text());
+                console.log(text());
+                root.userColors = JSON.parse(text());
+                root.updateColors();
+                console.log('Theme loaded successfully:', root.currentTheme);
             } catch (e) {
                 console.log('Failed to parse userColors data:', e);
                 root.userColors = root.userColors;
             }
+            root.isLoadingTheme = false;
+            console.log(root.background);
         }
         onLoadFailed: {
-            Quickshell.execDetached(['touch', '.data/user-colors.json']);
+            console.log('Load failed, creating theme file:', root.themePath);
+            Quickshell.execDetached(['touch', root.themePath]);
             persistantData.setText(JSON.stringify(root.userColors));
         }
         onSaveFailed: console.log('Failed to save userColors data')
+    }
+
+    Process {
+        id: listFiles
+        command: ['bash', '-c', `ls  $XDG_CONFIG_HOME/quickshell/Settings/${root.directory}`]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: root.availableThemes = text.trim().split(/\s+/)
+        }
     }
 }

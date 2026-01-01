@@ -3,7 +3,6 @@ import QtQuick.Layouts
 
 import qs.Settings
 import qs.Components
-import qs.Services
 
 Rectangle {
     id: base
@@ -14,7 +13,7 @@ Rectangle {
     ListView {
         anchors.fill: parent
         anchors.margins: Styles.marginSm
-        model: ThemeManager.availableThemes
+        model: Colors.availableThemes
         spacing: Styles.marginSm
         delegate: ButtonStyled {
             id: themeButton
@@ -26,19 +25,17 @@ Rectangle {
             Layout.fillWidth: true
 
             implicitWidth: parent.width
-            // Layout.preferredHeight: 40
-            // Layout.maximumHeight: 90
-
-            readonly property bool isActive: ThemeManager.currentTheme === modelData
 
             defaultColor: isActive ? Colors.primary : Colors.backgroundHighlighted
             hoverColor: isActive ? Colors.primary : Colors.backgroundLifted
 
-            onClicked: ThemeManager.setTheme(modelData)
+            onClicked: Colors.currentTheme = modelData
+
+            readonly property bool isActive: Colors.currentTheme === modelData
 
             TextStyled {
                 anchors.centerIn: parent
-                text: themeButton.modelData.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
+                text: themeButton.modelData.split('.')[0]
                 color: themeButton.isActive ? Colors.background : Colors.foreground
                 font.pixelSize: Styles.textSm
             }
