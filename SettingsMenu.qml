@@ -8,7 +8,7 @@ import QtQuick.Layouts
 import qs.Components
 import qs.Constants
 import qs.Services
-import qs.Settings
+import qs.SettingsViews
 
 FloatingWindow {
     id: root
@@ -48,15 +48,15 @@ FloatingWindow {
             color: Colors.backgroundLifted
             Layout.preferredWidth: 300
             Layout.fillWidth: true
-            ThemeSettings {
+            ThemeSettingsView {
                 readonly property string name: 'Theme'
                 anchors.fill: parent
             }
-            ColorSettings {
+            ColorSettingsView {
                 readonly property string name: 'Colors'
                 anchors.fill: parent
             }
-            StyleSettings {
+            StyleSettingsView {
                 readonly property string name: 'Styles'
                 anchors.fill: parent
             }
