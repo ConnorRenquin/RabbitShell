@@ -1,0 +1,22 @@
+{
+  "Background": "#0A0A0A",
+  "Background Lifted": "#1A1A1A",
+  "Background Highlighted": "#2A2A2A",
+  "Foreground": "#E0E0E0",
+  "Primary": "#FFFFFF",
+  "Secondary": "#C0C0C0",
+  "Accent": "#A0A0A0",
+  "Success": "#60D060",
+  "Background Success": "#2A3A2A",
+  "Error": "#E06060",
+  "Background Error": "#3A2A2A",
+  "Warning": "#E0C060",
+  "Background Warning": "#3A3A2A",
+  "Orange": "#E09060",
+  "Yellow": "#E0C060",
+  "Green": "#60D060",
+  "Aqua": "#60D0C0",
+  "Blue": "#6090E0",
+  "Purple": "#C060E0",
+  "Gray": "#6A6A6A"
+}
