@@ -52,6 +52,10 @@ FloatingWindow {
                 readonly property string name: 'Theme'
                 anchors.fill: parent
             }
+            ColorSettings {
+                readonly property string name: 'Colors'
+                anchors.fill: parent
+            }
             StyleSettings {
                 readonly property string name: 'Styles'
                 anchors.fill: parent
