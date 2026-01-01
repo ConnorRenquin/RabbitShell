@@ -37,7 +37,6 @@ Singleton {
 
     onUserStylesChanged: {
         if (persistantData.loaded) {
-            console.log('changed');
             persistantData.setText(JSON.stringify(root.userStyles));
         }
     }
@@ -48,11 +47,9 @@ Singleton {
         blockLoading: false
         onLoaded: {
             try {
-                console.log(root.userStyles["Margin Small"]);
                 root.userStyles = JSON.parse(persistantData.text());
-                console.log(root.userStyles["Margin Small"]);
             } catch (e) {
-                console.log('Failed to parse userStyles data:', e);
+                console.error('Failed to parse userStyles data:', e);
                 root.userStyles = root.userStyles;
             }
         }
@@ -60,6 +57,6 @@ Singleton {
             Quickshell.execDetached(['touch', '.data/userStyles.json']);
             persistantData.setText(JSON.stringify(root.userStyles));
         }
-        onSaveFailed: console.log('Failed to save userStyles data')
+        onSaveFailed: console.error('Failed to save userStyles data')
     }
 }

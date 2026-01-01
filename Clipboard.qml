@@ -246,7 +246,6 @@ PanelWindow {
                 clipboardItems.decrementCurrentIndex();
             } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
                 if (clipboardItems.currentItem) {
-                    console.log('hey');
                     clipboardItems.currentItem.clicked(null);
                 }
             } else if ([Qt.Key_G].includes(event.key)) {

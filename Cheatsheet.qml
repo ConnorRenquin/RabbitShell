@@ -11,8 +11,8 @@ import qs.Components
 FloatingWindow {
     id: root
 
-    width: 1200
-    height: 800
+    implicitWidth: 1200
+    implicitHeight: 800
     color: "transparent"
 
     visible: false
@@ -227,7 +227,6 @@ FloatingWindow {
                     TextStyled {
                         text: "󰌌 Keybind Cheatsheet"
                         Layout.fillWidth: true
-                        anchors.centerIn: parent
                     }
                 }
             }
@@ -247,8 +246,8 @@ FloatingWindow {
                     model: root.keybindSections
 
                     delegate: Rectangle {
-                        width: gridView.cellWidth - Styles.marginSm
-                        height: gridView.cellHeight - Styles.marginSm
+                        implicitWidth: gridView.cellWidth - Styles.marginSm
+                        implicitHeight: gridView.cellHeight - Styles.marginSm
                         color: Colors.backgroundLifted
                         radius: Styles.radiusSm
 
