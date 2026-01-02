@@ -1,14 +1,16 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Dialogs
 import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Settings
 import qs.Components
-import qs.Services
 
 ListView {
+    id: root
+
     anchors.fill: parent
     anchors.margins: Styles.marginSm
 
@@ -21,22 +23,27 @@ ListView {
         policy: ScrollBar.AsNeeded
     }
 
+    function isValidColor(color) {
+        return color.match(/^#[0-9A-Fa-f]{6}$/) !== null;
+    }
+
     delegate: Rectangle {
         id: colorEntry
 
-        color: Colors.background
-        implicitWidth: parent.width
-        implicitHeight: 100
-        radius: Styles.radiusSm
-
         required property string modelData
         required property int index
+
+        color: Colors.background
+        implicitWidth: parent?.width ?? 0
+        implicitHeight: 100
+        radius: Styles.radiusSm
 
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: Styles.marginSm
 
             TextStyled {
+                id: colorName
                 text: colorEntry.modelData
             }
 
@@ -44,179 +51,51 @@ ListView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                // Color preview rectangle with validation indicator
-                RowLayout {
-                    Layout.preferredWidth: 60
-                    Layout.preferredHeight: 40
-                    spacing: 5
-
-                    Rectangle {
-                        id: colorPreview
-                        Layout.preferredWidth: 40
-                        Layout.preferredHeight: 40
-                        color: Colors.userColors[colorEntry.modelData] || "#000000"
-                        border.width: Styles.marginSm / 2
-                        border.color: Colors.backgroundLifted
-                        // radius: Styles.radiusSm
-                    }
-
-                    Rectangle {
-                        id: validationIndicator
-                        Layout.preferredWidth: 10
-                        Layout.preferredHeight: 10
-                        radius: 5
-                        color: textField.isValidColor(textField.text) ? Colors.success : Colors.error
-                    }
+                Rectangle {
+                    id: colorPreview
+                    Layout.preferredWidth: 40
+                    Layout.fillHeight: true
+                    color: root.isValidColor(colorTextField?.text) ? colorTextField.text : Colors.userColors[colorEntry.modelData] || "#000000"
+                    radius: Styles.radiusSm
                 }
 
-                // Color text field
-                TextFieldStyled {
-                    id: textField
-                    Layout.fillWidth: true
+                Rectangle {
+                    id: validationIndicator
+                    Layout.preferredWidth: 10
+                    Layout.fillHeight: true
+                    radius: Styles.radiusSm
+                    color: root.isValidColor(colorTextField.text) ? Colors.success : Colors.error
+                }
 
-                    Component.onCompleted: {
-                        text = Colors.userColors[colorEntry.modelData] || "";
-                        colorPreviewUpdate.start();
-                    }
+                TextFieldStyled {
+                    id: colorTextField
+
+                    Layout.fillWidth: true
+                    Component.onCompleted: text = Colors.userColors[colorEntry.modelData] || ""
 
                     Connections {
                         target: Colors
                         function onUserColorsChanged() {
-                            textField.text = Colors.userColors[colorEntry.modelData] || "";
+                            colorTextField.text = Colors.userColors[colorEntry.modelData] || "";
                         }
-                    }
-
-                    onTextChanged: {
-                        // Only update the preview color after a short delay
-                        colorPreviewUpdate.restart();
-                    }
-
-                    // Timer to update the preview with a slight delay
-                    Timer {
-                        id: colorPreviewUpdate
-                        interval: 300
-                        onTriggered: {
-                            if (textField.isValidColor(textField.text)) {
-                                colorPreview.color = textField.text;
-                                applyButton.enabled = true;
-                            } else {
-                                applyButton.enabled = false;
-                            }
-                        }
-                    }
-
-                    function isValidColor(color) {
-                        // Simple validation for hex colors
-                        return color.match(/^#[0-9A-Fa-f]{6}$/) !== null;
                     }
                 }
 
-                // Apply button
                 ButtonStyled {
                     id: applyButton
                     text: "Apply"
-                    enabled: textField.isValidColor(textField.text)
+                    enabled: root.isValidColor(colorTextField.text)
                     onClicked: {
                         var newColors = Object.assign({}, Colors.userColors);
-                        newColors[colorEntry.modelData] = textField.text;
+                        newColors[colorEntry.modelData] = colorTextField.text;
                         Colors.userColors = newColors;
                     }
                 }
 
-                // Reset button
                 ButtonStyled {
                     id: resetButton
                     text: "Reset"
-                    onClicked: {
-                        var colorName = toCamelCase(colorEntry.modelData);
-                        var defaultColor = ThemeManager.theme[colorName];
-                        if (defaultColor) {
-                            textField.text = defaultColor;
-                            colorPreview.color = defaultColor;
-                            var newColors = Object.assign({}, Colors.userColors);
-                            newColors[colorEntry.modelData] = defaultColor;
-                            Colors.userColors = newColors;
-                        }
-                    }
-
-                    // Convert "Background Lifted" to "backgroundLifted"
-                    function toCamelCase(text) {
-                        return text.split(' ').map((word, index) => {
-                            if (index === 0) {
-                                return word.toLowerCase();
-                            }
-                            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-                        }).join('');
-                    }
-                }
-
-                // Color picker button
-                ButtonStyled {
-                    text: "..."
-                    Layout.preferredWidth: 30
-                    Layout.leftMargin: 5
-                    onClicked: colorDialog.open()
-
-                    Popup {
-                        id: colorDialog
-                        width: 300
-                        height: 300
-                        modal: true
-                        focus: true
-                        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-
-                        anchors.centerIn: Overlay.overlay
-
-                        ColumnLayout {
-                            anchors.fill: parent
-                            anchors.margins: Styles.marginSm
-
-                            // Simple color grid
-                            GridView {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-
-                                cellWidth: 50
-                                cellHeight: 50
-
-                                model: ["#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF", "#800000", "#008000", "#000080", "#808000", "#800080", "#008080", "#808080", "#C0C0C0", "#FF8080", "#80FF80", "#8080FF", "#FFFF80", "#FF80FF", "#80FFFF", "#333333", "#666666", "#999999"]
-
-                                delegate: Item {
-                                    id: colorSwatch
-                                    width: 45
-                                    height: 45
-
-                                    required property string modelData
-
-                                    Rectangle {
-                                        anchors.fill: parent
-                                        color: colorSwatch.modelData
-                                        border.width: 1
-                                        border.color: Colors.foreground
-
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            onClicked: {
-                                                var selectedColor = colorSwatch.modelData;
-                                                textField.text = selectedColor;
-                                                textField.text = selectedColor;
-                                                colorPreview.color = selectedColor;
-                                                applyButton.enabled = true;
-                                                colorDialog.close();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Close button
-                            ButtonStyled {
-                                Layout.alignment: Qt.AlignRight
-                                text: "Close"
-                                onClicked: colorDialog.close()
-                            }
-                        }
-                    }
+                    onClicked: colorTextField.text = Colors.userColors[colorEntry.modelData]
                 }
             }
         }
