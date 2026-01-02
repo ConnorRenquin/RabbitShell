@@ -1,4 +1,7 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 
 import qs.Settings
@@ -10,34 +13,42 @@ Rectangle {
     color: Colors.backgroundLifted
     anchors.fill: parent
 
-    ListView {
+    ScrollView {
         anchors.fill: parent
-        anchors.margins: Styles.marginSm
-        model: Colors.availableThemes
-        spacing: Styles.marginSm
-        delegate: ButtonStyled {
-            id: themeButton
+        contentWidth: availableWidth
 
-            required property string modelData
-            required property int index
+        GridLayout {
+            id: grid
+            columns: 2
+            layoutDirection: GridLayout.TopToBottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            Repeater {
+                model: Colors.availableThemes
+                delegate: ButtonStyled {
+                    id: themeButton
 
-            Layout.margins: Styles.marginSm
-            Layout.fillWidth: true
+                    required property string modelData
+                    required property int index
 
-            implicitWidth: parent.width
+                    Layout.preferredWidth: 200
+                    Layout.margins: Styles.marginSm
+                    Layout.fillWidth: true
 
-            defaultColor: isActive ? Colors.primary : Colors.backgroundHighlighted
-            hoverColor: isActive ? Colors.primary : Colors.backgroundLifted
+                    defaultColor: isActive ? Colors.primary : Colors.backgroundHighlighted
+                    hoverColor: isActive ? Colors.primary : Colors.backgroundLifted
 
-            onClicked: Colors.currentTheme = modelData
+                    onClicked: Colors.currentTheme = modelData
 
-            readonly property bool isActive: Colors.currentTheme === modelData
+                    readonly property bool isActive: Colors.currentTheme === modelData
 
-            TextStyled {
-                anchors.centerIn: parent
-                text: themeButton.modelData.split('.')[0]
-                color: themeButton.isActive ? Colors.background : Colors.foreground
-                font.pixelSize: Styles.textSm
+                    TextStyled {
+                        anchors.centerIn: parent
+                        text: themeButton.modelData.split('.')[0]
+                        color: themeButton.isActive ? Colors.background : Colors.foreground
+                        font.pixelSize: Styles.textSm
+                    }
+                }
             }
         }
     }
