@@ -1,5 +1,4 @@
-import Quickshell
-import Quickshell.Hyprland
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
@@ -8,21 +7,14 @@ import QtQuick.Layouts
 import qs.Settings
 import qs.Components
 
-FloatingWindow {
+Rectangle {
     id: root
 
-    implicitWidth: 1200
-    implicitHeight: 800
-    color: "transparent"
+    anchors.fill: parent
+    color: Colors.backgroundLifted
 
-    visible: false
+    Component.onCompleted: forceActiveFocus()
 
-    GlobalShortcut {
-        name: "cheatsheet"
-        onPressed: root.visible = !root.visible
-    }
-
-    // Keybind sections data
     property var keybindSections: [
         {
             "title": "App Launcher",
@@ -206,115 +198,90 @@ FloatingWindow {
         }
     ]
 
-    Rectangle {
+    ScrollView {
+        id: mainScrollView
         anchors.fill: parent
-        color: Colors.background
-        border.color: Colors.gray
+        contentWidth: availableWidth
 
         ColumnLayout {
+            id: gridView
             anchors.fill: parent
+            anchors.margins: Styles.marginSm
 
-            // Header
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 50
-                color: Colors.background
+            Repeater {
+                model: root.keybindSections
+                delegate: Rectangle {
+                    id: sectionRect
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 20
+                    required property int index
+                    required property var modelData
 
-                    TextStyled {
-                        text: "󰌌 Keybind Cheatsheet"
-                        Layout.fillWidth: true
-                    }
-                }
-            }
+                    Layout.fillWidth: true
+                    // Layout.fillHeight: true
+                    Layout.preferredHeight: contentColumn.implicitHeight + 2 * Styles.marginMd
+                    Layout.minimumWidth: 300
+                    color: Colors.background
+                    radius: Styles.radiusSm
 
-            // Grid Content
-            ScrollView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                Layout.margins: Styles.marginSm
+                    ColumnLayout {
+                        id: contentColumn
+                        anchors.fill: parent
+                        anchors.margins: Styles.marginMd
+                        spacing: Styles.marginMd
 
-                clip: true
-
-                GridView {
-                    id: gridView
-                    cellWidth: parent.width / 2
-                    cellHeight: 400
-                    model: root.keybindSections
-
-                    delegate: Rectangle {
-                        implicitWidth: gridView.cellWidth - Styles.marginSm
-                        implicitHeight: gridView.cellHeight - Styles.marginSm
-                        color: Colors.backgroundLifted
-                        radius: Styles.radiusSm
-
-                        ColumnLayout {
-                            anchors.fill: parent
-                            anchors.margins: Styles.marginSm
+                        // Header row with icon and title
+                        RowLayout {
+                            Layout.fillWidth: true
                             spacing: Styles.marginSm
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: 10
 
-                                TextStyled {
-                                    text: modelData.icon
-                                }
-
-                                TextStyled {
-                                    text: modelData.title
-                                    Layout.fillWidth: true
-                                }
+                            TextStyled {
+                                text: sectionRect.modelData.icon
+                                font.pixelSize: 18
                             }
 
-                            Rectangle {
+                            TextStyled {
+                                text: sectionRect.modelData.title
+                                font.bold: true
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 1
-                                color: Colors.foreground
                             }
+                        }
 
-                            // Keybinds List
-                            ScrollView {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                clip: true
+                        // Keybinds list
+                        ListView {
+                            id: keybindsList
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            implicitHeight: contentHeight
+                            spacing: Styles.marginSm
+                            clip: true
+                            interactive: false
 
-                                Column {
-                                    width: parent.width
-                                    spacing: Styles.marginSm
+                            model: sectionRect.modelData.keybinds
 
-                                    Repeater {
-                                        model: modelData.keybinds
+                            delegate: RowLayout {
+                                required property int index
+                                required property var modelData
 
-                                        RowLayout {
-                                            width: parent.width
-                                            spacing: 10
+                                width: keybindsList.width
+                                spacing: Styles.marginSm
 
-                                            Rectangle {
-                                                Layout.preferredWidth: contentWidth + 12
-                                                Layout.preferredHeight: 24
-                                                color: Colors.backgroundHighlighted
-                                                radius: 4
-                                                border.color: Colors.gray
-                                                border.width: 1
+                                Rectangle {
+                                    Layout.preferredWidth: keyText.implicitWidth + 12
+                                    Layout.preferredHeight: 24
+                                    color: Colors.backgroundHighlighted
+                                    radius: Styles.radiusSm
 
-                                                property real contentWidth: keyText.implicitWidth
-
-                                                TextStyled {
-                                                    id: keyText
-                                                    anchors.centerIn: parent
-                                                    text: modelData.key
-                                                }
-                                            }
-
-                                            TextStyled {
-                                                text: modelData.action
-                                                Layout.fillWidth: true
-                                            }
-                                        }
+                                    TextStyled {
+                                        id: keyText
+                                        anchors.centerIn: parent
+                                        text: modelData.key
                                     }
+                                }
+
+                                TextStyled {
+                                    text: modelData.action
+                                    Layout.fillWidth: true
+                                    wrapMode: Text.Wrap
                                 }
                             }
                         }
@@ -322,13 +289,5 @@ FloatingWindow {
                 }
             }
         }
-
-        Keys.onPressed: event => {
-            if (event.key === Qt.Key_Escape || event.key === Qt.Key_Q) {
-                root.visible = false;
-            }
-        }
-
-        Component.onCompleted: forceActiveFocus()
     }
 }

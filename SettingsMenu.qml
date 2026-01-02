@@ -60,6 +60,10 @@ FloatingWindow {
                 readonly property string name: 'Styles'
                 anchors.fill: parent
             }
+            Cheatsheet {
+                readonly property string name: 'Cheatsheet'
+                anchors.fill: parent
+            }
         }
     }
 }
