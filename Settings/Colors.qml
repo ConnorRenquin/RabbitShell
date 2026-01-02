@@ -65,11 +65,7 @@ Singleton {
     property string gray: userColors["Gray"] ?? "#7A8478"
 
     function updateColors() {
-        console.log(background);
-        console.log(userColors["Background"]);
         background = userColors["Background"] ?? "#2D353B";
-        console.log(background);
-
         backgroundLifted = userColors["Background Lifted"] ?? "#343F44";
         backgroundHighlighted = userColors["Background Highlighted"] ?? "#3D484D";
         foreground = userColors["Foreground"] ?? "#D3C6AA";
@@ -98,7 +94,6 @@ Singleton {
     }
 
     onCurrentThemeChanged: {
-        console.log('Theme changed to:', currentTheme);
         GlobalSettings.currentTheme = currentTheme;
         persistantData.reload();
     }
@@ -110,16 +105,13 @@ Singleton {
         onLoaded: {
             root.isLoadingTheme = true;
             try {
-                console.log(text());
                 root.userColors = JSON.parse(text());
                 root.updateColors();
-                console.log('Theme loaded successfully:', root.currentTheme);
             } catch (e) {
                 console.log('Failed to parse userColors data:', e);
                 root.userColors = root.userColors;
             }
             root.isLoadingTheme = false;
-            console.log(root.background);
         }
         onLoadFailed: {
             console.log('Load failed, creating theme file:', root.themePath);
