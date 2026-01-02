@@ -22,7 +22,7 @@ ListView {
         id: settingEntry
 
         color: Colors.background
-        implicitWidth: parent.width
+        implicitWidth: parent?.width ?? 0
         implicitHeight: 80
         radius: Styles.radiusSm
 

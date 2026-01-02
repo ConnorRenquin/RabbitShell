@@ -180,7 +180,7 @@ Rectangle {
                                                 implicitWidth: Math.max(180, itemText.implicitWidth + Styles.marginSm * 2)
                                                 implicitHeight: itemText.implicitHeight + Styles.marginSm
 
-                                                enabled: menuLoader.modelData.enabled
+                                                enabled: menuLoader?.modelData?.enabled ?? false
 
                                                 onContainsMouseChanged: {
                                                     if (containsMouse) {
@@ -210,27 +210,27 @@ Rectangle {
                                                     anchors.margins: Styles.marginSm / 2
 
                                                     IconImage {
-                                                        visible: menuLoader.modelData.icon !== undefined && menuLoader.modelData.icon !== null
+                                                        visible: menuLoader?.modelData?.icon ?? false
                                                         Layout.preferredWidth: 16
                                                         Layout.preferredHeight: 16
-                                                        source: menuLoader.modelData.icon || ""
+                                                        source: menuLoader?.modelData?.icon ?? ""
                                                     }
 
                                                     TextStyled {
                                                         id: itemText
-                                                        text: menuLoader.modelData.text || ""
+                                                        text: menuLoader?.modelData?.text || ""
                                                         font.pixelSize: Styles.textSm
                                                         Layout.fillWidth: true
                                                         horizontalAlignment: Text.AlignLeft
-                                                        color: menuLoader.modelData.enabled ? Colors.foreground : Colors.gray
+                                                        color: menuLoader?.modelData?.enabled ? Colors.foreground : Colors.gray
                                                     }
 
                                                     TextStyled {
                                                         id: checkBox
-                                                        text: menuLoader.modelData.checkState === Qt.Checked ? "✓" : ""
+                                                        text: menuLoader?.modelData?.checkState === Qt.Checked ? "✓" : ""
                                                         font.pixelSize: Styles.textSm
                                                         color: Colors.green
-                                                        visible: menuLoader.modelData.buttonType !== 0
+                                                        visible: menuLoader?.modelData?.buttonType !== 0
                                                     }
 
                                                     TextStyled {
@@ -238,7 +238,7 @@ Rectangle {
                                                         text: "›"
                                                         font.pixelSize: Styles.textSm
                                                         color: Colors.gray
-                                                        visible: menuLoader.modelData.hasChildren
+                                                        visible: menuLoader?.modelData?.hasChildren ?? false
                                                     }
                                                 }
                                             }
