@@ -88,6 +88,7 @@ Singleton {
     }
 
     onUserColorsChanged: {
+        root.updateColors();
         if (persistantData.loaded && !isLoadingTheme) {
             persistantData.setText(JSON.stringify(root.userColors));
         }
