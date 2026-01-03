@@ -12,13 +12,14 @@ import qs.Settings
 import qs.Components
 import qs.Services
 
-PanelWindow {
+FloatingWindow {
     id: root
 
     visible: false
-    anchors.right: true
-    margins.right: Styles.marginLg
-    exclusionMode: ExclusionMode.Ignore
+    title: 'Clipboard'
+    // anchors.right: true
+    // margins.right: Styles.marginLg
+    // exclusionMode: ExclusionMode.Ignore
 
     implicitWidth: 600
     implicitHeight: 900
@@ -108,7 +109,7 @@ PanelWindow {
     HyprlandFocusGrab {
         id: grab
         windows: [root]
-        onCleared: root.visible = false
+        // onCleared: root.visible = false
     }
 
     Rectangle {

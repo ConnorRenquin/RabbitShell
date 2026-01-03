@@ -28,11 +28,12 @@ Loader {
         onPressed: loader.toggle()
     }
 
-    sourceComponent: PanelWindow {
+    sourceComponent: FloatingWindow {
         id: root
 
         color: "transparent"
-        exclusionMode: ExclusionMode.Ignore
+        // exclusionMode: ExclusionMode.Ignore
+        title: 'Notification Manager'
         implicitWidth: 600
         implicitHeight: 900
 

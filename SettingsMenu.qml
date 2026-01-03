@@ -13,6 +13,10 @@ import qs.SettingsViews
 FloatingWindow {
     id: root
     color: Colors.background
+
+    title: 'Settings'
+    visible: false
+
     Component.onCompleted: {
         PatchBay.openThemeSelector.connect(() => root.visible = !root.visible);
         settingsModuleUi.children.forEach(item => item.visible = false);
