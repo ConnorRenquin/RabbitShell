@@ -10,16 +10,43 @@ import qs.Settings
 import qs.Components
 
 Loader {
-    id: loader
+    id: root
 
     active: false
+
+    property bool searchAll: false
+
+    property string keyMap: "wertyuiopasdfghjklzxcvbnm"
+    property var toplevels: []
+
+    function updateToplevels() {
+        if (!Hyprland.toplevels)
+            return;
+        toplevels = Hyprland.toplevels.values.filter(toplevel => {
+            if (root.searchAll) {
+                return toplevel?.workspace?.id;
+            } else {
+                return toplevel?.workspace?.id > 0 && toplevel?.workspace?.focused;
+            }
+        });
+    }
+
+    Component.onCompleted: updateToplevels()
+
+    Connections {
+        target: Hyprland.toplevels
+        function onValuesChanged() {
+            root.updateToplevels();
+        }
+    }
 
     GlobalShortcut {
         name: "toplevelview"
         onPressed: {
             hideTimer.restart();
-            if (!loader.active) {
-                loader.active = true;
+            root.updateToplevels();
+            if (!root.active) {
+                root.active = true;
             } else {
                 Hyprland.dispatch('cyclenext');
             }
@@ -29,41 +56,20 @@ Loader {
     Timer {
         id: hideTimer
         interval: 2000
-        onTriggered: loader.active = false
+        onTriggered: root.active = false
     }
 
     sourceComponent: PanelWindow {
-        id: root
+        id: toplevelView
 
         implicitWidth: base.implicitWidth
         implicitHeight: base.implicitHeight
         color: "transparent"
 
-        property int columns: 4
-        property string keyMap: "wertyuiopasdfghjklzxcvbnm"
-        property var toplevels: []
-
-        function updateToplevels() {
-            if (!Hyprland.toplevels)
-                return;
-            toplevels = Hyprland.toplevels.values.filter(toplevel => {
-                return toplevel?.workspace?.id > 0 && toplevel?.workspace?.focused;
-            });
-        }
-
-        Component.onCompleted: updateToplevels()
-
-        Connections {
-            target: Hyprland.toplevels
-            function onValuesChanged() {
-                root.updateToplevels();
-            }
-        }
-
         HyprlandFocusGrab {
-            active: loader.active
-            windows: [root]
-            onCleared: loader.active = false
+            active: root.active
+            windows: [toplevelView]
+            onCleared: root.active = false
         }
 
         Rectangle {
@@ -77,8 +83,12 @@ Loader {
             implicitHeight: Math.max(toplevelGrid.implicitHeight, noContent.implicitHeight) + Styles.marginMd
 
             Keys.onPressed: function (event) {
-                if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
-                    loader.active = false;
+                if (event.key === Qt.Key_Control) {
+                    root.searchAll = !root.searchAll;
+                    root.updateToplevels();
+                    return;
+                } else if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+                    root.active = false;
                     event.accepted = true;
                     return;
                 }
@@ -94,7 +104,7 @@ Loader {
 
                 var toplevel = root.toplevels[index].wayland;
 
-                loader.active = false;
+                root.active = false;
                 event.accepted = true;
                 toplevel.activate();
             }
@@ -112,9 +122,9 @@ Loader {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.margins: Styles.marginMd / 2
+                anchors.margins: Styles.marginSm
 
-                columns: root.columns
+                columns: 4
                 columnSpacing: Styles.marginSm
                 rowSpacing: Styles.marginSm
 
@@ -136,9 +146,7 @@ Loader {
 
                         property string keyLabel: index < root.keyMap.length ? root.keyMap[index] : ""
 
-                        onClicked: {
-                            modelData.wayland.activate();
-                        }
+                        onClicked: modelData.wayland.activate()
 
                         RowLayout {
                             anchors.fill: parent
@@ -155,11 +163,10 @@ Loader {
                                     id: windowTitle
                                     Layout.fillWidth: true
                                     font.pixelSize: 25
-                                    text: {
-                                        if (!windowCard.modelData.wayland)
-                                            return "";
-                                        return windowCard.modelData.wayland.title;
-                                    }
+
+                                    property string title: windowCard?.modelData?.wayland?.title ?? ""
+
+                                    text: root.searchAll ? windowCard?.modelData?.workspace?.id + " - " + title : title
                                 }
 
                                 TextStyled {
