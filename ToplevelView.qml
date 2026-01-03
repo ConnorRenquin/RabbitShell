@@ -16,7 +16,20 @@ Loader {
 
     GlobalShortcut {
         name: "toplevelview"
-        onPressed: loader.active = !loader.active
+        onPressed: {
+            hideTimer.restart();
+            if (!loader.active) {
+                loader.active = true;
+            } else {
+                Hyprland.dispatch('cyclenext');
+            }
+        }
+    }
+
+    Timer {
+        id: hideTimer
+        interval: 2000
+        onTriggered: loader.active = false
     }
 
     sourceComponent: PanelWindow {
@@ -60,7 +73,7 @@ Loader {
             radius: Styles.radiusMd
             focus: true
 
-            implicitWidth: Math.max(toplevelGrid.implicitWidth, noContent.implicitWidth) + Styles.marginMd * 2
+            implicitWidth: Math.max(toplevelGrid.implicitWidth, noContent.implicitWidth) + Styles.marginMd
             implicitHeight: Math.max(toplevelGrid.implicitHeight, noContent.implicitHeight) + Styles.marginMd
 
             Keys.onPressed: function (event) {
@@ -118,12 +131,10 @@ Loader {
 
                         radius: Styles.radiusMd
                         isFocused: modelData.activated
+                        focusedColor: Colors.backgroundLifted
                         clip: true
 
-                        property string keyLabel: {
-                            // Helper property to get the key label
-                            return index < root.keyMap.length ? root.keyMap[index] : "";
-                        }
+                        property string keyLabel: index < root.keyMap.length ? root.keyMap[index] : ""
 
                         onClicked: {
                             modelData.wayland.activate();
@@ -131,6 +142,7 @@ Loader {
 
                         RowLayout {
                             anchors.fill: parent
+                            anchors.margins: Styles.marginSm
                             IconImage {
                                 id: appIcon
                                 implicitHeight: 60
