@@ -117,6 +117,7 @@ Loader {
                         Layout.preferredHeight: 80
 
                         radius: Styles.radiusMd
+                        isFocused: modelData.activated
                         clip: true
 
                         property string keyLabel: {
@@ -138,20 +139,18 @@ Loader {
                             }
 
                             ColumnLayout {
-                                DoubleText {
+                                TextStyled {
                                     id: windowTitle
                                     Layout.fillWidth: true
-                                    pixelSize: 25
+                                    font.pixelSize: 25
                                     text: {
                                         if (!windowCard.modelData.wayland)
                                             return "";
                                         return windowCard.modelData.wayland.title;
                                     }
-                                    secondaryColor: Colors.background
-                                    offset: 2
                                 }
 
-                                DoubleText {
+                                TextStyled {
                                     id: windowShortcutAndId
                                     Layout.fillWidth: true
                                     text: {
@@ -159,9 +158,7 @@ Loader {
                                             return "";
                                         return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland?.appId;
                                     }
-                                    primaryColor: Colors.green
-                                    secondaryColor: Colors.background
-                                    offset: 2
+                                    color: Colors.green
                                 }
                             }
                         }
