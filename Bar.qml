@@ -36,6 +36,7 @@ Variants {
             anchors.left: parent.left
             ButtonStyled {
                 id: appsButton
+                implicitHeight: parent.height
                 text: "󰘳"
                 onClicked: PatchBay.openAppLauncher()
             }
@@ -66,6 +67,7 @@ Variants {
             IdleInhibitorWidget {}
             ButtonStyled {
                 id: themesButton
+                height: parent.height
                 text: "󱪵"
                 onClicked: mouse => {
                     if (mouse.button === Qt.LeftButton) {

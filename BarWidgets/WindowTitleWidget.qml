@@ -23,6 +23,6 @@ Rectangle {
         id: windowTitle
         anchors.fill: parent
         anchors.margins: Styles.marginSm
-        text: ToplevelManager.activeToplevel.appId ?? "Desktop"
+        text: ToplevelManager?.activeToplevel?.appId ?? "Desktop"
     }
 }
