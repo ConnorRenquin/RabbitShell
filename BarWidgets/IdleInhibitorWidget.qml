@@ -10,7 +10,7 @@ ButtonStyled {
     implicitWidth: parent.height
     implicitHeight: parent.height
 
-    defaultColor: IdleInhibitorSingleton.enabled() ? Colors.orange : Colors.background
+    defaultColor: IdleInhibitorSingleton.enabled() ? Colors.backgroundLifted : Colors.background
     hoverColor: IdleInhibitorSingleton.enabled() ? Colors.backgroundSuccess : Colors.backgroundHighlighted
 
     TextStyled {

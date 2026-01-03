@@ -92,7 +92,7 @@ Loader {
                             implicitHeight: 40
                             implicitWidth: clearAllText.implicitWidth + Styles.marginLg
 
-                            defaultColor: Colors.orange
+                            defaultColor: Colors.background
                             onClicked: Notifications.clear()
 
                             TextStyled {
@@ -100,7 +100,6 @@ Loader {
                                 anchors.centerIn: parent
                                 textFormat: Text.MarkdownText
                                 text: '<u>C</u>lear All'
-                                color: Colors.background
                             }
                         }
                     }

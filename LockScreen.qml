@@ -104,7 +104,7 @@ Scope {
                     id: clock
                     implicitWidth: clockText.implicitWidth + Styles.marginSm * 2
                     implicitHeight: clockText.implicitHeight
-                    color: Colors.orange
+                    color: Colors.backgroundLifted
                     radius: Styles.radiusMd
 
                     anchors {
@@ -115,7 +115,6 @@ Scope {
                     TextStyled {
                         id: clockText
                         anchors.centerIn: parent
-                        color: Colors.background
                         font.pixelSize: 80
                         text: Time.time + '  ' + Time.date
                     }
@@ -158,13 +157,12 @@ Scope {
                             implicitWidth: unlockButtonText.implicitWidth + Styles.marginMd
                             Layout.fillHeight: true
 
-                            defaultColor: Colors.orange
+                            defaultColor: Colors.backgroundLifted
                             onClicked: lockContext.tryUnlock()
                             enabled: !lockContext.unlockInProgress
                             TextStyled {
                                 id: unlockButtonText
                                 anchors.centerIn: parent
-                                color: Colors.background
                                 text: ""
                             }
                         }
