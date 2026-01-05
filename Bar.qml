@@ -66,13 +66,13 @@ Variants {
             SystemTrayWidget {}
             IdleInhibitorWidget {}
             ButtonStyled {
-                id: themesButton
+                id: settingsButton
                 height: parent.height
-                text: "󱪵"
+                text: ""
                 onClicked: mouse => {
-                    if (mouse.button === Qt.LeftButton) {
+                    if (mouse.button === Qt.RightButton) {
                         Quickshell.execDetached(["bash", "-c", "waypaper --random"]);
-                    } else if (mouse.button === Qt.RightButton) {
+                    } else if (mouse.button === Qt.LeftButton) {
                         PatchBay.openThemeSelector();
                     }
                 }
