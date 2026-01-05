@@ -11,8 +11,6 @@ TextField {
     font.pixelSize: Styles.textMd
     color: Colors.foreground
     selectByMouse: true
-    cursorVisible: true
-    focus: true
     verticalAlignment: TextInput.AlignVCenter
     placeholderTextColor: Colors.foreground
     background: Rectangle {
