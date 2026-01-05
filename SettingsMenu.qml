@@ -52,24 +52,30 @@ FloatingWindow {
             color: Colors.backgroundLifted
             Layout.preferredWidth: 300
             Layout.fillWidth: true
+            ColumnLayout {
+                id: appearanceSettings
+                readonly property string name: 'Appearance'
+                anchors.fill: parent
+                ThemeSettingsView {
+                    Layout.preferredHeight: 300
+                    Layout.fillWidth: true
+                }
+                ColorSettingsView {
+                    Layout.preferredHeight: 400
+                    Layout.fillWidth: true
+                }
+                StyleSettingsView {
+                    Layout.fillHeight: true
+                    Layout.preferredHeight: 300
+                    Layout.fillWidth: true
+                }
+            }
             WallpaperSettingsView {
                 readonly property string name: 'Wallpaper'
                 anchors.fill: parent
             }
             DisplaySettingsView {
                 readonly property string name: 'Display'
-                anchors.fill: parent
-            }
-            ThemeSettingsView {
-                readonly property string name: 'Theme'
-                anchors.fill: parent
-            }
-            ColorSettingsView {
-                readonly property string name: 'Colors'
-                anchors.fill: parent
-            }
-            StyleSettingsView {
-                readonly property string name: 'Styles'
                 anchors.fill: parent
             }
             Cheatsheet {

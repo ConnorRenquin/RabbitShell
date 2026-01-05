@@ -11,7 +11,6 @@ Rectangle {
     id: base
 
     color: Colors.backgroundLifted
-    anchors.fill: parent
 
     ScrollView {
         anchors.fill: parent

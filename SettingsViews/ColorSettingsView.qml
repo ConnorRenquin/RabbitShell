@@ -10,9 +10,6 @@ import qs.Components
 ListView {
     id: root
 
-    anchors.fill: parent
-    anchors.margins: Styles.marginSm
-
     spacing: Styles.marginSm
     clip: true
     model: Object.keys(Colors.userColors)

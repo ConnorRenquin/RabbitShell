@@ -6,7 +6,6 @@ import qs.Settings
 import qs.Components
 
 Rectangle {
-    anchors.fill: parent
     color: Colors.backgroundLifted
 
     ScrollView {
