@@ -10,44 +10,36 @@ Singleton {
 
     property var config: {
         "wallpaperDirectory": "",
-        "currentWallpaper": "",
         "transition": "fade",
         "transitionDuration": 2
     }
 
+    // readonly property string wallpaperDirectory: "/home/connor/Pictures/wallpapers"
     readonly property string wallpaperDirectory: config["wallpaperDirectory"] ?? ""
-    readonly property string currentWallpaper: config["currentWallpaper"] ?? ""
     readonly property string transition: config["transition"] ?? "fade"
     readonly property int transitionDuration: config["transitionDuration"] ?? 2
 
     function setWallpaperDirectory(path) {
-        console.log('set');
-        var newConfig = config;
+        var newConfig = Object.assign({}, config);
         newConfig["wallpaperDirectory"] = path;
         config = newConfig;
     }
 
-    function setCurrentWallpaper(path) {
-        var newConfig = config;
-        newConfig["currentWallpaper"] = path;
-        config = newConfig;
-    }
-
     function setTransition(trans) {
-        var newConfig = config;
+        var newConfig = Object.assign({}, config);
         newConfig["transition"] = trans;
         config = newConfig;
     }
 
     function setTransitionDuration(duration) {
-        var newConfig = config;
+        var newConfig = Object.assign({}, config);
         newConfig["transitionDuration"] = duration;
         config = newConfig;
     }
 
     onConfigChanged: {
         console.log('hi');
-        if (persistantData.loaded) {
+       if (persistantData.loaded) {
             console.log('saved');
             persistantData.setText(JSON.stringify(root.config));
         }

@@ -26,7 +26,6 @@ Rectangle {
 
     function setWallpaper(imagePath) {
         Quickshell.execDetached(["swww", "img", imagePath, "--transition-type", WallpaperSettings.transition, "--transition-duration", WallpaperSettings.transitionDuration.toString()]);
-        WallpaperSettings.setCurrentWallpaper(imagePath);
     }
 
     function isImageFile(filename) {
@@ -39,20 +38,19 @@ Rectangle {
         anchors.margins: Styles.marginMd
         spacing: Styles.marginMd
 
-        // Header
         TextStyled {
-            text: "Wallpaper Settings"
+            id: viewTitle
+            text: "Wallpaper"
             font.pixelSize: Styles.textLg
             Layout.fillWidth: true
         }
 
-        // Directory Selection
         Rectangle {
+            id: wallpaperDirectory
             Layout.fillWidth: true
             Layout.preferredHeight: 120
             color: Colors.background
             radius: Styles.radiusSm
-
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: Styles.marginMd
@@ -60,7 +58,6 @@ Rectangle {
 
                 TextStyled {
                     text: "Wallpaper Directory"
-                    font.pixelSize: Styles.textMd
                 }
 
                 RowLayout {
@@ -77,13 +74,11 @@ Rectangle {
 
                     ButtonStyled {
                         text: "Browse"
-                        Layout.preferredHeight: 35
                         onClicked: zenityProcess.running = true
                     }
 
                     ButtonStyled {
                         text: "Apply"
-                        Layout.preferredHeight: 35
                         onClicked: {
                             if (directoryField.text) {
                                 WallpaperSettings.setWallpaperDirectory(directoryField.text);
@@ -96,6 +91,8 @@ Rectangle {
         }
 
         Rectangle {
+            id: transitionsSection
+
             Layout.fillWidth: true
             Layout.preferredHeight: 100
             color: Colors.background
@@ -112,16 +109,14 @@ Rectangle {
 
                     TextStyled {
                         text: "Transition Type"
-                        font.pixelSize: Styles.textSm
                     }
 
                     ComboBoxStyled {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 30
                         model: ["fade", "wipe", "grow", "outer", "center", "simple"]
-                        Component.onCompleted: {
-                            currentIndex = model.indexOf(WallpaperSettings.transition);
-                        }
+                        Component.onCompleted: currentIndex = model.indexOf(WallpaperSettings.transition);
+
                         onCurrentTextChanged: {
                             if (currentText) {
                                 WallpaperSettings.setTransition(currentText);
@@ -136,7 +131,6 @@ Rectangle {
 
                     TextStyled {
                         text: "Duration (seconds)"
-                        font.pixelSize: Styles.textSm
                     }
 
                     RowLayout {
@@ -145,7 +139,6 @@ Rectangle {
                         TextFieldStyled {
                             id: durationField
                             Layout.preferredWidth: 60
-                            Layout.preferredHeight: 30
                             text: WallpaperSettings.transitionDuration.toString()
                             validator: IntValidator {
                                 bottom: 1
@@ -168,69 +161,37 @@ Rectangle {
             }
         }
 
-        // Current Wallpaper Info
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 40
-            color: Colors.background
-            radius: Styles.radiusSm
-            visible: WallpaperSettings.currentWallpaper
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: Styles.marginSm
-                spacing: Styles.marginSm
-
-                TextStyled {
-                    text: "Current:"
-                    font.pixelSize: Styles.textSm
-                }
-
-                TextStyled {
-                    text: WallpaperSettings.currentWallpaper
-                    font.pixelSize: Styles.textSm
-                    elide: Text.ElideMiddle
-                    Layout.fillWidth: true
-                }
-            }
-        }
-
-        // Wallpaper Grid
         TextStyled {
             text: "Available Wallpapers"
-            font.pixelSize: Styles.textMd
-            visible: folderModel.count > 0
         }
 
         Rectangle {
+            id: wallpaperSelectionSection
             Layout.fillWidth: true
             Layout.fillHeight: true
             color: Colors.background
             radius: Styles.radiusSm
-
             ScrollView {
                 anchors.fill: parent
                 anchors.margins: Styles.marginSm
                 contentWidth: availableWidth
-                clip: true
-
                 GridLayout {
                     columns: 3
                     columnSpacing: Styles.marginSm
                     rowSpacing: Styles.marginSm
                     anchors.left: parent.left
                     anchors.right: parent.right
-
                     Repeater {
                         model: folderModel
                         delegate: Rectangle {
                             id: wallpaperItem
+
                             required property string fileName
                             required property url fileUrl
                             required property int index
 
-                            Layout.preferredWidth: 210
-                            Layout.preferredHeight: 170
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 300
                             color: Colors.backgroundLifted
                             radius: Styles.radiusSm
 
@@ -251,20 +212,11 @@ Rectangle {
                                         source: wallpaperItem.fileUrl
                                         fillMode: Image.PreserveAspectCrop
                                         asynchronous: true
-                                        cache: false
-
-                                        Rectangle {
-                                            anchors.fill: parent
-                                            color: "transparent"
-                                            border.width: WallpaperSettings.currentWallpaper === wallpaperItem.fileUrl.toString().replace("file://", "") ? 3 : 0
-                                            border.color: Colors.foreground
-                                            radius: Styles.radiusSm
-                                        }
-
-                                        BusyIndicator {
+                                        cache: true
+                                        TextStyled {
                                             anchors.centerIn: parent
-                                            running: parent.status === Image.Loading
-                                            visible: running
+                                            text: "Loading..."
+                                            visible: parent.status === Image.Loading
                                         }
                                     }
 
@@ -280,8 +232,7 @@ Rectangle {
 
                                 TextStyled {
                                     text: wallpaperItem.fileName
-                                    font.pixelSize: Styles.textXS
-                                    elide: Text.ElideMiddle
+                                    font.pixelSize: Styles.textSm
                                     Layout.fillWidth: true
                                     horizontalAlignment: Text.AlignHCenter
                                 }
