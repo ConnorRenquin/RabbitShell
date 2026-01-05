@@ -71,7 +71,7 @@ Variants {
                 text: ""
                 onClicked: mouse => {
                     if (mouse.button === Qt.RightButton) {
-                        Quickshell.execDetached(["bash", "-c", "waypaper --random"]);
+                        WallpaperSettings.setRandomWallpaper();
                     } else if (mouse.button === Qt.LeftButton) {
                         PatchBay.openThemeSelector();
                     }

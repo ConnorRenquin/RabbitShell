@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 
 import QtQuick
+import Qt.labs.folderlistmodel
 
 Singleton {
     id: root
@@ -19,10 +20,20 @@ Singleton {
     readonly property string transition: config["transition"] ?? "fade"
     readonly property int transitionDuration: config["transitionDuration"] ?? 2
 
+    property alias folderModel: folderModel
+
+    FolderListModel {
+        id: folderModel
+        folder: root.wallpaperDirectory ? "file://" + root.wallpaperDirectory : ""
+        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.gif", "*.webp", "*.JPG", "*.JPEG", "*.PNG"]
+        showDirs: false
+    }
+
     function setWallpaperDirectory(path) {
         var newConfig = Object.assign({}, config);
         newConfig["wallpaperDirectory"] = path;
         config = newConfig;
+        folderModel.folder = path ? "file://" + path : "";
     }
 
     function setTransition(trans) {
@@ -37,9 +48,25 @@ Singleton {
         config = newConfig;
     }
 
+    function setWallpaper(imagePath) {
+        Quickshell.execDetached(["swww", "img", imagePath, "--transition-type", root.transition, "--transition-duration", root.transitionDuration.toString()]);
+    }
+
+    function setRandomWallpaper() {
+        if (folderModel.count === 0) {
+            console.warn("No wallpapers available in directory");
+            return;
+        }
+
+        var randomIndex = Math.floor(Math.random() * folderModel.count);
+        var fileUrl = folderModel.get(randomIndex, "fileUrl");
+        var filePath = fileUrl.toString().replace("file://", "");
+        setWallpaper(filePath);
+    }
+
     onConfigChanged: {
         console.log('hi');
-       if (persistantData.loaded) {
+        if (persistantData.loaded) {
             console.log('saved');
             persistantData.setText(JSON.stringify(root.config));
         }

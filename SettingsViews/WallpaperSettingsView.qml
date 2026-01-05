@@ -1,12 +1,10 @@
 pragma ComponentBehavior: Bound
 
+import Quickshell.Io
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import Qt.labs.folderlistmodel
-
-import Quickshell
-import Quickshell.Io
 
 import qs.Settings
 import qs.Components
@@ -16,22 +14,6 @@ Rectangle {
 
     anchors.fill: parent
     color: Colors.backgroundLifted
-
-    FolderListModel {
-        id: folderModel
-        folder: WallpaperSettings.wallpaperDirectory ? "file://" + WallpaperSettings.wallpaperDirectory : ""
-        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.gif", "*.webp", "*.JPG", "*.JPEG", "*.PNG"]
-        showDirs: false
-    }
-
-    function setWallpaper(imagePath) {
-        Quickshell.execDetached(["swww", "img", imagePath, "--transition-type", WallpaperSettings.transition, "--transition-duration", WallpaperSettings.transitionDuration.toString()]);
-    }
-
-    function isImageFile(filename) {
-        var lowerName = filename.toLowerCase();
-        return lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg") || lowerName.endsWith(".png") || lowerName.endsWith(".bmp") || lowerName.endsWith(".gif") || lowerName.endsWith(".webp");
-    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -82,7 +64,6 @@ Rectangle {
                         onClicked: {
                             if (directoryField.text) {
                                 WallpaperSettings.setWallpaperDirectory(directoryField.text);
-                                folderModel.folder = "file://" + directoryField.text;
                             }
                         }
                     }
@@ -115,7 +96,7 @@ Rectangle {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 30
                         model: ["fade", "wipe", "grow", "outer", "center", "simple"]
-                        Component.onCompleted: currentIndex = model.indexOf(WallpaperSettings.transition);
+                        Component.onCompleted: currentIndex = model.indexOf(WallpaperSettings.transition)
 
                         onCurrentTextChanged: {
                             if (currentText) {
@@ -182,7 +163,7 @@ Rectangle {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     Repeater {
-                        model: folderModel
+                        model: WallpaperSettings.folderModel
                         delegate: Rectangle {
                             id: wallpaperItem
 
@@ -225,7 +206,7 @@ Rectangle {
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: {
                                             var path = wallpaperItem.fileUrl.toString().replace("file://", "");
-                                            root.setWallpaper(path);
+                                            WallpaperSettings.setWallpaper(path);
                                         }
                                     }
                                 }
@@ -245,7 +226,7 @@ Rectangle {
             // Placeholder when no wallpapers
             ColumnLayout {
                 anchors.centerIn: parent
-                visible: folderModel.count === 0
+                visible: WallpaperSettings.folderModel.count === 0
                 spacing: Styles.marginSm
 
                 TextStyled {
