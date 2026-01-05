@@ -248,7 +248,7 @@ Rectangle {
                                     Layout.fillWidth: true
                                 }
 
-                                ComboBox {
+                                ComboBoxStyled {
                                     id: outputComboBox
 
                                     Layout.margins: Styles.marginSm
@@ -322,6 +322,8 @@ Rectangle {
 
                 Item {
                     id: displayCanvas
+
+                    clip: true
 
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
@@ -485,7 +487,7 @@ Rectangle {
                                 Layout.preferredWidth: 120
                             }
 
-                            Switch {
+                            SwitchStyled {
                                 Layout.preferredHeight: 30
                                 checked: root.selectedDisplay ? root.selectedDisplay.enabled : false
 
@@ -520,7 +522,7 @@ Rectangle {
                                 Layout.preferredWidth: 120
                             }
 
-                            Switch {
+                            SwitchStyled {
                                 Layout.preferredHeight: 30
                                 checked: root.selectedDisplay ? root.selectedDisplay.isPrimary : false
                                 enabled: root.selectedDisplay ? root.selectedDisplay.enabled : false
@@ -551,7 +553,7 @@ Rectangle {
                                 Layout.preferredWidth: 120
                             }
 
-                            ComboBox {
+                            ComboBoxStyled {
                                 enabled: root.selectedDisplay ? root.selectedDisplay.enabled : false
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 30
@@ -603,7 +605,7 @@ Rectangle {
                                 Layout.preferredWidth: 120
                             }
 
-                            ComboBox {
+                            ComboBoxStyled {
                                 enabled: root.selectedDisplay ? root.selectedDisplay.enabled : false
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 30
@@ -655,7 +657,7 @@ Rectangle {
                                 Layout.preferredWidth: 120
                             }
 
-                            ComboBox {
+                            ComboBoxStyled {
                                 enabled: root.selectedDisplay ? root.selectedDisplay.enabled : false
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 30
@@ -705,7 +707,7 @@ Rectangle {
                                 Layout.preferredWidth: 120
                             }
 
-                            ComboBox {
+                            ComboBoxStyled {
                                 enabled: root.selectedDisplay ? root.selectedDisplay.enabled : false
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 30
