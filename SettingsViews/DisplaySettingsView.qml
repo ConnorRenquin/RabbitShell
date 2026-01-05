@@ -292,33 +292,33 @@ Rectangle {
                 color: Colors.backgroundLifted
                 radius: Styles.radiusSm
                 border.color: Colors.background
-                border.width: 2
+                border.width: Styles.marginSm
 
-                Canvas {
-                    id: gridCanvas
+                // Canvas {
+                //     id: gridCanvas
 
-                    anchors.fill: parent
+                //     anchors.fill: parent
 
-                    onPaint: {
-                        var ctx = getContext("2d");
-                        ctx.strokeStyle = Qt.alpha(Colors.foreground, 0.1);
-                        ctx.lineWidth = 1;
+                //     onPaint: {
+                //         var ctx = getContext("2d");
+                //         ctx.strokeStyle = Qt.alpha(Colors.foreground, 0.1);
+                //         ctx.lineWidth = 5;
 
-                        for (var x = 50; x < width; x += 50) {
-                            ctx.beginPath();
-                            ctx.moveTo(x, 0);
-                            ctx.lineTo(x, height);
-                            ctx.stroke();
-                        }
+                //         for (var x = 50; x < width; x += 50) {
+                //             ctx.beginPath();
+                //             ctx.moveTo(x, 0);
+                //             ctx.lineTo(x, height);
+                //             ctx.stroke();
+                //         }
 
-                        for (var y = 50; y < height; y += 50) {
-                            ctx.beginPath();
-                            ctx.moveTo(0, y);
-                            ctx.lineTo(width, y);
-                            ctx.stroke();
-                        }
-                    }
-                }
+                //         for (var y = 50; y < height; y += 50) {
+                //             ctx.beginPath();
+                //             ctx.moveTo(0, y);
+                //             ctx.lineTo(width, y);
+                //             ctx.stroke();
+                //         }
+                //     }
+                // }
 
                 Item {
                     id: displayCanvas
@@ -331,9 +331,9 @@ Rectangle {
                     TextStyled {
                         anchors.top: parent.top
                         anchors.left: parent.left
-                        anchors.margins: 10
-                        text: `Displays: ${root.displays.length} | Scale: ${Math.round(root.viewScale * 100)}%`
-                        font.pixelSize: 10
+                        anchors.margins: Styles.marginSm
+                        text: `Displays ${root.displays.length}`
+                        font.pixelSize: Styles.textMd
                         color: Qt.alpha(Colors.foreground, 0.5)
                     }
 
@@ -358,8 +358,9 @@ Rectangle {
                             width: Math.max(50, parseInt(modelData.resolution.split('x')[0]) * root.viewScale)
                             height: Math.max(30, parseInt(modelData.resolution.split('x')[1]) * root.viewScale)
                             color: root.selectedDisplay === modelData ? Qt.alpha(Colors.primary, 0.3) : Colors.background
-                            border.color: root.selectedDisplay === modelData ? Colors.primary : Colors.foreground
-                            border.width: 2
+                            // Deprecated?
+                            // border.color: root.selectedDisplay === modelData ? Colors.primary : Colors.foreground
+                            // border.width: 2
                             radius: Styles.radiusSm
 
                             MouseArea {
@@ -392,12 +393,10 @@ Rectangle {
 
                             Rectangle {
                                 anchors.centerIn: parent
-                                width: displayInfo.width + 10
-                                height: displayInfo.height + 10
+                                implicitWidth: displayInfo.width + Styles.marginSm
+                                implicitHeight: displayInfo.height + Styles.marginSm
                                 color: Qt.alpha(Colors.background, 0.9)
                                 radius: Styles.radiusSm
-                                border.color: Colors.foreground
-                                border.width: 1
 
                                 Column {
                                     id: displayInfo
@@ -408,15 +407,15 @@ Rectangle {
                                     TextStyled {
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         text: thing.modelData.name
-                                        font.pixelSize: 10
+                                        font.pixelSize: 60
                                         font.bold: true
                                     }
 
                                     TextStyled {
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         text: thing.modelData.resolution
-                                        font.pixelSize: 8
-                                        color: Qt.alpha(Colors.foreground, 0.7)
+                                        font.pixelSize: 40
+                                        color: Colors.foreground
                                     }
                                 }
                             }
@@ -427,13 +426,11 @@ Rectangle {
                 RowLayout {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    anchors.margins: Styles.marginSm
+                    anchors.margins: Styles.marginMd
                     spacing: Styles.marginSm
 
                     ButtonStyled {
                         text: "-"
-                        implicitWidth: 30
-                        implicitHeight: 30
                         onClicked: {
                             if (root.viewScale > 0.05)
                                 root.viewScale -= 0.05;
@@ -446,8 +443,6 @@ Rectangle {
 
                     ButtonStyled {
                         text: "+"
-                        implicitWidth: 30
-                        implicitHeight: 30
                         onClicked: {
                             if (root.viewScale < 0.5)
                                 root.viewScale += 0.05;
