@@ -52,6 +52,14 @@ FloatingWindow {
             color: Colors.backgroundLifted
             Layout.preferredWidth: 300
             Layout.fillWidth: true
+            WallpaperSettingsView {
+                readonly property string name: 'Wallpaper'
+                anchors.fill: parent
+            }
+            DisplaySettingsView {
+                readonly property string name: 'Display'
+                anchors.fill: parent
+            }
             ColumnLayout {
                 id: appearanceSettings
                 readonly property string name: 'Appearance'
@@ -69,14 +77,6 @@ FloatingWindow {
                     Layout.preferredHeight: 300
                     Layout.fillWidth: true
                 }
-            }
-            WallpaperSettingsView {
-                readonly property string name: 'Wallpaper'
-                anchors.fill: parent
-            }
-            DisplaySettingsView {
-                readonly property string name: 'Display'
-                anchors.fill: parent
             }
             Cheatsheet {
                 readonly property string name: 'Cheatsheet'
