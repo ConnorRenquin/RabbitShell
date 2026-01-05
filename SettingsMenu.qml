@@ -15,7 +15,7 @@ FloatingWindow {
     color: Colors.background
 
     title: 'Settings'
-    visible: false
+    visible: true
 
     Component.onCompleted: {
         PatchBay.openThemeSelector.connect(() => root.visible = !root.visible);
@@ -52,6 +52,10 @@ FloatingWindow {
             color: Colors.backgroundLifted
             Layout.preferredWidth: 300
             Layout.fillWidth: true
+            DisplaySettingsView {
+                readonly property string name: 'Display'
+                anchors.fill: parent
+            }
             ThemeSettingsView {
                 readonly property string name: 'Theme'
                 anchors.fill: parent

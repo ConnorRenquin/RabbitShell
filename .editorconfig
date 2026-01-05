@@ -1,0 +1,45 @@
+# EditorConfig for Quickshell QML project
+# https://editorconfig.org
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.qml]
+indent_style = space
+indent_size = 4
+max_line_length = 120
+
+# QML-specific conventions:
+# - Use 'var' instead of 'let' or 'const'
+# - Single-line conditionals without braces when possible: if (condition) statement;
+# - Opening braces on same line: Rectangle {
+# - Space after colon in property assignments: property string text: "value"
+# - Group imports by source (Quickshell, Qt, local)
+# - Order within components:
+#   1. Required properties (required property var modelData)
+#   2. Regular properties
+#   3. Functions
+#   4. Signal handlers (onCompleted, onChanged, etc.)
+#   5. Child components
+# - Use component keyword for inline component definitions
+# - Prefer implicit property binding over explicit assignments
+# - Use camelCase for properties/functions, PascalCase for components
+
+[*.js]
+indent_style = space
+indent_size = 4
+
+[*.json]
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab
