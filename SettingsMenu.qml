@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 
 import qs.Components
@@ -52,30 +53,35 @@ FloatingWindow {
             color: Colors.backgroundLifted
             Layout.preferredWidth: 300
             Layout.fillWidth: true
-            WallpaperSettingsView {
-                readonly property string name: 'Wallpaper'
-                anchors.fill: parent
-            }
             DisplaySettingsView {
                 readonly property string name: 'Display'
                 anchors.fill: parent
             }
-            ColumnLayout {
-                id: appearanceSettings
+            WallpaperSettingsView {
+                readonly property string name: 'Wallpaper'
+                anchors.fill: parent
+            }
+            ScrollView {
                 readonly property string name: 'Appearance'
                 anchors.fill: parent
-                ThemeSettingsView {
-                    Layout.preferredHeight: 300
-                    Layout.fillWidth: true
-                }
-                ColorSettingsView {
-                    Layout.preferredHeight: 400
-                    Layout.fillWidth: true
-                }
-                StyleSettingsView {
-                    Layout.fillHeight: true
-                    Layout.preferredHeight: 300
-                    Layout.fillWidth: true
+                contentWidth: availableWidth
+                ColumnLayout {
+                    id: appearanceSettings
+                    spacing: Styles.marginSm
+                    anchors.fill: parent
+                    ThemeSettingsView {
+                        Layout.preferredHeight: 300
+                        Layout.fillWidth: true
+                    }
+                    ColorSettingsView {
+                        Layout.preferredHeight: 400
+                        Layout.fillWidth: true
+                    }
+                    StyleSettingsView {
+                        Layout.fillHeight: true
+                        Layout.preferredHeight: 300
+                        Layout.fillWidth: true
+                    }
                 }
             }
             Cheatsheet {

@@ -14,7 +14,7 @@ Rectangle {
     anchors.fill: parent
     color: Colors.backgroundLifted
 
-    property var displays: HyprlandMonitors.monitors
+    property var displays: HyprctlMonitors.monitors
     property var workspaces: generateWorkspaces()
     property int numWorkspaces: 10
     property double viewScale: 0.2
@@ -43,29 +43,8 @@ Rectangle {
         return ws;
     }
 
-    function applySettings() {
-        console.log("Applying display settings");
-        HyprlandMonitors.applyAllMonitors(displays);
-    }
-
-    function saveSettings() {
-        console.log("Saving display settings to config files");
-
-        var monitorConfigPath = "~/.config/hypr/monitors.conf";
-        var workspaceConfigPath = "~/.config/hypr/workspaces.conf";
-
-        HyprlandMonitors.saveConfiguration(displays, monitorConfigPath);
-        HyprlandMonitors.saveWorkspaceConfig(workspaces, workspaceConfigPath);
-
-        console.log("Configuration saved!");
-    }
-
-    function identifyDisplay(displayName) {
-        console.log(`Identifying display: ${displayName}`);
-    }
-
     Component.onCompleted: {
-        HyprlandMonitors.loadMonitors();
+        HyprctlMonitors.loadMonitors();
     }
 
     onDisplaysChanged: {
@@ -110,13 +89,17 @@ Rectangle {
                 ButtonStyled {
                     id: applyButton
                     text: "Apply"
-                    onClicked: root.applySettings()
+                    onClicked: HyprctlMonitors.applyAllMonitors(root.displays)
                 }
 
                 ButtonStyled {
                     id: saveButton
                     text: "Save Config"
-                    onClicked: root.saveSettings()
+                    onClicked: {
+                        HyprctlMonitors.saveConfiguration(root.displays);
+                        var workspaceConfigPath = "~/.config/hypr/workspaces.conf";
+                        HyprctlMonitors.saveWorkspaceConfig(root.workspaces, workspaceConfigPath);
+                    }
                 }
 
                 Item {
@@ -126,7 +109,7 @@ Rectangle {
                 ButtonStyled {
                     id: reloadButton
                     text: "Reload"
-                    onClicked: HyprlandMonitors.loadMonitors()
+                    onClicked: HyprctlMonitors.loadMonitors()
                 }
             }
         }
@@ -163,6 +146,7 @@ Rectangle {
 
                         Layout.fillWidth: true
                         Layout.preferredHeight: 150
+                        spacing: Styles.marginSm
 
                         model: root.displays
 
@@ -179,13 +163,13 @@ Rectangle {
 
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.margins: 5
-                                spacing: 5
+                                anchors.margins: Styles.marginSm
+                                spacing: Styles.marginSm
 
                                 Rectangle {
                                     Layout.preferredWidth: 12
                                     Layout.preferredHeight: 12
-                                    radius: 6
+                                    radius: Styles.radiusSm
                                     color: displayInfoCard.modelData.enabled ? Colors.success : Colors.error
                                 }
 
@@ -193,13 +177,6 @@ Rectangle {
                                     text: displayInfoCard.modelData.name
                                     font.bold: root.selectedDisplay === displayInfoCard.modelData
                                     Layout.fillWidth: true
-                                }
-
-                                ButtonStyled {
-                                    text: "ID"
-                                    Layout.preferredWidth: 35
-                                    Layout.preferredHeight: 25
-                                    onClicked: root.identifyDisplay(displayInfoCard.modelData.name)
                                 }
                             }
 
@@ -213,7 +190,6 @@ Rectangle {
                     TextStyled {
                         id: workspacesTitle
                         text: "Workspace Assignments"
-                        font.bold: true
                     }
 
                     ListView {
@@ -333,8 +309,6 @@ Rectangle {
                         anchors.left: parent.left
                         anchors.margins: Styles.marginSm
                         text: `Displays ${root.displays.length}`
-                        font.pixelSize: Styles.textMd
-                        color: Qt.alpha(Colors.foreground, 0.5)
                     }
 
                     TextStyled {
@@ -357,10 +331,7 @@ Rectangle {
                             y: modelData.position.y * root.viewScale + displayCanvas.height / 2 - height / 2
                             width: Math.max(50, parseInt(modelData.resolution.split('x')[0]) * root.viewScale)
                             height: Math.max(30, parseInt(modelData.resolution.split('x')[1]) * root.viewScale)
-                            color: root.selectedDisplay === modelData ? Qt.alpha(Colors.primary, 0.3) : Colors.background
-                            // Deprecated?
-                            // border.color: root.selectedDisplay === modelData ? Colors.primary : Colors.foreground
-                            // border.width: 2
+                            color: Colors.background
                             radius: Styles.radiusSm
 
                             MouseArea {
@@ -368,11 +339,8 @@ Rectangle {
                                 drag.target: parent
                                 drag.axis: Drag.XAxis | Drag.YAxis
                                 cursorShape: Qt.OpenHandCursor
-
                                 onClicked: root.selectedDisplay = thing.modelData
-
                                 onPressed: cursorShape = Qt.ClosedHandCursor
-
                                 onReleased: {
                                     cursorShape = Qt.OpenHandCursor;
 
@@ -395,20 +363,19 @@ Rectangle {
                                 anchors.centerIn: parent
                                 implicitWidth: displayInfo.width + Styles.marginSm
                                 implicitHeight: displayInfo.height + Styles.marginSm
-                                color: Qt.alpha(Colors.background, 0.9)
+                                color: Colors.background
                                 radius: Styles.radiusSm
 
                                 Column {
                                     id: displayInfo
 
                                     anchors.centerIn: parent
-                                    spacing: 2
+                                    spacing: Styles.marginSm
 
                                     TextStyled {
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         text: thing.modelData.name
                                         font.pixelSize: 60
-                                        font.bold: true
                                     }
 
                                     TextStyled {
@@ -424,6 +391,7 @@ Rectangle {
                 }
 
                 RowLayout {
+                    id: zoomButtons
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
                     anchors.margins: Styles.marginMd
@@ -470,7 +438,6 @@ Rectangle {
 
                         TextStyled {
                             text: root.selectedDisplay ? `${root.selectedDisplay.name} - ${root.selectedDisplay.description}` : ""
-                            font.bold: true
                             Layout.fillWidth: true
                         }
 
