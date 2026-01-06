@@ -18,6 +18,7 @@ Loader {
 
     property string keyMap: "wertyuiopasdfghjklzxcvbnm"
     property var toplevels: []
+    property int currentIndex: -1
 
     function updateToplevels() {
         if (!Hyprland.toplevels)
@@ -29,6 +30,11 @@ Loader {
                 return toplevel?.workspace?.id > 0 && toplevel?.workspace?.focused;
             }
         });
+
+        currentIndex = toplevels.findIndex(toplevel => toplevel.activated);
+        if (currentIndex === -1 && toplevels.length > 0) {
+            currentIndex = 0;
+        }
     }
 
     Component.onCompleted: updateToplevels()
@@ -47,8 +53,6 @@ Loader {
             root.updateToplevels();
             if (!root.active) {
                 root.active = true;
-            } else {
-                Hyprland.dispatch('cyclenext');
             }
         }
     }
@@ -83,12 +87,29 @@ Loader {
             implicitHeight: Math.max(toplevelGrid.implicitHeight, noContent.implicitHeight) + Styles.marginMd
 
             Keys.onPressed: function (event) {
+                hideTimer.restart();
                 if (event.key === Qt.Key_Control) {
                     root.searchAll = !root.searchAll;
                     root.updateToplevels();
                     return;
                 } else if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                     root.active = false;
+                    event.accepted = true;
+                    return;
+                } else if (event.key === Qt.Key_Tab) {
+                    if (root.toplevels.length === 0)
+                        return;
+                    root.currentIndex = (root.currentIndex - 1 + root.toplevels.length) % root.toplevels.length;
+                    var toplevel = root.toplevels[root.currentIndex].wayland;
+                    toplevel.activate();
+                    event.accepted = true;
+                    return;
+                } else if (event.key === Qt.Key_Alt) {
+                    if (root.toplevels.length === 0)
+                        return;
+                    root.currentIndex = (root.currentIndex + 1) % root.toplevels.length;
+                    var toplevel = root.toplevels[root.currentIndex].wayland;
+                    toplevel.activate();
                     event.accepted = true;
                     return;
                 }
