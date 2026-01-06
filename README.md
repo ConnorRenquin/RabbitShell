@@ -25,20 +25,21 @@ the modules in `shell.qml` and have the rest of it work. Don't like a thing? Rem
 `/Components` - A few basic components to use throughout the project.
 
 # Install
-1. In your `.config` clone this repo
+1. In your `.config` clone this repo and rename it `quickshell`
 2. Download the Dependenies in the dependency section.
 4. Copy and import the `./quickshell.conf` file into your hyprland config.
 - This file contains the defaulted keybinds.
-3. Add `exec-once = quickshell` to your Hyprland config.
 - You can test it out before hand by running `quickshell` in your terminal
 
 # Dependenies
-- `roboto nerd font` isn't techniqually required but if a nerd font is. You can choose your own in `./Components/TextStyled.qml`
+- `ttf-roboto-mono-nerd`or another nerd font. You can configure this in the settings menu. 
 
 ```sh
+hyprland
 quickshell-git
-swww
+pipewire
+polkit
+awww
 hypridle
-waypaper
-roboto nerd font
+ttf-roboto-mono-nerd
 ```

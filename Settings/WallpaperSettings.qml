@@ -49,7 +49,7 @@ Singleton {
     }
 
     function setWallpaper(imagePath) {
-        Quickshell.execDetached(["swww", "img", imagePath, "--transition-type", root.transition, "--transition-duration", root.transitionDuration.toString()]);
+        Quickshell.execDetached(["awww", "img", imagePath, "--transition-type", root.transition, "--transition-duration", root.transitionDuration.toString()]);
     }
 
     function setRandomWallpaper() {

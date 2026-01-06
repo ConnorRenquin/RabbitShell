@@ -22,7 +22,7 @@ Scope {
 
     function lockScreen() {
         lock.locked = true;
-        swwwQueryProcess.running = true;
+        awwwQueryProcess.running = true;
     }
 
     GlobalShortcut {
@@ -70,9 +70,9 @@ Scope {
     }
 
     Process {
-        id: swwwQueryProcess
+        id: awwwQueryProcess
         running: true
-        command: ["swww", "query"]
+        command: ["awww", "query"]
         stdout: StdioCollector {
             onStreamFinished: {
                 var output = this.text;
