@@ -59,13 +59,16 @@ Loader {
 
     Timer {
         id: hideTimer
-        interval: 2000
+        interval: 5000
         onTriggered: root.active = false
     }
 
     sourceComponent: PanelWindow {
         id: toplevelView
 
+        anchors.top: true
+        margins.top: Styles.marginLg * 2
+        exclusionMode: ExclusionMode.Ignore
         implicitWidth: base.implicitWidth
         implicitHeight: base.implicitHeight
         color: "transparent"
@@ -146,19 +149,17 @@ Loader {
                 anchors.margins: Styles.marginSm
 
                 columns: 4
-                columnSpacing: Styles.marginSm
-                rowSpacing: Styles.marginSm
 
                 Repeater {
-                    model: root.toplevels
+                    model: root.toplevels.sort((a, b) => a.workspace.id - b.workspace.id )
                     delegate: ButtonStyled {
                         id: windowCard
 
                         required property var modelData
                         required property int index
 
-                        Layout.preferredWidth: 340
-                        Layout.preferredHeight: 80
+                        Layout.preferredWidth: 250
+                        Layout.preferredHeight: 70
 
                         radius: Styles.radiusMd
                         isFocused: modelData.activated
@@ -174,8 +175,8 @@ Loader {
                             anchors.margins: Styles.marginSm
                             IconImage {
                                 id: appIcon
-                                implicitHeight: 60
-                                implicitWidth: 60
+                                implicitHeight: 32
+                                implicitWidth: 32
                                 source: Quickshell.iconPath(DesktopEntries.byId(windowCard.modelData.wayland?.appId)?.icon)
                             }
 
@@ -183,7 +184,7 @@ Loader {
                                 TextStyled {
                                     id: windowTitle
                                     Layout.fillWidth: true
-                                    font.pixelSize: 25
+                                    font.pixelSize: Styles.textSm
 
                                     property string title: windowCard?.modelData?.wayland?.title ?? ""
 
@@ -193,6 +194,7 @@ Loader {
                                 TextStyled {
                                     id: windowShortcutAndId
                                     Layout.fillWidth: true
+                                    font.pixelSize: Styles.textSm
                                     text: {
                                         if (!windowCard.keyLabel || !windowCard.modelData.wayland || !windowCard.modelData.wayland?.appId)
                                             return "";
