@@ -285,6 +285,7 @@ Rectangle {
 
                                                                     Layout.fillWidth: true
                                                                     visible: text
+                                                                    textPixelSize: Styles.textSm
                                                                     text: submenuButton.modelData.text || null
                                                                     enabled: submenuButton.modelData.enabled
 

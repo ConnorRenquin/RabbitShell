@@ -13,20 +13,17 @@ Rectangle {
         id: contentRow
         anchors.centerIn: parent
         spacing: Styles.marginSm
-        DoubleText {
-            offset: Styles.barTextOffset
+        TextStyled {
             anchors.verticalCenter: parent.verticalCenter
             text: Time.time
         }
-        DoubleText {
+        TextStyled {
             anchors.verticalCenter: parent.verticalCenter
             text: ""
-            offset: Styles.barTextOffset
         }
-        DoubleText {
+        TextStyled {
             anchors.verticalCenter: parent.verticalCenter
             text: Time.date
-            offset: Styles.barTextOffset
         }
     }
 }

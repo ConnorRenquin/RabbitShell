@@ -21,6 +21,7 @@ Rectangle {
 
     property string text
 
+    property string textPixelSize: Styles.textMd
     property string hoverColor: Colors.backgroundHighlighted
     property string defaultColor: Colors.background
     property string focusedColor: Colors.backgroundHighlighted
@@ -48,6 +49,7 @@ Rectangle {
         anchors.centerIn: parent
         visible: root.text
         text: root.text
+        font.pixelSize: root.textPixelSize
     }
 
     Item {
