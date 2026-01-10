@@ -18,6 +18,7 @@ Slider {
     property color handleTextColor: Colors.backgroundLifted
     property int handleHeight: 30
     property bool showPercentage: true
+    // property bool hovered: handleMouseArea.containsMouse
 
     background: Rectangle {
         x: root.leftPadding

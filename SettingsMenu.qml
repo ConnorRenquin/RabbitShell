@@ -53,6 +53,10 @@ FloatingWindow {
             color: Colors.backgroundLifted
             Layout.preferredWidth: 300
             Layout.fillWidth: true
+            PipewireSettingsView {
+                readonly property string name: 'Audio'
+                anchors.fill: parent
+            }
             DisplaySettingsView {
                 readonly property string name: 'Display'
                 anchors.fill: parent

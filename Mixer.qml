@@ -6,10 +6,12 @@ import Quickshell.Widgets
 import Quickshell.Hyprland
 
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 
 import qs.Components
 import qs.Settings
+import qs.Services
 
 Loader {
     id: loader
@@ -26,11 +28,11 @@ Loader {
 
         exclusionMode: ExclusionMode.Ignore
 
-        anchors.right: true
-        margins.right: Styles.marginMd
+        anchors.top: true
+        margins.top: 60
 
         implicitWidth: 650
-        implicitHeight: mixerList.contentHeight + Styles.marginSm * 2
+        implicitHeight: Math.min(300, mixerList.implicitHeight + Styles.marginSm * 2)
         color: "transparent"
 
         HyprlandFocusGrab {
@@ -41,134 +43,126 @@ Loader {
 
         Rectangle {
             id: base
-
             focus: true
-
             anchors.fill: parent
-
             color: Colors.background
             radius: Styles.radiusSm
 
-            Keys.onPressed: event => {
-                if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
-                    loader.active = false;
-                } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
-                    mixerList.incrementCurrentIndex();
-                } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
-                    mixerList.decrementCurrentIndex();
-                } else if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
-                    if (mixerList.currentItem && mixerList.currentItem.node) {
-                        mixerList.currentItem.node.audio.volume = Math.max(0, mixerList.currentItem.node.audio.volume - 0.05);
-                    }
-                } else if ([Qt.Key_Right, Qt.Key_L].includes(event.key)) {
-                    if (mixerList.currentItem && mixerList.currentItem.node) {
-                        mixerList.currentItem.node.audio.volume = Math.min(1, mixerList.currentItem.node.audio.volume + 0.05);
-                    }
-                } else if ([Qt.Key_M].includes(event.key)) {
-                    if (mixerList.currentItem && mixerList.currentItem.node) {
-                        mixerList.currentItem.node.audio.muted = !mixerList.currentItem.node.audio.muted;
-                    }
-                }
-                mixerList.positionViewAtIndex(mixerList.currentIndex, ListView.Contain);
-            }
+            // TODO Make layoutViewsWrappers
+            // Keys.onPressed: event => {
+            //     if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+            //         loader.active = false;
+            //     } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
+            //         mixerList.incrementCurrentIndex();
+            //     } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
+            //         mixerList.decrementCurrentIndex();
+            //     } else if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
+            //         if (mixerList.currentItem && mixerList.currentItem.modelData) {
+            //             const newVolume = Math.max(0, mixerList.currentItem.modelData.volume - 0.05);
+            //             mixerList.currentItem.modelData.setVolume(newVolume);
+            //         }
+            //     } else if ([Qt.Key_Right, Qt.Key_L].includes(event.key)) {
+            //         if (mixerList.currentItem && mixerList.currentItem.modelData) {
+            //             const newVolume = Math.min(1, mixerList.currentItem.modelData.volume + 0.05);
+            //             mixerList.currentItem.modelData.setVolume(newVolume);
+            //         }
+            //     } else if ([Qt.Key_M].includes(event.key)) {
+            //         if (mixerList.currentItem && mixerList.currentItem.modelData) {
+            //             mixerList.currentItem.modelData.setMuted(!mixerList.currentItem.modelData.muted);
+            //         }
+            //     }
+            // }
 
-            PwNodeLinkTracker {
-                id: linkTracker
-                node: Pipewire?.defaultAudioSink
-            }
-
-            ListView {
-                id: mixerList
-
+            ScrollView {
                 anchors.fill: parent
-                anchors.margins: Styles.marginSm
-                spacing: Styles.marginSm
+                ColumnLayout {
+                    id: mixerList
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: Styles.marginSm
+                    spacing: Styles.marginSm
+                    Repeater {
+                        model: Object.values(Audio.nodeStates)
+                        delegate: Rectangle {
+                             id: mixerEntry
+                             required property var index
+                             required property AudioNodeState modelData
+                             property PwNode node: modelData.node
 
-                model: linkTracker.linkGroups
-                delegate: Rectangle {
-                    id: mixerEntry
+                             Layout.fillWidth: true
+                             Layout.preferredHeight: 100
 
-                    required property var index
-                    required property var modelData
-                    property PwNode node: modelData?.source ?? null
+                             color: ListView.isCurrentItem ? Colors.backgroundLifted : Colors.background
+                             radius: Styles.radiusSm
+                             focus: true
 
-                    implicitHeight: mixerColum.implicitHeight + Styles.marginMd
-                    implicitWidth: mixerList.width
+                             Behavior on color {
+                                 ColorAnimation {
+                                     duration: 200
+                                 }
+                             }
 
-                    color: ListView.isCurrentItem ? Colors.backgroundLifted : Colors.background
-                    radius: Styles.radiusSm
-                    focus: true
+                             ColumnLayout {
+                                 id: mixerColum
+                                 anchors.fill: parent
+                                 anchors.margins: Styles.marginSm
+                                 spacing: Styles.marginLg
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                        }
-                    }
+                                 RowLayout {
+                                     id: info
 
-                    PwObjectTracker {
-                        id: tracker
-                        objects: [mixerEntry.node]
-                    }
+                                     spacing: Styles.marginSm
 
-                    ColumnLayout {
-                        id: mixerColum
-                        anchors.fill: parent
-                        anchors.margins: Styles.marginSm
-                        spacing: Styles.marginLg
+                                     Layout.fillWidth: true
+                                     Layout.leftMargin: Styles.marginSm
+                                     Layout.rightMargin: Styles.marginSm
+                                     Layout.preferredHeight: 20
 
-                        RowLayout {
-                            id: info
+                                     IconImage {
+                                        id: icon
+                                        source: Quickshell.iconPath(mixerEntry.node.name, "audio-volume-high-symbolic")
+                                        implicitWidth: 40
+                                        implicitHeight: 40
+                                     }
 
-                            spacing: Styles.marginSm
+                                     TextStyled {
+                                        Layout.fillWidth: true
+                                        text: mixerEntry.modelData.getName()
+                                     }
+                                 }
 
-                            Layout.fillWidth: true
-                            Layout.leftMargin: Styles.marginSm
-                            Layout.rightMargin: Styles.marginSm
-                            Layout.preferredHeight: 20
+                                 RowLayout {
+                                     id: controlRow
+                                     Layout.fillWidth: true
+                                     Layout.leftMargin: Styles.marginSm
+                                     Layout.rightMargin: Styles.marginSm
 
-                            IconImage {
-                                id: icon
-                                source: Quickshell.iconPath(mixerEntry.node.name, "audio-volume-high-symbolic")
-                                implicitWidth: 40
-                                implicitHeight: 40
-                            }
+                                     ButtonStyled {
+                                         id: muteButton
+                                         implicitWidth: 40
+                                         implicitHeight: muteIcon.implicitHeight + Styles.marginSm
+                                         radius: 100
+                                         defaultColor: mixerEntry.modelData?.muted ? Colors.background : Colors.foreground
+                                         onClicked: mixerEntry.modelData.setMuted(!mixerEntry.modelData.muted);
+                                         TextStyled {
+                                             id: muteIcon
+                                             anchors.centerIn: parent
+                                             font.pixelSize: Styles.textSm
+                                             color: mixerEntry.modelData?.muted ? Colors.foreground : Colors.background
+                                             text: mixerEntry.modelData?.muted ? "" : ""
+                                         }
+                                     }
 
-                            TextStyled {
-                                text: mixerEntry.node?.name
-                            }
-                        }
-
-                        RowLayout {
-                            id: controlRow
-                            Layout.fillWidth: true
-                            Layout.leftMargin: Styles.marginSm
-                            Layout.rightMargin: Styles.marginSm
-
-                            ButtonStyled {
-                                id: muteButton
-                                implicitWidth: muteIcon.implicitWidth + Styles.marginLg
-                                implicitHeight: muteIcon.implicitHeight + Styles.marginSm
-                                radius: 100
-                                defaultColor: mixerEntry.node?.audio.muted ? Colors.background : Colors.foreground
-
-                                onClicked: mixerEntry.node.audio.muted = !mixerEntry.node?.audio.muted
-                                TextStyled {
-                                    id: muteIcon
-                                    anchors.centerIn: parent
-                                    font.pixelSize: Styles.textSm
-                                    color: mixerEntry.node?.audio.muted ? Colors.foreground : Colors.background
-                                    text: mixerEntry.node?.audio.muted ? "" : ""
-                                }
-                            }
-
-                            SliderStyled {
-                                id: volumeSlider
-                                value: mixerEntry.node.audio.volume
-                                Layout.fillWidth: true
-                                handleHeight: muteButton.implicitHeight
-                                onValueChanged: mixerEntry.node.audio.volume = value
-                            }
-                        }
+                                     SliderStyled {
+                                         id: volumeSlider
+                                         value: mixerEntry.modelData?.volume ?? 0
+                                         Layout.fillWidth: true
+                                         onValueChanged: mixerEntry.modelData.setVolume(value);
+                                     }
+                                 }
+                             }
+                         }
                     }
                 }
             }
