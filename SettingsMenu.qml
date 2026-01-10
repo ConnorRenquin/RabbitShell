@@ -16,7 +16,7 @@ FloatingWindow {
     color: Colors.background
 
     title: 'Settings'
-    visible: true
+    visible: false
 
     Component.onCompleted: {
         PatchBay.openThemeSelector.connect(() => root.visible = !root.visible);
