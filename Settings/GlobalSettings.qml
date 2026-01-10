@@ -26,7 +26,6 @@ Singleton {
             try {
                 var loadedSettings = JSON.parse(persistantData.text());
                 root.currentTheme = loadedSettings["Current Theme"] ?? "default.json";
-                console.log('Global settings loaded. Current theme:', root.currentTheme);
             } catch (e) {
                 console.error('Failed to parse global settings data:', e);
             }

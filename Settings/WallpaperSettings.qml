@@ -25,7 +25,7 @@ Singleton {
     FolderListModel {
         id: folderModel
         folder: root.wallpaperDirectory ? "file://" + root.wallpaperDirectory : ""
-        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.gif", "*.webp", "*.JPG", "*.JPEG", "*.PNG"]
+        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.gif", "*.JPG", "*.JPEG", "*.PNG"]
         showDirs: false
     }
 
@@ -65,9 +65,7 @@ Singleton {
     }
 
     onConfigChanged: {
-        console.log('hi');
         if (persistantData.loaded) {
-            console.log('saved');
             persistantData.setText(JSON.stringify(root.config));
         }
     }
