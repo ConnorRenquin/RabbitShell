@@ -75,94 +75,92 @@ Loader {
 
             ScrollView {
                 anchors.fill: parent
-                ColumnLayout {
+                ColumnLayoutPlus {
                     id: mixerList
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.margins: Styles.marginSm
                     spacing: Styles.marginSm
-                    Repeater {
-                        model: Object.values(Audio.nodeStates)
-                        delegate: Rectangle {
-                             id: mixerEntry
-                             required property var index
-                             required property AudioNodeState modelData
-                             property PwNode node: modelData.node
+                    model: Object.values(Audio.nodeStates)
+                    delegate: Rectangle {
+                        id: mixerEntry
+                        required property var index
+                        required property AudioNodeState modelData
+                        property PwNode node: modelData.node
 
-                             Layout.fillWidth: true
-                             Layout.preferredHeight: 100
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 100
 
-                             color: ListView.isCurrentItem ? Colors.backgroundLifted : Colors.background
-                             radius: Styles.radiusSm
-                             focus: true
+                        color: ListView.isCurrentItem ? Colors.backgroundLifted : Colors.background
+                        radius: Styles.radiusSm
+                        focus: true
 
-                             Behavior on color {
-                                 ColorAnimation {
-                                     duration: 200
-                                 }
-                             }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+                        }
 
-                             ColumnLayout {
-                                 id: mixerColum
-                                 anchors.fill: parent
-                                 anchors.margins: Styles.marginSm
-                                 spacing: Styles.marginLg
+                        ColumnLayout {
+                            id: mixerColum
+                            anchors.fill: parent
+                            anchors.margins: Styles.marginSm
+                            spacing: Styles.marginLg
 
-                                 RowLayout {
-                                     id: info
+                            RowLayout {
+                                id: info
 
-                                     spacing: Styles.marginSm
+                                spacing: Styles.marginSm
 
-                                     Layout.fillWidth: true
-                                     Layout.leftMargin: Styles.marginSm
-                                     Layout.rightMargin: Styles.marginSm
-                                     Layout.preferredHeight: 20
+                                Layout.fillWidth: true
+                                Layout.leftMargin: Styles.marginSm
+                                Layout.rightMargin: Styles.marginSm
+                                Layout.preferredHeight: 20
 
-                                     IconImage {
-                                        id: icon
-                                        source: Quickshell.iconPath(mixerEntry.node.name, "audio-volume-high-symbolic")
-                                        implicitWidth: 40
-                                        implicitHeight: 40
-                                     }
+                                IconImage {
+                                    id: icon
+                                    source: Quickshell.iconPath(mixerEntry.node.name, "audio-volume-high-symbolic")
+                                    implicitWidth: 40
+                                    implicitHeight: 40
+                                }
 
-                                     TextStyled {
-                                        Layout.fillWidth: true
-                                        text: mixerEntry.modelData.getName()
-                                     }
-                                 }
+                                TextStyled {
+                                    Layout.fillWidth: true
+                                    text: mixerEntry.modelData.getName()
+                                }
+                            }
 
-                                 RowLayout {
-                                     id: controlRow
-                                     Layout.fillWidth: true
-                                     Layout.leftMargin: Styles.marginSm
-                                     Layout.rightMargin: Styles.marginSm
+                            RowLayout {
+                                id: controlRow
+                                Layout.fillWidth: true
+                                Layout.leftMargin: Styles.marginSm
+                                Layout.rightMargin: Styles.marginSm
 
-                                     ButtonStyled {
-                                         id: muteButton
-                                         implicitWidth: 40
-                                         implicitHeight: muteIcon.implicitHeight + Styles.marginSm
-                                         radius: 100
-                                         defaultColor: mixerEntry.modelData?.muted ? Colors.background : Colors.foreground
-                                         onClicked: mixerEntry.modelData.setMuted(!mixerEntry.modelData.muted);
-                                         TextStyled {
-                                             id: muteIcon
-                                             anchors.centerIn: parent
-                                             font.pixelSize: Styles.textSm
-                                             color: mixerEntry.modelData?.muted ? Colors.foreground : Colors.background
-                                             text: mixerEntry.modelData?.muted ? "" : ""
-                                         }
-                                     }
+                                ButtonStyled {
+                                    id: muteButton
+                                    implicitWidth: 40
+                                    implicitHeight: muteIcon.implicitHeight + Styles.marginSm
+                                    radius: 100
+                                    defaultColor: mixerEntry.modelData?.muted ? Colors.background : Colors.foreground
+                                    onClicked: mixerEntry.modelData.setMuted(!mixerEntry.modelData.muted)
+                                    TextStyled {
+                                        id: muteIcon
+                                        anchors.centerIn: parent
+                                        font.pixelSize: Styles.textSm
+                                        color: mixerEntry.modelData?.muted ? Colors.foreground : Colors.background
+                                        text: mixerEntry.modelData?.muted ? "" : ""
+                                    }
+                                }
 
-                                     SliderStyled {
-                                         id: volumeSlider
-                                         value: mixerEntry.modelData?.volume ?? 0
-                                         Layout.fillWidth: true
-                                         onValueChanged: mixerEntry.modelData.setVolume(value);
-                                     }
-                                 }
-                             }
-                         }
+                                SliderStyled {
+                                    id: volumeSlider
+                                    value: mixerEntry.modelData?.volume ?? 0
+                                    Layout.fillWidth: true
+                                    onValueChanged: mixerEntry.modelData.setVolume(value)
+                                }
+                            }
+                        }
                     }
                 }
             }

@@ -16,37 +16,35 @@ Rectangle {
         anchors.fill: parent
         contentWidth: availableWidth
 
-        GridLayout {
+        GridLayoutPlus {
             id: grid
             columns: 2
             layoutDirection: GridLayout.TopToBottom
             anchors.left: parent.left
             anchors.right: parent.right
-            Repeater {
-                model: Colors.availableThemes
-                delegate: ButtonStyled {
-                    id: themeButton
+            model: Colors.availableThemes
+            delegate: ButtonStyled {
+                id: themeButton
 
-                    required property string modelData
-                    required property int index
+                required property string modelData
+                required property int index
 
-                    Layout.preferredWidth: 200
-                    Layout.margins: Styles.marginSm
-                    Layout.fillWidth: true
+                Layout.preferredWidth: 200
+                Layout.margins: Styles.marginSm
+                Layout.fillWidth: true
 
-                    defaultColor: isActive ? Colors.primary : Colors.backgroundHighlighted
-                    hoverColor: isActive ? Colors.primary : Colors.backgroundLifted
+                defaultColor: isActive ? Colors.primary : Colors.backgroundHighlighted
+                hoverColor: isActive ? Colors.primary : Colors.backgroundLifted
 
-                    onClicked: Colors.currentTheme = modelData
+                onClicked: Colors.currentTheme = modelData
 
-                    readonly property bool isActive: Colors.currentTheme === modelData
+                readonly property bool isActive: Colors.currentTheme === modelData
 
-                    TextStyled {
-                        anchors.centerIn: parent
-                        text: themeButton.modelData.split('.')[0]
-                        color: themeButton.isActive ? Colors.background : Colors.foreground
-                        font.pixelSize: Styles.textSm
-                    }
+                TextStyled {
+                    anchors.centerIn: parent
+                    text: themeButton.modelData.split('.')[0]
+                    color: themeButton.isActive ? Colors.background : Colors.foreground
+                    font.pixelSize: Styles.textSm
                 }
             }
         }

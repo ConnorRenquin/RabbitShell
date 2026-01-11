@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 pragma Singleton
 
 import Quickshell
@@ -24,7 +25,9 @@ Singleton {
     readonly property var linkGroups: linkTracker.linkGroups.reduce((acc, group) => {
         acc.sources.push(group.source);
         return acc;
-    }, {sources: []})
+    }, {
+        sources: []
+    })
 
     property var nodeStates: ({})
     readonly property list<PwNode> links: linkGroups.sources
@@ -43,7 +46,7 @@ Singleton {
     }
 
     function getNodeState(node) {
-        return nodeStates[node?.id] ?? null
+        return nodeStates[node?.id] ?? null;
     }
 
     PwNodeLinkTracker {
@@ -61,7 +64,7 @@ Singleton {
             required property var modelData
             node: modelData
             Component.onCompleted: root.nodeStates[modelData.id] = this
-            Component.onDestruction:  delete root.nodeStates[modelData.id]
+            Component.onDestruction: delete root.nodeStates[modelData.id]
         }
     }
 }

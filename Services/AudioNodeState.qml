@@ -8,8 +8,8 @@ Item {
 
     Component.onCompleted: {
         if (node?.audio) {
-            volume = node.audio.volume
-            muted = node.audio.muted
+            volume = node.audio.volume;
+            muted = node.audio.muted;
         }
     }
 
@@ -18,23 +18,25 @@ Item {
     property bool updating: false
 
     function getName() {
-        return node?.description !== '' ? node?.description : node.name
+        return node?.description !== '' ? node?.description : node.name;
     }
 
     function setVolume(newVolume) {
-        if (!node?.audio) return
-        root.updating = true
-        root.volume = newVolume
-        node.audio.volume = newVolume
-        root.updating = false
+        if (!node?.audio)
+            return;
+        root.updating = true;
+        root.volume = newVolume;
+        node.audio.volume = newVolume;
+        root.updating = false;
     }
 
     function setMuted(newMuted) {
-        if (!node?.audio) return
-        root.updating = true
-        root.muted = newMuted
-        node.audio.muted = newMuted
-        root.updating = false
+        if (!node?.audio)
+            return;
+        root.updating = true;
+        root.muted = newMuted;
+        node.audio.muted = newMuted;
+        root.updating = false;
     }
 
     Connections {
@@ -44,15 +46,15 @@ Item {
         // Reset the volume to root.
         function onVolumeChanged() {
             if (!root.updating) {
-                root.updating = true
-                root.node.audio.volume = root.volume
-                root.updating = false
+                root.updating = true;
+                root.node.audio.volume = root.volume;
+                root.updating = false;
             }
         }
 
         function onMutedChanged() {
             if (!root.updating) {
-                root.muted = root.node.audio.muted
+                root.muted = root.node.audio.muted;
             }
         }
     }

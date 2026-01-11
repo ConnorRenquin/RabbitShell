@@ -112,18 +112,16 @@ Loader {
                                 elide: Text.ElideNone
                                 property string key: root.keyMap[wrapper.index].toUpperCase()
                             }
-                            Row {
+                            RowLayoutPlus {
                                 id: iconRow
-                                Repeater {
-                                    model: wrapper.modelData.toplevels.values.slice(0, 5) // Setting the max icons here so it doesn't overun.
-                                    delegate: IconImage {
-                                        required property var modelData
-                                        height: 32
-                                        width: 32
-                                        source: {
-                                            var source = Quickshell.iconPath(DesktopEntries.byId(modelData.wayland?.appId)?.icon, "image-missing"); // TODO Pick a better default icon?
-                                            return source;
-                                        }
+                                model: wrapper.modelData.toplevels.values.slice(0, 5) // Setting the max icons here so it doesn't overun.
+                                delegate: IconImage {
+                                    required property var modelData
+                                    height: 32
+                                    width: 32
+                                    source: {
+                                        var source = Quickshell.iconPath(DesktopEntries.byId(modelData.wayland?.appId)?.icon, "image-missing"); // TODO Pick a better default icon?
+                                        return source;
                                     }
                                 }
                             }

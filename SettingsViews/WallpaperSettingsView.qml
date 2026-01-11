@@ -156,67 +156,65 @@ Rectangle {
                 anchors.fill: parent
                 anchors.margins: Styles.marginSm
                 contentWidth: availableWidth
-                GridLayout {
+                GridLayoutPlus {
                     columns: 3
                     columnSpacing: Styles.marginSm
                     rowSpacing: Styles.marginSm
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    Repeater {
-                        model: WallpaperSettings.folderModel
-                        delegate: Rectangle {
-                            id: wallpaperItem
+                    model: WallpaperSettings.folderModel
+                    delegate: Rectangle {
+                        id: wallpaperItem
 
-                            required property string fileName
-                            required property url fileUrl
-                            required property int index
+                        required property string fileName
+                        required property url fileUrl
+                        required property int index
 
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 300
-                            color: Colors.backgroundLifted
-                            radius: Styles.radiusSm
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 300
+                        color: Colors.backgroundLifted
+                        radius: Styles.radiusSm
 
-                            ColumnLayout {
-                                anchors.fill: parent
-                                anchors.margins: Styles.marginSm
-                                spacing: Styles.marginSm
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: Styles.marginSm
+                            spacing: Styles.marginSm
 
-                                Rectangle {
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                    color: Colors.backgroundLifted
-                                    radius: Styles.radiusSm
-                                    clip: true
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                color: Colors.backgroundLifted
+                                radius: Styles.radiusSm
+                                clip: true
 
-                                    Image {
-                                        anchors.fill: parent
-                                        source: wallpaperItem.fileUrl
-                                        fillMode: Image.PreserveAspectCrop
-                                        asynchronous: true
-                                        cache: true
-                                        TextStyled {
-                                            anchors.centerIn: parent
-                                            text: "Loading..."
-                                            visible: parent.status === Image.Loading
-                                        }
-                                    }
-
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            var path = wallpaperItem.fileUrl.toString().replace("file://", "");
-                                            WallpaperSettings.setWallpaper(path);
-                                        }
+                                Image {
+                                    anchors.fill: parent
+                                    source: wallpaperItem.fileUrl
+                                    fillMode: Image.PreserveAspectCrop
+                                    asynchronous: true
+                                    cache: true
+                                    TextStyled {
+                                        anchors.centerIn: parent
+                                        text: "Loading..."
+                                        visible: parent.status === Image.Loading
                                     }
                                 }
 
-                                TextStyled {
-                                    text: wallpaperItem.fileName
-                                    font.pixelSize: Styles.textSm
-                                    Layout.fillWidth: true
-                                    horizontalAlignment: Text.AlignHCenter
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        var path = wallpaperItem.fileUrl.toString().replace("file://", "");
+                                        WallpaperSettings.setWallpaper(path);
+                                    }
                                 }
+                            }
+
+                            TextStyled {
+                                text: wallpaperItem.fileName
+                                font.pixelSize: Styles.textSm
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignHCenter
                             }
                         }
                     }

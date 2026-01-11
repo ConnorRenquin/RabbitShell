@@ -140,7 +140,7 @@ Loader {
                 text: "No windows on this workspace"
             }
 
-            GridLayout {
+            GridLayoutPlus {
                 id: toplevelGrid
 
                 anchors.top: parent.top
@@ -150,58 +150,56 @@ Loader {
 
                 columns: 4
 
-                Repeater {
-                    model: root.toplevels.sort((a, b) => a.workspace.id - b.workspace.id )
-                    delegate: ButtonStyled {
-                        id: windowCard
+                model: root.toplevels.sort((a, b) => a.workspace.id - b.workspace.id)
+                delegate: ButtonStyled {
+                    id: windowCard
 
-                        required property var modelData
-                        required property int index
+                    required property var modelData
+                    required property int index
 
-                        Layout.preferredWidth: 250
-                        Layout.preferredHeight: 70
+                    Layout.preferredWidth: 250
+                    Layout.preferredHeight: 70
 
-                        radius: Styles.radiusMd
-                        isFocused: modelData.activated
-                        focusedColor: Colors.backgroundLifted
-                        clip: true
+                    radius: Styles.radiusMd
+                    isFocused: modelData.activated
+                    focusedColor: Colors.backgroundLifted
+                    clip: true
 
-                        property string keyLabel: index < root.keyMap.length ? root.keyMap[index] : ""
+                    property string keyLabel: index < root.keyMap.length ? root.keyMap[index] : ""
 
-                        onClicked: modelData.wayland.activate()
+                    onClicked: modelData.wayland.activate()
 
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: Styles.marginSm
-                            IconImage {
-                                id: appIcon
-                                implicitHeight: 32
-                                implicitWidth: 32
-                                source: Quickshell.iconPath(DesktopEntries.byId(windowCard.modelData.wayland?.appId)?.icon)
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: Styles.marginSm
+                        IconImage {
+                            id: appIcon
+                            implicitHeight: 32
+                            implicitWidth: 32
+                            source: Quickshell.iconPath(DesktopEntries.byId(windowCard.modelData.wayland?.appId)?.icon)
+                        }
+
+                        ColumnLayout {
+                            TextStyled {
+                                id: windowTitle
+                                Layout.fillWidth: true
+                                font.pixelSize: Styles.textSm
+
+                                property string title: windowCard?.modelData?.wayland?.title ?? ""
+
+                                text: root.searchAll ? windowCard?.modelData?.workspace?.id + " - " + title : title
                             }
 
-                            ColumnLayout {
-                                TextStyled {
-                                    id: windowTitle
-                                    Layout.fillWidth: true
-                                    font.pixelSize: Styles.textSm
-
-                                    property string title: windowCard?.modelData?.wayland?.title ?? ""
-
-                                    text: root.searchAll ? windowCard?.modelData?.workspace?.id + " - " + title : title
+                            TextStyled {
+                                id: windowShortcutAndId
+                                Layout.fillWidth: true
+                                font.pixelSize: Styles.textSm
+                                text: {
+                                    if (!windowCard.keyLabel || !windowCard.modelData.wayland || !windowCard.modelData.wayland?.appId)
+                                        return "";
+                                    return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland?.appId;
                                 }
-
-                                TextStyled {
-                                    id: windowShortcutAndId
-                                    Layout.fillWidth: true
-                                    font.pixelSize: Styles.textSm
-                                    text: {
-                                        if (!windowCard.keyLabel || !windowCard.modelData.wayland || !windowCard.modelData.wayland?.appId)
-                                            return "";
-                                        return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland?.appId;
-                                    }
-                                    color: Colors.green
-                                }
+                                color: Colors.green
                             }
                         }
                     }

@@ -203,86 +203,83 @@ Rectangle {
         anchors.fill: parent
         contentWidth: availableWidth
 
-        ColumnLayout {
+        ColumnLayoutPlus {
             id: gridView
             anchors.fill: parent
             anchors.margins: Styles.marginSm
+            model: root.keybindSections
+            delegate: Rectangle {
+                id: sectionRect
 
-            Repeater {
-                model: root.keybindSections
-                delegate: Rectangle {
-                    id: sectionRect
+                required property int index
+                required property var modelData
 
-                    required property int index
-                    required property var modelData
+                Layout.fillWidth: true
+                // Layout.fillHeight: true
+                Layout.preferredHeight: contentColumn.implicitHeight + 2 * Styles.marginMd
+                Layout.minimumWidth: 300
+                color: Colors.background
+                radius: Styles.radiusSm
 
-                    Layout.fillWidth: true
-                    // Layout.fillHeight: true
-                    Layout.preferredHeight: contentColumn.implicitHeight + 2 * Styles.marginMd
-                    Layout.minimumWidth: 300
-                    color: Colors.background
-                    radius: Styles.radiusSm
+                ColumnLayout {
+                    id: contentColumn
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginMd
+                    spacing: Styles.marginMd
 
-                    ColumnLayout {
-                        id: contentColumn
-                        anchors.fill: parent
-                        anchors.margins: Styles.marginMd
-                        spacing: Styles.marginMd
+                    // Header row with icon and title
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: Styles.marginSm
 
-                        // Header row with icon and title
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: Styles.marginSm
-
-                            TextStyled {
-                                text: sectionRect.modelData.icon
-                                font.pixelSize: 18
-                            }
-
-                            TextStyled {
-                                text: sectionRect.modelData.title
-                                font.bold: true
-                                Layout.fillWidth: true
-                            }
+                        TextStyled {
+                            text: sectionRect.modelData.icon
+                            font.pixelSize: 18
                         }
 
-                        // Keybinds list
-                        ListView {
-                            id: keybindsList
+                        TextStyled {
+                            text: sectionRect.modelData.title
+                            font.bold: true
                             Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            implicitHeight: contentHeight
+                        }
+                    }
+
+                    // Keybinds list
+                    ListView {
+                        id: keybindsList
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        implicitHeight: contentHeight
+                        spacing: Styles.marginSm
+                        clip: true
+                        interactive: false
+
+                        model: sectionRect.modelData.keybinds
+
+                        delegate: RowLayout {
+                            required property int index
+                            required property var modelData
+
+                            width: keybindsList.width
                             spacing: Styles.marginSm
-                            clip: true
-                            interactive: false
 
-                            model: sectionRect.modelData.keybinds
-
-                            delegate: RowLayout {
-                                required property int index
-                                required property var modelData
-
-                                width: keybindsList.width
-                                spacing: Styles.marginSm
-
-                                Rectangle {
-                                    Layout.preferredWidth: keyText.implicitWidth + 12
-                                    Layout.preferredHeight: 24
-                                    color: Colors.backgroundHighlighted
-                                    radius: Styles.radiusSm
-
-                                    TextStyled {
-                                        id: keyText
-                                        anchors.centerIn: parent
-                                        text: modelData.key
-                                    }
-                                }
+                            Rectangle {
+                                Layout.preferredWidth: keyText.implicitWidth + 12
+                                Layout.preferredHeight: 24
+                                color: Colors.backgroundHighlighted
+                                radius: Styles.radiusSm
 
                                 TextStyled {
-                                    text: modelData.action
-                                    Layout.fillWidth: true
-                                    wrapMode: Text.Wrap
+                                    id: keyText
+                                    anchors.centerIn: parent
+                                    text: modelData.key
                                 }
+                            }
+
+                            TextStyled {
+                                text: modelData.action
+                                Layout.fillWidth: true
+                                wrapMode: Text.Wrap
                             }
                         }
                     }

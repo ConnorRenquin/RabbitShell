@@ -308,73 +308,70 @@ FloatingWindow {
                 color: Colors.backgroundLifted
                 radius: Styles.radiusSm
 
-                RowLayout {
+                RowLayoutPlus {
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
+                    model: 10
+                    delegate: Item {
+                        id: slotButtonContainer
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
 
-                    Repeater {
-                        model: 10
-                        delegate: Item {
-                            id: slotButtonContainer
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
+                        required property var modelData
 
-                            required property var modelData
+                        ButtonStyled {
+                            id: slotButton
+                            anchors.fill: parent
 
-                            ButtonStyled {
-                                id: slotButton
-                                anchors.fill: parent
+                            color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.background
 
-                                color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.background
-
-                                onClicked: mouse => {
-                                    if (mouse.button === Qt.RightButton) {
-                                        base.clearSlot(slotButtonContainer.modelData);
-                                    } else {
-                                        base.copySlotToClipboard(slotButtonContainer.modelData);
-                                    }
-                                }
-
-                                onContainsMouseChanged: {
-                                    if (containsMouse && root.clipboardData.slots[slotButtonContainer.modelData]) {
-                                        slotTooltip.visible = true;
-                                    } else {
-                                        slotTooltip.visible = false;
-                                    }
-                                }
-
-                                TextStyled {
-                                    anchors.centerIn: parent
-                                    text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
-                                    color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.background : Colors.foreground
+                            onClicked: mouse => {
+                                if (mouse.button === Qt.RightButton) {
+                                    base.clearSlot(slotButtonContainer.modelData);
+                                } else {
+                                    base.copySlotToClipboard(slotButtonContainer.modelData);
                                 }
                             }
 
-                            PopupWindow {
-                                id: slotTooltip
-                                visible: false
-                                implicitWidth: Math.min(tooltipContent.implicitWidth + Styles.marginSm * 2, 400)
-                                implicitHeight: tooltipContent.implicitHeight + Styles.marginSm * 2
-                                color: 'transparent'
-
-                                anchor {
-                                    item: slotButton
-                                    rect.y: slotButton.height + Styles.marginMd
-                                    rect.x: slotButton.width / 2 - implicitWidth / 2
+                            onContainsMouseChanged: {
+                                if (containsMouse && root.clipboardData.slots[slotButtonContainer.modelData]) {
+                                    slotTooltip.visible = true;
+                                } else {
+                                    slotTooltip.visible = false;
                                 }
+                            }
 
-                                Rectangle {
+                            TextStyled {
+                                anchors.centerIn: parent
+                                text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
+                                color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.background : Colors.foreground
+                            }
+                        }
+
+                        PopupWindow {
+                            id: slotTooltip
+                            visible: false
+                            implicitWidth: Math.min(tooltipContent.implicitWidth + Styles.marginSm * 2, 400)
+                            implicitHeight: tooltipContent.implicitHeight + Styles.marginSm * 2
+                            color: 'transparent'
+
+                            anchor {
+                                item: slotButton
+                                rect.y: slotButton.height + Styles.marginMd
+                                rect.x: slotButton.width / 2 - implicitWidth / 2
+                            }
+
+                            Rectangle {
+                                anchors.fill: parent
+                                color: Colors.backgroundLifted
+                                radius: Styles.radiusMd
+                                TextStyled {
+                                    id: tooltipContent
                                     anchors.fill: parent
-                                    color: Colors.backgroundLifted
-                                    radius: Styles.radiusMd
-                                    TextStyled {
-                                        id: tooltipContent
-                                        anchors.fill: parent
-                                        anchors.margins: Styles.marginSm
-                                        text: utils.removeIndentation(root.clipboardData.slots[slotButtonContainer.modelData]) || "Empty"
-                                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                        color: Colors.foreground
-                                    }
+                                    anchors.margins: Styles.marginSm
+                                    text: utils.removeIndentation(root.clipboardData.slots[slotButtonContainer.modelData]) || "Empty"
+                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                    color: Colors.foreground
                                 }
                             }
                         }
