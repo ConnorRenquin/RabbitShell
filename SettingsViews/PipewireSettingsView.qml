@@ -35,11 +35,9 @@ Rectangle {
                     Layout.preferredWidth: 40
                     onClicked: mixerEntry.modelData.setMuted(!mixerEntry.modelData.muted)
                 }
-                SliderStyled {
-                    id: volumeSlider
+                VolumeSlider {
                     Layout.fillWidth: true
-                    value: mixerEntry.modelData?.volume
-                    onValueChanged: mixerEntry.modelData.setVolume(value)
+                    modelData: mixerEntry.modelData
                 }
             }
         }

@@ -153,11 +153,9 @@ Loader {
                                     }
                                 }
 
-                                SliderStyled {
-                                    id: volumeSlider
-                                    value: mixerEntry.modelData?.volume ?? 0
+                                VolumeSlider {
                                     Layout.fillWidth: true
-                                    onValueChanged: mixerEntry.modelData.setVolume(value)
+                                    modelData: mixerEntry.modelData
                                 }
                             }
                         }

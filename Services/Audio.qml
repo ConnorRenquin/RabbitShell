@@ -30,12 +30,10 @@ Singleton {
     })
 
     property var nodeStates: ({})
+    property var lockableApps: ['spotify']  // Apps that can have locked volume (e.g., ["spotify", "discord"])
     readonly property list<PwNode> links: linkGroups.sources
     readonly property list<PwNode> sinks: nodes.sinks
     readonly property list<PwNode> sources: nodes.sources
-
-    readonly property PwNode sink: Pipewire.defaultAudioSink
-    readonly property PwNode source: Pipewire.defaultAudioSource
 
     function setAudioSink(newSink: PwNode): void {
         Pipewire.preferredDefaultAudioSink = newSink;
@@ -55,11 +53,11 @@ Singleton {
     }
 
     PwObjectTracker {
-        objects: [...root.sinks, ...root.sources, ...root.links]
+        objects: [Pipewire.defaultAudioSink, ...root.links]
     }
 
     Instantiator {
-        model: [root.sink, ...root.links]
+        model: [Pipewire.defaultAudioSink, ...root.links]
         delegate: AudioNodeState {
             required property var modelData
             node: modelData
