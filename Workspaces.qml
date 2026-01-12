@@ -27,7 +27,7 @@ Loader {
         exclusionMode: ExclusionMode.Ignore
 
         anchors.top: true
-        margins.top: 80
+        margins.top: Styles.marginLg * 2
 
         property string keyMap: "wertyuiopasdfghjklzxcvbnm"
         property var workspaces: Hyprland.workspaces.values.filter(workspace => workspace.id > 0)
