@@ -68,6 +68,7 @@ FloatingWindow {
             ScrollView {
                 readonly property string name: 'Appearance'
                 anchors.fill: parent
+                anchors.margins: Styles.marginSm
                 contentWidth: availableWidth
                 ColumnLayout {
                     id: appearanceSettings

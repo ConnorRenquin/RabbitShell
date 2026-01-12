@@ -14,7 +14,6 @@ Rectangle {
 
         ColumnLayoutPlus {
             anchors.fill: parent
-            anchors.margins: Styles.marginSm
             model: Object.keys(Styles.userStyles)
             delegate: Rectangle {
                 id: settingEntry

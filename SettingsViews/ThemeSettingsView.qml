@@ -30,7 +30,6 @@ Rectangle {
                 required property int index
 
                 Layout.preferredWidth: 200
-                Layout.margins: Styles.marginSm
                 Layout.fillWidth: true
 
                 defaultColor: isActive ? Colors.primary : Colors.backgroundHighlighted

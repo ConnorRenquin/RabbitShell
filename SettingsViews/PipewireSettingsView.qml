@@ -12,13 +12,18 @@ Rectangle {
     color: Colors.backgroundLifted
     ScrollView {
         anchors.fill: parent
+        anchors.margins: Styles.marginSm
         contentWidth: availableWidth
         ColumnLayout {
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.margins: Styles.marginSm
-            spacing: Styles.marginSm
+            spacing: Styles.marginMd
+            TextStyled {
+                text: "Audio Settings"
+                font.pixelSize: Styles.textLg
+            }
             Repeater {
                 model: [Audio.sink, ...Audio.links]
                 delegate: PipewireControls {
