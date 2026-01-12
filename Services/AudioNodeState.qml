@@ -9,12 +9,9 @@ Item {
     required property PwNode node
 
     Component.onCompleted: {
-        console.log('hi');
         if (node?.audio) {
-            console.log('bye');
             node.audio.volume = 0.75;
             volume = node.audio.volume;
-            console.log(node.audio.volume);
             muted = node.audio.muted;
         }
     }

@@ -1,19 +1,19 @@
-import QtQuick
+import Quickshell.Services.Pipewire
 
-import qs.Services
+import QtQuick
 
 SliderStyled {
     id: root
 
-    required property AudioNodeState modelData
+    required property PwNode node
 
-    onValueChanged: root.modelData.setVolume(value)
-    Component.onCompleted: value = modelData.getVolume()
+    onValueChanged: node.audio.volume = value
+    Component.onCompleted: value = node.audio.volume
 
     Connections {
-        target: root.modelData
+        target: root.node.audio
         function onVolumeChanged() {
-            root.value = root.modelData.getVolume();
+            root.value = root.node.audio.volume;
         }
     }
 }

@@ -82,12 +82,12 @@ Loader {
                     anchors.right: parent.right
                     anchors.margins: Styles.marginSm
                     spacing: Styles.marginSm
-                    model: Object.values(Audio.nodeStates)
+                    // model: Object.values(Audio.nodeStates)
+                    model: [Audio.sink, ...Audio.links]
                     delegate: Rectangle {
                         id: mixerEntry
                         required property var index
-                        required property AudioNodeState modelData
-                        property PwNode node: modelData.node
+                        required property PwNode modelData
 
                         Layout.fillWidth: true
                         Layout.preferredHeight: 100
@@ -120,14 +120,14 @@ Loader {
 
                                 IconImage {
                                     id: icon
-                                    source: Quickshell.iconPath(mixerEntry.node.name, "audio-volume-high-symbolic")
+                                    source: Quickshell.iconPath(mixerEntry.modelData.name, "audio-volume-high-symbolic")
                                     implicitWidth: 40
                                     implicitHeight: 40
                                 }
 
                                 TextStyled {
                                     Layout.fillWidth: true
-                                    text: mixerEntry.modelData.getName()
+                                    text: Audio.getName(mixerEntry.modelData)
                                 }
                             }
 
@@ -155,7 +155,7 @@ Loader {
 
                                 VolumeSlider {
                                     Layout.fillWidth: true
-                                    modelData: mixerEntry.modelData
+                                    node: mixerEntry.modelData
                                 }
                             }
                         }

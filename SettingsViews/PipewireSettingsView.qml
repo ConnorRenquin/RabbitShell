@@ -19,25 +19,24 @@ Rectangle {
             anchors.right: parent.right
             anchors.margins: Styles.marginSm
             spacing: Styles.marginSm
-            model: Object.values(Audio.nodeStates)
+            model: [Audio.sink, ...Audio.links]
             delegate: RowLayout {
                 id: mixerEntry
-                required property AudioNodeState modelData
-                property PwNode node: modelData.node
+                required property PwNode modelData
                 spacing: Styles.marginMd
                 Layout.preferredHeight: 50
                 TextStyled {
                     Layout.preferredWidth: 200
-                    text: mixerEntry.modelData.getName()
+                    text: Audio.getName(mixerEntry.modelData)
                 }
                 ButtonStyled {
-                    text: mixerEntry.modelData?.muted ? "" : ""
+                    text: mixerEntry.modelData.audio?.muted ? "" : ""
                     Layout.preferredWidth: 40
-                    onClicked: mixerEntry.modelData.setMuted(!mixerEntry.modelData.muted)
+                    onClicked: mixerEntry.modelData.audio.muted = !mixerEntry.modelData.audio.muted
                 }
                 VolumeSlider {
                     Layout.fillWidth: true
-                    modelData: mixerEntry.modelData
+                    node: mixerEntry.modelData
                 }
             }
         }
