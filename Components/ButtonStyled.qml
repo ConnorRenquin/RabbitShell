@@ -15,7 +15,7 @@ Rectangle {
     }
 
     radius: Styles.radiusSm
-    scale: mouseArea.pressed ? 0.90 : 1
+    scale: mouseArea.pressed ? 0.95 : 1
     implicitWidth: buttonText.implicitWidth + Styles.marginMd
     implicitHeight: buttonText.implicitHeight + Styles.marginMd
 
