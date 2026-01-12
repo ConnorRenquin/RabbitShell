@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Services.Pipewire
+import Quickshell.Services.Mpris
 import Quickshell.Widgets
 import Quickshell.Hyprland
 
@@ -48,33 +49,31 @@ Loader {
             color: Colors.background
             radius: Styles.radiusSm
 
-            // TODO Make layoutViewsWrappers
-            // Keys.onPressed: event => {
-            //     if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
-            //         loader.active = false;
-            //     } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
-            //         mixerList.incrementCurrentIndex();
-            //     } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
-            //         mixerList.decrementCurrentIndex();
-            //     } else if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
-            //         if (mixerList.currentItem && mixerList.currentItem.modelData) {
-            //             const newVolume = Math.max(0, mixerList.currentItem.modelData.volume - 0.05);
-            //             mixerList.currentItem.modelData.setVolume(newVolume);
-            //         }
-            //     } else if ([Qt.Key_Right, Qt.Key_L].includes(event.key)) {
-            //         if (mixerList.currentItem && mixerList.currentItem.modelData) {
-            //             const newVolume = Math.min(1, mixerList.currentItem.modelData.volume + 0.05);
-            //             mixerList.currentItem.modelData.setVolume(newVolume);
-            //         }
-            //     } else if ([Qt.Key_M].includes(event.key)) {
-            //         if (mixerList.currentItem && mixerList.currentItem.modelData) {
-            //             mixerList.currentItem.modelData.setMuted(!mixerList.currentItem.modelData.muted);
-            //         }
-            //     }
-            // }
+            Keys.onPressed: event => {
+                if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+                    loader.active = false;
+                } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
+                    mixerList.incrementCurrentIndex();
+                } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
+                    mixerList.decrementCurrentIndex();
+                } else if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
+                    if (mixerList.currentItem && mixerList.currentItem.modelData) {
+                        mixerList.currentItem.decrease();
+                    }
+                } else if ([Qt.Key_Right, Qt.Key_L].includes(event.key)) {
+                    if (mixerList.currentItem && mixerList.currentItem.modelData) {
+                        mixerList.currentItem.increase();
+                    }
+                } else if ([Qt.Key_M].includes(event.key)) {
+                    if (mixerList.currentItem && mixerList.currentItem.modelData) {
+                        mixerList.currentItem.toggleMute();
+                    }
+                }
+            }
 
             ScrollView {
                 anchors.fill: parent
+                contentWidth: availableWidth
                 ColumnLayoutPlus {
                     id: mixerList
                     anchors.top: parent.top
@@ -82,82 +81,18 @@ Loader {
                     anchors.right: parent.right
                     anchors.margins: Styles.marginSm
                     spacing: Styles.marginSm
-                    // model: Object.values(Audio.nodeStates)
-                    model: [Audio.sink, ...Audio.links]
-                    delegate: Rectangle {
-                        id: mixerEntry
-                        required property var index
-                        required property PwNode modelData
-
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 100
-
-                        color: ListView.isCurrentItem ? Colors.backgroundLifted : Colors.background
-                        radius: Styles.radiusSm
-                        focus: true
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
+                    Repeater {
+                        model: [Audio.sink]
+                        delegate: PipewireControls {
+                            Layout.fillWidth: true
+                            isCurrentItem: mixerList.currentItem === this
                         }
-
-                        ColumnLayout {
-                            id: mixerColum
-                            anchors.fill: parent
-                            anchors.margins: Styles.marginSm
-                            spacing: Styles.marginLg
-
-                            RowLayout {
-                                id: info
-
-                                spacing: Styles.marginSm
-
-                                Layout.fillWidth: true
-                                Layout.leftMargin: Styles.marginSm
-                                Layout.rightMargin: Styles.marginSm
-                                Layout.preferredHeight: 20
-
-                                IconImage {
-                                    id: icon
-                                    source: Quickshell.iconPath(mixerEntry.modelData.name, "audio-volume-high-symbolic")
-                                    implicitWidth: 40
-                                    implicitHeight: 40
-                                }
-
-                                TextStyled {
-                                    Layout.fillWidth: true
-                                    text: Audio.getName(mixerEntry.modelData)
-                                }
-                            }
-
-                            RowLayout {
-                                id: controlRow
-                                Layout.fillWidth: true
-                                Layout.leftMargin: Styles.marginSm
-                                Layout.rightMargin: Styles.marginSm
-
-                                ButtonStyled {
-                                    id: muteButton
-                                    implicitWidth: 40
-                                    implicitHeight: muteIcon.implicitHeight + Styles.marginSm
-                                    radius: 100
-                                    defaultColor: mixerEntry.modelData?.muted ? Colors.background : Colors.foreground
-                                    onClicked: mixerEntry.modelData.setMuted(!mixerEntry.modelData.muted)
-                                    TextStyled {
-                                        id: muteIcon
-                                        anchors.centerIn: parent
-                                        font.pixelSize: Styles.textSm
-                                        color: mixerEntry.modelData?.muted ? Colors.foreground : Colors.background
-                                        text: mixerEntry.modelData?.muted ? "" : ""
-                                    }
-                                }
-
-                                VolumeSlider {
-                                    Layout.fillWidth: true
-                                    node: mixerEntry.modelData
-                                }
-                            }
+                    }
+                    Repeater {
+                        model: Mpris.players
+                        delegate: MprisControls {
+                            Layout.fillWidth: true
+                            isCurrentItem: mixerList.currentItem === this
                         }
                     }
                 }

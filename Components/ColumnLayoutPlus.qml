@@ -25,7 +25,7 @@ ColumnLayout {
         if (currentIndex < visibleChildren.length - 1) {
             currentIndex++;
         } else {
-            currentIndex = 0; // wrap to beginning
+            currentIndex = 0;
         }
     }
 
@@ -35,7 +35,7 @@ ColumnLayout {
         if (currentIndex > 0) {
             currentIndex--;
         } else {
-            currentIndex = visibleChildren.length - 1; // wrap to end
+            currentIndex = visibleChildren.length - 1;
         }
     }
 

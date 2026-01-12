@@ -1,4 +1,4 @@
-import Quickshell.Services.Pipewire
+import Quickshell.Services.Mpris
 
 import QtQuick
 import QtQuick.Controls
@@ -13,30 +13,22 @@ Rectangle {
     ScrollView {
         anchors.fill: parent
         contentWidth: availableWidth
-        ColumnLayoutPlus {
+        ColumnLayout {
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.margins: Styles.marginSm
             spacing: Styles.marginSm
-            model: [Audio.sink, ...Audio.links]
-            delegate: RowLayout {
-                id: mixerEntry
-                required property PwNode modelData
-                spacing: Styles.marginMd
-                Layout.preferredHeight: 50
-                TextStyled {
-                    Layout.preferredWidth: 200
-                    text: Audio.getName(mixerEntry.modelData)
-                }
-                ButtonStyled {
-                    text: mixerEntry.modelData.audio?.muted ? "" : ""
-                    Layout.preferredWidth: 40
-                    onClicked: mixerEntry.modelData.audio.muted = !mixerEntry.modelData.audio.muted
-                }
-                VolumeSlider {
+            Repeater {
+                model: [Audio.sink, ...Audio.links]
+                delegate: PipewireControls {
                     Layout.fillWidth: true
-                    node: mixerEntry.modelData
+                }
+            }
+            Repeater {
+                model: Mpris.players
+                delegate: MprisControls {
+                    Layout.fillWidth: true
                 }
             }
         }

@@ -41,7 +41,7 @@ Slider {
         x: root.leftPadding + root.visualPosition * (root.availableWidth - width)
         y: root.topPadding + root.availableHeight / 2 - height / 2
 
-        implicitWidth: root.showPercentage ? handleText.width + Styles.marginLg : 20
+        implicitWidth: 60
         implicitHeight: root.handleHeight
 
         radius: Styles.radiusSm
