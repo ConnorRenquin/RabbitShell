@@ -137,7 +137,8 @@ Loader {
                 id: noContent
                 anchors.centerIn: parent
                 visible: root.toplevels.length === 0
-                text: "No windows on this workspace"
+                font.pixelSize: Styles.textLg
+                text: ""
             }
 
             GridLayoutPlus {
