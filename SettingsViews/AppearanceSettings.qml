@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Dialogs
 import QtQuick.Controls
 import QtQuick.Layouts
 
@@ -12,9 +11,14 @@ import qs.Settings
 import qs.SettingsViews
 
 ScrollView {
+    id: root
     anchors.fill: parent
     anchors.margins: Styles.marginMd
     contentWidth: availableWidth
+
+    function isValidColor(color) {
+        return color.match(/^#[0-9A-Fa-f]{6}$/) !== null;
+    }
 
     // Delete confirmation dialog
     Dialog {
@@ -54,7 +58,7 @@ ScrollView {
                     GlobalSettings.currentTheme = newTheme;
                 }
             }
-            Colors.refreshThemes()
+            Colors.refreshThemes();
         }
     }
 
@@ -105,7 +109,7 @@ ScrollView {
                 var newPath = '$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + newName;
                 Quickshell.execDetached(['bash', '-c', 'mv "' + oldPath + '" "' + newPath + '"']);
                 GlobalSettings.currentTheme = newName;
-                Colors.refreshThemes()
+                Colors.refreshThemes();
             }
         }
 
@@ -158,7 +162,7 @@ ScrollView {
                 GlobalSettings.currentTheme = newName;
                 createField.text = "";
             }
-            Colors.refreshThemes()
+            Colors.refreshThemes();
         }
 
         onOpened: {
@@ -208,19 +212,157 @@ ScrollView {
 
             ButtonStyled {
                 text: ""
-                onClicked: Quickshell.execDetached(['bash', '-c', 'xdg-open $XDG_CONFIG_HOME/quickshell/Settings/.data/colors']);
+                onClicked: Quickshell.execDetached(['bash', '-c', 'xdg-open $XDG_CONFIG_HOME/quickshell/Settings/.data/colors'])
             }
         }
 
-        ColorSettingsView {
-            Layout.preferredHeight: 400
-            Layout.fillWidth: true
+        Repeater {
+            model: Object.keys(Styles.userStyles)
+            delegate: Rectangle {
+                id: settingEntry
+
+                color: Colors.background
+                implicitWidth: parent?.width ?? 0
+                implicitHeight: 100
+                radius: Styles.radiusSm
+
+                required property string modelData
+                required property int index
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginSm
+
+                    TextStyled {
+                        text: settingEntry.modelData
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Rectangle {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: textField.implicitHeight + Styles.marginSm * 2
+
+                            color: Colors.backgroundLifted
+                            radius: Styles.radiusSm
+
+                            TextFieldStyled {
+                                id: textField
+
+                                anchors.fill: parent
+                                anchors.margins: Styles.marginSm
+
+                                Component.onCompleted: text = Styles.userStyles[settingEntry.modelData] || ""
+
+                                Connections {
+                                    target: Styles
+                                    function onUserStylesChanged() {
+                                        textField.text = Styles.userStyles[settingEntry.modelData] || "";
+                                    }
+                                }
+                            }
+                        }
+                        ButtonStyled {
+                            text: 'Apply'
+                            Layout.fillHeight: true
+                            onClicked: {
+                                var newStyles = Object.assign({}, Styles.userStyles);
+                                if (settingEntry.modelData === "Font Family") {
+                                    newStyles[settingEntry.modelData] = text;
+                                } else {
+                                    newStyles[settingEntry.modelData] = parseInt(textField.text) || 0;
+                                }
+                                Styles.userStyles = newStyles;
+                            }
+                        }
+
+                        ButtonStyled {
+                            text: 'Reset'
+                            Layout.fillHeight: true
+                            onClicked: {
+                                textField.text = Styles.userStyles[settingEntry.modelData];
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        StyleSettingsView {
-            Layout.fillHeight: true
-            Layout.preferredHeight: 300
-            Layout.fillWidth: true
+        Repeater {
+            model: Object.keys(Colors.userColors)
+            delegate: Rectangle {
+                id: colorEntry
+
+                required property string modelData
+                required property int index
+
+                color: Colors.background
+                implicitWidth: parent?.width ?? 0
+                implicitHeight: 100
+                radius: Styles.radiusSm
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginSm
+
+                    TextStyled {
+                        id: colorName
+                        text: colorEntry.modelData
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        Rectangle {
+                            id: colorPreview
+                            Layout.preferredWidth: 40
+                            Layout.fillHeight: true
+                            color: root.isValidColor(colorTextField?.text) ? colorTextField.text : Colors.userColors[colorEntry.modelData] || "#000000"
+                            radius: Styles.radiusSm
+                        }
+
+                        Rectangle {
+                            id: validationIndicator
+                            Layout.preferredWidth: 10
+                            Layout.fillHeight: true
+                            radius: Styles.radiusSm
+                            color: root.isValidColor(colorTextField.text) ? Colors.success : Colors.error
+                        }
+
+                        TextFieldStyled {
+                            id: colorTextField
+
+                            Layout.fillWidth: true
+                            Component.onCompleted: text = Colors.userColors[colorEntry.modelData] || ""
+
+                            Connections {
+                                target: Colors
+                                function onUserColorsChanged() {
+                                    colorTextField.text = Colors.userColors[colorEntry.modelData] || "";
+                                }
+                            }
+                        }
+
+                        ButtonStyled {
+                            id: applyButton
+                            text: "Apply"
+                            enabled: root.isValidColor(colorTextField.text)
+                            onClicked: {
+                                var newColors = Object.assign({}, Colors.userColors);
+                                newColors[colorEntry.modelData] = colorTextField.text;
+                                Colors.userColors = newColors;
+                            }
+                        }
+
+                        ButtonStyled {
+                            id: resetButton
+                            text: "Reset"
+                            onClicked: colorTextField.text = Colors.userColors[colorEntry.modelData]
+                        }
+                    }
+                }
+            }
         }
     }
 }
