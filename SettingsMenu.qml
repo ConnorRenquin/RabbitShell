@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import Quickshell
 
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 import qs.Components
@@ -16,7 +15,7 @@ FloatingWindow {
     color: Colors.background
 
     title: 'Settings'
-    visible: false
+    // visible: false
 
     Component.onCompleted: {
         PatchBay.openThemeSelector.connect(() => root.visible = !root.visible);
@@ -53,6 +52,10 @@ FloatingWindow {
             color: Colors.backgroundLifted
             Layout.preferredWidth: 300
             Layout.fillWidth: true
+            AppearanceSettings {
+                readonly property string name: 'Appearance'
+                anchors.fill: parent
+            }
             PipewireSettingsView {
                 readonly property string name: 'Audio'
                 anchors.fill: parent
@@ -64,30 +67,6 @@ FloatingWindow {
             WallpaperSettingsView {
                 readonly property string name: 'Wallpaper'
                 anchors.fill: parent
-            }
-            ScrollView {
-                readonly property string name: 'Appearance'
-                anchors.fill: parent
-                anchors.margins: Styles.marginSm
-                contentWidth: availableWidth
-                ColumnLayout {
-                    id: appearanceSettings
-                    spacing: Styles.marginSm
-                    anchors.fill: parent
-                    ThemeSettingsView {
-                        Layout.preferredHeight: 300
-                        Layout.fillWidth: true
-                    }
-                    ColorSettingsView {
-                        Layout.preferredHeight: 400
-                        Layout.fillWidth: true
-                    }
-                    StyleSettingsView {
-                        Layout.fillHeight: true
-                        Layout.preferredHeight: 300
-                        Layout.fillWidth: true
-                    }
-                }
             }
             Cheatsheet {
                 readonly property string name: 'Cheatsheet'

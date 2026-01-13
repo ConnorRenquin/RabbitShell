@@ -21,6 +21,9 @@ Rectangle {
             columns: 2
             layoutDirection: GridLayout.TopToBottom
             anchors.left: parent.left
+            ComboBoxStyled {
+                model: Colors.availableThemes
+            }
             anchors.right: parent.right
             model: Colors.availableThemes
             delegate: ButtonStyled {

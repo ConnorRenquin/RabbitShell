@@ -87,6 +87,10 @@ Singleton {
         gray = userColors["Gray"] ?? "#7A8478";
     }
 
+    function refreshThemes() {
+        listFiles.running = true
+    }
+
     onUserColorsChanged: {
         root.updateColors();
         if (persistantData.loaded && !isLoadingTheme) {
