@@ -8,10 +8,12 @@ import QtQuick.Layouts
 import qs.Settings
 import qs.Services
 
-RowLayout {
+ColumnLayout {
     id: root
     required property PwNode modelData
     property bool isCurrentItem: false
+
+    spacing: Styles.marginSm
 
     function decrease() {
         slider.decrease();
@@ -25,26 +27,35 @@ RowLayout {
         root.modelData.audio.muted = !root.modelData.audio.muted;
     }
 
-    TextStyled {
-        text: "󰓃"
-        font.pixelSize: Styles.textLg
-    }
-    Rectangle {
-        color: root.isCurrentItem ? Colors.backgroundLifted : Colors.background
-        radius: Styles.radiusLg
-        Layout.fillHeight: true
-        Layout.preferredWidth: 150
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: Styles.marginSm
+
         TextStyled {
-            anchors.fill: parent
-            anchors.margins: Styles.marginSm
-            text: Audio.getName(root.modelData)
+            text: "󰓃"
+            font.pixelSize: Styles.textLg
+        }
+
+        Rectangle {
+            color: root.isCurrentItem ? Colors.backgroundLifted : Colors.background
+            radius: Styles.radiusLg
+            Layout.fillWidth: true
+            Layout.preferredHeight: 35
+            TextStyled {
+                anchors.fill: parent
+                anchors.margins: Styles.marginSm
+                verticalAlignment: Text.AlignVCenter
+                text: Audio.getName(root.modelData)
+            }
+        }
+
+        ButtonStyled {
+            text: root.modelData.audio?.muted ? "" : ""
+            Layout.preferredHeight: 35
+            onClicked: root.modelData.audio.muted = !root.modelData.audio.muted
         }
     }
-    ButtonStyled {
-        text: root.modelData.audio?.muted ? "" : ""
-        Layout.preferredWidth: 40
-        onClicked: root.modelData.audio.muted = !root.modelData.audio.muted
-    }
+
     SliderStyled {
         id: slider
         Layout.fillWidth: true
