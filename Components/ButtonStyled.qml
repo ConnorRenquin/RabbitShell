@@ -46,7 +46,8 @@ Rectangle {
 
     TextStyled {
         id: buttonText
-        anchors.centerIn: parent
+        anchors.fill: parent
+        anchors.margins: Styles.marginSm
         visible: root.text
         text: root.text
         font.pixelSize: root.textPixelSize

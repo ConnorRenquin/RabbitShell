@@ -12,7 +12,6 @@ import qs.Services
 ButtonStyled {
     id: root
 
-    implicitWidth: parent.height
     implicitHeight: parent.height
     text: "⏻"
 

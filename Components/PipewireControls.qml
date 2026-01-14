@@ -40,7 +40,7 @@ ColumnLayout {
             color: root.isCurrentItem ? Colors.backgroundLifted : Colors.background
             radius: Styles.radiusLg
             Layout.fillWidth: true
-            Layout.preferredHeight: 35
+            Layout.fillHeight: true
             TextStyled {
                 anchors.fill: parent
                 anchors.margins: Styles.marginSm
@@ -51,7 +51,6 @@ ColumnLayout {
 
         ButtonStyled {
             text: root.modelData.audio?.muted ? "" : ""
-            Layout.preferredHeight: 35
             onClicked: root.modelData.audio.muted = !root.modelData.audio.muted
         }
     }
