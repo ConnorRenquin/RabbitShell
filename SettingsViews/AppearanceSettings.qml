@@ -8,7 +8,6 @@ import Quickshell
 
 import qs.Components
 import qs.Settings
-import qs.SettingsViews
 
 ScrollView {
     id: root
@@ -20,38 +19,11 @@ ScrollView {
         return color.match(/^#[0-9A-Fa-f]{6}$/) !== null;
     }
 
-    // Delete confirmation dialog
-    Dialog {
+    ConfirmationDialog {
         id: deleteDialog
-        anchors.centerIn: parent
-        modal: true
-        title: "Delete Theme"
-        standardButtons: Dialog.Yes | Dialog.No
-
-        ColumnLayout {
-            spacing: Styles.marginMd
-            TextStyled {
-                text: "Are you sure you want to delete the theme:"
-                Layout.fillWidth: true
-            }
-            TextStyled {
-                text: GlobalSettings.currentTheme
-                font.bold: true
-                color: Colors.error
-                Layout.fillWidth: true
-            }
-            TextStyled {
-                text: "This action cannot be undone."
-                font.pixelSize: Styles.textSm
-                color: Colors.warning
-                Layout.fillWidth: true
-            }
-        }
-
         onAccepted: {
             var themePath = Colors.directory + GlobalSettings.currentTheme;
             Quickshell.execDetached(['bash', '-c', 'rm "$XDG_CONFIG_HOME/quickshell/Settings/' + themePath + '"']);
-            // Switch to first available theme after deletion
             if (Colors.availableThemes.length > 1) {
                 var newTheme = Colors.availableThemes.find(t => t !== GlobalSettings.currentTheme);
                 if (newTheme) {
@@ -62,45 +34,12 @@ ScrollView {
         }
     }
 
-    // Rename dialog
-    Dialog {
+    TextFieldDialog {
         id: renameDialog
-        anchors.centerIn: parent
-        modal: true
-        title: "Rename Theme"
-        standardButtons: Dialog.Ok | Dialog.Cancel
-
-        ColumnLayout {
-            spacing: Styles.marginMd
-            TextStyled {
-                text: "Current name: " + GlobalSettings.currentTheme
-                Layout.fillWidth: true
-            }
-            TextStyled {
-                text: "New name:"
-                Layout.fillWidth: true
-            }
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 30
-                color: Colors.backgroundLifted
-                border.color: Colors.backgroundHighlighted
-                border.width: 1
-                radius: Styles.radiusSm
-
-                TextFieldStyled {
-                    id: renameField
-                    anchors.fill: parent
-                    placeholderText: "Enter new theme name"
-                    text: GlobalSettings.currentTheme.replace('.json', '')
-
-                    onAccepted: renameDialog.accept()
-                }
-            }
-        }
-
+        title: "Rename"
+        currentText: GlobalSettings.currentTheme.replace('.json', '')
         onAccepted: {
-            var newName = renameField.text.trim();
+            var newName = currentText.trim();
             if (newName && newName !== GlobalSettings.currentTheme.replace('.json', '')) {
                 if (!newName.endsWith('.json')) {
                     newName += '.json';
@@ -112,46 +51,14 @@ ScrollView {
                 Colors.refreshThemes();
             }
         }
-
-        onOpened: {
-            renameField.selectAll();
-            renameField.forceActiveFocus();
-        }
     }
 
-    // Create new theme dialog
-    Dialog {
+    TextFieldDialog {
         id: createDialog
-        anchors.centerIn: parent
-        modal: true
-        title: "Create New Theme"
-        standardButtons: Dialog.Ok | Dialog.Cancel
-
-        ColumnLayout {
-            spacing: Styles.marginMd
-            TextStyled {
-                text: "New Theme"
-                Layout.fillWidth: true
-            }
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 30
-                color: Colors.backgroundLifted
-                border.color: Colors.backgroundHighlighted
-                radius: Styles.radiusSm
-
-                TextFieldStyled {
-                    id: createField
-                    anchors.fill: parent
-                    placeholderText: "my-theme"
-
-                    onAccepted: createDialog.accept()
-                }
-            }
-        }
-
+        title: "Create Theme"
+        placeholderText: "Enter new theme name"
         onAccepted: {
-            var newName = createField.text.trim();
+            var newName = currentText.trim();
             if (newName) {
                 if (!newName.endsWith('.json')) {
                     newName += '.json';
@@ -160,14 +67,9 @@ ScrollView {
                 var destPath = '$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + newName;
                 Quickshell.execDetached(['bash', '-c', 'cp "' + sourcePath + '" "' + destPath + '"']);
                 GlobalSettings.currentTheme = newName;
-                createField.text = "";
+                currentText.text = "";
             }
             Colors.refreshThemes();
-        }
-
-        onOpened: {
-            createField.text = "";
-            createField.forceActiveFocus();
         }
     }
 
@@ -196,18 +98,18 @@ ScrollView {
 
             ButtonStyled {
                 text: "+"
-                onClicked: createDialog.open()
+                onClicked: createDialog.visible = true
             }
 
             ButtonStyled {
                 text: ""
                 enabled: Colors.availableThemes.length > 1
-                onClicked: deleteDialog.open()
+                onClicked: deleteDialog.visible = true
             }
 
             ButtonStyled {
                 text: ""
-                onClicked: renameDialog.open()
+                onClicked: renameDialog.visible = true
             }
 
             ButtonStyled {
