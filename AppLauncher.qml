@@ -105,19 +105,20 @@ Loader {
         }
 
         function gridNavigationController(event) {
+            const ctrlHeld = event.modifiers & Qt.ControlModifier;
             if ([Qt.Key_Escape].includes(event.key)) {
                 textInput.text = "";
                 loader.active = false;
             } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
                 appGridView.currentItem.clicked(null);
                 loader.active = false;
-            } else if (event.key === Qt.Key_Down) {
+            } else if (event.key === Qt.Key_Down || (ctrlHeld && event.key === Qt.Key_J)) {
                 appGridView.moveCurrentIndexDown();
-            } else if (event.key === Qt.Key_Up) {
+            } else if (event.key === Qt.Key_Up || (ctrlHeld && event.key === Qt.Key_K)) {
                 appGridView.moveCurrentIndexUp();
-            } else if (event.key === Qt.Key_Left) {
+            } else if (event.key === Qt.Key_Left || (ctrlHeld && event.key === Qt.Key_H)) {
                 appGridView.moveCurrentIndexLeft();
-            } else if (event.key === Qt.Key_Right) {
+            } else if (event.key === Qt.Key_Right || (ctrlHeld && event.key === Qt.Key_L)) {
                 appGridView.moveCurrentIndexRight();
             }
         }
