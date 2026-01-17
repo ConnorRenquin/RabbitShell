@@ -21,6 +21,8 @@ ScrollView {
 
     ConfirmationDialog {
         id: deleteDialog
+        title: "Delete current theme?"
+        warning: "This action can't be undone."
         onAccepted: {
             var themePath = Colors.directory + GlobalSettings.currentTheme;
             Quickshell.execDetached(['bash', '-c', 'rm "$XDG_CONFIG_HOME/quickshell/Settings/' + themePath + '"']);
@@ -55,7 +57,7 @@ ScrollView {
 
     TextFieldDialog {
         id: createDialog
-        title: "Create Theme"
+        title: "Create New Theme"
         placeholderText: "Enter new theme name"
         onAccepted: {
             var newName = currentText.trim();
