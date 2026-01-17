@@ -14,17 +14,22 @@ Rectangle {
     height: column.implicitHeight + Styles.marginSm * 2
     signal accepted
     signal canceled
+    property string title
+    property string body
+    property string warning
     ColumnLayout {
         id: column
         anchors.fill: parent
         anchors.margins: Styles.marginSm
         spacing: Styles.marginSm
         TextStyled {
-            text: "Deleting file"
+            visible: text
+            text: root.title
             Layout.fillWidth: true
         }
         TextStyled {
-            text: GlobalSettings.currentTheme
+            visible: text
+            text: root.body
             color: Colors.error
             Layout.fillWidth: true
         }
@@ -32,7 +37,8 @@ Rectangle {
             Layout.fillHeight: true
         }
         TextStyled {
-            text: "This action cannot be undone."
+            visible: text
+            text: root.warning
             font.pixelSize: Styles.textSm
             color: Colors.warning
             Layout.fillWidth: true
