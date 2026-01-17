@@ -1,7 +1,6 @@
 pragma Singleton
 
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Io
 
 import QtQuick
@@ -9,154 +8,67 @@ import QtQuick
 Singleton {
     id: root
 
-    Component.onCompleted: {
-        loadMonitors();
-    }
-
-    property var monitors: []
-    property bool loading: false
-
-    function loadMonitors() {
-        loading = true;
-        monitorProcess.running = true;
-    }
+    property list<MonitorInfo> monitors
 
     Process {
         id: monitorProcess
         command: ["hyprctl", "monitors", "all", "-j"]
-        running: false
-
+        running: true
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
                     var monitorData = JSON.parse(text);
-                    root.monitors = monitorData.map(function (mon) {
-                        return {
-                            id: mon.id,
-                            name: mon.name,
-                            description: mon.description || (mon.make + " " + mon.model),
-                            make: mon.make || "",
-                            model: mon.model || "",
-                            enabled: !mon.disabled,
-                            isPrimary: mon.focused,
-                            width: mon.width,
-                            height: mon.height,
-                            resolution: mon.width + "x" + mon.height,
-                            refreshRate: Math.round(mon.refreshRate),
-                            position: {
-                                x: mon.x,
-                                y: mon.y
-                            },
-                            scale: mon.scale || 1.0,
-                            transform: mon.transform || 0,
-                            rotation: root.transformToRotation(mon.transform || 0),
-                            modes: root.parseAvailableModes(mon.availableModes || []),
-                            activeWorkspace: (mon.activeWorkspace && mon.activeWorkspace.id) || 1,
-                            dpmsStatus: mon.dpmsStatus,
-                            vrr: mon.vrr || false,
-                            disabled: mon.disabled || false
-                        };
-                    });
-                    root.loading = false;
+                    var monitorsList = [];
+                    for (var i = 0; i < monitorData.length; i++) {
+                        var monitorComponent = Qt.createComponent("MonitorInfo.qml");
+                        if (monitorComponent.status === Component.Ready) {
+                            var monitorObject = monitorComponent.createObject(root, {
+                                modelData: monitorData[i]
+                            });
+                            monitorsList.push(monitorObject);
+                        }
+                    }
+                    root.monitors = monitorsList;
                 } catch (e) {
                     console.error("Failed to parse monitor data:", e);
-                    root.loading = false;
                 }
             }
         }
     }
 
-    function transformToRotation(transform) {
-        switch (transform) {
-        case 0:
-            return 0;
-        case 1:
-            return 90;
-        case 2:
-            return 180;
-        case 3:
-            return 270;
-        default:
-            return 0;
-        }
-    }
-
-    function rotationToTransform(rotation) {
-        switch (rotation) {
-        case 0:
-            return 0;
-        case 90:
-            return 1;
-        case 180:
-            return 2;
-        case 270:
-            return 3;
-        default:
-            return 0;
-        }
-    }
-
-    function parseAvailableModes(modesArray) {
-        var modes = [];
-        modesArray.forEach(function (modeStr) {
-            var match = modeStr.match(/(\d+)x(\d+)@([\d.]+)Hz/);
-            if (match) {
-                var width = parseInt(match[1]);
-                var height = parseInt(match[2]);
-                var refresh = Math.round(parseFloat(match[3]));
-                modes.push({
-                    resolution: width + "x" + height,
-                    refreshRate: refresh,
-                    width: width,
-                    height: height
-                });
-            }
-        });
-        return modes;
-    }
-
-    function applyMonitorConfig(monitor) {
-        var cmd = "keyword monitor " + monitor.name + ",";
-
-        if (!monitor.enabled || monitor.disabled) {
+    function applyMonitorConfig(monitor: MonitorInfo) {
+        var cmd = "hyprctl keyword monitor " + monitor.name + ",";
+        if (monitor.disabled) {
             cmd += "disable";
         } else {
-            cmd += monitor.resolution + "@" + monitor.refreshRate + ",";
-            cmd += monitor.position.x + "x" + monitor.position.y + ",";
-            cmd += monitor.scale;
-
-            if (monitor.rotation !== 0) {
-                cmd += ",transform," + rotationToTransform(monitor.rotation);
-            }
+            cmd += monitor.width + "x" + monitor.height + "@" + monitor.refreshRate + ",";
+            cmd += monitor.x + "x" + monitor.y + ",";
+            cmd += monitor.scale + ",";
+            cmd += "transform, " + monitor.transform;
         }
-
-        console.log("Applying monitor config:", cmd);
-        Hyprland.dispatch(cmd);
+        Quickshell.execDetached(["bash", "-c", cmd]);
     }
 
-    function applyAllMonitors(monitorsArray) {
-        monitorsArray.forEach(function (monitor) {
+    function applyAllMonitors() {
+        monitors.forEach(function (monitor) {
             applyMonitorConfig(monitor);
         });
         loadMonitors();
     }
 
-    function generateConfigContent(monitorsArray) {
-        var config = "# Monitor configuration generated by DisplaySettingsView\n";
-        config += "# " + new Date().toLocaleString() + "\n\n";
-        monitorsArray.forEach(function (monitor) {
+    function generateConfigContent() {
+        var config = "# Monitor configuration generated by Quickshell::DisplaySettingsView\n";
+        config += "# Created On: " + new Date().toLocaleString() + "\n\n";
+        monitors.forEach(function (monitor: MonitorInfo) {
             config += "# " + monitor.name + " - " + monitor.description + "\n";
-            if (!monitor.enabled || monitor.disabled) {
+            if (monitor.disabled) {
                 config += "monitor=" + monitor.name + ",disable\n";
             } else {
                 config += "monitor=" + monitor.name + ",";
-                config += monitor.resolution + "@" + monitor.refreshRate + ",";
-                config += monitor.position.x + "x" + monitor.position.y + ",";
-                config += monitor.scale;
-
-                if (monitor.rotation !== 0) {
-                    config += ",transform," + rotationToTransform(monitor.rotation);
-                }
+                config += monitor.width + "x" + monitor.height + "@" + monitor.refreshRate + ",";
+                config += monitor.x + "x" + monitor.y + ",";
+                config += monitor.scale + ",";
+                config += "transform, " + monitor.transform;
                 config += "\n";
             }
             config += "\n";
@@ -164,34 +76,12 @@ Singleton {
         return config;
     }
 
-    function saveConfiguration(displays) {
-        var content = generateConfigContent(displays);
-        var command = "printf " + JSON.stringify(content) + " > $HOME/.config/hypr/monitors.conf";
-        Quickshell.execDetached(["bash", "-c", command]);
-        return content;
+    function resetConfiguration() {
+        Quickshell.execDetached(["bash", "-c", "cp -f $HOME/.config/hypr/monitors.conf.bak $HOME/.config/hypr/monitors.conf"]);
     }
 
-    function generateWorkspaceConfig(workspaceAssignments) {
-        var config = "# Workspace assignments generated by DisplaySettingsView\n";
-        config += "# " + new Date().toLocaleString() + "\n\n";
-
-        workspaceAssignments.forEach(function (ws) {
-            config += "workspace=" + ws.id + ",monitor:" + ws.output + "\n";
-        });
-
-        return config;
-    }
-
-    function saveWorkspaceConfig(workspaceAssignments, configPath) {
-        var content = generateWorkspaceConfig(workspaceAssignments);
-
-        // Create a temporary file with the content and move it to the target location
-        var tmpFile = "/tmp/quickshell_workspaces_" + Date.now() + ".conf";
-
-        // Write content to temp file using printf to avoid shell escaping issues
-        Quickshell.execDetached(["bash", "-c", "printf '%s' " + JSON.stringify(content) + " > " + tmpFile + " && mv " + tmpFile + " " + configPath.replace("~", "$HOME")]);
-
-        console.log("Workspace configuration saved to:", configPath);
-        return content;
+    function saveConfiguration() {
+        Quickshell.execDetached(["bash", "-c", "cp -f $HOME/.config/hypr/monitors.conf $HOME/.config/hypr/monitors.conf.bak"]);
+        Quickshell.execDetached(["bash", "-c", "printf " + JSON.stringify(generateConfigContent(monitors)) + " > $HOME/.config/hypr/monitors.conf"]);
     }
 }
