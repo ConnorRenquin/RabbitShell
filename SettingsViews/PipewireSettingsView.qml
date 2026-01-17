@@ -1,4 +1,5 @@
 import Quickshell.Services.Mpris
+import Quickshell.Services.Pipewire
 
 import QtQuick
 import QtQuick.Controls
@@ -26,48 +27,47 @@ Rectangle {
                 font.pixelSize: Styles.textLg
             }
 
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: Styles.marginSm
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: Styles.marginSm
 
-                    TextStyled {
-                        text: "Default Audio Sink (Output)"
-                        font.pixelSize: Styles.textMd
-                    }
-
-                    ComboBoxStyled {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 35
-                        model: Audio.sinks.map(node => Audio.getName(node))
-                        currentIndex: {
-                            const defaultSink = Pipewire.defaultAudioSink;
-                            return Audio.sinks.findIndex(node => node === defaultSink);
-                        }
-                        onActivated: Audio.setAudioSink(Audio.sinks[currentIndex]);
-                    }
+                TextStyled {
+                    text: "Default Audio Sink (Output)"
+                    font.pixelSize: Styles.textMd
                 }
 
-                ColumnLayout {
+                ComboBoxStyled {
                     Layout.fillWidth: true
-                    spacing: Styles.marginSm
-
-                    TextStyled {
-                        text: "Default Audio Source (Input)"
-                        font.pixelSize: Styles.textMd
+                    Layout.preferredHeight: 35
+                    model: Audio.sinks.map(node => Audio.getName(node))
+                    currentIndex: {
+                        const defaultSink = Pipewire.defaultAudioSink;
+                        return Audio.sinks.findIndex(node => node === defaultSink);
                     }
-
-                    ComboBoxStyled {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 35
-                        model: Audio.sources.map(node => Audio.getName(node))
-                        currentIndex: {
-                            const defaultSource = Pipewire.defaultAudioSource;
-                            return Audio.sources.findIndex(node => node === defaultSource);
-                        }
-                        onActivated: Audio.setAudioSource(Audio.sources[currentIndex]);
-
-                    }
+                    onActivated: Audio.setAudioSink(Audio.sinks[currentIndex])
                 }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: Styles.marginSm
+
+                TextStyled {
+                    text: "Default Audio Source (Input)"
+                    font.pixelSize: Styles.textMd
+                }
+
+                ComboBoxStyled {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 35
+                    model: Audio.sources.map(node => Audio.getName(node))
+                    currentIndex: {
+                        const defaultSource = Pipewire.defaultAudioSource;
+                        return Audio.sources.findIndex(node => node === defaultSource);
+                    }
+                    onActivated: Audio.setAudioSource(Audio.sources[currentIndex])
+                }
+            }
             TextStyled {
                 text: "Mixer"
                 font.pixelSize: Styles.textLg
