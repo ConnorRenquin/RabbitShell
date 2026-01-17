@@ -3,7 +3,12 @@
 - QML Language Reference : https://quickshell.org/docs/v0.1.0/guide/qml-language/
 - Qt : https://doc.qt.io/
 
+
 # About
+
+https://github.com/user-attachments/assets/d5c31a74-d0c8-446a-aec3-19b4b3e868f4
+
+
 This shell was built to be extermly minimal/hackable. Each file has the goal of being relevently small and too the point. 
 With basic styling to make things look pretty. Each item is intended to be modular. You can remove more or less any of 
 the modules in `shell.qml` and have the rest of it work. Don't like a thing? Remove it! 
