@@ -36,6 +36,10 @@ Singleton {
         }
     }
 
+    function loadMonitors() {
+        monitorProcess.running = true;
+    }
+
     function applyMonitorConfig(monitor: MonitorInfo) {
         var cmd = "hyprctl keyword monitor " + monitor.name + ",";
         if (monitor.disabled) {
