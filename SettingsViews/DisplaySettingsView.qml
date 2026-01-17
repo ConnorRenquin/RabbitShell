@@ -18,14 +18,7 @@ Rectangle {
 
     property double viewScale: 0.1
     property var selectedMonitorIndex: 0
-    property MonitorInfo selectedMonitor: HyprctlMonitors?.monitors[selectedMonitorIndex] ?? null
-
-    Connections {
-        target: HyprctlMonitors
-        function onMonitorsChanged() {
-            root.selectedMonitor = HyprctlMonitors.monitors[root.selectedMonitorIndex];
-        }
-    }
+    property list<MonitorInfo> monitors: HyprctlMonitors.monitors
 
     ConfirmationDialog {
         id: saveDialog
@@ -33,8 +26,7 @@ Rectangle {
             remainingTime = totalTime;
             hideTimer.restart();
             if (saveDialog.visible) {
-                HyprctlMonitors.monitors[root.selectedMonitorIndex] = root.selectedMonitor;
-                HyprctlMonitors.applyAllMonitors();
+                HyprctlMonitors.applyAllMonitors(root.monitors);
             } else {
                 hideTimer.stop();
             }
@@ -48,8 +40,7 @@ Rectangle {
 
         onAccepted: {
             hideTimer.stop();
-            HyprctlMonitors.monitors[root.selectedMonitorIndex] = root.selectedMonitor;
-            HyprctlMonitors.saveConfiguration();
+            HyprctlMonitors.saveConfiguration(root.monitors);
         }
 
         onCanceled: Quickshell.execDetached(["bash", "-c", "hyprctl reload"])
@@ -139,6 +130,8 @@ Rectangle {
                 ScrollView {
                     id: displayCanvas
                     anchors.fill: parent
+                    contentWidth: 3000
+                    contentHeight: 3000
 
                     TextStyled {
                         anchors.centerIn: parent
@@ -148,15 +141,16 @@ Rectangle {
                     }
 
                     Repeater {
-                        model: HyprctlMonitors.monitors
+                        model: root.monitors
                         delegate: Rectangle {
                             id: monitorPositionCard
 
                             required property MonitorInfo modelData
+                            required property int index
 
                             visible: !modelData.disabled
-                            x: Math.ceil(modelData.x * root.viewScale + displayCanvas.width / 2 - width / 2)
-                            y: Math.ceil(modelData.y * root.viewScale + displayCanvas.height / 2 - height / 2)
+                            x: Math.ceil(parseInt(modelData.x) * root.viewScale + displayCanvas.width / 2)
+                            y: Math.ceil(parseInt(modelData.y) * root.viewScale + displayCanvas.height / 2)
                             width: parseInt(modelData.width) * root.viewScale
                             height: parseInt(modelData.height) * root.viewScale
                             color: Colors.background
@@ -168,10 +162,13 @@ Rectangle {
                                 drag.axis: Drag.XAxis | Drag.YAxis
                                 cursorShape: Qt.OpenHandCursor
                                 onPressed: cursorShape = Qt.ClosedHandCursor
+                                onClicked: {
+                                    root.selectedMonitorIndex = monitorPositionCard.index;
+                                }
                                 onReleased: {
                                     cursorShape = Qt.OpenHandCursor;
-                                    root.selectedMonitor.x = Math.ceil((parent.x - displayCanvas.width / 2 + parent.width / 2) / root.viewScale);
-                                    root.selectedMonitor.y = Math.ceil((parent.y - displayCanvas.height / 2 + parent.height / 2) / root.viewScale);
+                                    monitorPositionCard.modelData.x = Math.ceil((parent.x - displayCanvas.width / 2) / root.viewScale);
+                                    monitorPositionCard.modelData.y = Math.ceil((parent.y - displayCanvas.height / 2) / root.viewScale);
                                 }
                             }
 
@@ -260,7 +257,6 @@ Rectangle {
                                 required property int index
                                 defaultColor: Colors.backgroundLifted
                                 onClicked: {
-                                    HyprctlMonitors.monitors[root.selectedMonitorIndex] = root.selectedMonitor;
                                     root.selectedMonitorIndex = index;
                                 }
                                 text: displayInfoCard.modelData.name
@@ -268,7 +264,7 @@ Rectangle {
                         }
 
                         TextStyled {
-                            text: root.selectedMonitor ? `${root.selectedMonitor.name} - ${root.selectedMonitor.description}` : ""
+                            text: root.monitors[root.selectedMonitorIndex] ? `${root.monitors[root.selectedMonitorIndex].name} - ${root.monitors[root.selectedMonitorIndex].description}` : ""
                             Layout.fillWidth: true
                         }
 
@@ -278,8 +274,8 @@ Rectangle {
                                 text: "Enabled"
                             }
                             SwitchStyled {
-                                checked: !root?.selectedMonitor?.disabled ?? false
-                                onToggled: root.selectedMonitor.disabled = checked
+                                checked: !root.monitors[root.selectedMonitorIndex]?.disabled ?? false
+                                onToggled: root.monitors[root.selectedMonitorIndex].disabled = !checked
                             }
                         }
 
@@ -290,24 +286,24 @@ Rectangle {
                             TextFieldStyled {
                                 id: widthField
                                 Layout.fillWidth: true
-                                text: root?.selectedMonitor?.width ?? "1920"
+                                text: root.monitors[root.selectedMonitorIndex]?.width ?? "1920"
                             }
                             TextFieldStyled {
                                 id: heightField
                                 Layout.fillWidth: true
-                                text: root?.selectedMonitor?.height ?? "1080"
+                                text: root.monitors[root.selectedMonitorIndex]?.height ?? "1080"
                             }
                             TextFieldStyled {
                                 id: refreshRateField
                                 Layout.fillWidth: true
-                                text: root?.selectedMonitor?.refreshRate ?? "60"
+                                text: root.monitors[root.selectedMonitorIndex]?.refreshRate ?? "60"
                             }
                             ButtonStyled {
                                 text: ""
                                 onClicked: {
-                                    root.selectedMonitor.width = parseInt(widthField.text);
-                                    root.selectedMonitor.height = parseInt(heightField.text);
-                                    root.selectedMonitor.refreshRate = parseFloat(refreshRateField.text);
+                                    root.monitors[root.selectedMonitorIndex].width = parseInt(widthField.text);
+                                    root.monitors[root.selectedMonitorIndex].height = parseInt(heightField.text);
+                                    root.monitors[root.selectedMonitorIndex].refreshRate = parseFloat(refreshRateField.text);
                                 }
                             }
                         }
@@ -322,8 +318,7 @@ Rectangle {
                             ComboBoxStyled {
                                 id: modesBox
                                 Layout.fillWidth: true
-                                model: root?.selectedMonitor?.availableModes ?? []
-                                onCurrentTextChanged: root.selectedMonitor
+                                model: root.monitors[root.selectedMonitorIndex]?.availableModes ?? []
                             }
 
                             ButtonStyled {
@@ -332,9 +327,9 @@ Rectangle {
                                 function setMode(mode) {
                                     var match = mode.match(/(\d+)x(\d+)@([\d.]+)Hz/);
                                     if (match) {
-                                        root.selectedMonitor.width = parseInt(match[1]);
-                                        root.selectedMonitor.height = parseInt(match[2]);
-                                        root.selectedMonitor.refreshRate = Math.round(parseFloat(match[3]));
+                                        root.monitors[root.selectedMonitorIndex].width = parseInt(match[1]);
+                                        root.monitors[root.selectedMonitorIndex].height = parseInt(match[2]);
+                                        root.monitors[root.selectedMonitorIndex].refreshRate = Math.round(parseFloat(match[3]));
                                     }
                                 }
                             }
@@ -351,10 +346,10 @@ Rectangle {
                             ComboBoxStyled {
                                 Layout.fillWidth: true
                                 model: ["0.5", "0.75", "1.0", "1.25", "1.5", "2.0"]
-                                displayText: root?.selectedMonitor?.scale ?? "1.0"
+                                displayText: root.monitors[root.selectedMonitorIndex]?.scale ?? "1.0"
                                 onCurrentTextChanged: {
-                                    if (root.selectedMonitor) {
-                                        root.selectedMonitor.scale = parseFloat(currentText || 1.0);
+                                    if (root.monitors[root.selectedMonitorIndex]) {
+                                        root.monitors[root.selectedMonitorIndex].scale = parseFloat(currentText || 1.0);
                                     }
                                 }
                             }
@@ -370,8 +365,8 @@ Rectangle {
                             ComboBoxStyled {
                                 Layout.fillWidth: true
                                 model: ["Normal", "90", "180", "270", "flipped", "flipped + 90", "flipped + 180", "flipped + 270"]
-                                currentIndex: root?.selectedMonitor?.transform ?? 0
-                                onCurrentValueChanged: root.selectedMonitor.transform = currentIndex ?? 0
+                                currentIndex: root.monitors[root.selectedMonitorIndex]?.transform ?? 0
+                                onCurrentValueChanged: root.monitors[root.selectedMonitorIndex].transform = currentIndex ?? 0
                             }
                         }
 
@@ -388,10 +383,14 @@ Rectangle {
                                 }
                                 TextFieldStyled {
                                     id: xPosTextField
-                                    text: root?.selectedMonitor?.x ?? ""
+                                    text: root.monitors[root.selectedMonitorIndex]?.x ?? ""
                                     Layout.fillWidth: true
                                     validator: IntValidator {}
-                                    onTextChanged: root.selectedMonitor.x = parseInt(text)
+                                    onEditingFinished: {
+                                        if (root.monitors[root.selectedMonitorIndex] && text !== "") {
+                                            root.monitors[root.selectedMonitorIndex].x = parseInt(text);
+                                        }
+                                    }
                                 }
 
                                 TextStyled {
@@ -400,17 +399,21 @@ Rectangle {
 
                                 TextFieldStyled {
                                     id: yPosTextField
-                                    text: root?.selectedMonitor?.y ?? ""
+                                    text: root.monitors[root.selectedMonitorIndex]?.y ?? ""
                                     Layout.fillWidth: true
                                     validator: IntValidator {}
-                                    onTextChanged: root.selectedMonitor.y = parseInt(text)
+                                    onEditingFinished: {
+                                        if (root.monitors[root.selectedMonitorIndex] && text !== "") {
+                                            root.monitors[root.selectedMonitorIndex].y = parseInt(text);
+                                        }
+                                    }
                                 }
 
                                 ButtonStyled {
                                     text: "zero"
                                     onClicked: {
-                                        root.selectedMonitor.y = 0;
-                                        root.selectedMonitor.x = 0;
+                                        root.monitors[root.selectedMonitorIndex].y = 0;
+                                        root.monitors[root.selectedMonitorIndex].x = 0;
                                     }
                                 }
                             }
