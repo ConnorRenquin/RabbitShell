@@ -52,6 +52,10 @@ FloatingWindow {
             color: Colors.backgroundLifted
             Layout.preferredWidth: 300
             Layout.fillWidth: true
+            BluetoothSettingsView {
+                readonly property string name: 'Bluetooth'
+                anchors.fill: parent
+            }
             AppearanceSettings {
                 readonly property string name: 'Appearance'
                 anchors.fill: parent
