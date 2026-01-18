@@ -29,19 +29,19 @@ Rectangle {
                     "action": "Launch selected application"
                 },
                 {
-                    "key": "↑",
+                    "key": "↑ / Ctrl+K",
                     "action": "Move up"
                 },
                 {
-                    "key": "↓",
+                    "key": "↓ / Ctrl+J",
                     "action": "Move down"
                 },
                 {
-                    "key": "←",
+                    "key": "← / Ctrl+H",
                     "action": "Move left"
                 },
                 {
-                    "key": "→",
+                    "key": "→ / Ctrl+L",
                     "action": "Move right"
                 }
             ]
@@ -56,7 +56,7 @@ Rectangle {
                 },
                 {
                     "key": "Escape / Q",
-                    "action": "Close clipboard manager"
+                    "action": "Close clipboard manager/Unfocus search field."
                 },
                 {
                     "key": "↓ / J",
@@ -68,7 +68,7 @@ Rectangle {
                 },
                 {
                     "key": "Return / Enter",
-                    "action": "Paste selected item"
+                    "action": "Copy selected item"
                 },
                 {
                     "key": "G",
@@ -85,6 +85,22 @@ Rectangle {
                 {
                     "key": "Ctrl + 0-9",
                     "action": "Store item to slot"
+                },
+                {
+                    "key": "Ctrl + Click",
+                    "action": "Store item in next slot"
+                },
+                {
+                    "key": "Shift + Click",
+                    "action": "Delete item"
+                },
+                {
+                    "key": "Right Click Button 0-9",
+                    "action": "Delete item"
+                },
+                {
+                    "key": "Left Click Button 0-9",
+                    "action": "Copy item"
                 },
                 {
                     "key": "Alt + D",
@@ -118,7 +134,7 @@ Rectangle {
                 },
                 {
                     "key": "M",
-                    "action": "Toggle mute"
+                    "action": "Toggle mute/Toggle play"
                 }
             ]
         },
@@ -145,12 +161,12 @@ Rectangle {
                     "action": "Close power menu"
                 },
                 {
-                    "key": "↓ / J",
-                    "action": "Next option"
+                    "key": "← / H",
+                    "action": "Option Left"
                 },
                 {
-                    "key": "↑ / K",
-                    "action": "Previous option"
+                    "key": "→ / L",
+                    "action": "Option Right"
                 },
                 {
                     "key": "Return / Enter",
@@ -169,7 +185,19 @@ Rectangle {
                 {
                     "key": "Letter Keys",
                     "action": "Jump to window starting with that letter"
-                }
+                },
+                {
+                    "key": "Ctrl",
+                    "action": "Toggle Local/All"
+                },
+                {
+                    "key": "Alt",
+                    "action": "Next Toplevel"
+                },
+                {
+                    "key": "Tab",
+                    "action": "Previous Toplevel"
+                },
             ]
         },
         {
