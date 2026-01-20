@@ -1,29 +1,16 @@
 import QtQuick
 
-import qs.Settings
 import qs.Components
 
-Item {
+TextStyled {
     id: root
-    width: text.implicitWidth
-    height: text.implicitHeight
-    property bool running: true
-    property int speed: 80 // Animation speed in milliseconds
-    property string color: Colors.foreground
 
-    // Braille animation symbols
     readonly property var brailleSymbols: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-
-    TextStyled {
-        id: text
-        anchors.centerIn: parent
-        text: running ? brailleSymbols[currentFrame] : ""
-        color: root.color
-        font.family: Styles.nerdFontFamily // Use nerd font for proper braille symbols
-    }
-
+    property bool running: true
+    property int speed: 80
     property int currentFrame: 0
 
+    text: root.running ? root.brailleSymbols[root.currentFrame] : ""
     Timer {
         id: animationTimer
         interval: root.speed
