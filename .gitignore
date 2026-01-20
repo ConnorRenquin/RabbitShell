@@ -1,3 +1,4 @@
 .zed
 .data/
 !Settings/.data/colors/
+.qmlls.ini
