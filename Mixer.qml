@@ -54,8 +54,10 @@ Loader {
                     loader.active = false;
                 } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
                     mixerList.incrementCurrentIndex();
+                    scrollView.scrollToItem();
                 } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
                     mixerList.decrementCurrentIndex();
+                    scrollView.scrollToItem();
                 } else if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
                     if (mixerList.currentItem && mixerList.currentItem.modelData) {
                         mixerList.currentItem.decrease();
@@ -71,7 +73,8 @@ Loader {
                 }
             }
 
-            ScrollView {
+            ScrollViewPlus {
+                id: scrollView
                 anchors.fill: parent
                 contentWidth: availableWidth
                 ColumnLayoutPlus {
@@ -82,7 +85,7 @@ Loader {
                     anchors.margins: Styles.marginSm
                     spacing: Styles.marginSm
                     Repeater {
-                        model: [Audio.sink]
+                        model: [Audio.sink, ...Audio.links]
                         delegate: PipewireControls {
                             Layout.fillWidth: true
                             isCurrentItem: mixerList.currentItem === this
