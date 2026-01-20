@@ -366,7 +366,11 @@ Rectangle {
                                 Layout.fillWidth: true
                                 model: ["Normal", "90", "180", "270", "flipped", "flipped + 90", "flipped + 180", "flipped + 270"]
                                 currentIndex: root.monitors[root.selectedMonitorIndex]?.transform ?? 0
-                                onCurrentValueChanged: root.monitors[root.selectedMonitorIndex].transform = currentIndex ?? 0
+                                onCurrentValueChanged: {
+                                    if (root.monitors && root.monitors[root.selectedMonitorIndex]?.transform) {
+                                        root.monitors[root.selectedMonitorIndex].transform = currentIndex ?? 0;
+                                    }
+                                }
                             }
                         }
 

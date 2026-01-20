@@ -35,6 +35,9 @@ Singleton {
     readonly property list<PwNode> sources: nodes.sources
 
     function getName(node) {
+        if (!node) {
+            return "Audio";
+        }
         return node?.description !== '' ? node?.description : node.name;
     }
 

@@ -43,12 +43,12 @@ ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: Styles.marginSm
                 verticalAlignment: Text.AlignVCenter
-                text: Audio.getName(root.modelData)
+                text: Audio.getName(root?.modelData)
             }
         }
 
         ButtonStyled {
-            text: root.modelData.audio?.muted ? "" : ""
+            text: root.modelData?.audio?.muted ? "" : ""
             onClicked: root.modelData.audio.muted = !root.modelData.audio.muted
         }
     }
@@ -56,7 +56,15 @@ ColumnLayout {
     SliderStyled {
         id: slider
         Layout.fillWidth: true
-        onValueChanged: root.modelData.audio.volume = value
-        Component.onCompleted: value = root.modelData.audio.volume
+        onValueChanged: {
+            if (root.modelData.audio.volume) {
+                root.modelData.audio.volume = value
+            }
+        }
+        Component.onCompleted: {
+            if (root?.modelData?.audio?.volume) {
+                value = root.modelData?.audio?.volume
+            }
+        }
     }
 }
