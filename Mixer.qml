@@ -85,7 +85,7 @@ Loader {
                     anchors.margins: Styles.marginSm
                     spacing: Styles.marginSm
                     Repeater {
-                        model: [Audio.sink, ...Audio.links]
+                        model: [Audio.sink, ...Audio.links.filter(node => node.name !== "spotify")]
                         delegate: PipewireControls {
                             Layout.fillWidth: true
                             isCurrentItem: mixerList.currentItem === this
