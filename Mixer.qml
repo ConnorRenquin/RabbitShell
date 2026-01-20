@@ -76,13 +76,12 @@ Loader {
             ScrollViewPlus {
                 id: scrollView
                 anchors.fill: parent
+                anchors.margins: Styles.marginSm
                 contentWidth: availableWidth
                 ColumnLayoutPlus {
                     id: mixerList
-                    anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.margins: Styles.marginSm
                     spacing: Styles.marginSm
                     Repeater {
                         model: [Audio.sink, ...Audio.links.filter(node => node.name !== "spotify")]
