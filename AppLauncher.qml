@@ -35,7 +35,7 @@ Loader {
         }
 
         property var allApps: DesktopEntries.applications.values
-        property var filteredApplications: []
+        property list<DesktopEntry> filteredApplications: []
         property int currentFocusIndex: -1
 
         Utils {
@@ -205,7 +205,7 @@ Loader {
                     delegate: ButtonStyled {
                         id: appLaunchButton
 
-                        required property var modelData
+                        required property DesktopEntry modelData
                         required property int index
 
                         implicitWidth: appGridView.cellWidth - Styles.marginSm
@@ -214,7 +214,7 @@ Loader {
                         isFocused: index === appGridView.currentIndex
 
                         onClicked: {
-                            Quickshell.execDetached(["bash", "-c", modelData.execString]);
+                            modelData.execute();
                             textInput.text = "";
                             loader.active = false;
                         }
