@@ -11,6 +11,7 @@ ShellRoot {
     Mixer {}
     ToplevelView {}
     Clipboard {}
+    ImageClipboard {}
     NotificationManager {}
     LockScreen {}
     Polkit {}
