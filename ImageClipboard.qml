@@ -16,7 +16,7 @@ FloatingWindow {
 
     FolderListModel {
         id: folderModel
-        folder: '$XDG_CONFIG_HOME/Pictures/Screenshots'
+        folder: '$XDG_CONFIG_HOME/Pictures/clipboard'
         nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.gif", "*.JPG", "*.JPEG", "*.PNG"]
         showDirs: false
     }
