@@ -65,12 +65,37 @@ FloatingWindow {
                         radius: Styles.radiusSm
                         border.width: Styles.marginSm
                         border.color: Colors.backgroundLifted
+                        color: Colors.backgroundLifted
                         Image {
+                            id: imageComponent
                             anchors.fill: parent
                             source: image.fileUrl
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
-                            cache: true
+                            cache: false
+
+                            property int retryCount: 0
+                            property int maxRetries: 5
+
+
+                            onStatusChanged: {
+                                if (status === Image.Error && retryCount < maxRetries) {
+                                    retryTimer.start()
+                                }
+                            }
+
+                            Timer {
+                                id: retryTimer
+                                interval: 500
+                                repeat: false
+                                onTriggered: {
+                                    imageComponent.retryCount++
+                                    var oldSource = imageComponent.source
+                                    imageComponent.source = ""
+                                    imageComponent.source = oldSource
+                                }
+                            }
+
                             ColumnLayout {
                                 height: 40
                                 anchors.top: parent.top
@@ -98,8 +123,8 @@ FloatingWindow {
                             }
                             TextStyled {
                                 anchors.centerIn: parent
-                                text: "Loading..."
-                                visible: parent.status === Image.Loading
+                                text:  "Loading..."
+                                visible: imageComponent.status === Image.Loading || imageComponent.status === Image.Error
                             }
                         }
                     }
