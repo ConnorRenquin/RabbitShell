@@ -20,6 +20,7 @@ FloatingWindow {
         id: folderModel
         folder: StandardPaths.writableLocation(StandardPaths.HomeLocation) + "/Pictures/clipboard"
         rootFolder: StandardPaths.writableLocation(StandardPaths.HomeLocation) + "/Pictures/clipboard"
+        sortReversed: true
         showDirs: false
     }
 
@@ -46,22 +47,18 @@ FloatingWindow {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 model: folderModel
-                delegate: ButtonStyled {
+                delegate: Rectangle {
                     id: image
+
                     required property string fileName
                     required property url fileUrl
                     required property int index
+
                     Layout.preferredHeight: 250
                     Layout.fillWidth: true
                     Layout.margins: Styles.marginSm / 2
 
-                    onClicked: mouse => {
-                        if (mouse.button === Qt.RightButton) {
-                            Quickshell.execDetached(['sh', '-c', 'rm ' + String(fileUrl).replace('file://', '')]);
-                        } else {
-                            Quickshell.execDetached(['sh', '-c', 'wl-copy --type image/png < ' + String(fileUrl).replace('file://', '')]);
-                        }
-                    }
+                    color: "transparent"
 
                     ClippingRectangle {
                         anchors.fill: parent
@@ -74,6 +71,31 @@ FloatingWindow {
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
                             cache: true
+                            ColumnLayout {
+                                height: 40
+                                anchors.top: parent.top
+                                anchors.right: parent.right
+                                anchors.margins: Styles.marginSm
+
+                                ButtonStyled {
+                                    id: editButton
+                                    text: ""
+                                    Layout.fillWidth: true
+                                    onClicked: Quickshell.execDetached(['sh', '-c', 'satty --filename ' + String(image.fileUrl).replace('file://', '')])
+                                }
+                                ButtonStyled {
+                                    id: copyButton
+                                    text: ""
+                                    Layout.fillWidth: true
+                                    onClicked: Quickshell.execDetached(['sh', '-c', 'wl-copy --type image/png < ' + String(image.fileUrl).replace('file://', '')])
+                                }
+                                ButtonStyled {
+                                    id: deleteButton
+                                    text: ""
+                                    Layout.fillWidth: true
+                                    onClicked: Quickshell.execDetached(['sh', '-c', 'rm ' + String(image.fileUrl).replace('file://', '')])
+                                }
+                            }
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: "Loading..."
