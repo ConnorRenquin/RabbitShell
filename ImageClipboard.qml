@@ -2,6 +2,8 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Widgets
 
+import QtCore
+
 import QtQuick
 import QtQuick.Layouts
 import Qt.labs.folderlistmodel
@@ -16,10 +18,11 @@ FloatingWindow {
 
     FolderListModel {
         id: folderModel
-        folder: '$XDG_CONFIG_HOME/Pictures/clipboard'
-        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.gif", "*.JPG", "*.JPEG", "*.PNG"]
+        folder: StandardPaths.writableLocation(StandardPaths.HomeLocation) + "/Pictures/clipboard"
+        rootFolder: StandardPaths.writableLocation(StandardPaths.HomeLocation) + "/Pictures/clipboard"
         showDirs: false
     }
+
     GlobalShortcut {
         name: 'image-clipboard'
         onPressed: root.visible = !root.visible
