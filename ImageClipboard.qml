@@ -42,10 +42,12 @@ FloatingWindow {
             anchors.fill: parent
             anchors.margins: Styles.marginSm
             contentWidth: availableWidth
-            ColumnLayoutPlus {
+            GridLayoutPlus {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
+                columns: Math.floor(parent.width / 240)
+
                 model: folderModel
                 delegate: Rectangle {
                     id: image
@@ -70,8 +72,8 @@ FloatingWindow {
                             id: imageComponent
                             anchors.fill: parent
                             source: image.fileUrl
-                            fillMode: Image.PreserveAspectCrop
                             asynchronous: true
+                            fillMode: Image.PreserveAspectFit
                             cache: false
 
                             property int retryCount: 0
@@ -96,7 +98,14 @@ FloatingWindow {
                                 }
                             }
 
+                            LoadingIndicator {
+                                font.pixelSize: Styles.textLg
+                                anchors.centerIn: parent
+                                visible: imageComponent.status === Image.Loading || imageComponent.status === Image.Error
+                            }
+
                             ColumnLayout {
+                                id: modificationButtons
                                 height: 40
                                 anchors.top: parent.top
                                 anchors.right: parent.right
@@ -120,11 +129,6 @@ FloatingWindow {
                                     Layout.fillWidth: true
                                     onClicked: Quickshell.execDetached(['sh', '-c', 'rm ' + String(image.fileUrl).replace('file://', '')])
                                 }
-                            }
-                            TextStyled {
-                                anchors.centerIn: parent
-                                text:  "Loading..."
-                                visible: imageComponent.status === Image.Loading || imageComponent.status === Image.Error
                             }
                         }
                     }
