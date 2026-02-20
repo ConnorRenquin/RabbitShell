@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Hyprland
+import Quickshell.Wayland
 
 import QtQuick
 import QtQuick.Layouts
@@ -74,19 +75,10 @@ Loader {
         exclusionMode: ExclusionMode.Ignore
         color: "transparent"
 
-        property var onMonitorToplevels: root.toplevels.filter(toplevel => {
-            return toplevel?.workspace?.focused && toplevel?.workspace?.id > 0;
-        })
+        WlrLayershell.namespace: "toplevels"
 
-        property var offMonitorToplevels: root.toplevels.filter(toplevel => {
-            return !toplevel?.workspace?.focused || toplevel?.workspace?.id <= 0;
-        })
-
-        function findClientForToplevel(toplevel) {
-            // Match by class/title as best approximation
-            return HyprctlClients.clients.find(client => {
-                return client.workspaceId === toplevel?.workspace?.id;
-            });
+        function getToplevelIndex(toplevel) {
+            return root.toplevels.indexOf(toplevel);
         }
 
         HyprlandFocusGrab {
@@ -99,13 +91,14 @@ Loader {
         Rectangle {
             id: offMonitorBar
 
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: Styles.marginMd
+            visible: offMonitorFlow.model.length > 0
 
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.margins: Styles.marginLg * 2
+
+            width: offMonitorFlow.implicitWidth + Styles.marginMd * 2
             height: offMonitorFlow.implicitHeight + Styles.marginMd
-            visible: toplevelView.offMonitorToplevels.length > 0
 
             color: Colors.background
             radius: Styles.radiusMd
@@ -116,7 +109,7 @@ Loader {
                 anchors.margins: Styles.marginSm
                 spacing: Styles.marginSm
 
-                model: toplevelView.offMonitorToplevels
+                model: root.toplevels.filter(toplevel => !toplevel?.workspace?.focused || toplevel?.workspace?.id <= 0)
                 delegate: ButtonStyled {
                     id: offMonitor
 
@@ -129,12 +122,11 @@ Loader {
 
                     onClicked: modelData.wayland.activate()
 
-                    property string keyLabel: index < root.keyMap.length ? root.keyMap[index] : ""
+                    property int globalIndex: toplevelView.getToplevelIndex(modelData)
+                    property string keyLabel: globalIndex >= 0 && globalIndex < root.keyMap.length ? root.keyMap[globalIndex] : ""
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.margins: Styles.marginSm
-
                         IconImage {
                             implicitHeight: 24
                             implicitWidth: 24
@@ -148,7 +140,7 @@ Loader {
 
                             TextStyled {
                                 Layout.fillWidth: true
-                                font.pixelSize: Styles.textXS
+                                font.pixelSize: Styles.textSm
                                 text: offMonitor.modelData?.workspace?.id + " - " + (offMonitor.modelData?.wayland?.title ?? "")
                                 elide: Text.ElideRight
                             }
@@ -162,30 +154,25 @@ Loader {
             }
         }
 
-        // Overlays for on-monitor windows
         Repeater {
-            model: Hyprland.toplevels.values.filter((toplevel) => toplevel.workspace.id === Hyprland.focusedWorkspace.id)
+            model: root.toplevels.filter(toplevel => toplevel?.workspace?.focused && toplevel?.workspace?.id > 0)
             delegate: Rectangle {
                 id: onScreen
 
-                required property HyprlandToplevel modelData
+                required property var modelData
                 required property int index
 
-                property ClientInfo clientInfo: HyprctlClients.clients.find((client) => modelData.address === client.address)[0]
-                property var clientMonitor: Hyprland.monitors.values.find(m => m.id === modelData.monitor)
+                property int globalIndex: toplevelView.getToplevelIndex(modelData)
+                property string keyLabel: globalIndex >= 0 && globalIndex < root.keyMap.length ? root.keyMap[globalIndex] : ""
 
-                property string keyLabel: {
-                    if (!matchingToplevel)
-                        return "";
-                    var toplevelIndex = toplevelView.onMonitorToplevels.indexOf(matchingToplevel);
-                    return toplevelIndex < root.keyMap.length ? root.keyMap[toplevelIndex] : "";
-                }
+                property ClientInfo clientInfo: HyprctlClients.clients.find(client => modelData.address === client.address.replace('0x', ''))
+                property var clientMonitor: Hyprland.monitors.values.find(monitor => monitor.id === clientInfo?.monitor)
 
                 width: 80
                 height: 60
 
-                x: clientInfo.at[0] - (clientMonitor?.x ?? 0) + clientInfo.size[0] / 2 - width / 2
-                y: clientInfo.at[1] - (clientMonitor?.y ?? 0) + clientInfo.size[1] / 2 - height / 2
+                x: clientInfo ? clientInfo.at[0] - (clientMonitor?.x ?? 0) + clientInfo.size[0] / 2 - width / 2 : 0
+                y: clientInfo ? clientInfo.at[1] - (clientMonitor?.y ?? 0) + clientInfo.size[1] / 2 - height / 2 : 0
 
                 color: Colors.background
                 radius: Styles.radiusMd
@@ -193,30 +180,25 @@ Loader {
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
-
                     IconImage {
                         implicitHeight: 32
                         implicitWidth: 32
-                        source: onScreen.matchingToplevel ? Quickshell.iconPath(DesktopEntries.byId(onScreen.matchingToplevel.wayland?.appId)?.icon) : ""
+                        source: Quickshell.iconPath(DesktopEntries.byId(onScreen.modelData.wayland?.appId)?.icon)
                     }
-
                     ColumnLayout {
                         Layout.fillWidth: true
-
                         TextStyled {
                             Layout.fillWidth: true
                             font.pixelSize: Styles.textSm
                             text: onScreen.keyLabel.toUpperCase()
-                            color: Colors.green
                         }
                     }
                 }
             }
         }
 
-        // Focus handling rectangle (invisible)
         Rectangle {
-            id: base
+            id: controller
 
             anchors.fill: parent
             color: "transparent"
