@@ -15,6 +15,8 @@ Rectangle {
     anchors.fill: parent
     color: Colors.backgroundLifted
 
+    property string pendingThemeName: ""
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Styles.marginMd
@@ -216,6 +218,20 @@ Rectangle {
                                 Layout.fillWidth: true
                                 horizontalAlignment: Text.AlignHCenter
                             }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: Styles.marginSm
+
+                                ButtonStyled {
+                                    text: "🎨 Generate Theme"
+                                    Layout.fillWidth: true
+                                    onClicked: {
+                                        matugenProcess.path = wallpaperItem.fileUrl.toString().replace("file://", "");
+                                        matugenProcess.running = true;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -253,6 +269,20 @@ Rectangle {
                 if (path) {
                     directoryField.text = path;
                 }
+            }
+        }
+    }
+
+    Process {
+        id: matugenProcess
+        command: ['bash', '-c', 'matugen image ' + path]
+
+        property string path
+
+        onRunningChanged: {
+            if (!running && path) {
+                Colors.updateColors();
+                Colors.refreshThemes();
             }
         }
     }
