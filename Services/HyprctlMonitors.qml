@@ -10,6 +10,10 @@ Singleton {
 
     property list<MonitorInfo> monitors
 
+    function init() {
+        console.log('ey')
+    }
+
     Process {
         id: monitorProcess
         command: ["hyprctl", "monitors", "all", "-j"]

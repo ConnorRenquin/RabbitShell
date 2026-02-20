@@ -8,6 +8,7 @@ import QtQuick.Layouts
 
 import qs.Settings
 import qs.Components
+import qs.Services
 
 Loader {
     id: root
@@ -67,11 +68,26 @@ Loader {
         id: toplevelView
 
         anchors.top: true
-        margins.top: Styles.marginLg * 2
+        anchors.bottom: true
+        anchors.left: true
+        anchors.right: true
         exclusionMode: ExclusionMode.Ignore
-        implicitWidth: base.implicitWidth
-        implicitHeight: base.implicitHeight
         color: "transparent"
+
+        property var onMonitorToplevels: root.toplevels.filter(toplevel => {
+            return toplevel?.workspace?.focused && toplevel?.workspace?.id > 0;
+        })
+
+        property var offMonitorToplevels: root.toplevels.filter(toplevel => {
+            return !toplevel?.workspace?.focused || toplevel?.workspace?.id <= 0;
+        })
+
+        function findClientForToplevel(toplevel) {
+            // Match by class/title as best approximation
+            return HyprctlClients.clients.find(client => {
+                return client.workspaceId === toplevel?.workspace?.id;
+            });
+        }
 
         HyprlandFocusGrab {
             active: root.active
@@ -79,15 +95,132 @@ Loader {
             onCleared: root.active = false
         }
 
+        // Bar for off-monitor windows
         Rectangle {
-            id: base
+            id: offMonitorBar
+
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: Styles.marginMd
+
+            height: offMonitorFlow.implicitHeight + Styles.marginMd
+            visible: toplevelView.offMonitorToplevels.length > 0
 
             color: Colors.background
             radius: Styles.radiusMd
-            focus: true
 
-            implicitWidth: Math.max(toplevelGrid.implicitWidth, noContent.implicitWidth) + Styles.marginMd
-            implicitHeight: Math.max(toplevelGrid.implicitHeight, noContent.implicitHeight) + Styles.marginMd
+            RowLayoutPlus {
+                id: offMonitorFlow
+                anchors.fill: parent
+                anchors.margins: Styles.marginSm
+                spacing: Styles.marginSm
+
+                model: toplevelView.offMonitorToplevels
+                delegate: ButtonStyled {
+                    id: offMonitor
+
+                    required property var modelData
+                    required property int index
+
+                    implicitWidth: 200
+                    implicitHeight: 50
+                    isFocused: modelData.activated
+
+                    onClicked: modelData.wayland.activate()
+
+                    property string keyLabel: index < root.keyMap.length ? root.keyMap[index] : ""
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: Styles.marginSm
+
+                        IconImage {
+                            implicitHeight: 24
+                            implicitWidth: 24
+                            source: Quickshell.iconPath(DesktopEntries.byId(offMonitor.modelData.wayland?.appId)?.icon)
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            spacing: 2
+
+                            TextStyled {
+                                Layout.fillWidth: true
+                                font.pixelSize: Styles.textXS
+                                text: offMonitor.modelData?.workspace?.id + " - " + (offMonitor.modelData?.wayland?.title ?? "")
+                                elide: Text.ElideRight
+                            }
+
+                            TextStyled {
+                                text: offMonitor.keyLabel.toUpperCase()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Overlays for on-monitor windows
+        Repeater {
+            model: Hyprland.toplevels.values.filter((toplevel) => toplevel.workspace.id === Hyprland.focusedWorkspace.id)
+            delegate: Rectangle {
+                id: onScreen
+
+                required property HyprlandToplevel modelData
+                required property int index
+
+                property ClientInfo clientInfo: HyprctlClients.clients.find((client) => modelData.address === client.address)[0]
+                property var clientMonitor: Hyprland.monitors.values.find(m => m.id === modelData.monitor)
+
+                property string keyLabel: {
+                    if (!matchingToplevel)
+                        return "";
+                    var toplevelIndex = toplevelView.onMonitorToplevels.indexOf(matchingToplevel);
+                    return toplevelIndex < root.keyMap.length ? root.keyMap[toplevelIndex] : "";
+                }
+
+                width: 80
+                height: 60
+
+                x: clientInfo.at[0] - (clientMonitor?.x ?? 0) + clientInfo.size[0] / 2 - width / 2
+                y: clientInfo.at[1] - (clientMonitor?.y ?? 0) + clientInfo.size[1] / 2 - height / 2
+
+                color: Colors.background
+                radius: Styles.radiusMd
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginSm
+
+                    IconImage {
+                        implicitHeight: 32
+                        implicitWidth: 32
+                        source: onScreen.matchingToplevel ? Quickshell.iconPath(DesktopEntries.byId(onScreen.matchingToplevel.wayland?.appId)?.icon) : ""
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+
+                        TextStyled {
+                            Layout.fillWidth: true
+                            font.pixelSize: Styles.textSm
+                            text: onScreen.keyLabel.toUpperCase()
+                            color: Colors.green
+                        }
+                    }
+                }
+            }
+        }
+
+        // Focus handling rectangle (invisible)
+        Rectangle {
+            id: base
+
+            anchors.fill: parent
+            color: "transparent"
+            focus: true
 
             Keys.onPressed: function (event) {
                 hideTimer.restart();
@@ -126,84 +259,12 @@ Loader {
                 if (index === -1 && !root.toplevels[index])
                     return;
 
-                var toplevel = root.toplevels[index].wayland;
-
-                root.active = false;
-                event.accepted = true;
-                toplevel.activate();
-            }
-
-            TextStyled {
-                id: noContent
-                anchors.centerIn: parent
-                visible: root.toplevels.length === 0
-                font.pixelSize: Styles.textLg
-                text: ""
-            }
-
-            GridLayoutPlus {
-                id: toplevelGrid
-
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.margins: Styles.marginSm
-
-                columns: 4
-
-                model: root.toplevels.sort((a, b) => a.workspace.id - b.workspace.id)
-                delegate: ButtonStyled {
-                    id: windowCard
-
-                    required property var modelData
-                    required property int index
-
-                    Layout.preferredWidth: 250
-                    Layout.preferredHeight: 70
-
-                    radius: Styles.radiusMd
-                    isFocused: modelData.activated
-                    focusedColor: Colors.backgroundLifted
-                    clip: true
-
-                    property string keyLabel: index < root.keyMap.length ? root.keyMap[index] : ""
-
-                    onClicked: modelData.wayland.activate()
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: Styles.marginSm
-                        IconImage {
-                            id: appIcon
-                            implicitHeight: 32
-                            implicitWidth: 32
-                            source: Quickshell.iconPath(DesktopEntries.byId(windowCard.modelData.wayland?.appId)?.icon)
-                        }
-
-                        ColumnLayout {
-                            TextStyled {
-                                id: windowTitle
-                                Layout.fillWidth: true
-                                font.pixelSize: Styles.textSm
-
-                                property string title: windowCard?.modelData?.wayland?.title ?? ""
-
-                                text: root.searchAll ? windowCard?.modelData?.workspace?.id + " - " + title : title
-                            }
-
-                            TextStyled {
-                                id: windowShortcutAndId
-                                Layout.fillWidth: true
-                                font.pixelSize: Styles.textSm
-                                text: {
-                                    if (!windowCard.keyLabel || !windowCard.modelData.wayland || !windowCard.modelData.wayland?.appId)
-                                        return "";
-                                    return windowCard.keyLabel.toUpperCase() + " | " + windowCard.modelData.wayland?.appId;
-                                }
-                                color: Colors.green
-                            }
-                        }
-                    }
+                var allToplevels = root.toplevels;
+                if (index >= 0 && index < allToplevels.length) {
+                    var toplevel = allToplevels[index].wayland;
+                    root.active = false;
+                    event.accepted = true;
+                    toplevel.activate();
                 }
             }
         }
