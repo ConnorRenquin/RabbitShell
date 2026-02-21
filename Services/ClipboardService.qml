@@ -17,6 +17,8 @@ Singleton {
         "clipboardText": []
     }
 
+    property int maxClipboardEntries: 200
+
     function removeEntry(index) {
         const newClipboardText = root.clipboardData.clipboardText.filter((_, i) => i !== index);
         root.clipboardData = {
@@ -24,6 +26,27 @@ Singleton {
             "clipboardText": newClipboardText
         };
         utils.notify('Entry Removed');
+    }
+
+    function deduplicateClipboardText() {
+        const currentClipboardText = root.clipboardData.clipboardText;
+        const uniqueClipboardText = [];
+        const seen = new Set();
+
+        for (let i = 0; i < currentClipboardText.length; i++) {
+            const text = currentClipboardText[i];
+            if (!seen.has(text)) {
+                seen.add(text);
+                uniqueClipboardText.push(text);
+            }
+        }
+
+        const duplicatesRemoved = currentClipboardText.length - uniqueClipboardText.length;
+
+        root.clipboardData = {
+            "slots": root.clipboardData.slots,
+            "clipboardText": uniqueClipboardText
+        };
     }
 
     function checkSlot(index) {
@@ -135,10 +158,19 @@ Singleton {
                 return;
             }
 
+            let newClipboardText = [text, ...root.clipboardData.clipboardText];
+
+            // Limit the number of entries, removing oldest ones
+            if (newClipboardText.length > root.maxClipboardEntries) {
+                newClipboardText = newClipboardText.slice(0, root.maxClipboardEntries + 1);
+            }
+
             root.clipboardData = {
                 "slots": root.clipboardData.slots,
-                "clipboardText": [text, ...root.clipboardData.clipboardText]
+                "clipboardText": newClipboardText
             };
+
+            root.deduplicateClipboardText()
         }
     }
 }
