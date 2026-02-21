@@ -158,6 +158,14 @@ Singleton {
                 return;
             }
 
+            if (text.length === 1) {
+                const charCode = text.charCodeAt(0);
+                // Allow if in Private Use Area (E000-F8FF) which includes Nerd Font symbols
+                if (charCode < 0xE000 || charCode > 0xF8FF) {
+                    return;
+                }
+            }
+
             let newClipboardText = [text, ...root.clipboardData.clipboardText];
 
             // Limit the number of entries, removing oldest ones
