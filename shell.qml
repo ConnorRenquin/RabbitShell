@@ -26,6 +26,7 @@ ShellRoot {
             Audio.init();
             Notifications.init();
             IdleInhibitorSingleton.init();
+            ClipboardService.init();
             HyprctlClients.init();
             HyprctlMonitors.init();
         });

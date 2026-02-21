@@ -17,84 +17,18 @@ FloatingWindow {
 
     visible: false
     title: 'Clipboard'
-    // anchors.right: true
-    // margins.right: Styles.marginLg
-    // exclusionMode: ExclusionMode.Ignore
 
     implicitWidth: 600
     implicitHeight: 900
     color: "transparent"
-
-    property var clipboardData: {
-        "slots": [],
-        "clipboardText": []
-    }
-
-    onClipboardDataChanged: {
-        if (persistantData.loaded) {
-            persistantData.setText(JSON.stringify(root.clipboardData));
-        }
-    }
 
     function exit() {
         root.visible = false;
         grab.active = false;
     }
 
-    function removeEntry(index) {
-        const newClipboardText = root.clipboardData.clipboardText.filter((_, i) => i !== index);
-        root.clipboardData = {
-            "slots": root.clipboardData.slots,
-            "clipboardText": newClipboardText
-        };
-        utils.notify('Entry Removed');
-    }
-
     Utils {
         id: utils
-    }
-
-    IpcHandler {
-        target: "clip"
-        function save(text: string) {
-            if (text.trim() === "") {
-                return;
-            }
-            if (root.clipboardData.clipboardText.length > 0 && root.clipboardData.clipboardText[0] === text) {
-                return;
-            }
-
-            root.clipboardData = {
-                "slots": root.clipboardData.slots,
-                "clipboardText": [text, ...root.clipboardData.clipboardText]
-            };
-        }
-    }
-
-    FileView {
-        id: persistantData
-        path: Qt.resolvedUrl('./.data/clipboard.json')
-        blockLoading: false
-        onLoaded: {
-            try {
-                const parsedFile = JSON.parse(persistantData.text());
-                root.clipboardData = {
-                    "slots": parsedFile.slots || [],
-                    "clipboardText": parsedFile.clipboardText || []
-                };
-            } catch (e) {
-                console.log('Failed to parse clipboard data:', e);
-                root.clipboardData = {
-                    "slots": [],
-                    "clipboardText": []
-                };
-            }
-        }
-        onLoadFailed: {
-            Quickshell.execDetached(['touch', '.data/clipboard.json']);
-            persistantData.setText(JSON.stringify(root.clipboardData));
-        }
-        onSaveFailed: console.log('Failed to save clipboard data')
     }
 
     GlobalShortcut {
@@ -109,7 +43,6 @@ FloatingWindow {
     HyprlandFocusGrab {
         id: grab
         windows: [root]
-        // onCleared: root.visible = false
     }
 
     Rectangle {
@@ -139,14 +72,14 @@ FloatingWindow {
                 if (isNumberKey && clipboardItems.currentItem) {
                     const itemText = clipboardItems.currentItem.itemText;
                     utils.notify('Storing to slot ' + (keyIndex === 9 ? 0 : keyIndex + 1), itemText);
-                    const newSlots = root.clipboardData.slots.slice();
+                    const newSlots = ClipboardService.clipboardData.slots.slice();
                     while (newSlots.length <= keyIndex) {
                         newSlots.push("");
                     }
                     newSlots[keyIndex] = itemText;
                     root.clipboardData = {
                         "slots": newSlots,
-                        "clipboardText": root.clipboardData.clipboardText
+                        "clipboardText": ClipboardService.clipboardData.clipboardText
                     };
                 }
             } else if (altHeld) {
@@ -154,77 +87,14 @@ FloatingWindow {
                     utils.notify('Slots Cleared');
                     root.clipboardData = {
                         "slots": [],
-                        "clipboardText": root.clipboardData.clipboardText
+                        "clipboardText": ClipboardService.clipboardData.clipboardText
                     };
                 } else if (isNumberKey) {
-                    checkSlot(keyIndex);
+                    ClipboardService.checkSlot(keyIndex);
                 }
             } else if (isNumberKey) {
-                copySlotToClipboard(keyIndex);
+                ClipboardService.copySlotToClipboard(keyIndex);
             }
-        }
-
-        function checkSlot(index) {
-            const storedText = root.clipboardData.slots[index];
-            if (!storedText) {
-                utils.notify('Slot Empty');
-                return;
-            }
-            utils.notify('', storedText);
-        }
-
-        function findNextEmptySlot() {
-            for (let i = 0; i < 10; i++) {
-                if (!root.clipboardData.slots[i] || root.clipboardData.slots[i] === "") {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        function storeToNextAvailableSlot(text) {
-            const nextSlot = findNextEmptySlot();
-            if (nextSlot === -1) {
-                utils.notify('No Empty Slots Available');
-                return;
-            }
-
-            const newSlots = root.clipboardData.slots.slice();
-            while (newSlots.length <= nextSlot) {
-                newSlots.push("");
-            }
-            newSlots[nextSlot] = text;
-            root.clipboardData = {
-                "slots": newSlots,
-                "clipboardText": root.clipboardData.clipboardText
-            };
-            utils.notify('Stored to slot ' + (nextSlot === 9 ? 0 : nextSlot + 1), text);
-        }
-
-        function clearSlot(index) {
-            if (!root.clipboardData.slots[index]) {
-                utils.notify('Slot Already Empty');
-                return;
-            }
-            const newSlots = root.clipboardData.slots.slice();
-            newSlots[index] = "";
-            root.clipboardData = {
-                "slots": newSlots,
-                "clipboardText": root.clipboardData.clipboardText
-            };
-            utils.notify('Slot ' + (index === 9 ? 0 : index + 1) + ' Cleared');
-        }
-
-        function copySlotToClipboard(index) {
-            const storedText = root.clipboardData.slots[index];
-            if (!storedText) {
-                utils.notify('Slot Empty');
-                return;
-            }
-            const text = storedText.replace(/'/g, "'\\''");
-            Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-            utils.notify('Copied');
-            root.exit();
         }
 
         Keys.onPressed: event => {
@@ -255,7 +125,7 @@ FloatingWindow {
                 if (clipboardItems.currentItem) {
                     const currentIndex = clipboardItems.currentIndex;
                     const originalIndex = clipboardItems.currentItem.originalIndex;
-                    root.removeEntry(originalIndex);
+                    ClipboardService.removeEntry(originalIndex);
                     if (clipboardItems.count > 0) {
                         clipboardItems.currentIndex = Math.min(currentIndex, clipboardItems.count - 1);
                     }
@@ -272,7 +142,7 @@ FloatingWindow {
             property var filteredItems: {
                 if (!searchText || searchText.trim() === "") {
                     // Return items with their original indices
-                    return root.clipboardData.clipboardText.map((text, index) => ({
+                    return ClipboardService.clipboardData.clipboardText.map((text, index) => ({
                                 text: text,
                                 originalIndex: index
                             }));
@@ -280,8 +150,8 @@ FloatingWindow {
 
                 // Create array of items with search scores
                 let scoredItems = [];
-                for (let i = 0; i < root.clipboardData.clipboardText.length; i++) {
-                    let item = root.clipboardData.clipboardText[i];
+                for (let i = 0; i < ClipboardService.clipboardData.clipboardText.length; i++) {
+                    let item = ClipboardService.clipboardData.clipboardText[i];
                     let result = utils.fuzzySearch(searchText, item);
                     if (result.matches) {
                         scoredItems.push({
@@ -323,18 +193,18 @@ FloatingWindow {
                             id: slotButton
                             anchors.fill: parent
 
-                            color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.background
+                            color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.background
 
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
-                                    base.clearSlot(slotButtonContainer.modelData);
+                                    ClipboardService.clearSlot(slotButtonContainer.modelData);
                                 } else {
-                                    base.copySlotToClipboard(slotButtonContainer.modelData);
+                                    ClipboardService.copySlotToClipboard(slotButtonContainer.modelData);
                                 }
                             }
 
                             onContainsMouseChanged: {
-                                if (containsMouse && root.clipboardData.slots[slotButtonContainer.modelData]) {
+                                if (containsMouse && ClipboardService.clipboardData.slots[slotButtonContainer.modelData]) {
                                     slotTooltip.visible = true;
                                 } else {
                                     slotTooltip.visible = false;
@@ -344,7 +214,7 @@ FloatingWindow {
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
-                                color: root.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.background : Colors.foreground
+                                color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.background : Colors.foreground
                             }
                         }
 
@@ -369,7 +239,7 @@ FloatingWindow {
                                     id: tooltipContent
                                     anchors.fill: parent
                                     anchors.margins: Styles.marginSm
-                                    text: utils.removeIndentation(root.clipboardData.slots[slotButtonContainer.modelData]) || "Empty"
+                                    text: utils.removeIndentation(ClipboardService.clipboardData.slots[slotButtonContainer.modelData]) || "Empty"
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                     color: Colors.foreground
                                 }
@@ -483,9 +353,9 @@ FloatingWindow {
                             const shiftHeld = event?.modifiers & Qt.ShiftModifier;
 
                             if (shiftHeld) {
-                                root.removeEntry(button.originalIndex);
+                                ClipboardService.removeEntry(button.originalIndex);
                             } else if (ctrlHeld) {
-                                base.storeToNextAvailableSlot(button.itemText);
+                                ClipboardService.storeToNextAvailableSlot(button.itemText);
                             } else {
                                 const text = button.itemText.replace(/'/g, "'\\''");
                                 Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
