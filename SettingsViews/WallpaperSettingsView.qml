@@ -109,11 +109,11 @@ Rectangle {
                 }
 
                 ColumnLayout {
-                    Layout.preferredWidth: 200
+                    Layout.preferredWidth: 150
                     spacing: Styles.marginSm
 
                     TextStyled {
-                        text: "Duration (seconds)"
+                        text: "Duration"
                     }
 
                     RowLayout {
@@ -141,7 +141,77 @@ Rectangle {
                         }
                     }
                 }
+
+                RowLayout {
+                    Layout.preferredWidth: 300
+                    spacing: Styles.marginMd
+                    ColumnLayout {
+                        spacing: Styles.marginSm
+
+                        TextStyled {
+                            text: "Contrast"
+                        }
+
+                        ComboBoxStyled {
+                            id: matugenContrast
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 30
+                            model: ["-1", "0", "1"]
+                            currentIndex: 1
+                        }
+                    }
+
+                    ColumnLayout {
+                        spacing: Styles.marginSm
+
+                        TextStyled {
+                            text: "Resize"
+                        }
+
+                        ComboBoxStyled {
+                            id: matugenResize
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 30
+                            model: ['nearest', 'triangle', 'catmull-rom', 'gaussian', 'lanczos3']
+                            currentIndex: 1
+                        }
+                    }
+
+                    ColumnLayout {
+                        spacing: Styles.marginSm
+
+                        TextStyled {
+                            text: "Type"
+                        }
+
+                        ComboBoxStyled {
+                            id: matugenType
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 30
+                            Layout.preferredWidth: 100
+                            model: ['scheme-content', 'scheme-expressive', 'scheme-fidelity', 'scheme-fruit-salad', 'scheme-monochrome', 'scheme-neutral', 'scheme-rainbow', 'scheme-tonal-spot', 'scheme-vibrant']
+                            currentIndex: 7
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.preferredWidth: 50
+                        spacing: Styles.marginSm
+
+                        TextStyled {
+                            Layout.fillWidth: true
+                            text: "DarkMode"
+                        }
+
+                        SwitchStyled {
+                            id: matugenDarkmode
+                            Layout.fillWidth: true
+                            checked: true
+                        }
+                    }
+                }
             }
+
         }
 
         TextStyled {
@@ -217,6 +287,7 @@ Rectangle {
                                 Layout.fillWidth: true
                                 spacing: Styles.marginSm
                                 TextStyled {
+                                    Layout.maximumWidth: 200
                                     text: wallpaperItem.fileName
                                     font.pixelSize: Styles.textSm
                                     Layout.fillWidth: true
@@ -274,11 +345,16 @@ Rectangle {
 
     Process {
         id: matugenProcess
-        command: ['bash', '-c', 'matugen image ' + path]
+        command: ['bash', '-c', 'matugen image ' + path + ' -m ' + mode + ' --contrast ' + contrast + ' --type ' + type + ' -r ' + resize]
 
         property string path
+        property string mode: matugenDarkmode.checked ? 'dark' : 'light'
+        property string contrast: matugenContrast.currentText
+        property string type: matugenType.currentText
+        property string resize: matugenResize.currentText
 
         onRunningChanged: {
+            console.log(command)
             if (!running && path) {
                 GlobalSettings.currentTheme = ''
                 GlobalSettings.currentTheme = 'matugen.json'
