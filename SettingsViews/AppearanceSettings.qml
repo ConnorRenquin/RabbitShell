@@ -19,6 +19,7 @@ Rectangle {
     function isValidColor(color) {
         return color.match(/^#[0-9A-Fa-f]{6}$/) !== null;
     }
+
     ConfirmationDialog {
         id: deleteDialog
         title: "Delete current theme?"

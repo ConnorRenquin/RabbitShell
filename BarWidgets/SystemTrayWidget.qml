@@ -233,7 +233,6 @@ Rectangle {
                                                 id: submenu
                                                 text: "›"
                                                 font.pixelSize: Styles.textSm
-                                                color: Colors.gray
                                                 visible: menuLoader?.modelData?.hasChildren ?? false
                                             }
                                         }
