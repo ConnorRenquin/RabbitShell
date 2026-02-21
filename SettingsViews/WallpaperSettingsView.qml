@@ -159,7 +159,7 @@ Rectangle {
                 anchors.margins: Styles.marginSm
                 contentWidth: availableWidth
                 GridLayoutPlus {
-                    columns: 3
+                    columns: Math.floor(parent.width / 500)
                     columnSpacing: Styles.marginSm
                     rowSpacing: Styles.marginSm
                     anchors.left: parent.left
@@ -212,19 +212,18 @@ Rectangle {
                                 }
                             }
 
-                            TextStyled {
-                                text: wallpaperItem.fileName
-                                font.pixelSize: Styles.textSm
-                                Layout.fillWidth: true
-                                horizontalAlignment: Text.AlignHCenter
-                            }
 
                             RowLayout {
                                 Layout.fillWidth: true
                                 spacing: Styles.marginSm
-
+                                TextStyled {
+                                    text: wallpaperItem.fileName
+                                    font.pixelSize: Styles.textSm
+                                    Layout.fillWidth: true
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
                                 ButtonStyled {
-                                    text: "🎨 Generate Theme"
+                                    text: "󰉦 Generate Theme"
                                     Layout.fillWidth: true
                                     onClicked: {
                                         matugenProcess.path = wallpaperItem.fileUrl.toString().replace("file://", "");
