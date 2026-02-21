@@ -5,6 +5,11 @@ import QtQuick
 
 Singleton {
     id: root
+
+    function init() {
+        console.log('Notifications -----------------------------------------');
+    }
+
     signal onNotify(notification: Notification)
 
     property list<Notification> notifications: []

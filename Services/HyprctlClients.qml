@@ -12,7 +12,7 @@ Singleton {
     property list<ClientInfo> clients
 
     function init() {
-        console.log('HyprctlClients init');
+        console.log('HyprctlClients -----------------------------------------');
     }
 
     Timer {

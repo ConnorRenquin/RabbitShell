@@ -11,7 +11,7 @@ Singleton {
     property list<MonitorInfo> monitors
 
     function init() {
-        console.log('ey')
+        console.log('HyprctlMonitors -----------------------------------------');
     }
 
     Process {

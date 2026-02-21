@@ -9,6 +9,10 @@ import QtQml
 Singleton {
     id: root
 
+    function init() {
+        console.log('Audio -----------------------------------------');
+    }
+
     readonly property var nodes: Pipewire.nodes.values.reduce((acc, node) => {
         if (!node.isStream) {
             if (node.isSink)

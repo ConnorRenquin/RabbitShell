@@ -23,7 +23,11 @@ ShellRoot {
     // Test {}
     Component.onCompleted: {
         Qt.callLater(function () {
+            Audio.init();
+            Notifications.init();
+            IdleInhibitorSingleton.init();
             HyprctlClients.init();
+            HyprctlMonitors.init();
         });
     }
 }

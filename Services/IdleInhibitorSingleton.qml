@@ -9,6 +9,10 @@ import QtQuick
 Singleton {
     id: root
 
+    function init() {
+        console.log('IdleInhibitorSingleton -----------------------------------------');
+    }
+
     function enabled() {
         return persist.isEnabled;
     }
