@@ -25,13 +25,7 @@ Loader {
     function updateToplevels() {
         if (!Hyprland.toplevels)
             return;
-        toplevels = Hyprland.toplevels.values.filter(toplevel => {
-            if (root.searchAll) {
-                return toplevel?.workspace?.id;
-            } else {
-                return toplevel?.workspace?.id > 0 && toplevel?.workspace?.focused;
-            }
-        });
+        toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel?.workspace?.id);
 
         currentIndex = toplevels.findIndex(toplevel => toplevel.activated);
         if (currentIndex === -1 && toplevels.length > 0) {
@@ -106,14 +100,14 @@ Loader {
             RowLayoutPlus {
                 id: offMonitorFlow
                 anchors.centerIn: parent
-                model: root.toplevels.filter(toplevel => !toplevel?.workspace?.focused || toplevel?.workspace?.id <= 0)
+                model: root.toplevels.filter(toplevel => !toplevel?.workspace?.focused || toplevel?.workspace?.id <= 0).sort((a, b) => (a?.workspace?.id ?? 0) - (b?.workspace?.id ?? 0))
                 delegate: ButtonStyled {
                     id: offMonitor
 
                     required property var modelData
                     required property int index
 
-                    implicitWidth: 180
+                    implicitWidth: 240
                     implicitHeight: 80
                     isFocused: modelData.activated
 
@@ -125,9 +119,10 @@ Loader {
                     RowLayout {
                         anchors.fill: parent
                         anchors.margins: Styles.marginSm
+                        spacing: Styles.marginMd
                         IconImage {
-                            implicitHeight: 24
-                            implicitWidth: 24
+                            implicitHeight: 32
+                            implicitWidth: 32
                             source: Quickshell.iconPath(DesktopEntries.byId(offMonitor.modelData.wayland?.appId)?.icon)
                         }
 
@@ -139,12 +134,14 @@ Loader {
                             TextStyled {
                                 Layout.fillWidth: true
                                 font.pixelSize: Styles.textSm
-                                text: offMonitor.modelData?.workspace?.id + " - " + (offMonitor.modelData?.wayland?.title ?? "")
+                                text: "󰜌 " + offMonitor.modelData?.workspace?.id + " Workspace"
                                 elide: Text.ElideRight
                             }
 
                             TextStyled {
-                                text: offMonitor.keyLabel.toUpperCase()
+                                Layout.fillWidth: true
+                                font.pixelSize: Styles.textSm
+                                text: offMonitor.keyLabel.toUpperCase() + " " + (offMonitor.modelData?.wayland?.title ?? "")
                             }
                         }
                     }
@@ -212,11 +209,7 @@ Loader {
 
             Keys.onPressed: function (event) {
                 hideTimer.restart();
-                if (event.key === Qt.Key_Control) {
-                    root.searchAll = !root.searchAll;
-                    root.updateToplevels();
-                    return;
-                } else if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+                if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                     root.active = false;
                     event.accepted = true;
                     return;
