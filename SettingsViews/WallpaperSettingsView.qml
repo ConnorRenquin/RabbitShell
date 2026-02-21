@@ -280,8 +280,8 @@ Rectangle {
 
         onRunningChanged: {
             if (!running && path) {
-                Colors.updateColors();
-                Colors.refreshThemes();
+                GlobalSettings.currentTheme = ''
+                GlobalSettings.currentTheme = 'matugen.json'
             }
         }
     }
