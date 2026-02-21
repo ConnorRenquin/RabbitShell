@@ -76,6 +76,7 @@ Loader {
         color: "transparent"
 
         WlrLayershell.namespace: "toplevels"
+        WlrLayershell.layer: WlrLayer.Overlay
 
         function getToplevelIndex(toplevel) {
             return root.toplevels.indexOf(toplevel);
@@ -87,7 +88,6 @@ Loader {
             onCleared: root.active = false
         }
 
-        // Bar for off-monitor windows
         Rectangle {
             id: offMonitorBar
 
@@ -97,18 +97,15 @@ Loader {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.margins: Styles.marginLg * 2
 
-            width: offMonitorFlow.implicitWidth + Styles.marginMd * 2
-            height: offMonitorFlow.implicitHeight + Styles.marginMd
+            width: offMonitorFlow.implicitWidth + Styles.marginSm
+            height: offMonitorFlow.implicitHeight + Styles.marginSm
 
-            color: Colors.background
+            color: Colors.backgroundLifted
             radius: Styles.radiusMd
 
             RowLayoutPlus {
                 id: offMonitorFlow
-                anchors.fill: parent
-                anchors.margins: Styles.marginSm
-                spacing: Styles.marginSm
-
+                anchors.centerIn: parent
                 model: root.toplevels.filter(toplevel => !toplevel?.workspace?.focused || toplevel?.workspace?.id <= 0)
                 delegate: ButtonStyled {
                     id: offMonitor
@@ -116,8 +113,8 @@ Loader {
                     required property var modelData
                     required property int index
 
-                    implicitWidth: 200
-                    implicitHeight: 50
+                    implicitWidth: 180
+                    implicitHeight: 80
                     isFocused: modelData.activated
 
                     onClicked: modelData.wayland.activate()
@@ -127,6 +124,7 @@ Loader {
 
                     RowLayout {
                         anchors.fill: parent
+                        anchors.margins: Styles.marginSm
                         IconImage {
                             implicitHeight: 24
                             implicitWidth: 24
@@ -168,13 +166,21 @@ Loader {
                 property ClientInfo clientInfo: HyprctlClients.clients.find(client => modelData.address === client.address.replace('0x', ''))
                 property var clientMonitor: Hyprland.monitors.values.find(monitor => monitor.id === clientInfo?.monitor)
 
+                scale: visible ? 1 : 0
+
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: 2000
+                    }
+                }
+
                 width: 80
                 height: 60
 
                 x: clientInfo ? clientInfo.at[0] - (clientMonitor?.x ?? 0) + clientInfo.size[0] / 2 - width / 2 : 0
                 y: clientInfo ? clientInfo.at[1] - (clientMonitor?.y ?? 0) + clientInfo.size[1] / 2 - height / 2 : 0
 
-                color: Colors.background
+                color: modelData.activated ? Colors.backgroundHighlighted : Colors.backgroundLifted
                 radius: Styles.radiusMd
 
                 RowLayout {
