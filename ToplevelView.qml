@@ -72,6 +72,10 @@ Loader {
         WlrLayershell.namespace: "toplevels"
         WlrLayershell.layer: WlrLayer.Overlay
 
+        mask: Region{
+            item: offMonitorBar
+        }
+
         function getToplevelIndex(toplevel) {
             return root.toplevels.indexOf(toplevel);
         }
