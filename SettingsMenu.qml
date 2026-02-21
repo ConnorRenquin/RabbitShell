@@ -56,7 +56,7 @@ FloatingWindow {
                 readonly property string name: 'Bluetooth'
                 anchors.fill: parent
             }
-            AppearanceSettings {
+            AppearanceSettingsView {
                 readonly property string name: 'Appearance'
                 anchors.fill: parent
             }
