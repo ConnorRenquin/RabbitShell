@@ -255,18 +255,38 @@ FloatingWindow {
                 Layout.margins: Styles.marginSm
                 color: Colors.backgroundLifted
                 radius: Styles.radiusSm
-                TextFieldStyled {
-                    id: searchField
-                    placeholderText: 'search (press / to focus)'
+
+                RowLayout {
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
-                    backgroundColor: Colors.backgroundLifted
-                    onTextChanged: mainContent.searchText = text
-                    Keys.onPressed: event => {
-                        if (event.key === Qt.Key_Escape) {
-                            searchField.focus = false;
-                            base.focus = true;
-                            event.accepted = true;
+                    spacing: Styles.marginSm
+
+                    TextFieldStyled {
+                        id: searchField
+                        placeholderText: 'search (press / to focus)'
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        backgroundColor: Colors.backgroundLifted
+                        onTextChanged: mainContent.searchText = text
+                        Keys.onPressed: event => {
+                            if (event.key === Qt.Key_Escape) {
+                                searchField.focus = false;
+                                base.focus = true;
+                                event.accepted = true;
+                            }
+                        }
+                    }
+
+                    ButtonStyled {
+                        id: emojiButton
+                        Layout.preferredWidth: 60
+                        Layout.fillHeight: true
+                        onClicked:  PatchBay.openAsciiEmojis();
+
+                        TextStyled {
+                            anchors.centerIn: parent
+                            text: "(ᵔᴥᵔ)"
+                            color: Colors.foreground
                         }
                     }
                 }

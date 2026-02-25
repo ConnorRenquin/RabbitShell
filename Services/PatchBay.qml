@@ -9,4 +9,5 @@ Singleton {
     signal lockScreen
     signal openThemeSelector
     signal openAppLauncher
+    signal openAsciiEmojis
 }

@@ -20,6 +20,7 @@ ShellRoot {
     Polkit {}
     SettingsMenu {}
     Cheatsheet {}
+    AsciiEmojis {}
     // Test {}
     Component.onCompleted: {
         Qt.callLater(function () {
