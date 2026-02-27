@@ -77,7 +77,7 @@ FloatingWindow {
                         newSlots.push("");
                     }
                     newSlots[keyIndex] = itemText;
-                    root.clipboardData = {
+                    ClipboardService.clipboardData = {
                         "slots": newSlots,
                         "clipboardText": ClipboardService.clipboardData.clipboardText
                     };
@@ -85,7 +85,7 @@ FloatingWindow {
             } else if (altHeld) {
                 if (event.key === Qt.Key_D) {
                     utils.notify('Slots Cleared');
-                    root.clipboardData = {
+                    ClipboardService.clipboardData = {
                         "slots": [],
                         "clipboardText": ClipboardService.clipboardData.clipboardText
                     };
@@ -193,7 +193,7 @@ FloatingWindow {
                             id: slotButton
                             anchors.fill: parent
 
-                            color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.background
+                            color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.background
 
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
@@ -214,7 +214,7 @@ FloatingWindow {
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
-                                color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && root.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.background : Colors.foreground
+                                color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.background : Colors.foreground
                             }
                         }
 
