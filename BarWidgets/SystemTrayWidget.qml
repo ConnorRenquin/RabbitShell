@@ -13,6 +13,7 @@ import qs.Settings
 Rectangle {
     id: root
 
+    visible: SystemTray.items.values.length != 0
     property var currentOpenMenu: null
 
     radius: Styles.radiusSm
