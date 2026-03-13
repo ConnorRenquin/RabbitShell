@@ -19,7 +19,7 @@ Rectangle {
         }
         TextStyled {
             anchors.verticalCenter: parent.verticalCenter
-            text: ""
+            text: "󱄅"
         }
         TextStyled {
             anchors.verticalCenter: parent.verticalCenter
