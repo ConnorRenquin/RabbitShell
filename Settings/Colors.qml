@@ -102,7 +102,7 @@ Singleton {
 
     Process {
         id: listFiles
-        command: ['bash', '-c', `ls  $XDG_CONFIG_HOME/quickshell/Settings/${root.directory}`]
+        command: ['bash', '-c', `ls  $HOME/.config/quickshell/Settings/${root.directory}`]
         running: true
         stdout: StdioCollector {
             onStreamFinished: root.availableThemes = text.trim().split(/\s+/)
