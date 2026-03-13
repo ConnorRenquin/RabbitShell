@@ -17,7 +17,7 @@ FloatingWindow {
     id: root
 
     visible: false
-    title: 'ASCII Emojis'
+    title: 'Clipboard'
 
     implicitWidth: 700
     implicitHeight: 800
@@ -202,24 +202,14 @@ FloatingWindow {
                         ColumnLayout {
                             anchors.fill: parent
                             anchors.margins: Styles.marginSm
-                            spacing: Styles.marginXs
+                            spacing: Styles.marginSm
 
-                            // Emoji Display
-                            Rectangle {
+                            TextStyled {
                                 Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                color: Colors.background
-                                radius: Styles.radiusSm
-
-                                TextStyled {
-                                    anchors.centerIn: parent
-                                    text: emojiButton.modelData.emoji
-                                    font.pixelSize: 24
-                                    color: Colors.foreground
-                                }
+                                text: emojiButton.modelData.emoji
+                                font.pixelSize: 24
+                                color: Colors.foreground
                             }
-
-                            // Name Label
                             TextStyled {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 20
