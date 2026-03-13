@@ -15,13 +15,13 @@ ButtonStyled {
     implicitHeight: parent.height
     text: "⏻"
 
-    GlobalShortcut {
-        name: "powermenu"
-        onPressed: {
-            dropdown.visible = !dropdown.visible;
-            grab.active = dropdown.visible;
-        }
-    }
+    // GlobalShortcut {
+    //     name: "powermenu"
+    //     onPressed: {
+    //         dropdown.visible = !dropdown.visible;
+    //         grab.active = dropdown.visible;
+    //     }
+    // }
 
     onClicked: {
         dropdown.visible = !dropdown.visible;

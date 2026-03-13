@@ -77,7 +77,6 @@ Variants {
                     }
                 }
             }
-            PowerButtonWidget {}
         }
     }
 
