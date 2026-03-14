@@ -21,7 +21,7 @@ Rectangle {
 
     property string text
 
-    property string textPixelSize: Styles.textMd
+    property alias pixelSize: buttonText.font.pixelSize
     property string hoverColor: Colors.backgroundHighlighted
     property string defaultColor: Colors.background
     property string focusedColor: Colors.backgroundHighlighted
@@ -51,7 +51,6 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: root.text
-        font.pixelSize: root.textPixelSize
     }
 
     Item {
