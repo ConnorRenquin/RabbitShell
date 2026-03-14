@@ -90,7 +90,7 @@ Loader {
 
                 PowerMenuButton {
                     text: "󰿅"
-                    onClicked: root.menuAction("hyprctl dispatch exit")
+                    onClicked: loader.menuAction("hyprctl dispatch exit")
                     index: 0
                 }
                 PowerMenuButton {
@@ -100,19 +100,19 @@ Loader {
                 }
                 PowerMenuButton {
                     text: "󰤄"
-                    onClicked: root.menuAction("hyprctl dispatch global quickshell:lockscreen && systemctl suspend")
+                    onClicked: loader.menuAction("hyprctl dispatch global quickshell:lockscreen && systemctl suspend")
                     index: 2
                 }
 
                 PowerMenuButton {
                     text: ""
-                    onClicked: root.menuAction("reboot now")
+                    onClicked: loader.menuAction("reboot now")
                     index: 3
                 }
 
                 PowerMenuButton {
                     text: ""
-                    onClicked: root.menuAction("shutdown now")
+                    onClicked: loader.menuAction("shutdown now")
                     index: 4
                 }
             }
