@@ -23,6 +23,7 @@ Rectangle {
         spacing: Styles.marginSm
 
         TextStyled {
+            id: clock
             text: Time.time
         }
 
@@ -41,6 +42,7 @@ Rectangle {
 
         TextStyled {
             text: Time.date
+            Layout.preferredWidth: clock.width
         }
     }
 }
