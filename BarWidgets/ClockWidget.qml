@@ -12,6 +12,13 @@ import qs.Services
 Rectangle {
     id: root
 
+    readonly property var clockSymbols: [
+        "󱐿", "󱑀", "󱑁", "󱑂", "󱑃", "󱑄",
+        "󱑅", "󱑆", "󱑇", "󱑈", "󱑉", "󱑊"
+    ]
+
+    property real matchedWidth: Math.max(clock.implicitWidth, date.implicitWidth)
+
     implicitWidth: contentRow.implicitWidth + Styles.marginSm * 2
     radius: Styles.radiusSm
     color: Colors.background
@@ -24,7 +31,9 @@ Rectangle {
 
         TextStyled {
             id: clock
-            text: Time.time
+            text: root.clockSymbols[Time.hour % 12] + " " + Time.time
+            Layout.preferredWidth: root.matchedWidth
+            horizontalAlignment: Text.AlignRight
         }
 
         ButtonStyled {
@@ -41,8 +50,10 @@ Rectangle {
         }
 
         TextStyled {
-            text: Time.date
-            Layout.preferredWidth: clock.width
+            id: date
+            text: Time.date + "  󰃭 "
+            horizontalAlignment: Text.AlignLeft
+            Layout.preferredWidth: root.matchedWidth
         }
     }
 }
