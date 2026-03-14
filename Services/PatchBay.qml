@@ -10,4 +10,5 @@ Singleton {
     signal openThemeSelector
     signal openAppLauncher
     signal openAsciiEmojis
+    signal openMixer
 }

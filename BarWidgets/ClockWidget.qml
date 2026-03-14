@@ -27,7 +27,15 @@ Rectangle {
         }
         ButtonStyled {
             text: "󱄅"
-            onClicked: dropdown.visible = !dropdown.visible;
+            onClicked: mouse => {
+                if (mouse.button === Qt.LeftButton) {
+                    dropdown.visible = !dropdown.visible;
+                } else if (mouse.button === Qt.MiddleButton) {
+                    Hyprland.dispatch("togglespecialworkspace");
+                } else if (mouse.button === Qt.RightButton) {
+                    PatchBay.openMixer();
+                }
+            }
         }
 
         TextStyled {

@@ -64,7 +64,7 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
         // propagateComposedEvents: true
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
         onClicked: mouse => root.clicked(mouse)
     }
 }

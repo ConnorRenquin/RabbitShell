@@ -19,9 +19,15 @@ Loader {
 
     active: false
 
+    function toggle() {
+        loader.active = !loader.active;
+    }
+
+    Component.onCompleted: PatchBay.openMixer.connect(toggle)
+
     GlobalShortcut {
         name: "mixer"
-        onPressed: active = !active
+        onPressed: loader.toggle()
     }
 
     sourceComponent: PanelWindow {
