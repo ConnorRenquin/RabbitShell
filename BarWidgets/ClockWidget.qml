@@ -38,6 +38,7 @@ Rectangle {
 
         ButtonStyled {
             text: "󱄅"
+            pixelSize: 28
             onClicked: mouse => {
                 if (mouse.button === Qt.LeftButton) {
                     PatchBay.openPowerMenu();
