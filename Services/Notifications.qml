@@ -37,11 +37,6 @@ Singleton {
         inlineReplySupported: true
         onNotification: notification => {
             notification.tracked = true;
-            notification.closed.connect(() => {
-                const idx = root.notifications.indexOf(notification);
-                if (idx !== -1)
-                    root.notifications.splice(idx, 1);
-            });
             root.notifications.unshift(notification);
             if (notification.lastGeneration)
                 return;

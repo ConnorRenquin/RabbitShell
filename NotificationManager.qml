@@ -121,8 +121,6 @@ Loader {
                         model: Notifications.notifications
                         delegate: NotificationCard {
                             id: notificationItem
-                            required property Notification modelData
-                            required property int index
                             notification: modelData
                             width: scrollContainer.width
                             autoExpire: false

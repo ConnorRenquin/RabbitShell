@@ -16,7 +16,6 @@ Variants {
     delegate: PanelWindow {
         id: root
 
-        property var modelData: null
         anchors.top: true
         implicitWidth: notificationList.implicitWidth
         implicitHeight: notificationList.implicitHeight + Styles.marginSm * 2
@@ -25,6 +24,11 @@ Variants {
         exclusionMode: ExclusionMode.Normal
         color: "transparent"
 
+        mask: Region {
+            item: notificationList
+        }
+
+        property var modelData: null
         property bool focusGrabbed: false
 
         HyprlandFocusGrab {
@@ -47,17 +51,24 @@ Variants {
                 notificationList.children[0].destroy();
 
             notificationPopupComponent.createObject(notificationList, {
-                notification: notification
+                notification: notification,
+                index: 0
             });
         }
 
-        property Component notificationPopupComponent: NotificationCard {
+       property Component notificationPopupComponent: NotificationCard {
             id: notificationPopup
             implicitWidth: parent.width
-            autoExpire: true
             showCloseButton: true
             onDismissed: notificationPopup.destroy()
             onReplyFocused: root.focusGrabbed = true
+            Timer {
+                id: expireTimer
+                interval: 4000
+                running: true
+                onTriggered: notificationPopup.destroy()
+            }
+
         }
 
         ColumnLayout {
