@@ -12,6 +12,7 @@ ShellRoot {
     AppLauncher {}
     Workspaces {}
     Mixer {}
+    PowerMenu {}
     ToplevelView {}
     Clipboard {}
     // ImageClipboard {}
