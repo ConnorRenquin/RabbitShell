@@ -34,9 +34,15 @@ Singleton {
         keepOnReload: true
         actionIconsSupported: true
         persistenceSupported: true
+        inlineReplySupported: true
         onNotification: notification => {
             notification.tracked = true;
-            root.notifications.unshift(notification); // Add new notifications at the beginning
+            notification.closed.connect(() => {
+                const idx = root.notifications.indexOf(notification);
+                if (idx !== -1)
+                    root.notifications.splice(idx, 1);
+            });
+            root.notifications.unshift(notification);
             if (notification.lastGeneration)
                 return;
             root.onNotify(notification);

@@ -119,68 +119,16 @@ Loader {
                         clip: true
 
                         model: Notifications.notifications
-                        delegate: Rectangle {
+                        delegate: NotificationCard {
                             id: notificationItem
                             required property Notification modelData
                             required property int index
+                            notification: modelData
+                            width: scrollContainer.width
+                            autoExpire: false
+                            showCloseButton: true
+                            onDismissed: Notifications.dismiss(index)
 
-                            implicitWidth: scrollContainer.width
-                            implicitHeight: notificationContent.implicitHeight + Styles.marginMd * 2
-                            color: Colors.backgroundLifted
-                            radius: Styles.radiusMd
-
-                            ColumnLayout {
-                                id: notificationContent
-                                anchors {
-                                    top: parent.top
-                                    left: parent.left
-                                    right: parent.right
-                                    margins: Styles.marginMd
-                                }
-                                spacing: Styles.marginSm
-
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    spacing: Styles.marginMd
-
-                                    TextStyled {
-                                        text: notificationItem.modelData?.appName ?? "Unknown"
-                                        visible: text
-                                        font.bold: true
-                                        color: Colors.orange
-                                        Layout.fillWidth: true
-                                    }
-
-                                    ButtonStyled {
-                                        implicitHeight: 30
-                                        implicitWidth: dismissText.implicitWidth + Styles.marginMd
-                                        defaultColor: Colors.backgroundLifted
-                                        onClicked: Notifications.dismiss(notificationItem.index)
-
-                                        TextStyled {
-                                            id: dismissText
-                                            anchors.centerIn: parent
-                                            text: 'Dismiss'
-                                            font.pixelSize: Styles.textSm
-                                        }
-                                    }
-                                }
-
-                                TextStyled {
-                                    text: notificationItem.modelData.summary ?? ""
-                                    visible: text
-                                    Layout.fillWidth: true
-                                    font.pixelSize: Styles.textMd
-                                }
-
-                                TextStyled {
-                                    visible: text
-                                    text: notificationItem.modelData.body ?? ""
-                                    Layout.fillWidth: true
-                                    color: Colors.foreground
-                                    font.pixelSize: Styles.textSm
-                                }
-                            }
                         }
 
                         Rectangle {

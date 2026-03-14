@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Services.Notifications
+import Quickshell.Hyprland
 
 import QtQuick
 import QtQuick.Layouts
@@ -11,18 +12,9 @@ import qs.Settings
 import qs.Services
 
 Variants {
-    component NotificationText: TextStyled {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-    }
-
     model: Quickshell.screens
     delegate: PanelWindow {
         id: root
-
-        Utils {
-            id: utils
-        }
 
         property var modelData: null
         anchors.top: true
@@ -32,73 +24,45 @@ Variants {
 
         exclusionMode: ExclusionMode.Normal
         color: "transparent"
-        mask: Region {
-            item: notificationList
+
+        property bool focusGrabbed: false
+
+        HyprlandFocusGrab {
+            active: root.focusGrabbed
+            windows: [root]
+            onCleared: root.focusGrabbed = false
         }
 
         Component.onCompleted: {
             Notifications.onNotify.connect(addNotification);
         }
 
+        property int maxPopups: 4
+
         function addNotification(notification) {
             if (!notification)
                 return;
+
+            if (notificationList.children.length >= maxPopups)
+                notificationList.children[0].destroy();
+
             notificationPopupComponent.createObject(notificationList, {
                 notification: notification
             });
         }
 
-        property Component notificationPopupComponent: ButtonStyled {
-            id: notificationBase
-
-            required property Notification notification
-
-            implicitHeight: Math.min(notificationContent.implicitHeight + notificationContent.anchors.margins * 2, 300)
+        property Component notificationPopupComponent: NotificationCard {
+            id: notificationPopup
             implicitWidth: parent.width
-
-            clip: true
-            onClicked: notificationBase.destroy()
-
-            Timer {
-                interval: 4000
-                running: true
-                onTriggered: notificationBase.destroy()
-            }
-
-            ColumnLayout {
-                id: notificationContent
-
-                height: parent.height
-                anchors.fill: parent
-                anchors.margins: Styles.marginSm
-                spacing: Styles.marginSm
-
-                NotificationText {
-                    font.pixelSize: Styles.textLg
-                    color: Colors.orange
-                    visible: text
-                    text: notificationBase.notification?.appName ?? text
-                }
-
-                NotificationText {
-                    color: Colors.yellow
-                    visible: text
-                    text: notificationBase.notification?.summary ?? text
-                    wrapMode: Text.WordWrap
-                }
-
-                NotificationText {
-                    font.pixelSize: Styles.textSm
-                    visible: text
-                    text: utils.removeIndentation(notificationBase.notification?.body) ?? text
-                    wrapMode: Text.NoWrap
-                }
-            }
+            autoExpire: true
+            showCloseButton: true
+            onDismissed: notificationPopup.destroy()
+            onReplyFocused: root.focusGrabbed = true
         }
 
         ColumnLayout {
             id: notificationList
-            spacing: 20
+            spacing: Styles.marginSm
             anchors {
                 top: parent.top
                 horizontalCenter: parent.horizontalCenter
