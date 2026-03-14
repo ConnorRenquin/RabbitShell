@@ -31,7 +31,7 @@ Rectangle {
 
         TextStyled {
             id: clock
-            text: root.clockSymbols[Time.hour % 12] + " " + Time.time
+            text: root.clockSymbols[Time.hour % 12] + " |- " + Time.time
             Layout.preferredWidth: root.matchedWidth
             horizontalAlignment: Text.AlignRight
         }
