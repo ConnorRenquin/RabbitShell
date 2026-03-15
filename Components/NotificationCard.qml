@@ -12,8 +12,10 @@ import qs.Settings
 Rectangle {
     id: root
 
-    required property var notification
+    required property var modelData
     required property int index
+
+    property var notification: modelData
 
     property bool autoExpire: true
     property bool showCloseButton: true
@@ -129,7 +131,7 @@ Rectangle {
                     root.notification.sendInlineReply(text);
                     text = "";
                     if (!root.notification.resident) {
-                        Notifications.dismiss(root.index);
+                        root.notification.dismiss();
                     }
                 }
             }
@@ -143,7 +145,7 @@ Rectangle {
                         root.notification.sendInlineReply(inlineReplyInput.text);
                         inlineReplyInput.text = "";
                         if (!root.notification.resident) {
-                            Notifications.dismiss(root.index);
+                            root.notification.dismiss();
                         }
                     }
                 }
@@ -164,7 +166,7 @@ Rectangle {
                 onClicked: {
                     modelData.invoke();
                     if (!root.notification.resident) {
-                        Notifications.dismiss(root.index);
+                        root.notification.dismiss();
                     }
                 }
             }

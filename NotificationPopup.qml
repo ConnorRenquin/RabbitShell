@@ -24,10 +24,6 @@ Variants {
         exclusionMode: ExclusionMode.Normal
         color: "transparent"
 
-        mask: Region {
-            item: notificationList
-        }
-
         property var modelData: null
         property bool focusGrabbed: false
 
@@ -51,7 +47,7 @@ Variants {
                 notificationList.children[0].destroy();
 
             notificationPopupComponent.createObject(notificationList, {
-                notification: notification,
+                modelData: notification,
                 index: 0
             });
         }

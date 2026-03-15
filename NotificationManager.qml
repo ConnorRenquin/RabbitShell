@@ -32,10 +32,13 @@ Loader {
         id: root
 
         color: "transparent"
-        // exclusionMode: ExclusionMode.Ignore
         title: 'Notification Manager'
         implicitWidth: 600
         implicitHeight: 900
+
+        function clear() {
+            Notifications.clear();
+        }
 
         HyprlandFocusGrab {
             active: loader.active
@@ -84,7 +87,7 @@ Loader {
                         }
 
                         TextStyled {
-                            text: `${Notifications.notifications.length} active`
+                            text: `${Notifications.notifications.values.length} active`
                         }
 
                         ButtonStyled {
@@ -93,7 +96,7 @@ Loader {
                             implicitWidth: clearAllText.implicitWidth + Styles.marginLg
 
                             defaultColor: Colors.background
-                            onClicked: Notifications.clear()
+                            onClicked: root.clear()
 
                             TextStyled {
                                 id: clearAllText
@@ -117,16 +120,16 @@ Loader {
                         anchors.fill: parent
                         spacing: Styles.marginSm
                         clip: true
-
                         model: Notifications.notifications
                         delegate: NotificationCard {
                             id: notificationItem
-                            notification: modelData
                             width: scrollContainer.width
                             autoExpire: false
                             showCloseButton: true
-                            onDismissed: Notifications.dismiss(index)
-
+                            onDismissed: {
+                                notification.dismiss();
+                                notification.tracked = false;
+                            }
                         }
 
                         Rectangle {

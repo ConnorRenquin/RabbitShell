@@ -51,8 +51,8 @@ Variants {
             anchors.centerIn: parent
             ButtonStyled {
                 id: notificationsButton
-                visible: Notifications.notifications.length > 0
-                text: " " + Notifications.notifications.length
+                visible: Notifications.notifications.values.length > 0
+                text: " " + Notifications.notifications.values.length
                 onClicked: PatchBay.openNotificationsManager()
             }
             ClockWidget {}

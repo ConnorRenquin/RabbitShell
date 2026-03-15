@@ -12,17 +12,21 @@ Singleton {
 
     signal onNotify(notification: Notification)
 
-    property list<Notification> notifications: []
+    property alias notifications: notificationServer.trackedNotifications
 
     function clear() {
-        notifications = [];
-        notificationServer.trackedNotifications.values.forEach(notification => notification.tracked = false);
+        const snapshot = [...notificationServer.trackedNotifications.values];
+        snapshot.forEach(notification => {
+            notification.dismiss();
+            notification.tracked = false;
+        });
     }
 
     function dismiss(index) {
-        if (index >= 0 && index < notifications.length) {
-            const notification = notifications[index];
-            notifications.splice(index, 1);
+        const values = notificationServer.trackedNotifications.values;
+        if (index >= 0 && index < values.length) {
+            const notification = values[index];
+            notification.dismiss();
             notification.tracked = false;
         }
     }
@@ -37,7 +41,6 @@ Singleton {
         inlineReplySupported: true
         onNotification: notification => {
             notification.tracked = true;
-            root.notifications.unshift(notification);
             if (notification.lastGeneration)
                 return;
             root.onNotify(notification);
