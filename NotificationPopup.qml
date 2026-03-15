@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Services.Notifications
 import Quickshell.Hyprland
+import Quickshell.Wayland
 
 import QtQuick
 import QtQuick.Layouts
@@ -17,12 +18,20 @@ Variants {
         id: root
 
         anchors.top: true
-        implicitWidth: notificationList.implicitWidth
-        implicitHeight: notificationList.implicitHeight + Styles.marginSm * 2
-        screen: modelData
+        anchors.bottom: true
+        anchors.left: true
+        anchors.right: true
 
-        exclusionMode: ExclusionMode.Normal
+        screen: modelData
+        exclusionMode: ExclusionMode.Ignore
         color: "transparent"
+
+        WlrLayershell.namespace: "notifications"
+        WlrLayershell.layer: WlrLayer.Overlay
+
+        mask: Region {
+            item: notificationList
+        }
 
         property var modelData: null
         property bool focusGrabbed: false
@@ -52,30 +61,41 @@ Variants {
             });
         }
 
-       property Component notificationPopupComponent: NotificationCard {
+        property Component notificationPopupComponent: NotificationCard {
             id: notificationPopup
-            implicitWidth: parent.width
+            Layout.fillWidth: true
             showCloseButton: true
             onDismissed: notificationPopup.destroy()
             onReplyFocused: root.focusGrabbed = true
+
+            transformOrigin: Item.Top
+            scale: scaleTarget
+            property real scaleTarget: 0
+            Component.onCompleted: scaleTarget = 1
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: 150
+                    easing.type: Easing.OutCubic
+                }
+            }
             Timer {
                 id: expireTimer
                 interval: 4000
                 running: true
                 onTriggered: notificationPopup.destroy()
             }
-
         }
 
         ColumnLayout {
             id: notificationList
             spacing: Styles.marginSm
+            width: 400
             anchors {
                 top: parent.top
                 horizontalCenter: parent.horizontalCenter
-                margins: Styles.marginSm
+                margins: Styles.marginLg * 2
             }
-            width: 400
         }
     }
 }
