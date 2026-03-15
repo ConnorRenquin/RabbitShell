@@ -10,6 +10,7 @@ import Qt.labs.folderlistmodel
 
 import qs.Settings
 import qs.Components
+import qs.Services
 
 FloatingWindow {
     id: root
@@ -24,9 +25,20 @@ FloatingWindow {
         showDirs: false
     }
 
+    Connections {
+        target: PatchBay
+        function onOpenImageClipboard() {
+            root.visible = !root.visible;
+            grab.active = root.visible;
+        }
+    }
+
     GlobalShortcut {
         name: 'image-clipboard'
-        onPressed: root.visible = !root.visible
+        onPressed: {
+            root.visible = !root.visible;
+            grab.active = root.visible;
+        }
     }
 
     HyprlandFocusGrab {

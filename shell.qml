@@ -15,7 +15,7 @@ ShellRoot {
     PowerMenu {}
     ToplevelView {}
     Clipboard {}
-    // ImageClipboard {}
+    ImageClipboard {}
     NotificationManager {}
     LockScreen {}
     Polkit {}

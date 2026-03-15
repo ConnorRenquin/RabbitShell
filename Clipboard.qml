@@ -278,10 +278,23 @@ FloatingWindow {
                     }
 
                     ButtonStyled {
+                        id: imageClipboardButton
+                        Layout.preferredWidth: 60
+                        Layout.fillHeight: true
+                        onClicked: PatchBay.openImageClipboard()
+
+                        TextStyled {
+                            anchors.centerIn: parent
+                            text: Icons.image
+                            color: Colors.foreground
+                        }
+                    }
+
+                    ButtonStyled {
                         id: emojiButton
                         Layout.preferredWidth: 60
                         Layout.fillHeight: true
-                        onClicked:  PatchBay.openAsciiEmojis();
+                        onClicked: PatchBay.openAsciiEmojis()
 
                         TextStyled {
                             anchors.centerIn: parent
