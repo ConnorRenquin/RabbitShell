@@ -1,4 +1,6 @@
 import Quickshell
+import Quickshell.Hyprland
+
 import QtQuick
 
 import qs.BarWidgets
@@ -38,7 +40,7 @@ Variants {
                 id: appsButton
                 implicitHeight: parent.height
                 text: "󰘳"
-                onClicked: PatchBay.openAppLauncher()
+                onClicked: Hyprland.dispatch("togglespecialworkspace")
             }
             WorkspacesWidget {
                 monitorName: root.modelData.name

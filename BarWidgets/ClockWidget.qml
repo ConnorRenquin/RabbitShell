@@ -41,9 +41,9 @@ Rectangle {
             pixelSize: 28
             onClicked: mouse => {
                 if (mouse.button === Qt.LeftButton) {
-                    PatchBay.openPowerMenu();
+                    PatchBay.openAppLauncher()
                 } else if (mouse.button === Qt.MiddleButton) {
-                    Hyprland.dispatch("togglespecialworkspace");
+                    PatchBay.openPowerMenu();
                 } else if (mouse.button === Qt.RightButton) {
                     PatchBay.openMixer();
                 }
