@@ -26,12 +26,6 @@ Loader {
         Quickshell.execDetached(["bash", "-c", command]);
     }
 
-    function executeCurrentItem() {
-        if (currentFocusIndex >= 0 && currentFocusIndex < buttons.children.length) {
-            buttons.children[currentFocusIndex].clicked(null);
-        }
-    }
-
     Component.onCompleted: PatchBay.openPowerMenu.connect(toggle)
 
     GlobalShortcut {
@@ -78,7 +72,9 @@ Loader {
                 } else if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
                     loader.currentFocusIndex = Math.max(loader.currentFocusIndex - 1, 0);
                 } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
-                    loader.executeCurrentItem();
+                    if (loader.currentFocusIndex >= 0 && loader.currentFocusIndex < buttons.children.length) {
+                        buttons.children[loader.currentFocusIndex].clicked(null);
+                    }
                 }
             }
 
