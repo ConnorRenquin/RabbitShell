@@ -20,7 +20,6 @@ ShellRoot {
     LockScreen {}
     Polkit {}
     SettingsMenu {}
-    Cheatsheet {}
     AsciiEmojis {}
     // Test {}
     Component.onCompleted: {
