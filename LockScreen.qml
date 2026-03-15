@@ -126,7 +126,7 @@ Scope {
                     implicitHeight: 40
                     RowLayout {
                         Rectangle {
-                            Layout.preferredWidth: 400
+                            Layout.preferredWidth: 500
                             Layout.fillHeight: true
                             color: Colors.background
                             radius: Styles.radiusSm
@@ -165,6 +165,25 @@ Scope {
                                 anchors.centerIn: parent
                                 text: ""
                             }
+                        }
+
+                        ButtonStyled {
+                            text: "󰿅"
+                            onClicked: Quickshell.execDetached(["bash", "-c","hyprctl dispatch exit"])
+                        }
+                        ButtonStyled {
+                            text: "󰤄"
+                            onClicked: Quickshell.execDetached(["bash", "-c","hyprctl dispatch global quickshell:lockscreen && systemctl suspend"])
+                        }
+
+                        ButtonStyled {
+                            text: ""
+                            onClicked: Quickshell.execDetached(["bash", "-c","reboot now"])
+                        }
+
+                        ButtonStyled {
+                            text: ""
+                            onClicked: Quickshell.execDetached(["bash", "-c","shutdown now"])
                         }
                     }
 
