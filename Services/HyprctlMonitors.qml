@@ -14,6 +14,18 @@ Singleton {
         console.log('HyprctlMonitors -----------------------------------------');
     }
 
+    property Component monitorInfoComponent: Component {
+        MonitorInfo {}
+    }
+
+    function destroyOldMonitors() {
+        for (var i = 0; i < root.monitors.length; i++) {
+            if (root.monitors[i]) {
+                root.monitors[i].destroy();
+            }
+        }
+    }
+
     Process {
         id: monitorProcess
         command: ["hyprctl", "monitors", "all", "-j"]
@@ -23,15 +35,17 @@ Singleton {
                 try {
                     var monitorData = JSON.parse(text);
                     var monitorsList = [];
+
                     for (var i = 0; i < monitorData.length; i++) {
-                        var monitorComponent = Qt.createComponent("MonitorInfo.qml");
-                        if (monitorComponent.status === Component.Ready) {
-                            var monitorObject = monitorComponent.createObject(root, {
-                                modelData: monitorData[i]
-                            });
+                        var monitorObject = root.monitorInfoComponent.createObject(root, {
+                            modelData: monitorData[i]
+                        });
+                        if (monitorObject) {
                             monitorsList.push(monitorObject);
                         }
                     }
+
+                    root.destroyOldMonitors();
                     root.monitors = monitorsList;
                 } catch (e) {
                     console.error("Failed to parse monitor data:", e);
