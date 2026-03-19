@@ -84,30 +84,42 @@ Rectangle {
             }
         }
 
-        TextStyled {
-            id: summaryText
-            Layout.fillWidth: true
-            visible: text
-            text: root.notification?.summary ?? ""
-            wrapMode: Text.WordWrap
-        }
 
-        TextStyled {
-            id: bodyText
+        RowLayout {
+            id: notificationInfo
             Layout.fillWidth: true
-            font.pixelSize: Styles.textSm
-            visible: text
-            text: root.removeIndentation(root.notification?.body) ?? ""
-            wrapMode: Text.WordWrap
-        }
+            ColumnLayout {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
 
-        Image {
-            id: notificationImage
-            Layout.fillWidth: true
-            Layout.maximumHeight: 200
-            source: root.notification?.image ?? ""
-            visible: root.notification?.image ?? false
-            fillMode: Image.PreserveAspectCrop
+                TextStyled {
+                    id: summaryText
+                    Layout.fillWidth: true
+                    visible: text
+                    text: root.notification?.summary ?? ""
+                    wrapMode: Text.WordWrap
+                }
+
+                TextStyled {
+                    id: bodyText
+                    Layout.fillWidth: true
+                    font.pixelSize: Styles.textSm
+                    visible: text
+                    text: root.removeIndentation(root.notification?.body) ?? ""
+                    wrapMode: Text.WordWrap
+                }
+            }
+            Image {
+                id: notificationImage
+                Layout.preferredHeight: notificationInfo.implicitHeight
+                Layout.preferredWidth: implicitHeight > 0 ? (height * implicitWidth / implicitHeight) : 0
+                Layout.maximumWidth: 100
+                source: root.notification?.image ?? ""
+                visible: root.notification?.image ?? false
+                horizontalAlignment: Image.AlignRight
+                verticalAlignment: Image.AlignTop
+                fillMode: Image.PreserveAspectFit
+            }
         }
 
         RowLayout {
@@ -124,7 +136,7 @@ Rectangle {
                 backgroundColor: Colors.backgroundLifted
                 background: Rectangle {
                     color: inlineReplyInput.backgroundColor
-                    radius: Styles.radiusLg
+                    radius: Styles.radiusSm
                 }
                 Keys.onReturnPressed: {
                     if (text.length <= 0) return
