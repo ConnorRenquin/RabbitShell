@@ -101,8 +101,9 @@ Loader {
             color: Colors.backgroundLifted
             radius: Styles.radiusMd
 
-            RowLayoutPlus {
+            GridLayoutPlus {
                 id: offMonitorFlow
+                columns: 4
                 anchors.centerIn: parent
                 model: root.toplevels.filter(toplevel => !toplevel?.workspace?.focused || toplevel?.workspace?.id <= 0).sort((a, b) => (a?.workspace?.id ?? 0) - (b?.workspace?.id ?? 0))
                 delegate: ButtonStyled {
