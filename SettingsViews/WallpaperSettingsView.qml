@@ -165,6 +165,22 @@ Rectangle {
                         spacing: Styles.marginSm
 
                         TextStyled {
+                            text: "Dominant Color"
+                        }
+
+                        ComboBoxStyled {
+                            id: matugenDominantColor
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 30
+                            model: ["0", "1", "2", "3", "4"]
+                            currentIndex: 1
+                        }
+                    }
+
+                    ColumnLayout {
+                        spacing: Styles.marginSm
+
+                        TextStyled {
                             text: "Resize"
                         }
 
@@ -345,13 +361,14 @@ Rectangle {
 
     Process {
         id: matugenProcess
-        command: ['bash', '-c', 'matugen image ' + path + ' -m ' + mode + ' --contrast ' + contrast + ' --type ' + type + ' -r ' + resize]
+        command: ['bash', '-c', 'matugen image ' + path + ' -m ' + mode + ' --contrast ' + contrast + ' --type ' + type + ' -r ' + resize + ' --source-color-index ' + dominantColor]
 
         property string path
         property string mode: matugenDarkmode.checked ? 'dark' : 'light'
         property string contrast: matugenContrast.currentText
         property string type: matugenType.currentText
         property string resize: matugenResize.currentText
+        property string dominantColor: matugenDominantColor.currentText
 
         onRunningChanged: {
             console.log(command)
