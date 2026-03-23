@@ -16,7 +16,7 @@ Variants {
         required property var modelData
 
         screen: modelData
-        implicitHeight: 45
+        implicitHeight: 48
         color: "transparent"
 
         anchors {
@@ -33,12 +33,18 @@ Variants {
             right: margin
         }
 
-        // Left
+        component BarRow: Row {
+            height: parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.top: parent.top
+            spacing: 8
+        }
+
         BarRow {
+            id: leftGroup
             anchors.left: parent.left
             ButtonStyled {
                 id: appsButton
-                implicitHeight: parent.height
                 text: "󰘳"
                 onClicked: Hyprland.dispatch("togglespecialworkspace")
             }
@@ -48,8 +54,8 @@ Variants {
             WindowTitleWidget {}
         }
 
-        // Center
         BarRow {
+            id: centerGroup
             anchors.centerIn: parent
             ButtonStyled {
                 id: notificationsButton
@@ -61,8 +67,8 @@ Variants {
             BatteryWidget {}
         }
 
-        // Right
         BarRow {
+            id: rightGroup
             anchors.right: parent.right
             MediaWidget {}
             SystemTrayWidget {}
@@ -82,10 +88,4 @@ Variants {
         }
     }
 
-    component BarRow: Row {
-        height: parent.height
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.top: parent.top
-        spacing: 8
-    }
 }
