@@ -81,7 +81,7 @@ Variants {
                     if (mouse.button === Qt.RightButton) {
                         WallpaperSettings.setRandomWallpaper();
                     } else if (mouse.button === Qt.LeftButton) {
-                        PatchBay.openThemeSelector();
+                        PatchBay.openSettings();
                     }
                 }
             }

@@ -7,7 +7,7 @@ import QtQuick
 Singleton {
     signal openNotificationsManager
     signal lockScreen
-    signal openThemeSelector
+    signal openSettings
     signal openAppLauncher
     signal openAsciiEmojis
     signal openImageClipboard

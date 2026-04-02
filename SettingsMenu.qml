@@ -20,7 +20,7 @@ Loader {
         loader.active = !loader.active;
     }
 
-    Component.onCompleted: PatchBay.openThemeSelector.connect(toggle)
+    Component.onCompleted: PatchBay.openSettings.connect(toggle)
 
     sourceComponent: FloatingWindow {
         id: root
