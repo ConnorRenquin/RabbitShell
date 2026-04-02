@@ -1,10 +1,13 @@
 pragma Singleton
 
 import Quickshell
+import Quickshell.Io
 
 import QtQuick
 
 Singleton {
+    id: root
+
     signal openNotificationsManager
     signal lockScreen
     signal openSettings
@@ -13,4 +16,11 @@ Singleton {
     signal openImageClipboard
     signal openMixer
     signal openPowerMenu
+
+    IpcHandler {
+        target: "patch"
+        function settings() {
+            root.openSettings()
+        }
+    }
 }
