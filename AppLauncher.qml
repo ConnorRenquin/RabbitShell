@@ -232,7 +232,7 @@ Loader {
                                 id: appIcon
                                 implicitWidth: 32
                                 implicitHeight: 32
-                                source: Quickshell.iconPath(appLaunchButton.modelData.icon) ?? ""
+                                source: Quickshell.iconPath(appLaunchButton.modelData.icon, "applications-other")
                             }
 
                             TextStyled {

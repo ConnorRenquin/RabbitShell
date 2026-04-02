@@ -128,7 +128,7 @@ Loader {
                         IconImage {
                             implicitHeight: 32
                             implicitWidth: 32
-                            source: Quickshell.iconPath(DesktopEntries.byId(offMonitor.modelData.wayland?.appId)?.icon)
+                            source: Quickshell.iconPath(DesktopEntries.byId(offMonitor.modelData.wayland?.appId)?.icon, "applications-other")
                         }
 
                         ColumnLayout {
@@ -191,7 +191,7 @@ Loader {
                     IconImage {
                         implicitHeight: 32
                         implicitWidth: 32
-                        source: Quickshell.iconPath(DesktopEntries.byId(onScreen.modelData.wayland?.appId)?.icon)
+                        source: Quickshell.iconPath(DesktopEntries.byId(onScreen.modelData.wayland?.appId)?.icon, "applications-other")
                     }
                     ColumnLayout {
                         Layout.fillWidth: true
