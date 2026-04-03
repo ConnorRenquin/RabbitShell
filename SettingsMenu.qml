@@ -58,8 +58,7 @@ Loader {
                     model: settingsModuleUi.children
                     delegate: ButtonStyled {
                         required property var modelData
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 40
+                        textAlignment: Text.AlignLeft
                         width: parent.width
                         text: modelData.name
                         isFocused: modelData.visible
@@ -75,28 +74,32 @@ Loader {
                     color: Colors.backgroundLifted
                     Layout.preferredWidth: 300
                     Layout.fillWidth: true
+                    UpdateSettingsView {
+                        readonly property string name:  Icons.info + ' About'
+                        anchors.fill: parent
+                    }
                     BluetoothSettingsView {
-                        readonly property string name: 'Bluetooth'
+                        readonly property string name: Icons.bluetooth + ' Bluetooth'
                         anchors.fill: parent
                     }
                     AppearanceSettingsView {
-                        readonly property string name: 'Appearance'
+                        readonly property string name: Icons.appearance + ' Appearance'
                         anchors.fill: parent
                     }
                     PipewireSettingsView {
-                        readonly property string name: 'Audio'
+                        readonly property string name: Icons.audio + ' Audio'
                         anchors.fill: parent
                     }
                     DisplaySettingsView {
-                        readonly property string name: 'Display'
+                        readonly property string name: Icons.display + ' Display'
                         anchors.fill: parent
                     }
                     WallpaperSettingsView {
-                        readonly property string name: 'Wallpaper'
+                        readonly property string name: Icons.wallpaper + ' Wallpaper'
                         anchors.fill: parent
                     }
                     Cheatsheet {
-                        readonly property string name: 'Cheatsheet'
+                        readonly property string name: Icons.cheatsheet + ' Cheatsheet'
                         anchors.fill: parent
                     }
                 }
