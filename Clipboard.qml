@@ -71,7 +71,7 @@ FloatingWindow {
             if (ctrlHeld) {
                 if (isNumberKey && clipboardItems.currentItem) {
                     const itemText = clipboardItems.currentItem.itemText;
-                    utils.notify('Storing to slot ' + (keyIndex === 9 ? 0 : keyIndex + 1), itemText);
+                    utils.notify({ summary: 'Storing to slot ' + (keyIndex === 9 ? 0 : keyIndex + 1), body: itemText});
                     const newSlots = ClipboardService.clipboardData.slots.slice();
                     while (newSlots.length <= keyIndex) {
                         newSlots.push("");
@@ -84,7 +84,7 @@ FloatingWindow {
                 }
             } else if (altHeld) {
                 if (event.key === Qt.Key_D) {
-                    utils.notify('Slots Cleared');
+                    utils.notify({summary: 'Slots Cleared'});
                     ClipboardService.clipboardData = {
                         "slots": [],
                         "clipboardText": ClipboardService.clipboardData.clipboardText
@@ -392,7 +392,7 @@ FloatingWindow {
                             } else {
                                 const text = button.itemText.replace(/'/g, "'\\''");
                                 Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-                                utils.notify('Copied Item');
+                                utils.notify({summary: 'Copied Item'});
                                 root.exit();
                             }
                         }

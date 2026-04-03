@@ -225,7 +225,7 @@ FloatingWindow {
                             const emoji = emojiButton.modelData.emoji;
                             const escapedEmoji = emoji.replace(/'/g, "'\\''");
                             Quickshell.execDetached(['bash', '-c', "printf '%s' '" + escapedEmoji + "' | wl-copy"]);
-                            utils.notify('Copied: ' + emojiButton.modelData.name, emoji);
+                            utils.notify({ summary: 'Copied: ' + emojiButton.modelData.name, body: emoji});
                             root.exit();
                         }
                     }

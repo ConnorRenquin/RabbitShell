@@ -7,8 +7,8 @@ Item {
     height: 0
 
     // TODO Implement AppName/Icon
-    function notify(summary = '', body = '') {
-        var test = Quickshell.execDetached(['notify-send', '-a', 'Clipboard', summary, body]);
+    function notify({summary = '', body = '', from = ''}) {
+        var test = Quickshell.execDetached(['notify-send', '-a', from, summary, body]);
     }
 
     // Ai code to move text over for indented blocks of copied text.

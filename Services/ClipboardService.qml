@@ -25,7 +25,7 @@ Singleton {
             "slots": root.clipboardData.slots,
             "clipboardText": newClipboardText
         };
-        utils.notify('Entry Removed');
+        utils.notify({summary: 'Entry Removed'});
     }
 
     function deduplicateClipboardText() {
@@ -52,10 +52,10 @@ Singleton {
     function checkSlot(index) {
         const storedText = root.clipboardData.slots[index];
         if (!storedText) {
-            utils.notify('Slot Empty');
+            utils.notify({summary: 'Slot Empty'});
             return;
         }
-        utils.notify('', storedText);
+        utils.notify({summary: '', body: storedText});
     }
 
     function findNextEmptySlot() {
@@ -70,7 +70,7 @@ Singleton {
     function storeToNextAvailableSlot(text) {
         const nextSlot = findNextEmptySlot();
         if (nextSlot === -1) {
-            utils.notify('No Empty Slots Available');
+            utils.notify({summary: 'No Empty Slots Available'});
             return;
         }
 
@@ -83,12 +83,12 @@ Singleton {
             "slots": newSlots,
             "clipboardText": root.clipboardData.clipboardText
         };
-        utils.notify('Stored to slot ' + (nextSlot === 9 ? 0 : nextSlot + 1), text);
+        utils.notify({summary: 'Stored to slot ' + (nextSlot === 9 ? 0 : nextSlot + 1),body: text});
     }
 
     function clearSlot(index) {
         if (!root.clipboardData.slots[index]) {
-            utils.notify('Slot Already Empty');
+            utils.notify({summary: 'Slot Already Empty'});
             return;
         }
         const newSlots = root.clipboardData.slots.slice();
@@ -97,18 +97,18 @@ Singleton {
             "slots": newSlots,
             "clipboardText": root.clipboardData.clipboardText
         };
-        utils.notify('Slot ' + (index === 9 ? 0 : index + 1) + ' Cleared');
+        utils.notify({summary: 'Slot ' + (index === 9 ? 0 : index + 1) + ' Cleared'});
     }
 
     function copySlotToClipboard(index) {
         const storedText = root.clipboardData.slots[index];
         if (!storedText) {
-            utils.notify('Slot Empty');
+            utils.notify({summary: 'Slot Empty'});
             return;
         }
         const text = storedText.replace(/'/g, "'\\''");
         Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-        utils.notify('Copied');
+        utils.notify({summary: 'Copied'});
     }
 
     Utils {
