@@ -10,4 +10,11 @@ Singleton {
     readonly property string close: ""
     readonly property string image: "󰋩"
     readonly property string info: ""
+    readonly property string bluetooth: ""
+    readonly property string display: "󰍹"
+    readonly property string wallpaper: "󰋩"
+    readonly property string audio: "󰓃"
+    readonly property string cheatsheet: "?"
+    readonly property string appearance: ""
+
 }
