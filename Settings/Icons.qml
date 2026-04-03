@@ -9,4 +9,5 @@ Singleton {
     readonly property string send: ""
     readonly property string close: ""
     readonly property string image: "󰋩"
+    readonly property string info: ""
 }
