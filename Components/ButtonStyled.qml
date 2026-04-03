@@ -29,6 +29,9 @@ Rectangle {
     property bool containsMouse: mouseArea.containsMouse
 
     default property alias content: contentItem.data
+
+    property alias textAlignment: buttonText.horizontalAlignment
+
     // TODO Have size effected by clicked.
     signal clicked(var mouse)
 
@@ -44,6 +47,7 @@ Rectangle {
         id: buttonText
         visible: root.text
         anchors.fill: parent
+        anchors.margins: Styles.marginSm
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: root.text
