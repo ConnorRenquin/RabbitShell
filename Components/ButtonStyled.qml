@@ -32,16 +32,12 @@ Rectangle {
     // TODO Have size effected by clicked.
     signal clicked(var mouse)
 
-    Behavior on color {
-        ColorAnimation {
-            duration: 50
-        }
+    ColorAnimation on color {
+        duration: 50
     }
 
-    Behavior on scale {
-        NumberAnimation {
-            duration: 50
-        }
+    NumberAnimation on scale {
+        duration: 50
     }
 
     TextStyled {
