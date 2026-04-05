@@ -20,13 +20,32 @@ Loader {
 
     property string keyMap: "wertyuiopasdfghjklzxcvbnm"
     property var toplevels: []
+    property var workspaceGroups: []
+    property var allToplevels: []
     property int currentIndex: -1
 
     function updateToplevels() {
         if (!Hyprland.toplevels)
             return;
-        toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel?.workspace?.id);
 
+        workspaceGroups = Hyprland.toplevels.values.reduce((groups, toplevel) => {
+            var workspaceId = toplevel?.workspace?.id
+            if (workspaceId === undefined || workspaceId === null || workspaceId === Hyprland.focusedWorkspace.id) {
+                return groups;
+            }
+            if (!groups[workspaceId]) {
+                groups[workspaceId] = [];
+            }
+            groups[workspaceId].push(toplevel);
+            return groups
+        }, {})
+        toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace.id);
+        allToplevels = toplevels.concat(
+            Object.keys(workspaceGroups)
+                .sort((a, b) => parseInt(a) - parseInt(b))
+                .map(id => workspaceGroups[id])
+                .reduce((acc, arr) => acc.concat(arr), [])
+        );
         currentIndex = toplevels.findIndex(toplevel => toplevel.activated);
         if (currentIndex === -1 && toplevels.length > 0) {
             currentIndex = 0;
@@ -38,6 +57,13 @@ Loader {
     Connections {
         target: Hyprland.toplevels
         function onValuesChanged() {
+            root.updateToplevels();
+        }
+    }
+
+    Connections {
+        target: Hyprland
+        function onFocusedWorkspaceChanged() {
             root.updateToplevels();
         }
     }
@@ -77,7 +103,7 @@ Loader {
         }
 
         function getToplevelIndex(toplevel) {
-            return root.toplevels.indexOf(toplevel);
+            return root.allToplevels.indexOf(toplevel);
         }
 
         HyprlandFocusGrab {
@@ -89,7 +115,7 @@ Loader {
         Rectangle {
             id: offMonitorBar
 
-            visible: offMonitorFlow.model.length > 0
+            visible: Object.keys(root.workspaceGroups).length > 0
 
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
@@ -103,50 +129,53 @@ Loader {
 
             GridLayoutPlus {
                 id: offMonitorFlow
-                columns: 4
                 anchors.centerIn: parent
-                model: root.toplevels.filter(toplevel => !toplevel?.workspace?.focused || toplevel?.workspace?.id <= 0).sort((a, b) => (a?.workspace?.id ?? 0) - (b?.workspace?.id ?? 0))
-                delegate: ButtonStyled {
-                    id: offMonitor
+                model: Object.keys(root.workspaceGroups).sort((a, b) => parseInt(a) - parseInt(b))
+                delegate: ColumnLayout {
+                    id: offMonitorToplevel
+
+                    Layout.alignment: Qt.AlignTop
 
                     required property var modelData
-                    required property int index
+                    property var workspaceToplevels: root.workspaceGroups[modelData] ?? []
 
-                    implicitWidth: 240
-                    implicitHeight: 80
-                    isFocused: modelData.activated
+                    spacing: Styles.marginSm
 
-                    onClicked: modelData.wayland.activate()
+                    TextStyled {
+                        font.pixelSize: Styles.textSm
+                        text: "󰜌 " + offMonitorToplevel.modelData + " Workspace"
+                    }
 
-                    property int globalIndex: toplevelView.getToplevelIndex(modelData)
-                    property string keyLabel: globalIndex >= 0 && globalIndex < root.keyMap.length ? root.keyMap[globalIndex] : ""
+                    ColumnLayoutPlus {
+                        model: parent.workspaceToplevels
+                        delegate: ButtonStyled {
+                            id: offMonitor
 
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: Styles.marginSm
-                        spacing: Styles.marginMd
-                        IconImage {
-                            implicitHeight: 32
-                            implicitWidth: 32
-                            source: Quickshell.iconPath(DesktopEntries.byId(offMonitor.modelData.wayland?.appId)?.icon, "applications-other")
-                        }
+                            required property var modelData
+                            required property int index
 
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            spacing: 2
+                            implicitWidth: 175
+                            implicitHeight: 50
+                            isFocused: modelData.activated
 
-                            TextStyled {
-                                Layout.fillWidth: true
-                                font.pixelSize: Styles.textSm
-                                text: "󰜌 " + offMonitor.modelData?.workspace?.id + " Workspace"
-                                elide: Text.ElideRight
-                            }
+                            onClicked: modelData.wayland.activate()
 
-                            TextStyled {
-                                Layout.fillWidth: true
-                                font.pixelSize: Styles.textSm
-                                text: offMonitor.keyLabel.toUpperCase() + " " + (offMonitor.modelData?.wayland?.title ?? "")
+                            property int globalIndex: toplevelView.getToplevelIndex(modelData)
+                            property string keyLabel: globalIndex >= 0 && globalIndex < root.keyMap.length ? root.keyMap[globalIndex] : ""
+
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.margins: Styles.marginSm
+                                IconImage {
+                                    implicitHeight: 32
+                                    implicitWidth: 32
+                                    source: Quickshell.iconPath(DesktopEntries.byId(offMonitor.modelData.wayland?.appId)?.icon, "applications-other")
+                                }
+                                TextStyled {
+                                    Layout.fillWidth: true
+                                    text: offMonitor.keyLabel.toUpperCase() + " " + (offMonitor.modelData?.wayland?.title ?? "Unknown App")
+                                    elide: Text.ElideRight
+                                }
                             }
                         }
                     }
@@ -155,7 +184,7 @@ Loader {
         }
 
         Repeater {
-            model: root.toplevels.filter(toplevel => toplevel?.workspace?.focused && toplevel?.workspace?.id > 0)
+            model: root.toplevels.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace.id)
             delegate: Rectangle {
                 id: onScreen
 
@@ -167,12 +196,6 @@ Loader {
 
                 property ClientInfo clientInfo: HyprctlClients.clients.find(client => modelData.address === client.address.replace('0x', ''))
                 property var clientMonitor: Hyprland.monitors.values.find(monitor => monitor.id === clientInfo?.monitor)
-
-                scale: visible ? 1 : 0
-
-                NumberAnimation on scale {
-                    duration: 2000
-                }
 
                 width: 80
                 height: 60
@@ -211,8 +234,15 @@ Loader {
             focus: true
 
             Keys.onPressed: function (event) {
+                var digit = parseInt(event.text);
                 hideTimer.restart();
-                if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+                if (!isNaN(digit) && digit >= 1) {
+                    Hyprland.dispatch("workspace " + digit)
+                    Qt.callLater(() => {
+                        controller.forceActiveFocus();
+                    });
+                    return;
+                } else if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                     root.active = false;
                     event.accepted = true;
                     return;
@@ -243,7 +273,7 @@ Loader {
                 if (index === -1 && !root.toplevels[index])
                     return;
 
-                var allToplevels = root.toplevels;
+                var allToplevels = root.allToplevels;
                 if (index >= 0 && index < allToplevels.length) {
                     var toplevel = allToplevels[index].wayland;
                     root.active = false;
