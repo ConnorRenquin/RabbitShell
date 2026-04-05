@@ -94,10 +94,8 @@ Loader {
 
                         anchors.centerIn: parent
 
-                        Behavior on radius {
-                            NumberAnimation {
-                                duration: 400
-                            }
+                        NumberAnimation on radius {
+                            duration: 400
                         }
 
                         Column {

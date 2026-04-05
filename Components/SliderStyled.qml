@@ -47,10 +47,8 @@ Slider {
         radius: Styles.radiusSm
         color: handleMouseArea.containsMouse ? root.handleHoverColor : root.handleColor
 
-        Behavior on color {
-            ColorAnimation {
-                duration: 200
-            }
+        ColorAnimation on color {
+            duration: 200
         }
 
         TextStyled {

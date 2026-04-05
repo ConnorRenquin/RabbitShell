@@ -20,10 +20,8 @@ Switch {
         radius: height / 2
         color: root.checked ? root.checkedColor : root.uncheckedColor
 
-        Behavior on color {
-            ColorAnimation {
-                duration: 100
-            }
+        ColorAnimation on color {
+            duration: 100
         }
 
         Rectangle {
@@ -34,16 +32,12 @@ Switch {
             radius: width / 2
             color: root.checked ? root.handleCheckedColor : root.handleColor
 
-            Behavior on x {
-                NumberAnimation {
-                    duration: 100
-                }
+            NumberAnimation on x {
+                duration: 100
             }
 
-            Behavior on color {
-                ColorAnimation {
-                    duration: 100
-                }
+            ColorAnimation on color {
+                duration: 100
             }
         }
     }

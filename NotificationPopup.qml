@@ -73,11 +73,9 @@ Variants {
             property real scaleTarget: 0
             Component.onCompleted: scaleTarget = 1
 
-            Behavior on scale {
-                NumberAnimation {
-                    duration: 150
-                    easing.type: Easing.OutCubic
-                }
+            NumberAnimation on scale {
+                duration: 150
+                easing.type: Easing.OutCubic
             }
             Timer {
                 id: expireTimer

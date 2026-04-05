@@ -21,10 +21,8 @@ ComboBox {
         border.width: 1
         border.color: root.borderColor
 
-        Behavior on color {
-            ColorAnimation {
-                duration: 50
-            }
+        ColorAnimation on color {
+            duration: 50
         }
     }
 
@@ -97,10 +95,8 @@ ComboBox {
             color: highlighted ? root.highlightColor : "transparent"
             radius: Styles.radiusSm
 
-            Behavior on color {
-                ColorAnimation {
-                    duration: 50
-                }
+            ColorAnimation on color {
+                duration: 50
             }
         }
 

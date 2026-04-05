@@ -27,18 +27,14 @@ Rectangle {
         opacity: visible ? 1 : 0
         scale: visible ? 1 : 0.95
 
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutCubic
-            }
+        NumberAnimation on opacity {
+            duration: 200
+            easing.type: Easing.OutCubic
         }
 
-        Behavior on scale {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutCubic
-            }
+        NumberAnimation on scale {
+            duration: 200
+            easing.type: Easing.OutCubic
         }
     }
 

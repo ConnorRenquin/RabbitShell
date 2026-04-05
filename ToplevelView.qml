@@ -72,7 +72,7 @@ Loader {
         WlrLayershell.namespace: "toplevels"
         WlrLayershell.layer: WlrLayer.Overlay
 
-        mask: Region{
+        mask: Region {
             item: offMonitorBar
         }
 
@@ -170,10 +170,8 @@ Loader {
 
                 scale: visible ? 1 : 0
 
-                Behavior on scale {
-                    NumberAnimation {
-                        duration: 2000
-                    }
+                NumberAnimation on scale {
+                    duration: 2000
                 }
 
                 width: 80

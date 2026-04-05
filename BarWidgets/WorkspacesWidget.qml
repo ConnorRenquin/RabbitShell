@@ -15,10 +15,8 @@ Rectangle {
     implicitHeight: parent.height
     implicitWidth: workspacesListView.width + Styles.marginSm
 
-    Behavior on implicitWidth {
-        NumberAnimation {
-            duration: 150
-        }
+    NumberAnimation on implicitWidth {
+        duration: 150
     }
 
     ListView {
@@ -64,11 +62,9 @@ Rectangle {
 
             onClicked: Hyprland.dispatch(`workspace ${modelData.id}`)
 
-            Behavior on radius {
-                NumberAnimation {
-                    duration: 400
-                    easing.type: Easing.OutQuad
-                }
+            NumberAnimation on radius {
+                duration: 400
+                easing.type: Easing.OutQuad
             }
 
             DoubleText {

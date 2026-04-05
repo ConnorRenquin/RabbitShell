@@ -69,17 +69,12 @@ Rectangle {
             opacity: popup.visible ? 1 : 0
             scale: popup.visible ? 1 : 0
 
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 200
-                    easing: Easing.InOutCubic
-                }
+            NumberAnimation on opacity {
+                duration: 200
             }
 
-            Behavior on scale {
-                NumberAnimation {
-                    duration: 200
-                }
+            NumberAnimation on scale {
+                duration: 200
             }
 
             Image {

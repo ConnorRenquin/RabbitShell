@@ -13,10 +13,8 @@ Rectangle {
     implicitWidth: Math.min(windowTitle.implicitWidth + Styles.marginSm * 2, 300)
     implicitHeight: parent.height
 
-    Behavior on implicitWidth {
-        NumberAnimation {
-            duration: 100
-        }
+    NumberAnimation on implicitWidth {
+        duration: 100
     }
 
     TextStyled {
