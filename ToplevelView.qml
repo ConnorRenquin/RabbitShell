@@ -29,7 +29,7 @@ Loader {
             return;
 
         workspaceGroups = Hyprland.toplevels.values.reduce((groups, toplevel) => {
-            var workspaceId = toplevel?.workspace?.id
+            var workspaceId = toplevel?.workspace?.id;
             if (workspaceId === undefined || workspaceId === null || workspaceId === Hyprland.focusedWorkspace.id) {
                 return groups;
             }
@@ -37,15 +37,10 @@ Loader {
                 groups[workspaceId] = [];
             }
             groups[workspaceId].push(toplevel);
-            return groups
-        }, {})
+            return groups;
+        }, {});
         toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace.id);
-        allToplevels = toplevels.concat(
-            Object.keys(workspaceGroups)
-                .sort((a, b) => parseInt(a) - parseInt(b))
-                .map(id => workspaceGroups[id])
-                .reduce((acc, arr) => acc.concat(arr), [])
-        );
+        allToplevels = toplevels.concat(Object.keys(workspaceGroups).sort((a, b) => parseInt(a) - parseInt(b)).map(id => workspaceGroups[id]).reduce((acc, arr) => acc.concat(arr), []));
         currentIndex = toplevels.findIndex(toplevel => toplevel.activated);
         if (currentIndex === -1 && toplevels.length > 0) {
             currentIndex = 0;
@@ -134,16 +129,26 @@ Loader {
                 delegate: ColumnLayout {
                     id: offMonitorToplevel
 
+                    spacing: Styles.marginSm
+
                     Layout.alignment: Qt.AlignTop
 
                     required property var modelData
                     property var workspaceToplevels: root.workspaceGroups[modelData] ?? []
 
-                    spacing: Styles.marginSm
-
-                    TextStyled {
-                        font.pixelSize: Styles.textSm
-                        text: "󰜌 " + offMonitorToplevel.modelData + " Workspace"
+                    Rectangle {
+                        Layout.preferredHeight: workspaceId.implicitHeight + Styles.marginSm
+                        Layout.fillWidth: true
+                        radius: Styles.radiusMd
+                        color: Colors.background
+                        TextStyled {
+                            id: workspaceId
+                            anchors.fill: parent
+                            font.pixelSize: Styles.textSm
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            text: "󰜌 " + offMonitorToplevel.modelData
+                        }
                     }
 
                     ColumnLayoutPlus {
@@ -171,10 +176,26 @@ Loader {
                                     implicitWidth: 32
                                     source: Quickshell.iconPath(DesktopEntries.byId(offMonitor.modelData.wayland?.appId)?.icon, "applications-other")
                                 }
+                                Rectangle {
+                                    Layout.preferredHeight: text.implicitHeight
+                                    Layout.preferredWidth: 30
+                                    color: Colors.backgroundLifted
+                                    radius: Styles.radiusLg
+                                    TextStyled {
+                                        id: text
+                                        anchors.fill: parent
+                                        text: offMonitor.keyLabel.toUpperCase()
+                                        color: Colors.foreground
+                                        elide: Text.ElideRight
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
                                 TextStyled {
                                     Layout.fillWidth: true
-                                    text: offMonitor.keyLabel.toUpperCase() + " " + (offMonitor.modelData?.wayland?.title ?? "Unknown App")
+                                    text: (offMonitor.modelData?.wayland?.title ?? "Unknown App")
                                     elide: Text.ElideRight
+                                    font.pixelSize: Styles.textSm
                                 }
                             }
                         }
@@ -234,32 +255,26 @@ Loader {
             focus: true
 
             Keys.onPressed: function (event) {
-                var digit = parseInt(event.text);
                 hideTimer.restart();
-                if (!isNaN(digit) && digit >= 1) {
-                    Hyprland.dispatch("workspace " + digit)
-                    Qt.callLater(() => {
-                        controller.forceActiveFocus();
-                    });
+
+                var digit = -1;
+                if (event.key >= Qt.Key_1 && event.key <= Qt.Key_9)
+                    digit = event.key - Qt.Key_0;
+
+                const ctrlHeld = event.modifiers & Qt.ControlModifier;
+                if (ctrlHeld) {
+                    if (!isNaN(digit) && digit >= 1) {
+                        Hyprland.dispatch("movetoworkspace " + digit);
+                        console.log('held 2');
+                        Qt.callLater(() => controller.forceActiveFocus());
+                        return;
+                    }
+                } else if (!isNaN(digit) && digit >= 1) {
+                    Hyprland.dispatch("workspace " + digit);
+                    Qt.callLater(() => controller.forceActiveFocus());
                     return;
                 } else if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
                     root.active = false;
-                    event.accepted = true;
-                    return;
-                } else if (event.key === Qt.Key_Tab) {
-                    if (root.toplevels.length === 0)
-                        return;
-                    root.currentIndex = (root.currentIndex - 1 + root.toplevels.length) % root.toplevels.length;
-                    var toplevel = root.toplevels[root.currentIndex].wayland;
-                    toplevel.activate();
-                    event.accepted = true;
-                    return;
-                } else if (event.key === Qt.Key_Alt) {
-                    if (root.toplevels.length === 0)
-                        return;
-                    root.currentIndex = (root.currentIndex + 1) % root.toplevels.length;
-                    var toplevel = root.toplevels[root.currentIndex].wayland;
-                    toplevel.activate();
                     event.accepted = true;
                     return;
                 }
@@ -273,9 +288,8 @@ Loader {
                 if (index === -1 && !root.toplevels[index])
                     return;
 
-                var allToplevels = root.allToplevels;
-                if (index >= 0 && index < allToplevels.length) {
-                    var toplevel = allToplevels[index].wayland;
+                if (index >= 0 && index < root.allToplevels.length) {
+                    var toplevel = root.allToplevels[index].wayland;
                     root.active = false;
                     event.accepted = true;
                     toplevel.activate();
