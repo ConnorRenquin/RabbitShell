@@ -204,6 +204,37 @@ Loader {
             }
         }
 
+        Rectangle {
+            id: workspaceInput
+            visible: false
+            anchors.top: offMonitorBar.bottom
+            anchors.horizontalCenter: offMonitorBar.horizontalCenter
+            anchors.margins: Styles.marginSm
+            color: Colors.backgroundLifted
+            width: 50
+            height: 50
+            radius: Styles.radiusMd
+            TextFieldStyled {
+                id: workspaceInputField
+                placeholderText: 'workspace'
+                backgroundColor: Colors.background
+                anchors.fill: parent
+                Keys.onEscapePressed: root.active = false;
+                Keys.onReturnPressed: event => {
+                    const ctrlHeld = event.modifiers & Qt.ControlModifier;
+                    const shiftHeld = event.modifiers & Qt.ShiftModifier;
+                    if (ctrlHeld) {
+                        Hyprland.dispatch("movetoworkspace " + text);
+                    } else if (shiftHeld) {
+                        Hyprland.dispatch("movetoworkspacesilent " + text);
+                    } else {
+                        Hyprland.dispatch("workspace " + text);
+                    }
+                    root.active = false;
+                }
+            }
+        }
+
         Repeater {
             model: root.toplevels.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace.id)
             delegate: Rectangle {
@@ -256,43 +287,30 @@ Loader {
 
             Keys.onPressed: function (event) {
                 hideTimer.restart();
-
-                var digit = -1;
-                if (event.key >= Qt.Key_1 && event.key <= Qt.Key_9)
-                    digit = event.key - Qt.Key_0;
-
-                const ctrlHeld = event.modifiers & Qt.ControlModifier;
-                if (ctrlHeld) {
-                    if (!isNaN(digit) && digit >= 1) {
-                        Hyprland.dispatch("movetoworkspace " + digit);
-                        console.log('held 2');
-                        Qt.callLater(() => controller.forceActiveFocus());
+                if (event.text.match(/[0-9-+]/) !== null) { // Workspace input
+                    workspaceInputField.text = event.text;
+                    workspaceInput.visible = true;
+                    workspaceInputField.focus = true;
+                    return;
+                } else if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) { // Quit
+                    root.active = false;
+                    event.accepted = true;
+                    return;
+                } else { // Select a window
+                    var pressedChar = event.text.toLowerCase();
+                    if (pressedChar === "")
                         return;
+
+                    var index = root.keyMap.indexOf(pressedChar);
+                    if (index === -1 && !root.toplevels[index])
+                        return;
+
+                    if (index >= 0 && index < root.allToplevels.length) {
+                        var toplevel = root.allToplevels[index].wayland;
+                        root.active = false;
+                        event.accepted = true;
+                        toplevel.activate();
                     }
-                } else if (!isNaN(digit) && digit >= 1) {
-                    Hyprland.dispatch("workspace " + digit);
-                    Qt.callLater(() => controller.forceActiveFocus());
-                    return;
-                } else if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
-                    root.active = false;
-                    event.accepted = true;
-                    return;
-                }
-
-                var pressedChar = event.text.toLowerCase();
-                if (pressedChar === "")
-                    return;
-
-                var index = root.keyMap.indexOf(pressedChar);
-
-                if (index === -1 && !root.toplevels[index])
-                    return;
-
-                if (index >= 0 && index < root.allToplevels.length) {
-                    var toplevel = root.allToplevels[index].wayland;
-                    root.active = false;
-                    event.accepted = true;
-                    toplevel.activate();
                 }
             }
         }
