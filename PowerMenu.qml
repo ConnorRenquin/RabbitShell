@@ -23,7 +23,7 @@ Loader {
 
     function menuAction(command) {
         loader.active = false;
-        Quickshell.execDetached(["bash", "-c", command]);
+        Quickshell.execDetached(["sh", "-c", command]);
     }
 
     Component.onCompleted: PatchBay.openPowerMenu.connect(toggle)
@@ -102,14 +102,20 @@ Loader {
 
                 PowerMenuButton {
                     text: ""
-                    onClicked: loader.menuAction("reboot now")
+                    onClicked: loader.menuAction("systemctl reboot || loginctl reboot")
                     index: 3
                 }
 
                 PowerMenuButton {
                     text: ""
-                    onClicked: loader.menuAction("shutdown now")
+                    onClicked: loader.menuAction("systemctl poweroff || loginctl poweroff")
                     index: 4
+                }
+
+                PowerMenuButton {
+                    text: ""
+                    onClicked: loader.menuAction("systemctl reboot --firmware-setup || loginctl reboot --firmware-setup")
+                    index: 5
                 }
             }
         }
