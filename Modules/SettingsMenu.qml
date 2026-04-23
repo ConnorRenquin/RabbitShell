@@ -7,9 +7,10 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Components
-import qs.Settings
 import qs.Services
-import qs.SettingsViews
+
+import qs.Settings
+import qs.Settings.SettingsViews
 
 Loader {
     id: loader

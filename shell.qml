@@ -4,6 +4,7 @@ import Quickshell.Io
 import QtQuick
 
 import qs.Services
+import qs.Modules
 
 ShellRoot {
     Bar {}
