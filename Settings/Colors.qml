@@ -14,36 +14,36 @@ Singleton {
     property bool isLoadingTheme: false
 
     property var userColors: {
-        "Surface": "#2D353B",
-        "OnSurface": "#D3C6AA",
-        "Primary": "#A7C080",
-        "Error": "#E67E80",
-        "Tertiary": "#DBBC7F",
+        "surface": "#2D353B",
+        "onSurface": "#D3C6AA",
+        "primary": "#A7C080",
+        "error": "#E67E80",
+        "tertiary": "#DBBC7F",
     }
 
     property double lighter: 2.5
     property double darker: 1.5
 
-    property string surface: userColors["Surface"] ?? "#2D353B"
+    property string surface: userColors["surface"] ?? "#2D353B"
     property string surfaceContainer: Qt.lighter(Colors.surface, lighter) ?? "#343F44"
     property string surfaceContainerHigh: Qt.darker(Colors.surface, darker) ?? "#343F44"
 
-    property string onSurface: userColors["OnSurface"] ?? "#D3C6AA"
+    property string onSurface: userColors["onSurface"] ?? "#D3C6AA"
 
-    property string primary: userColors["Primary"] ?? "#A7C080"
+    property string primary: userColors["primary"] ?? "#A7C080"
     property string primaryDarker: Qt.darker(Colors.primary, darker) ?? "#425047"
 
-    property string error: userColors["Error"] ?? "#E67E80"
+    property string error: userColors["error"] ?? "#E67E80"
     property string errorDarker: Qt.darker(Colors.error, Colors.darker) ?? "#514045"
 
-    property string tertiary: userColors["Tertiary"] ?? "#DBBC7F"
+    property string tertiary: userColors["tertiary"] ?? "#DBBC7F"
 
     function updateColors() {
-        surface = userColors["Surface"] ?? "#2D353B";
-        onSurface = userColors["OnSurface"] ?? "#D3C6AA";
-        primary = userColors["Primary"] ?? "#A7C080";
-        error = userColors["Error"] ?? "#E67E80";
-        tertiary = userColors["Tertiary"] ?? "#DBBC7F";
+        surface = userColors["surface"] ?? "#2D353B";
+        onSurface = userColors["onSurface"] ?? "#D3C6AA";
+        primary = userColors["primary"] ?? "#A7C080";
+        error = userColors["error"] ?? "#E67E80";
+        tertiary = userColors["tertiary"] ?? "#DBBC7F";
     }
 
     function refreshThemes() {

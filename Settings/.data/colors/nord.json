@@ -1,7 +1,7 @@
 {
-  "Surface": "#2E3440",
-  "OnSurface": "#ECEFF4",
-  "Primary": "#A3BE8C",
-  "Error": "#BF616A",
-  "Tertiary": "#EBCB8B"
+  "surface": "#2E3440",
+  "onSurface": "#ECEFF4",
+  "primary": "#A3BE8C",
+  "error": "#BF616A",
+  "tertiary": "#EBCB8B"
 }
