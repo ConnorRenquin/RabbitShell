@@ -10,7 +10,7 @@ import qs.Settings
 import qs.Components
 
 Rectangle {
-    color: Colors.backgroundLighter
+    color: Colors.surfaceContainer
     ScrollView {
         anchors.fill: parent
         anchors.margins: Styles.marginSm
@@ -23,7 +23,7 @@ Rectangle {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                color: Colors.background
+                color: Colors.surface
                 radius: Styles.radiusLg
 
                 RowLayout {

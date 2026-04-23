@@ -11,11 +11,11 @@ Slider {
     from: 0
     to: 1
 
-    property color backgroundColor: Colors.background
-    property color progressColor: Colors.foreground
-    property color handleColor: Colors.foreground
-    property color handleHoverColor: Colors.foreground
-    property color handleTextColor: Colors.backgroundLighter
+    property color backgroundColor: Colors.surface
+    property color progressColor: Colors.onSurface
+    property color handleColor: Colors.onSurface
+    property color handleHoverColor: Colors.onSurface
+    property color handleTextColor: Colors.surfaceContainer
     property int handleHeight: 30
     property bool showPercentage: true
 

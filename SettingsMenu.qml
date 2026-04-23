@@ -24,7 +24,7 @@ Loader {
 
     sourceComponent: FloatingWindow {
         id: root
-        color: Colors.background
+        color: Colors.surface
         title: 'Settings'
 
         HyprlandFocusGrab {
@@ -36,7 +36,7 @@ Loader {
         Rectangle {
             id: base
             anchors.fill: parent
-            color: Colors.background
+            color: Colors.surface
             focus: true
 
             Keys.onPressed: event => {
@@ -71,7 +71,7 @@ Loader {
                 Rectangle {
                     id: settingsModuleUi
                     Layout.fillHeight: true
-                    color: Colors.backgroundLighter
+                    color: Colors.surfaceContainer
                     Layout.preferredWidth: 300
                     Layout.fillWidth: true
                     UpdateSettingsView {

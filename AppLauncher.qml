@@ -138,7 +138,7 @@ Loader {
                 implicitHeight: 60
                 Layout.fillWidth: true
 
-                color: Colors.background
+                color: Colors.surface
                 radius: Styles.radiusSm
 
                 readonly property int textSize: 25
@@ -163,7 +163,7 @@ Loader {
                     anchors.margins: Styles.marginMd
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    color: Colors.backgroundDarker
+                    color: Colors.surfaceContainerHigh
                     radius: Styles.radiusLg
                     TextStyled {
                         id: clock
@@ -177,7 +177,7 @@ Loader {
             Rectangle {
                 id: appGridBackground
 
-                color: Colors.background
+                color: Colors.surface
                 radius: Styles.radiusSm
 
                 Layout.fillWidth: true

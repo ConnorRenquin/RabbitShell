@@ -27,7 +27,7 @@ Rectangle {
     visible: root.notification !== null && root.notification.tracked
     implicitHeight: visible ? Math.min(notificationContent.implicitHeight + notificationContent.anchors.margins * 2, root.maxHeight) : 0
     clip: true
-    color: Colors.background
+    color: Colors.surface
     radius: Styles.radiusMd
 
 
@@ -133,7 +133,7 @@ Rectangle {
                 Layout.fillHeight: true
                 placeholderText: root.notification?.inlineReplyPlaceholder || "Reply..."
                 onActiveFocusChanged: if (activeFocus) root.replyFocused()
-                backgroundColor: Colors.backgroundLighter
+                backgroundColor: Colors.surfaceContainer
                 background: Rectangle {
                     color: inlineReplyInput.backgroundColor
                     radius: Styles.radiusSm

@@ -48,7 +48,7 @@ FloatingWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: Colors.background
+        color: Colors.surface
         ScrollViewPlus {
             id: scrollView
             anchors.fill: parent
@@ -78,8 +78,8 @@ FloatingWindow {
                         anchors.fill: parent
                         radius: Styles.radiusSm
                         border.width: Styles.marginSm
-                        border.color: Colors.backgroundLighter
-                        color: Colors.backgroundLighter
+                        border.color: Colors.surfaceContainer
+                        color: Colors.surfaceContainer
                         Image {
                             id: imageComponent
                             anchors.fill: parent

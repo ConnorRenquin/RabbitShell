@@ -12,7 +12,7 @@ Rectangle {
     width: 500
     height: column.implicitHeight + Styles.marginSm * 2
     radius: Styles.radiusLg
-    color: Colors.backgroundLighter
+    color: Colors.surfaceContainer
 
     property alias title: header.text
     property alias currentText: textField.text
@@ -33,7 +33,7 @@ Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 40
             radius: Styles.radiusSm
-            color: Colors.background
+            color: Colors.surface
             TextFieldStyled {
                 id: textField
                 anchors.fill: parent

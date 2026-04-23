@@ -8,7 +8,7 @@ Rectangle {
     z: 5
     visible: false
     anchors.centerIn: parent
-    color: Colors.backgroundLighter
+    color: Colors.surfaceContainer
     radius: Styles.radiusLg
     width: 400
     height: column.implicitHeight + Styles.marginSm * 2
@@ -40,7 +40,7 @@ Rectangle {
             visible: text
             text: root.warning
             font.pixelSize: Styles.textSm
-            color: Colors.warning
+            color: Colors.tertiary
             Layout.fillWidth: true
         }
         RowLayout {

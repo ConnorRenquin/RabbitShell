@@ -6,11 +6,11 @@ import qs.Settings
 Switch {
     id: root
 
-    property color backgroundColor: Colors.background
-    property color checkedColor: Colors.foreground
-    property color uncheckedColor: Colors.backgroundLighter
-    property color handleColor: Colors.foreground
-    property color handleCheckedColor: Colors.backgroundLighter
+    property color backgroundColor: Colors.surface
+    property color checkedColor: Colors.onSurface
+    property color uncheckedColor: Colors.surfaceContainer
+    property color handleColor: Colors.onSurface
+    property color handleCheckedColor: Colors.surfaceContainer
 
     indicator: Rectangle {
         implicitWidth: 40

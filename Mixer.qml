@@ -52,7 +52,7 @@ Loader {
             id: base
             focus: true
             anchors.fill: parent
-            color: Colors.background
+            color: Colors.surface
             radius: Styles.radiusSm
 
             Keys.onPressed: event => {

@@ -14,7 +14,7 @@ Rectangle {
     id: root
 
     anchors.fill: parent
-    color: Colors.backgroundLighter
+    color: Colors.surfaceContainer
 
     property double viewScale: 0.1
     property var selectedMonitorIndex: 0
@@ -72,7 +72,7 @@ Rectangle {
 
             Layout.fillWidth: true
             Layout.preferredHeight: 80
-            color: Colors.background
+            color: Colors.surface
             radius: Styles.radiusSm
 
             RowLayout {
@@ -124,7 +124,7 @@ Rectangle {
                 id: displayPlacer
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: Colors.backgroundLighter
+                color: Colors.surfaceContainer
                 clip: true
 
                 ScrollView {
@@ -153,7 +153,7 @@ Rectangle {
                             y: Math.ceil(parseInt(modelData.y) * root.viewScale + displayCanvas.height / 2)
                             width: parseInt(modelData.width) * root.viewScale
                             height: parseInt(modelData.height) * root.viewScale
-                            color: Colors.background
+                            color: Colors.surface
                             radius: Styles.radiusSm
 
                             MouseArea {
@@ -177,7 +177,7 @@ Rectangle {
                                 anchors.centerIn: parent
                                 implicitWidth: displayInfo.width + Styles.marginSm
                                 implicitHeight: displayInfo.height + Styles.marginSm
-                                color: Colors.background
+                                color: Colors.surface
                                 radius: Styles.radiusSm
                                 Column {
                                     id: displayInfo
@@ -230,7 +230,7 @@ Rectangle {
                 id: rightPanel
                 Layout.preferredWidth: 340
                 Layout.fillHeight: true
-                color: Colors.background
+                color: Colors.surface
                 radius: Styles.radiusSm
 
                 ScrollView {
@@ -255,7 +255,7 @@ Rectangle {
                                 id: displayInfoCard
                                 required property var modelData
                                 required property int index
-                                defaultColor: Colors.backgroundLighter
+                                defaultColor: Colors.surfaceContainer
                                 onClicked: {
                                     root.selectedMonitorIndex = index;
                                 }

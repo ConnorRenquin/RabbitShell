@@ -13,7 +13,7 @@ Rectangle {
     id: root
 
     anchors.fill: parent
-    color: Colors.backgroundLighter
+    color: Colors.surfaceContainer
 
     property string pendingThemeName: ""
 
@@ -33,7 +33,7 @@ Rectangle {
             id: wallpaperDirectory
             Layout.fillWidth: true
             Layout.preferredHeight: 120
-            color: Colors.background
+            color: Colors.surface
             radius: Styles.radiusSm
             ColumnLayout {
                 anchors.fill: parent
@@ -78,7 +78,7 @@ Rectangle {
 
             Layout.fillWidth: true
             Layout.preferredHeight: 100
-            color: Colors.background
+            color: Colors.surface
             radius: Styles.radiusSm
 
             RowLayout {
@@ -238,7 +238,7 @@ Rectangle {
             id: wallpaperSelectionSection
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: Colors.background
+            color: Colors.surface
             radius: Styles.radiusSm
             ScrollView {
                 anchors.fill: parent
@@ -260,7 +260,7 @@ Rectangle {
 
                         Layout.fillWidth: true
                         Layout.preferredHeight: 300
-                        color: Colors.backgroundLighter
+                        color: Colors.surfaceContainer
                         radius: Styles.radiusSm
 
                         ColumnLayout {
@@ -271,7 +271,7 @@ Rectangle {
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                color: Colors.backgroundLighter
+                                color: Colors.surfaceContainer
                                 radius: Styles.radiusSm
                                 clip: true
 

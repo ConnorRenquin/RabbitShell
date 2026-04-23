@@ -41,7 +41,7 @@ Loader {
         Rectangle {
             id: base
 
-            color: Colors.background
+            color: Colors.surface
             radius: Styles.radiusSm
             focus: true
 

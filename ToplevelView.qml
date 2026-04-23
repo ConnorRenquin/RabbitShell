@@ -119,7 +119,7 @@ Loader {
             width: offMonitorFlow.implicitWidth + Styles.marginSm
             height: offMonitorFlow.implicitHeight + Styles.marginSm
 
-            color: Colors.backgroundLighter
+            color: Colors.surfaceContainer
             radius: Styles.radiusMd
 
             GridLayoutPlus {
@@ -140,7 +140,7 @@ Loader {
                         Layout.preferredHeight: workspaceId.implicitHeight + Styles.marginSm
                         Layout.fillWidth: true
                         radius: Styles.radiusMd
-                        color: Colors.background
+                        color: Colors.surface
                         TextStyled {
                             id: workspaceId
                             anchors.fill: parent
@@ -179,13 +179,13 @@ Loader {
                                 Rectangle {
                                     Layout.preferredHeight: text.implicitHeight
                                     Layout.preferredWidth: 30
-                                    color: Colors.backgroundLighter
+                                    color: Colors.surfaceContainer
                                     radius: Styles.radiusLg
                                     TextStyled {
                                         id: text
                                         anchors.fill: parent
                                         text: offMonitor.keyLabel.toUpperCase()
-                                        color: Colors.foreground
+                                        color: Colors.onSurface
                                         elide: Text.ElideRight
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
@@ -210,14 +210,14 @@ Loader {
             anchors.top: offMonitorBar.bottom
             anchors.horizontalCenter: offMonitorBar.horizontalCenter
             anchors.margins: Styles.marginSm
-            color: Colors.backgroundLighter
+            color: Colors.surfaceContainer
             width: 50
             height: 50
             radius: Styles.radiusMd
             TextFieldStyled {
                 id: workspaceInputField
                 placeholderText: 'workspace'
-                backgroundColor: Colors.background
+                backgroundColor: Colors.surface
                 anchors.fill: parent
                 Keys.onEscapePressed: root.active = false;
                 Keys.onReturnPressed: event => {
@@ -255,7 +255,7 @@ Loader {
                 x: clientInfo ? clientInfo.at[0] - (clientMonitor?.x ?? 0) + clientInfo.size[0] / 2 - width / 2 : 0
                 y: clientInfo ? clientInfo.at[1] - (clientMonitor?.y ?? 0) + clientInfo.size[1] / 2 - height / 2 : 0
 
-                color: modelData.activated ? Colors.backgroundLighter: Colors.background
+                color: modelData.activated ? Colors.surfaceContainer: Colors.surface
                 radius: Styles.radiusMd
 
                 RowLayout {

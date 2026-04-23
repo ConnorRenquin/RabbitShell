@@ -14,36 +14,36 @@ Singleton {
     property bool isLoadingTheme: false
 
     property var userColors: {
-        "Background": "#2D353B",
-        "Foreground": "#D3C6AA",
-        "Success": "#A7C080",
+        "Surface": "#2D353B",
+        "OnSurface": "#D3C6AA",
+        "Primary": "#A7C080",
         "Error": "#E67E80",
-        "Warning": "#DBBC7F",
+        "Tertiary": "#DBBC7F",
     }
 
     property double lighter: 2.5
     property double darker: 1.5
 
-    property string background: userColors["Background"] ?? "#2D353B"
-    property string backgroundLighter: Qt.lighter(Colors.background, lighter) ?? "#343F44"
-    property string backgroundDarker: Qt.darker(Colors.background, darker) ?? "#343F44"
+    property string surface: userColors["Surface"] ?? "#2D353B"
+    property string surfaceContainer: Qt.lighter(Colors.surface, lighter) ?? "#343F44"
+    property string surfaceContainerHigh: Qt.darker(Colors.surface, darker) ?? "#343F44"
 
-    property string foreground: userColors["Foreground"] ?? "#D3C6AA"
+    property string onSurface: userColors["OnSurface"] ?? "#D3C6AA"
 
-    property string success: userColors["Success"] ?? "#A7C080"
-    property string successDarker: Qt.darker(Colors.success, darker) ?? "#425047"
+    property string primary: userColors["Primary"] ?? "#A7C080"
+    property string primaryDarker: Qt.darker(Colors.primary, darker) ?? "#425047"
 
     property string error: userColors["Error"] ?? "#E67E80"
     property string errorDarker: Qt.darker(Colors.error, Colors.darker) ?? "#514045"
 
-    property string warning: userColors["Warning"] ?? "#DBBC7F"
+    property string tertiary: userColors["Tertiary"] ?? "#DBBC7F"
 
     function updateColors() {
-        background = userColors["Background"] ?? "#2D353B";
-        foreground = userColors["Foreground"] ?? "#D3C6AA";
-        success = userColors["Success"] ?? "#A7C080";
+        surface = userColors["Surface"] ?? "#2D353B";
+        onSurface = userColors["OnSurface"] ?? "#D3C6AA";
+        primary = userColors["Primary"] ?? "#A7C080";
         error = userColors["Error"] ?? "#E67E80";
-        warning = userColors["Warning"] ?? "#DBBC7F";
+        tertiary = userColors["Tertiary"] ?? "#DBBC7F";
     }
 
     function refreshThemes() {

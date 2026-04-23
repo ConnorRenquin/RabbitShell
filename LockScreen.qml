@@ -91,7 +91,7 @@ Scope {
             Rectangle {
                 id: lockScreenBackground
                 anchors.fill: parent
-                color: Colors.background
+                color: Colors.surface
 
                 Image {
                     id: wallpaper
@@ -104,7 +104,7 @@ Scope {
                     id: clock
                     implicitWidth: clockText.implicitWidth + Styles.marginSm * 2
                     implicitHeight: clockText.implicitHeight
-                    color: Colors.backgroundLighter
+                    color: Colors.surfaceContainer
                     radius: Styles.radiusMd
 
                     anchors {
@@ -128,13 +128,13 @@ Scope {
                         Rectangle {
                             Layout.preferredWidth: 500
                             Layout.fillHeight: true
-                            color: Colors.background
+                            color: Colors.surface
                             radius: Styles.radiusSm
                             TextFieldStyled {
                                 id: passwordTextField
                                 anchors.fill: parent
                                 anchors.centerIn: parent
-                                backgroundColor: Colors.backgroundLighter
+                                backgroundColor: Colors.surfaceContainer
                                 padding: Styles.marginSm
                                 enabled: !lockContext.unlockInProgress
                                 echoMode: TextInput.Password
@@ -157,7 +157,7 @@ Scope {
                             implicitWidth: unlockButtonText.implicitWidth + Styles.marginMd
                             Layout.fillHeight: true
 
-                            defaultColor: Colors.backgroundLighter
+                            defaultColor: Colors.surfaceContainer
                             onClicked: lockContext.tryUnlock()
                             enabled: !lockContext.unlockInProgress
                             TextStyled {

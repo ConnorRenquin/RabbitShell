@@ -3,7 +3,7 @@ import QtQuick
 import qs.Settings
 
 Text {
-    color: Colors.foreground
+    color: Colors.onSurface
     elide: Text.ElideRight
     antialiasing: true
     font {

@@ -12,7 +12,7 @@ import qs.Settings
 Rectangle {
     id: root
     anchors.fill: parent
-    color: Colors.backgroundLighter
+    color: Colors.surfaceContainer
 
     property bool showStyles: true
 
@@ -144,7 +144,7 @@ Rectangle {
                         id: settingEntry
 
                         visible: root.showStyles
-                        color: Colors.background
+                        color: Colors.surface
                         Layout.fillWidth: true
                         Layout.preferredHeight: 100
                         radius: Styles.radiusSm
@@ -166,7 +166,7 @@ Rectangle {
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: textField.implicitHeight + Styles.marginSm * 2
 
-                                    color: Colors.backgroundLighter
+                                    color: Colors.surfaceContainer
                                     radius: Styles.radiusSm
 
                                     TextFieldStyled {
@@ -220,7 +220,7 @@ Rectangle {
                         required property string modelData
                         required property int index
 
-                        color: Colors.background
+                        color: Colors.surface
                         Layout.fillWidth: true
                         Layout.preferredHeight: 100
                         radius: Styles.radiusSm
@@ -251,7 +251,7 @@ Rectangle {
                                     Layout.preferredWidth: 10
                                     Layout.fillHeight: true
                                     radius: Styles.radiusSm
-                                    color: root.isValidColor(colorTextField.text) ? Colors.success : Colors.error
+                                    color: root.isValidColor(colorTextField.text) ? Colors.primary : Colors.error
                                 }
 
                                 TextFieldStyled {

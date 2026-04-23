@@ -11,7 +11,7 @@ Rectangle {
     id: root
 
     anchors.fill: parent
-    color: Colors.backgroundLighter
+    color: Colors.surfaceContainer
 
     Component.onCompleted: forceActiveFocus()
 
@@ -246,7 +246,7 @@ Rectangle {
                 // Layout.fillHeight: true
                 Layout.preferredHeight: contentColumn.implicitHeight + 2 * Styles.marginMd
                 Layout.minimumWidth: 300
-                color: Colors.background
+                color: Colors.surface
                 radius: Styles.radiusSm
 
                 ColumnLayout {
@@ -294,7 +294,7 @@ Rectangle {
                             Rectangle {
                                 Layout.preferredWidth: keyText.implicitWidth + 12
                                 Layout.preferredHeight: 24
-                                color: Colors.backgroundLighter
+                                color: Colors.surfaceContainer
                                 radius: Styles.radiusSm
 
                                 TextStyled {

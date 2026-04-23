@@ -8,7 +8,7 @@ Rectangle {
     id: root
 
     radius: Styles.radiusSm
-    color: Colors.background
+    color: Colors.surface
 
     implicitWidth: Math.min(windowTitle.implicitWidth + Styles.marginSm * 2, 300)
     implicitHeight: parent.height

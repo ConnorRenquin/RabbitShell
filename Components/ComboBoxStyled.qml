@@ -6,10 +6,10 @@ import qs.Settings
 ComboBox {
     id: root
 
-    property color backgroundColor: Colors.background
-    property color highlightColor: Colors.backgroundLighter
-    property color textColor: Colors.foreground
-    property color borderColor: Colors.backgroundLighter
+    property color backgroundColor: Colors.surface
+    property color highlightColor: Colors.surfaceContainer
+    property color textColor: Colors.onSurface
+    property color borderColor: Colors.surfaceContainer
 
     font.pixelSize: Styles.textMd
     font.family: Styles.defaultFontFamily

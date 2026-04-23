@@ -165,7 +165,7 @@ FloatingWindow {
 
         anchors.fill: parent
 
-        color: Colors.background
+        color: Colors.surface
         radius: Styles.radiusSm
 
         Keys.onPressed: event => {
@@ -197,7 +197,7 @@ FloatingWindow {
                         Layout.preferredHeight: 100
 
                         radius: Styles.radiusMd
-                        defaultColor: Colors.backgroundLighter
+                        defaultColor: Colors.surfaceContainer
 
                         ColumnLayout {
                             anchors.fill: parent
@@ -208,13 +208,13 @@ FloatingWindow {
                                 Layout.fillWidth: true
                                 text: emojiButton.modelData.emoji
                                 font.pixelSize: 24
-                                color: Colors.foreground
+                                color: Colors.onSurface
                             }
                             TextStyled {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 20
                                 text: emojiButton.modelData.name
-                                color: Colors.foreground
+                                color: Colors.onSurface
                                 font.pixelSize: 12
                                 horizontalAlignment: Text.AlignHCenter
                                 elide: Text.ElideRight

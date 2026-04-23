@@ -37,7 +37,7 @@ Loader {
             Layout.preferredWidth: 300
             Layout.fillHeight: true
             radius: Styles.radiusLg
-            color: Colors.background
+            color: Colors.surface
             Timer {
                 repeat: true
                 running: true
@@ -88,7 +88,7 @@ Loader {
                     anchors.margins: Styles.marginMd
                     Rectangle {
                         id: polkitMonitor
-                        color: Colors.background
+                        color: Colors.surface
                         Layout.fillWidth: true
                         Layout.preferredHeight: 90
                         radius: Styles.radiusMd
@@ -109,7 +109,7 @@ Loader {
                                     if (polkitAgent.flow?.failed) {
                                         return "red";
                                     } else if (polkitAgent.flow?.isSuccessful) {
-                                        return Colors.success;
+                                        return Colors.primary;
                                     } else {
                                         return Colors.errorDarker;
                                     }
@@ -122,7 +122,7 @@ Loader {
                         id: passwordArea
                         Layout.fillWidth: true
                         Layout.preferredHeight: 50
-                        color: Colors.backgroundLighter
+                        color: Colors.surfaceContainer
                         radius: Styles.radiusMd
                         TextFieldStyled {
                             id: passwordInput
@@ -156,7 +156,7 @@ Loader {
                             Layout.fillWidth: true
                             enabled: polkitAgent.flow && (passwordInput.text.length > 0 || !polkitAgent.flow.isResponseRequired)
                             text: "Submit"
-                            defaultColor: Colors.successDarker
+                            defaultColor: Colors.primaryDarker
                             onClicked: {
                                 if (polkitAgent.flow) {
                                     polkitAgent.flow.submit(passwordInput.text);

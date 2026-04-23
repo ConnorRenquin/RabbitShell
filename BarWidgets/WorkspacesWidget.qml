@@ -11,7 +11,7 @@ Rectangle {
     id: root
     required property string monitorName
     radius: Styles.radiusSm
-    color: Colors.background
+    color: Colors.surface
     implicitHeight: parent.height
     implicitWidth: workspacesListView.width + Styles.marginSm
 
@@ -70,7 +70,7 @@ Rectangle {
             DoubleText {
                 id: workspaceIcon
                 elide: Text.ElideNone
-                primaryColor: Colors.success
+                primaryColor: Colors.primary
                 anchors.centerIn: parent
                 text: workspaceButton.modelData?.focused ? "󰜋" : "󰜌"
             }

@@ -1,7 +1,7 @@
 {
-  "Background": "#EFF1F5",
-  "Foreground": "#4C4F69",
-  "Success": "#40A02B",
+  "Surface": "#EFF1F5",
+  "OnSurface": "#4C4F69",
+  "Primary": "#40A02B",
   "Error": "#D20F39",
-  "Warning": "#DF8E1D"
+  "Tertiary": "#DF8E1D"
 }

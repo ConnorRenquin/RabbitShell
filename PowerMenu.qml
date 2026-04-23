@@ -58,7 +58,7 @@ Loader {
 
         Rectangle {
             id: menuBackground
-            color: Colors.background
+            color: Colors.surface
             radius: Styles.marginSm
             implicitHeight: 70
             implicitWidth: buttons.implicitWidth + Styles.marginSm * 2

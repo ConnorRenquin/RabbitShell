@@ -17,12 +17,12 @@ Rectangle {
     property var currentOpenMenu: null
 
     radius: Styles.radiusSm
-    color: Colors.background
+    color: Colors.surface
     implicitHeight: parent.height
     implicitWidth: row.implicitWidth + Styles.marginSm * 2
 
     component AnimatedMenuBackground: Rectangle {
-        color: Colors.background
+        color: Colors.surface
         radius: Styles.radiusLg
         opacity: visible ? 1 : 0
         scale: visible ? 1 : 0.95
@@ -152,7 +152,7 @@ Rectangle {
                                     implicitHeight: 1
                                     anchors.centerIn: parent
                                     width: parent.width - Styles.marginSm * 2
-                                    color: Colors.backgroundLighter
+                                    color: Colors.surfaceContainer
                                 }
                             }
 
@@ -215,14 +215,14 @@ Rectangle {
                                                 font.pixelSize: Styles.textSm
                                                 Layout.fillWidth: true
                                                 horizontalAlignment: Text.AlignLeft
-                                                color: menuLoader?.modelData?.enabled ? Colors.foreground : Colors.backgroundLighter
+                                                color: menuLoader?.modelData?.enabled ? Colors.onSurface : Colors.surfaceContainer
                                             }
 
                                             TextStyled {
                                                 id: checkBox
                                                 text: menuLoader?.modelData?.checkState === Qt.Checked ? "✓" : ""
                                                 font.pixelSize: Styles.textSm
-                                                color: Colors.success
+                                                color: Colors.primary
                                                 visible: menuLoader?.modelData?.buttonType !== 0
                                             }
 

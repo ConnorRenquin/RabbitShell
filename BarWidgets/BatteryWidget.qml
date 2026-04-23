@@ -11,7 +11,7 @@ Rectangle {
     implicitWidth: text.implicitWidth + Styles.marginSm * 2
     implicitHeight: parent.height
     radius: Styles.radiusSm
-    color: Colors.background
+    color: Colors.surface
 
     readonly property var dischargingGlyphs: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
     readonly property var chargingGlyphs: ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]

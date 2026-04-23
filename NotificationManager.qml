@@ -49,7 +49,7 @@ Loader {
         Rectangle {
             id: base
             anchors.fill: parent
-            color: Colors.background
+            color: Colors.surface
             radius: Styles.radiusMd
             focus: true
 
@@ -71,7 +71,7 @@ Loader {
                     id: controlSection
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
-                    color: Colors.backgroundLighter
+                    color: Colors.surfaceContainer
                     radius: Styles.radiusMd
 
                     RowLayout {
@@ -95,7 +95,7 @@ Loader {
                             implicitHeight: 40
                             implicitWidth: clearAllText.implicitWidth + Styles.marginLg
 
-                            defaultColor: Colors.background
+                            defaultColor: Colors.surface
                             onClicked: root.clear()
 
                             TextStyled {
@@ -143,7 +143,7 @@ Loader {
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: "No notifications"
-                                color: Colors.foreground
+                                color: Colors.onSurface
                                 opacity: 0.5
                                 font.pixelSize: 16
                             }

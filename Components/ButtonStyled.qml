@@ -22,9 +22,9 @@ Rectangle {
     property string text
 
     property alias pixelSize: buttonText.font.pixelSize
-    property string hoverColor: Colors.backgroundLighter
-    property string defaultColor: Colors.background
-    property string focusedColor: Colors.backgroundLighter
+    property string hoverColor: Colors.surfaceContainer
+    property string defaultColor: Colors.surface
+    property string focusedColor: Colors.surfaceContainer
     property bool isFocused: false
     property bool containsMouse: mouseArea.containsMouse
 

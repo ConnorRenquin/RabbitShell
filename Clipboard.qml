@@ -50,7 +50,7 @@ FloatingWindow {
 
         anchors.fill: parent
 
-        color: Colors.background
+        color: Colors.surface
         radius: Styles.radiusSm
 
         property int selectedEntryIndex: 0
@@ -175,7 +175,7 @@ FloatingWindow {
                 Layout.preferredHeight: 50
                 Layout.margins: Styles.marginSm
                 Layout.bottomMargin: 0
-                color: Colors.backgroundLighter
+                color: Colors.surfaceContainer
                 radius: Styles.radiusSm
 
                 RowLayoutPlus {
@@ -193,7 +193,7 @@ FloatingWindow {
                             id: slotButton
                             anchors.fill: parent
 
-                            color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.success : Colors.background
+                            color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.primary : Colors.surface
 
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
@@ -214,7 +214,7 @@ FloatingWindow {
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
-                                color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.background : Colors.foreground
+                                color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.surface : Colors.onSurface
                             }
                         }
 
@@ -233,7 +233,7 @@ FloatingWindow {
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: Colors.backgroundLighter
+                                color: Colors.surfaceContainer
                                 radius: Styles.radiusMd
                                 TextStyled {
                                     id: tooltipContent
@@ -241,7 +241,7 @@ FloatingWindow {
                                     anchors.margins: Styles.marginSm
                                     text: utils.removeIndentation(ClipboardService.clipboardData.slots[slotButtonContainer.modelData]) || "Empty"
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: Colors.foreground
+                                    color: Colors.onSurface
                                 }
                             }
                         }
@@ -253,7 +253,7 @@ FloatingWindow {
                 Layout.preferredHeight: 50
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
-                color: Colors.backgroundLighter
+                color: Colors.surfaceContainer
                 radius: Styles.radiusSm
 
                 RowLayout {
@@ -266,7 +266,7 @@ FloatingWindow {
                         placeholderText: 'search (press / to focus)'
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        backgroundColor: Colors.backgroundLighter
+                        backgroundColor: Colors.surfaceContainer
                         onTextChanged: mainContent.searchText = text
                         Keys.onPressed: event => {
                             if (event.key === Qt.Key_Escape) {
@@ -286,7 +286,7 @@ FloatingWindow {
                         TextStyled {
                             anchors.centerIn: parent
                             text: Icons.image
-                            color: Colors.foreground
+                            color: Colors.onSurface
                         }
                     }
 
@@ -299,7 +299,7 @@ FloatingWindow {
                         TextStyled {
                             anchors.centerIn: parent
                             text: "(ᵔᴥᵔ)"
-                            color: Colors.foreground
+                            color: Colors.onSurface
                         }
                     }
                 }
@@ -328,7 +328,7 @@ FloatingWindow {
                         implicitWidth: rect.width
                         radius: Styles.radiusMd
 
-                        defaultColor: Colors.backgroundLighter
+                        defaultColor: Colors.surfaceContainer
 
                         isFocused: ListView.isCurrentItem
 
@@ -348,12 +348,12 @@ FloatingWindow {
                                 id: clipboardItemKey
                                 Layout.preferredWidth: 80
                                 implicitHeight: 20
-                                color: Colors.foreground
+                                color: Colors.onSurface
                                 radius: Styles.radiusSm
                                 TextStyled {
                                     id: clipboardItemKeyText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: Colors.background
+                                    color: Colors.surface
                                     anchors.centerIn: parent
                                     text: button.originalIndex === 0 ? "Now" : button.originalIndex
                                 }
@@ -361,7 +361,7 @@ FloatingWindow {
 
                             Rectangle {
                                 id: clipboardItemScreen
-                                color: Colors.background
+                                color: Colors.surface
                                 radius: Styles.radiusMd
 
                                 Layout.fillWidth: true
