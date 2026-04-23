@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Services.Polkit
 import Quickshell.Hyprland
@@ -48,7 +49,7 @@ Loader {
 
                 anchors.centerIn: parent
                 text: ''
-                color: Colors.backgroundError
+                color: Colors.errorDarker
                 font.pixelSize: 160
             }
         }
@@ -78,7 +79,7 @@ Loader {
                 id: passwordControls
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                color: Colors.orange
+                color: Colors.error
                 radius: Styles.radiusLg
                 ColumnLayout {
                     id: contentColumn
@@ -108,9 +109,9 @@ Loader {
                                     if (polkitAgent.flow?.failed) {
                                         return "red";
                                     } else if (polkitAgent.flow?.isSuccessful) {
-                                        return Colors.green;
+                                        return Colors.success;
                                     } else {
-                                        return Colors.backgroundError;
+                                        return Colors.errorDarker;
                                     }
                                 }
                             }
@@ -121,7 +122,7 @@ Loader {
                         id: passwordArea
                         Layout.fillWidth: true
                         Layout.preferredHeight: 50
-                        color: Colors.backgroundLifted
+                        color: Colors.backgroundLighter
                         radius: Styles.radiusMd
                         TextFieldStyled {
                             id: passwordInput
@@ -146,7 +147,7 @@ Loader {
                         spacing: 8
                         ButtonStyled {
                             text: "Cancel"
-                            defaultColor: Colors.backgroundError
+                            defaultColor: Colors.errorDarker
                             onClicked: root.cancel()
                         }
 
@@ -155,7 +156,7 @@ Loader {
                             Layout.fillWidth: true
                             enabled: polkitAgent.flow && (passwordInput.text.length > 0 || !polkitAgent.flow.isResponseRequired)
                             text: "Submit"
-                            defaultColor: Colors.backgroundSuccess
+                            defaultColor: Colors.successDarker
                             onClicked: {
                                 if (polkitAgent.flow) {
                                     polkitAgent.flow.submit(passwordInput.text);

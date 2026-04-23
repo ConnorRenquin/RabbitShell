@@ -71,7 +71,7 @@ Loader {
                     id: controlSection
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
-                    color: Colors.backgroundLifted
+                    color: Colors.backgroundLighter
                     radius: Styles.radiusMd
 
                     RowLayout {

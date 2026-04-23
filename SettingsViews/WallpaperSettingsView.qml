@@ -13,7 +13,7 @@ Rectangle {
     id: root
 
     anchors.fill: parent
-    color: Colors.backgroundLifted
+    color: Colors.backgroundLighter
 
     property string pendingThemeName: ""
 
@@ -260,7 +260,7 @@ Rectangle {
 
                         Layout.fillWidth: true
                         Layout.preferredHeight: 300
-                        color: Colors.backgroundLifted
+                        color: Colors.backgroundLighter
                         radius: Styles.radiusSm
 
                         ColumnLayout {
@@ -271,7 +271,7 @@ Rectangle {
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                color: Colors.backgroundLifted
+                                color: Colors.backgroundLighter
                                 radius: Styles.radiusSm
                                 clip: true
 

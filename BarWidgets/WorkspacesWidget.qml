@@ -70,7 +70,7 @@ Rectangle {
             DoubleText {
                 id: workspaceIcon
                 elide: Text.ElideNone
-                primaryColor: Colors.green
+                primaryColor: Colors.success
                 anchors.centerIn: parent
                 text: workspaceButton.modelData?.focused ? "󰜋" : "󰜌"
             }

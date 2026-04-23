@@ -71,7 +71,7 @@ Loader {
                 Rectangle {
                     id: settingsModuleUi
                     Layout.fillHeight: true
-                    color: Colors.backgroundLifted
+                    color: Colors.backgroundLighter
                     Layout.preferredWidth: 300
                     Layout.fillWidth: true
                     UpdateSettingsView {

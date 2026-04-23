@@ -10,7 +10,7 @@ Item {
     property string text
     property int pixelSize: Styles.textMd
     property string primaryColor: Colors.foreground
-    property string secondaryColor: Colors.backgroundHighlighted
+    property string secondaryColor: Colors.backgroundLighter
     property int offset: 8
     property var elide: Text.ElideRight
 

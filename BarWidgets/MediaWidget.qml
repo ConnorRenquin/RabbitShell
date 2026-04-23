@@ -22,7 +22,7 @@ Rectangle {
 
         property string iconText: ""
         property string iconColor: Colors.background
-        property string backgroundColor: Colors.green
+        property string backgroundColor: Colors.success
 
         implicitWidth: iconTextItem.width + Styles.marginSm * 2
         implicitHeight: root.height - Styles.marginSm
@@ -128,7 +128,7 @@ Rectangle {
             onClicked: root.player.previous()
         }
         ButtonStyledLocal {
-            backgroundColor: root.player?.isPlaying ? Colors.orange : Colors.backgroundLifted
+            backgroundColor: root.player?.isPlaying ? Colors.error : Colors.backgroundLighter
             iconColor: root.player?.isPlaying ? Colors.background : Colors.foreground
             iconText: "󰐎"
             onClicked: root.player.togglePlaying()

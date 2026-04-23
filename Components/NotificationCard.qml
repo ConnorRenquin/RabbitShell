@@ -133,7 +133,7 @@ Rectangle {
                 Layout.fillHeight: true
                 placeholderText: root.notification?.inlineReplyPlaceholder || "Reply..."
                 onActiveFocusChanged: if (activeFocus) root.replyFocused()
-                backgroundColor: Colors.backgroundLifted
+                backgroundColor: Colors.backgroundLighter
                 background: Rectangle {
                     color: inlineReplyInput.backgroundColor
                     radius: Styles.radiusSm

@@ -7,9 +7,9 @@ ComboBox {
     id: root
 
     property color backgroundColor: Colors.background
-    property color highlightColor: Colors.backgroundHighlighted
+    property color highlightColor: Colors.backgroundLighter
     property color textColor: Colors.foreground
-    property color borderColor: Colors.backgroundHighlighted
+    property color borderColor: Colors.backgroundLighter
 
     font.pixelSize: Styles.textMd
     font.family: Styles.defaultFontFamily

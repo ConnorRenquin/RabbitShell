@@ -12,7 +12,7 @@ import qs.Settings
 Rectangle {
     id: root
     anchors.fill: parent
-    color: Colors.backgroundLifted
+    color: Colors.backgroundLighter
 
     property bool showStyles: true
 
@@ -166,7 +166,7 @@ Rectangle {
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: textField.implicitHeight + Styles.marginSm * 2
 
-                                    color: Colors.backgroundLifted
+                                    color: Colors.backgroundLighter
                                     radius: Styles.radiusSm
 
                                     TextFieldStyled {

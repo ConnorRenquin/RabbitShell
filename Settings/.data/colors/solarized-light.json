@@ -1,22 +1,7 @@
 {
   "Background": "#FDF6E3",
-  "Background Lifted": "#EEE8D5",
-  "Background Highlighted": "#DDD6C1",
   "Foreground": "#657B83",
-  "Primary": "#268BD2",
-  "Secondary": "#2AA198",
-  "Accent": "#D33682",
   "Success": "#859900",
-  "Background Success": "#E8F0E5",
   "Error": "#DC322F",
-  "Background Error": "#F7D7DC",
-  "Warning": "#B58900",
-  "Background Warning": "#F7F0D9",
-  "Orange": "#CB4B16",
-  "Yellow": "#B58900",
-  "Green": "#859900",
-  "Aqua": "#2AA198",
-  "Blue": "#268BD2",
-  "Purple": "#6C71C4",
-  "Gray": "#93A1A1"
+  "Warning": "#B58900"
 }

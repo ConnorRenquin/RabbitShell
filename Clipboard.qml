@@ -175,7 +175,7 @@ FloatingWindow {
                 Layout.preferredHeight: 50
                 Layout.margins: Styles.marginSm
                 Layout.bottomMargin: 0
-                color: Colors.backgroundLifted
+                color: Colors.backgroundLighter
                 radius: Styles.radiusSm
 
                 RowLayoutPlus {
@@ -193,7 +193,7 @@ FloatingWindow {
                             id: slotButton
                             anchors.fill: parent
 
-                            color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.green : Colors.background
+                            color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.success : Colors.background
 
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
@@ -233,7 +233,7 @@ FloatingWindow {
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: Colors.backgroundLifted
+                                color: Colors.backgroundLighter
                                 radius: Styles.radiusMd
                                 TextStyled {
                                     id: tooltipContent
@@ -253,7 +253,7 @@ FloatingWindow {
                 Layout.preferredHeight: 50
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
-                color: Colors.backgroundLifted
+                color: Colors.backgroundLighter
                 radius: Styles.radiusSm
 
                 RowLayout {
@@ -266,7 +266,7 @@ FloatingWindow {
                         placeholderText: 'search (press / to focus)'
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        backgroundColor: Colors.backgroundLifted
+                        backgroundColor: Colors.backgroundLighter
                         onTextChanged: mainContent.searchText = text
                         Keys.onPressed: event => {
                             if (event.key === Qt.Key_Escape) {
@@ -328,7 +328,7 @@ FloatingWindow {
                         implicitWidth: rect.width
                         radius: Styles.radiusMd
 
-                        defaultColor: Colors.backgroundLifted
+                        defaultColor: Colors.backgroundLighter
 
                         isFocused: ListView.isCurrentItem
 

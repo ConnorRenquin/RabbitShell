@@ -11,7 +11,7 @@ Rectangle {
     id: root
 
     anchors.fill: parent
-    color: Colors.backgroundLifted
+    color: Colors.backgroundLighter
 
     Component.onCompleted: forceActiveFocus()
 
@@ -294,7 +294,7 @@ Rectangle {
                             Rectangle {
                                 Layout.preferredWidth: keyText.implicitWidth + 12
                                 Layout.preferredHeight: 24
-                                color: Colors.backgroundHighlighted
+                                color: Colors.backgroundLighter
                                 radius: Styles.radiusSm
 
                                 TextStyled {

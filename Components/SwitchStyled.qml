@@ -8,9 +8,9 @@ Switch {
 
     property color backgroundColor: Colors.background
     property color checkedColor: Colors.foreground
-    property color uncheckedColor: Colors.backgroundHighlighted
+    property color uncheckedColor: Colors.backgroundLighter
     property color handleColor: Colors.foreground
-    property color handleCheckedColor: Colors.backgroundLifted
+    property color handleCheckedColor: Colors.backgroundLighter
 
     indicator: Rectangle {
         implicitWidth: 40

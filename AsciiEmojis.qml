@@ -197,7 +197,7 @@ FloatingWindow {
                         Layout.preferredHeight: 100
 
                         radius: Styles.radiusMd
-                        defaultColor: Colors.backgroundLifted
+                        defaultColor: Colors.backgroundLighter
 
                         ColumnLayout {
                             anchors.fill: parent

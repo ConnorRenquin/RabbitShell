@@ -152,7 +152,7 @@ Rectangle {
                                     implicitHeight: 1
                                     anchors.centerIn: parent
                                     width: parent.width - Styles.marginSm * 2
-                                    color: Colors.backgroundHighlighted
+                                    color: Colors.backgroundLighter
                                 }
                             }
 
@@ -215,14 +215,14 @@ Rectangle {
                                                 font.pixelSize: Styles.textSm
                                                 Layout.fillWidth: true
                                                 horizontalAlignment: Text.AlignLeft
-                                                color: menuLoader?.modelData?.enabled ? Colors.foreground : Colors.gray
+                                                color: menuLoader?.modelData?.enabled ? Colors.foreground : Colors.backgroundLighter
                                             }
 
                                             TextStyled {
                                                 id: checkBox
                                                 text: menuLoader?.modelData?.checkState === Qt.Checked ? "✓" : ""
                                                 font.pixelSize: Styles.textSm
-                                                color: Colors.green
+                                                color: Colors.success
                                                 visible: menuLoader?.modelData?.buttonType !== 0
                                             }
 

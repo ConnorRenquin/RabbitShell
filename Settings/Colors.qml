@@ -15,54 +15,39 @@ Singleton {
 
     property var userColors: {
         "Background": "#2D353B",
-        "Background Lifted": "#343F44",
-        "Background Highlighted": "#3D484D",
-        "Background Success": "#425047",
-        "Background Error": "#514045",
-        "Background Warning": "#4D4C43",
         "Foreground": "#D3C6AA",
         "Success": "#A7C080",
         "Error": "#E67E80",
         "Warning": "#DBBC7F",
-        "Orange": "#E69875",
-        "Yellow": "#DBBC7F",
-        "Green": "#A7C080",
     }
 
+    property double lighter: 2.5
+    property double darker: 1.5
+
     property string background: userColors["Background"] ?? "#2D353B"
-    property string backgroundLifted: userColors["Background Lifted"] ?? "#343F44"
-    property string backgroundHighlighted: userColors["Background Highlighted"] ?? "#3D484D"
-    property string backgroundSuccess: userColors["Background Success"] ?? "#425047"
-    property string backgroundError: userColors["Background Error"] ?? "#514045"
-    property string backgroundWarning: userColors["Background Warning"] ?? "#4D4C43"
+    property string backgroundLighter: Qt.lighter(Colors.background, lighter) ?? "#343F44"
+    property string backgroundDarker: Qt.darker(Colors.background, darker) ?? "#343F44"
 
     property string foreground: userColors["Foreground"] ?? "#D3C6AA"
-    property string success: userColors["Success"] ?? "#A7C080"
-    property string error: userColors["Error"] ?? "#E67E80"
-    property string warning: userColors["Warning"] ?? "#DBBC7F"
 
-    property string orange: userColors["Orange"] ?? "#E69875"
-    property string yellow: userColors["Yellow"] ?? "#DBBC7F"
-    property string green: userColors["Green"] ?? "#A7C080"
+    property string success: userColors["Success"] ?? "#A7C080"
+    property string successDarker: Qt.darker(Colors.success, darker) ?? "#425047"
+
+    property string error: userColors["Error"] ?? "#E67E80"
+    property string errorDarker: Qt.darker(Colors.error, Colors.darker) ?? "#514045"
+
+    property string warning: userColors["Warning"] ?? "#DBBC7F"
 
     function updateColors() {
         background = userColors["Background"] ?? "#2D353B";
-        backgroundLifted = userColors["Background Lifted"] ?? "#343F44";
-        backgroundHighlighted = userColors["Background Highlighted"] ?? "#3D484D";
-        backgroundSuccess = userColors["Background Success"] ?? "#425047";
-        backgroundError = userColors["Background Error"] ?? "#514045";
-        backgroundWarning = userColors["Background Warning"] ?? "#4D4C43";
         foreground = userColors["Foreground"] ?? "#D3C6AA";
         success = userColors["Success"] ?? "#A7C080";
         error = userColors["Error"] ?? "#E67E80";
         warning = userColors["Warning"] ?? "#DBBC7F";
-        orange = userColors["Orange"] ?? "#E69875";
-        yellow = userColors["Yellow"] ?? "#DBBC7F";
-        green = userColors["Green"] ?? "#A7C080";
     }
 
     function refreshThemes() {
-        listFiles.running = true
+        listFiles.running = true;
     }
 
     onUserColorsChanged: {
