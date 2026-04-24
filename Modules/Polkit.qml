@@ -122,7 +122,7 @@ Loader {
                         id: passwordArea
                         Layout.fillWidth: true
                         Layout.preferredHeight: 50
-                        color: Colors.surfaceContainer
+                        color: Colors.surfaceLighter
                         radius: Styles.radiusMd
                         TextFieldStyled {
                             id: passwordInput

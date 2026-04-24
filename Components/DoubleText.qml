@@ -10,7 +10,7 @@ Item {
     property string text
     property int pixelSize: Styles.textMd
     property string primaryColor: Colors.onSurface
-    property string secondaryColor: Colors.surfaceContainer
+    property string secondaryColor: Colors.surfaceLighter
     property int offset: 8
     property var elide: Text.ElideRight
 

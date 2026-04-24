@@ -12,7 +12,7 @@ import qs.Settings
 Rectangle {
     id: root
     anchors.fill: parent
-    color: Colors.surfaceContainer
+    color: Colors.surfaceLighter
 
     property bool showStyles: true
 
@@ -166,7 +166,7 @@ Rectangle {
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: textField.implicitHeight + Styles.marginSm * 2
 
-                                    color: Colors.surfaceContainer
+                                    color: Colors.surfaceLighter
                                     radius: Styles.radiusSm
 
                                     TextFieldStyled {

@@ -25,8 +25,8 @@ Singleton {
     property double darker: 1.5
 
     property string surface: userColors["surface"] ?? "#2D353B"
-    property string surfaceContainer: Qt.lighter(Colors.surface, lighter) ?? "#343F44"
-    property string surfaceContainerHigh: Qt.darker(Colors.surface, darker) ?? "#343F44"
+    property string surfaceLighter: Qt.lighter(Colors.surface, lighter) ?? "#343F44"
+    property string surfaceDarker: Qt.darker(Colors.surface, darker) ?? "#343F44"
 
     property string onSurface: userColors["onSurface"] ?? "#D3C6AA"
 

@@ -152,7 +152,7 @@ Rectangle {
                                     implicitHeight: 1
                                     anchors.centerIn: parent
                                     width: parent.width - Styles.marginSm * 2
-                                    color: Colors.surfaceContainer
+                                    color: Colors.surfaceLighter
                                 }
                             }
 
@@ -215,7 +215,7 @@ Rectangle {
                                                 font.pixelSize: Styles.textSm
                                                 Layout.fillWidth: true
                                                 horizontalAlignment: Text.AlignLeft
-                                                color: menuLoader?.modelData?.enabled ? Colors.onSurface : Colors.surfaceContainer
+                                                color: menuLoader?.modelData?.enabled ? Colors.onSurface : Colors.surfaceLighter
                                             }
 
                                             TextStyled {

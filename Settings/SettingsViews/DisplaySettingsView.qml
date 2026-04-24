@@ -14,7 +14,7 @@ Rectangle {
     id: root
 
     anchors.fill: parent
-    color: Colors.surfaceContainer
+    color: Colors.surfaceLighter
 
     property double viewScale: 0.1
     property var selectedMonitorIndex: 0
@@ -124,7 +124,7 @@ Rectangle {
                 id: displayPlacer
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: Colors.surfaceContainer
+                color: Colors.surfaceLighter
                 clip: true
 
                 ScrollView {
@@ -255,7 +255,7 @@ Rectangle {
                                 id: displayInfoCard
                                 required property var modelData
                                 required property int index
-                                defaultColor: Colors.surfaceContainer
+                                defaultColor: Colors.surfaceLighter
                                 onClicked: {
                                     root.selectedMonitorIndex = index;
                                 }

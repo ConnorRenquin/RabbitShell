@@ -78,8 +78,8 @@ FloatingWindow {
                         anchors.fill: parent
                         radius: Styles.radiusSm
                         border.width: Styles.marginSm
-                        border.color: Colors.surfaceContainer
-                        color: Colors.surfaceContainer
+                        border.color: Colors.surfaceLighter
+                        color: Colors.surfaceLighter
                         Image {
                             id: imageComponent
                             anchors.fill: parent

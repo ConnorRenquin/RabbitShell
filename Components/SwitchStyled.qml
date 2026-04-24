@@ -8,9 +8,9 @@ Switch {
 
     property color backgroundColor: Colors.surface
     property color checkedColor: Colors.onSurface
-    property color uncheckedColor: Colors.surfaceContainer
+    property color uncheckedColor: Colors.surfaceLighter
     property color handleColor: Colors.onSurface
-    property color handleCheckedColor: Colors.surfaceContainer
+    property color handleCheckedColor: Colors.surfaceLighter
 
     indicator: Rectangle {
         implicitWidth: 40

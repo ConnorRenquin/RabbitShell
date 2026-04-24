@@ -8,7 +8,7 @@ Rectangle {
     z: 5
     visible: false
     anchors.centerIn: parent
-    color: Colors.surfaceContainer
+    color: Colors.surfaceLighter
     radius: Styles.radiusLg
     width: 400
     height: column.implicitHeight + Styles.marginSm * 2

@@ -128,7 +128,7 @@ Rectangle {
             onClicked: root.player.previous()
         }
         ButtonStyledLocal {
-            backgroundColor: root.player?.isPlaying ? Colors.error : Colors.surfaceContainer
+            backgroundColor: root.player?.isPlaying ? Colors.error : Colors.surfaceLighter
             iconColor: root.player?.isPlaying ? Colors.surface : Colors.onSurface
             iconText: "󰐎"
             onClicked: root.player.togglePlaying()

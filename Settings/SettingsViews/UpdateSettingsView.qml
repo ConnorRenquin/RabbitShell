@@ -9,7 +9,7 @@ import qs.Services
 
 Rectangle {
     id: root
-    color: Colors.surfaceContainer
+    color: Colors.surfaceLighter
 
     Utils {
         id: utils

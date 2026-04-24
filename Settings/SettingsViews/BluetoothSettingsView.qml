@@ -10,7 +10,7 @@ import qs.Settings
 import qs.Components
 
 Rectangle {
-    color: Colors.surfaceContainer
+    color: Colors.surfaceLighter
     ScrollView {
         anchors.fill: parent
         anchors.margins: Styles.marginSm

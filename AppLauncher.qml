@@ -163,7 +163,7 @@ Loader {
                     anchors.margins: Styles.marginMd
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    color: Colors.surfaceContainerHigh
+                    color: Colors.surfaceDarker
                     radius: Styles.radiusLg
                     TextStyled {
                         id: clock

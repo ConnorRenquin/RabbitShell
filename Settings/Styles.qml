@@ -17,6 +17,7 @@ Singleton {
 
     readonly property string defaultFontFamily: userStyles["Font Family"] ?? "RobotoMono Nerd Font Propo"
     readonly property int barTextOffset: 2
+    readonly property int marginXS: marginSm / 2 ?? 10
     readonly property int marginSm: userStyles["margin"] ?? 10
     readonly property int marginMd: marginSm * 2 ?? 20
     readonly property int marginLg: marginSm * 3 ?? 30

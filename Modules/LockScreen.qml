@@ -104,7 +104,7 @@ Scope {
                     id: clock
                     implicitWidth: clockText.implicitWidth + Styles.marginSm * 2
                     implicitHeight: clockText.implicitHeight
-                    color: Colors.surfaceContainer
+                    color: Colors.surfaceLighter
                     radius: Styles.radiusMd
 
                     anchors {
@@ -134,7 +134,7 @@ Scope {
                                 id: passwordTextField
                                 anchors.fill: parent
                                 anchors.centerIn: parent
-                                backgroundColor: Colors.surfaceContainer
+                                backgroundColor: Colors.surfaceLighter
                                 padding: Styles.marginSm
                                 enabled: !lockContext.unlockInProgress
                                 echoMode: TextInput.Password
@@ -157,7 +157,7 @@ Scope {
                             implicitWidth: unlockButtonText.implicitWidth + Styles.marginMd
                             Layout.fillHeight: true
 
-                            defaultColor: Colors.surfaceContainer
+                            defaultColor: Colors.surfaceLighter
                             onClicked: lockContext.tryUnlock()
                             enabled: !lockContext.unlockInProgress
                             TextStyled {

@@ -36,7 +36,7 @@ ColumnLayout {
         }
 
         Rectangle {
-            color: root.isCurrentItem ? Colors.surfaceContainer : Colors.surface
+            color: root.isCurrentItem ? Colors.surfaceLighter : Colors.surface
             Layout.fillWidth: true
             Layout.preferredHeight: 35
             radius: Styles.radiusLg

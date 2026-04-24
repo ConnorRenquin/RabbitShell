@@ -119,7 +119,7 @@ Loader {
             width: offMonitorFlow.implicitWidth + Styles.marginSm
             height: offMonitorFlow.implicitHeight + Styles.marginSm
 
-            color: Colors.surfaceContainer
+            color: Colors.surfaceLighter
             radius: Styles.radiusMd
 
             GridLayoutPlus {
@@ -179,7 +179,7 @@ Loader {
                                 Rectangle {
                                     Layout.preferredHeight: text.implicitHeight
                                     Layout.preferredWidth: 30
-                                    color: Colors.surfaceContainer
+                                    color: Colors.surfaceLighter
                                     radius: Styles.radiusLg
                                     TextStyled {
                                         id: text
@@ -210,7 +210,7 @@ Loader {
             anchors.top: offMonitorBar.bottom
             anchors.horizontalCenter: offMonitorBar.horizontalCenter
             anchors.margins: Styles.marginSm
-            color: Colors.surfaceContainer
+            color: Colors.surfaceLighter
             width: 50
             height: 50
             radius: Styles.radiusMd
@@ -255,7 +255,7 @@ Loader {
                 x: clientInfo ? clientInfo.at[0] - (clientMonitor?.x ?? 0) + clientInfo.size[0] / 2 - width / 2 : 0
                 y: clientInfo ? clientInfo.at[1] - (clientMonitor?.y ?? 0) + clientInfo.size[1] / 2 - height / 2 : 0
 
-                color: modelData.activated ? Colors.surfaceContainer: Colors.surface
+                color: modelData.activated ? Colors.surfaceLighter: Colors.surface
                 radius: Styles.radiusMd
 
                 RowLayout {

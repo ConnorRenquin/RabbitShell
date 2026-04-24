@@ -71,7 +71,10 @@ FloatingWindow {
             if (ctrlHeld) {
                 if (isNumberKey && clipboardItems.currentItem) {
                     const itemText = clipboardItems.currentItem.itemText;
-                    utils.notify({ summary: 'Storing to slot ' + (keyIndex === 9 ? 0 : keyIndex + 1), body: itemText});
+                    utils.notify({
+                        summary: 'Storing to slot ' + (keyIndex === 9 ? 0 : keyIndex + 1),
+                        body: itemText
+                    });
                     const newSlots = ClipboardService.clipboardData.slots.slice();
                     while (newSlots.length <= keyIndex) {
                         newSlots.push("");
@@ -84,7 +87,9 @@ FloatingWindow {
                 }
             } else if (altHeld) {
                 if (event.key === Qt.Key_D) {
-                    utils.notify({summary: 'Slots Cleared'});
+                    utils.notify({
+                        summary: 'Slots Cleared'
+                    });
                     ClipboardService.clipboardData = {
                         "slots": [],
                         "clipboardText": ClipboardService.clipboardData.clipboardText
@@ -175,7 +180,7 @@ FloatingWindow {
                 Layout.preferredHeight: 50
                 Layout.margins: Styles.marginSm
                 Layout.bottomMargin: 0
-                color: Colors.surfaceContainer
+                color: Colors.primaryDarker
                 radius: Styles.radiusSm
 
                 RowLayoutPlus {
@@ -233,7 +238,7 @@ FloatingWindow {
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: Colors.surfaceContainer
+                                color: Colors.surfaceLighter
                                 radius: Styles.radiusMd
                                 TextStyled {
                                     id: tooltipContent
@@ -253,7 +258,7 @@ FloatingWindow {
                 Layout.preferredHeight: 50
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
-                color: Colors.surfaceContainer
+                color: Colors.surfaceLighter
                 radius: Styles.radiusSm
 
                 RowLayout {
@@ -266,7 +271,7 @@ FloatingWindow {
                         placeholderText: 'search (press / to focus)'
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        backgroundColor: Colors.surfaceContainer
+                        backgroundColor: Colors.surfaceLighter
                         onTextChanged: mainContent.searchText = text
                         Keys.onPressed: event => {
                             if (event.key === Qt.Key_Escape) {
@@ -328,14 +333,12 @@ FloatingWindow {
                         implicitWidth: rect.width
                         radius: Styles.radiusMd
 
-                        defaultColor: Colors.surfaceContainer
-
                         isFocused: ListView.isCurrentItem
 
                         property string itemText: modelData.text
                         property int originalIndex: modelData.originalIndex
 
-                        ColumnLayout {
+                        RowLayout {
                             id: clipboardItemContent
 
                             anchors {
@@ -346,9 +349,10 @@ FloatingWindow {
 
                             Rectangle {
                                 id: clipboardItemKey
-                                Layout.preferredWidth: 80
+                                Layout.preferredWidth: 50
                                 implicitHeight: 20
-                                color: Colors.onSurface
+                                Layout.fillHeight: true
+                                color: button.isFocused ? Colors.primary : Colors.surfaceLighter
                                 radius: Styles.radiusSm
                                 TextStyled {
                                     id: clipboardItemKeyText
@@ -361,13 +365,12 @@ FloatingWindow {
 
                             Rectangle {
                                 id: clipboardItemScreen
-                                color: Colors.surface
-                                radius: Styles.radiusMd
+                                color: Colors.surfaceDarker
+                                radius: Styles.radiusSm
 
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: clipboardText.implicitHeight + Styles.marginSm * 2
                                 Layout.maximumHeight: 300
-                                Layout.margins: Styles.marginSm
 
                                 TextStyled {
                                     id: clipboardText
@@ -392,7 +395,9 @@ FloatingWindow {
                             } else {
                                 const text = button.itemText.replace(/'/g, "'\\''");
                                 Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-                                utils.notify({summary: 'Copied Item'});
+                                utils.notify({
+                                    summary: 'Copied Item'
+                                });
                                 root.exit();
                             }
                         }
