@@ -11,7 +11,7 @@ ComboBox {
     property color textColor: Colors.onSurface
     property color borderColor: Colors.surfaceLighter
 
-    font.pixelSize: Styles.textMd
+    font.pointSize: Styles.textMd
     font.family: Styles.defaultFontFamily
     font.bold: true
 

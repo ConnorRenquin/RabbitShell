@@ -207,7 +207,7 @@ FloatingWindow {
                             TextStyled {
                                 Layout.fillWidth: true
                                 text: emojiButton.modelData.emoji
-                                font.pixelSize: 24
+                                font.pointSize: 24
                                 color: Colors.onSurface
                             }
                             TextStyled {
@@ -215,7 +215,7 @@ FloatingWindow {
                                 Layout.preferredHeight: 20
                                 text: emojiButton.modelData.name
                                 color: Colors.onSurface
-                                font.pixelSize: 12
+                                font.pointSize: 12
                                 horizontalAlignment: Text.AlignHCenter
                                 elide: Text.ElideRight
                             }

@@ -39,7 +39,7 @@ Rectangle {
         TextStyled {
             visible: text
             text: root.warning
-            font.pixelSize: Styles.textSm
+            font.pointSize: Styles.textSm
             color: Colors.tertiary
             Layout.fillWidth: true
         }

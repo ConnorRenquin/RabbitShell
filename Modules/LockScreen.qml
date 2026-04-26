@@ -115,7 +115,7 @@ Scope {
                     TextStyled {
                         id: clockText
                         anchors.centerIn: parent
-                        font.pixelSize: 80
+                        font.pointSize: 80
                         text: Time.time + ' 󱄅 ' + Time.date
                     }
                 }

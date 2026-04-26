@@ -39,7 +39,7 @@ Rectangle {
 
         ButtonStyled {
             text: "󱄅"
-            pixelSize: 28
+            pointSize: Styles.textLg
             onClicked: mouse => {
                 if (mouse.button === Qt.LeftButton) {
                     PatchBay.openAppLauncher()

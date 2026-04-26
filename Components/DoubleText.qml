@@ -8,7 +8,7 @@ Item {
     implicitWidth: clockText.implicitWidth
     implicitHeight: clockText.implicitHeight
     property string text
-    property int pixelSize: Styles.textMd
+    property int pointSize: Styles.textMd
     property string primaryColor: Colors.onSurface
     property string secondaryColor: Colors.surfaceLighter
     property int offset: 8
@@ -20,7 +20,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         y: root.offset / 2 * -1
-        font.pixelSize: root.pixelSize
+        font.pointSize: root.pointSize
         elide: root.elide
         color: root.primaryColor
         text: root.text
@@ -34,7 +34,7 @@ Item {
         anchors.right: parent.right
         elide: root.elide
         antialiasing: true
-        font.pixelSize: root.pixelSize
+        font.pointSize: root.pointSize
         color: root.secondaryColor
         text: root.text
     }

@@ -69,7 +69,7 @@ Rectangle {
             TextStyled {
                 visible: Bluetooth?.devices?.values?.length <= 0
                 text: "No devices currently found."
-                font.pixelSize: Styles.textSm
+                font.pointSize: Styles.textSm
             }
             Repeater {
                 model: Bluetooth.devices

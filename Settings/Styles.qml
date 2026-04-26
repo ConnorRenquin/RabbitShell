@@ -12,7 +12,7 @@ Singleton {
         "fontFamily": "RobotoMono Nerd Font Propo",
         "margin": 10,
         "radius": 5,
-        "text": 12,
+        "text": 10,
     }
 
     readonly property string defaultFontFamily: userStyles["Font Family"] ?? "RobotoMono Nerd Font Propo"
@@ -26,8 +26,8 @@ Singleton {
     readonly property int radiusLg: radiusSm * 3 ?? 15
     readonly property int textXS: textSm * 0.8 ?? 12
     readonly property int textSm: userStyles["text"] ?? 18
-    readonly property int textMd: textSm * 1.5 ?? 20
-    readonly property int textLg: textSm * 2.5 ?? 26
+    readonly property int textMd: textSm * 1.2 ?? 20
+    readonly property int textLg: textSm * 2.0 ?? 26
 
     onUserStylesChanged: {
         if (persistantData.loaded) {

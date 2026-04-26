@@ -56,7 +56,7 @@ Slider {
             visible: root.showPercentage
             anchors.centerIn: parent
             color: root.handleTextColor
-            font.pixelSize: Styles.textSm
+            font.pointSize: Styles.textSm
             text: `${Math.floor(root.value * 100)}%`
         }
 

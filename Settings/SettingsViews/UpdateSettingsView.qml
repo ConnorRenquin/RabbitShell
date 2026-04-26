@@ -44,7 +44,7 @@ Rectangle {
         anchors.margins: Styles.marginSm
         TextStyled {
             text: "Hello Computer"
-            font.pixelSize: Styles.textLg
+            font.pointSize: Styles.textLg
         }
         Rectangle {
             Layout.fillWidth: true

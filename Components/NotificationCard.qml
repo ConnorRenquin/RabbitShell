@@ -65,7 +65,7 @@ Rectangle {
 
             TextStyled {
                 id: appNameText
-                font.pixelSize: Styles.textLg
+                font.pointSize: Styles.textLg
                 visible: text
                 text: root.notification?.appName ?? "Notification"
             }
@@ -103,7 +103,7 @@ Rectangle {
                 TextStyled {
                     id: bodyText
                     Layout.fillWidth: true
-                    font.pixelSize: Styles.textSm
+                    font.pointSize: Styles.textSm
                     visible: text
                     text: root.removeIndentation(root.notification?.body) ?? ""
                     wrapMode: Text.WordWrap
@@ -174,7 +174,7 @@ Rectangle {
                 Layout.fillWidth: true
                 text: modelData.text || modelData.identifier
                 Layout.maximumHeight: 32
-                pixelSize: Styles.textSm
+                pointSize: Styles.textSm
                 onClicked: {
                     modelData.invoke();
                     if (!root.notification.resident) {

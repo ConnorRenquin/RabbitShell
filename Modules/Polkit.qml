@@ -50,7 +50,7 @@ Loader {
                 anchors.centerIn: parent
                 text: ''
                 color: Colors.errorDarker
-                font.pixelSize: 160
+                font.pointSize: 160
             }
         }
 

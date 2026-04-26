@@ -105,7 +105,7 @@ Loader {
                                 id: text
                                 text: wrapper.modelData.focused ? "󰜋 " + key : "󰜌 " + key
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                pixelSize: 26
+                                pointSize: 26
                                 offset: 3
                                 elide: Text.ElideNone
                                 property string key: root.keyMap[wrapper.index].toUpperCase()

@@ -262,7 +262,7 @@ Rectangle {
 
                         TextStyled {
                             text: sectionRect.modelData.icon
-                            font.pixelSize: 18
+                            font.pointSize: 18
                         }
 
                         TextStyled {

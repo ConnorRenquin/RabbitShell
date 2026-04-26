@@ -25,7 +25,7 @@ Rectangle {
         TextStyled {
             id: viewTitle
             text: "Wallpaper"
-            font.pixelSize: Styles.textLg
+            font.pointSize: Styles.textLg
             Layout.fillWidth: true
         }
 
@@ -305,7 +305,7 @@ Rectangle {
                                 TextStyled {
                                     Layout.maximumWidth: 200
                                     text: wallpaperItem.fileName
-                                    font.pixelSize: Styles.textSm
+                                    font.pointSize: Styles.textSm
                                     Layout.fillWidth: true
                                     horizontalAlignment: Text.AlignHCenter
                                 }
@@ -331,13 +331,13 @@ Rectangle {
 
                 TextStyled {
                     text: WallpaperSettings.wallpaperDirectory ? "No wallpapers found" : "Select a directory"
-                    font.pixelSize: Styles.textLg
+                    font.pointSize: Styles.textLg
                     Layout.alignment: Qt.AlignHCenter
                 }
 
                 TextStyled {
                     text: WallpaperSettings.wallpaperDirectory ? "Check if the directory contains image files" : "Click 'Browse' or enter a path above"
-                    font.pixelSize: Styles.textSm
+                    font.pointSize: Styles.textSm
                     opacity: 0.7
                     Layout.alignment: Qt.AlignHCenter
                 }

@@ -144,7 +144,7 @@ Loader {
                         TextStyled {
                             id: workspaceId
                             anchors.fill: parent
-                            font.pixelSize: Styles.textSm
+                            font.pointSize: Styles.textSm
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             text: "󰜌 " + offMonitorToplevel.modelData
@@ -195,7 +195,7 @@ Loader {
                                     Layout.fillWidth: true
                                     text: (offMonitor.modelData?.wayland?.title ?? "Unknown App")
                                     elide: Text.ElideRight
-                                    font.pixelSize: Styles.textSm
+                                    font.pointSize: Styles.textSm
                                 }
                             }
                         }
@@ -270,7 +270,7 @@ Loader {
                         Layout.fillWidth: true
                         TextStyled {
                             Layout.fillWidth: true
-                            font.pixelSize: Styles.textSm
+                            font.pointSize: Styles.textSm
                             text: onScreen.keyLabel.toUpperCase()
                         }
                     }

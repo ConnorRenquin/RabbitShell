@@ -92,7 +92,7 @@ Rectangle {
                 DoubleText {
                     id: popupText
                     anchors.centerIn: parent
-                    pixelSize: Styles.textMd
+                    pointSize: Styles.textMd
                     offset: 4
                     text: root.player?.trackTitle + " - " + root.player?.trackArtist
                 }

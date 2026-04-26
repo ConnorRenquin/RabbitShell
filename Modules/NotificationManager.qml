@@ -81,7 +81,7 @@ Loader {
 
                         TextStyled {
                             text: "Notifications"
-                            font.pixelSize: 18
+                            font.pointSize: 18
                             font.bold: true
                             Layout.fillWidth: true
                         }
@@ -145,7 +145,7 @@ Loader {
                                 text: "No notifications"
                                 color: Colors.onSurface
                                 opacity: 0.5
-                                font.pixelSize: 16
+                                font.pointSize: 16
                             }
                         }
                     }

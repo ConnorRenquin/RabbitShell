@@ -7,7 +7,7 @@ Text {
     elide: Text.ElideRight
     antialiasing: true
     font {
-        pixelSize: Styles.textMd
+        pointSize: Styles.textMd
         family: Styles.defaultFontFamily
         bold: true
     }

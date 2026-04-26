@@ -24,7 +24,7 @@ Rectangle {
 
             TextStyled {
                 text: "Audio Settings"
-                font.pixelSize: Styles.textLg
+                font.pointSize: Styles.textLg
             }
 
             ColumnLayout {
@@ -33,7 +33,7 @@ Rectangle {
 
                 TextStyled {
                     text: "Default Audio Sink (Output)"
-                    font.pixelSize: Styles.textMd
+                    font.pointSize: Styles.textMd
                 }
 
                 ComboBoxStyled {
@@ -54,7 +54,7 @@ Rectangle {
 
                 TextStyled {
                     text: "Default Audio Source (Input)"
-                    font.pixelSize: Styles.textMd
+                    font.pointSize: Styles.textMd
                 }
 
                 ComboBoxStyled {
@@ -70,7 +70,7 @@ Rectangle {
             }
             TextStyled {
                 text: "Mixer"
-                font.pixelSize: Styles.textLg
+                font.pointSize: Styles.textLg
             }
             Repeater {
                 model: [Audio.sink, ...Audio.links]

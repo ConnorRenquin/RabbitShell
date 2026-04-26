@@ -21,7 +21,7 @@ Rectangle {
 
     property string text
 
-    property alias pixelSize: buttonText.font.pixelSize
+    property alias pointSize: buttonText.font.pointSize
     property string hoverColor: Colors.surfaceLighter
     property string defaultColor: Colors.surface
     property string focusedColor: Colors.surfaceLighter

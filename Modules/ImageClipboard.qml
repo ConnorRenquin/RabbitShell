@@ -111,7 +111,7 @@ FloatingWindow {
                             }
 
                             LoadingIndicator {
-                                font.pixelSize: Styles.textLg
+                                font.pointSize: Styles.textLg
                                 anchors.centerIn: parent
                                 visible: imageComponent.status === Image.Loading || imageComponent.status === Image.Error
                             }

@@ -82,7 +82,7 @@ Rectangle {
 
         TextStyled {
             text: "Appearance"
-            font.pixelSize: Styles.textLg
+            font.pointSize: Styles.textLg
         }
 
         RowLayout {

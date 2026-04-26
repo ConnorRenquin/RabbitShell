@@ -46,7 +46,7 @@ Variants {
             }
 
             DoubleText {
-                pixelSize: 34
+                pointSize: 34
                 offset: 4
                 text: "󰎄 " + root.player?.trackTitle + " - " + root.player?.trackArtist
 
@@ -61,7 +61,7 @@ Variants {
         DoubleText {
             id: clockText
             anchors.horizontalCenter: parent.horizontalCenter
-            pixelSize: 160
+            pointSize: 160
             text: Time.timeShort
         }
     }

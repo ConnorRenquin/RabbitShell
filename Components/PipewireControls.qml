@@ -31,7 +31,7 @@ ColumnLayout {
 
         TextStyled {
             text: "󰓃"
-            font.pixelSize: Styles.textLg
+            font.pointSize: Styles.textLg
         }
 
         Rectangle {

@@ -8,7 +8,7 @@ TextField {
 
     property string backgroundColor: Colors.surface
 
-    font.pixelSize: Styles.textMd
+    font.pointSize: Styles.textMd
     color: Colors.onSurface
     selectByMouse: true
     verticalAlignment: TextInput.AlignVCenter

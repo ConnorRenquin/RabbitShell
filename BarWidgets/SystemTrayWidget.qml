@@ -212,7 +212,7 @@ Rectangle {
                                             TextStyled {
                                                 id: itemText
                                                 text: menuLoader?.modelData?.text || ""
-                                                font.pixelSize: Styles.textSm
+                                                font.pointSize: Styles.textSm
                                                 Layout.fillWidth: true
                                                 horizontalAlignment: Text.AlignLeft
                                                 color: menuLoader?.modelData?.enabled ? Colors.onSurface : Colors.surfaceLighter
@@ -221,7 +221,7 @@ Rectangle {
                                             TextStyled {
                                                 id: checkBox
                                                 text: menuLoader?.modelData?.checkState === Qt.Checked ? "✓" : ""
-                                                font.pixelSize: Styles.textSm
+                                                font.pointSize: Styles.textSm
                                                 color: Colors.primary
                                                 visible: menuLoader?.modelData?.buttonType !== 0
                                             }
@@ -229,7 +229,7 @@ Rectangle {
                                             TextStyled {
                                                 id: submenu
                                                 text: "›"
-                                                font.pixelSize: Styles.textSm
+                                                font.pointSize: Styles.textSm
                                                 visible: menuLoader?.modelData?.hasChildren ?? false
                                             }
                                         }
@@ -275,7 +275,7 @@ Rectangle {
 
                                                         Layout.fillWidth: true
                                                         visible: text
-                                                        pixelSize: Styles.textSm
+                                                        pointSize: Styles.textSm
                                                         text: submenuButton.modelData.text || null
                                                         enabled: submenuButton.modelData.enabled
 
