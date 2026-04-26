@@ -9,7 +9,7 @@ import qs.Services
 
 Rectangle {
     id: root
-    color: Colors.surfaceLighter
+    color: Colors.onSecondary
 
     Utils {
         id: utils
@@ -20,7 +20,10 @@ Rectangle {
         running: false
         command: ["sh", "-c", "nixos-rebuild switch --impure"]
         stdout: StdioCollector {
-            onStreamFinished: utils.notify({from: Icons.info + " System", summary: this.text})
+            onStreamFinished: utils.notify({
+                from: Icons.info + " System",
+                summary: this.text
+            })
         }
     }
 
@@ -29,8 +32,10 @@ Rectangle {
         running: false
         command: ["sh", "-c", "/etc/nixos/update-configs.sh"]
         stdout: StdioCollector {
-            onStreamFinished: utils.notify({from: Icons.info + " System", summary: this.text})
-
+            onStreamFinished: utils.notify({
+                from: Icons.info + " System",
+                summary: this.text
+            })
         }
     }
 

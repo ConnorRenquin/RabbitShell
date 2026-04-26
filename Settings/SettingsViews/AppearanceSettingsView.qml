@@ -12,7 +12,7 @@ import qs.Settings
 Rectangle {
     id: root
     anchors.fill: parent
-    color: Colors.surfaceLighter
+    color: Colors.surface
 
     property bool showStyles: true
 
