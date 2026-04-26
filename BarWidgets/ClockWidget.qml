@@ -22,7 +22,8 @@ Rectangle {
     implicitWidth: contentRow.implicitWidth + Styles.marginSm * 2
     radius: Styles.radiusSm
     color: Colors.surface
-    implicitHeight: parent.height
+
+    Layout.fillHeight: true
 
     RowLayout {
         id: contentRow

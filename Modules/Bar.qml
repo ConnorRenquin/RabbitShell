@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Hyprland
 
 import QtQuick
+import QtQuick.Layouts
 
 import qs.BarWidgets
 import qs.Services
@@ -33,55 +34,61 @@ Variants {
             right: margin
         }
 
-        component BarRow: Row {
+        component BarRow: RowLayout {
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             anchors.top: parent.top
-            spacing: 8
+            spacing: Styles.marginXS
         }
 
-        BarRow {
-            id: leftGroup
-            anchors.left: parent.left
-            ButtonStyled {
-                id: appsButton
-                text: "󰘳"
-                onClicked: Hyprland.dispatch("togglespecialworkspace")
-            }
-            WorkspacesWidget {
-                monitorName: root.modelData.name
-            }
-            WindowTitleWidget {}
+        component BarButton: ButtonStyled {
+            Layout.fillHeight: true
         }
 
-        BarRow {
-            id: centerGroup
-            anchors.centerIn: parent
-            ButtonStyled {
-                id: notificationsButton
-                visible: Notifications.notifications.values.length > 0
-                text: " " + Notifications.notifications.values.length
-                onClicked: PatchBay.openNotificationsManager()
+        Rectangle {
+            anchors.fill: parent
+            radius: Styles.radiusMd
+            color: Colors.background
+            BarRow {
+                id: leftGroup
+                anchors.left: parent.left
+                BarButton {
+                    id: appsButton
+                    text: "󰘳"
+                    onClicked: Hyprland.dispatch("togglespecialworkspace")
+                }
+                WorkspacesWidget {
+                    monitorName: root.modelData.name
+                }
+                WindowTitleWidget {}
+                }
+            BarRow {
+                id: centerGroup
+                anchors.centerIn: parent
+                BarButton {
+                    id: notificationsButton
+                    visible: Notifications.notifications.values.length > 0
+                    text: " " + Notifications.notifications.values.length
+                    onClicked: PatchBay.openNotificationsManager()
+                }
+                ClockWidget {}
+                BatteryWidget {}
             }
-            ClockWidget {}
-            BatteryWidget {}
-        }
-
-        BarRow {
-            id: rightGroup
-            anchors.right: parent.right
-            MediaWidget {}
-            SystemTrayWidget {}
-            IdleInhibitorWidget {}
-            ButtonStyled {
-                id: settingsButton
-                height: parent.height
-                text: ""
-                onClicked: mouse => {
-                    if (mouse.button === Qt.RightButton) {
-                        WallpaperSettings.setRandomWallpaper();
-                    } else if (mouse.button === Qt.LeftButton) {
-                        PatchBay.openSettings();
+            BarRow {
+                id: rightGroup
+                anchors.right: parent.right
+                MediaWidget {}
+                SystemTrayWidget {}
+                IdleInhibitorWidget {}
+                BarButton {
+                    id: settingsButton
+                    text: ""
+                    onClicked: mouse => {
+                        if (mouse.button === Qt.RightButton) {
+                            WallpaperSettings.setRandomWallpaper();
+                        } else if (mouse.button === Qt.LeftButton) {
+                            PatchBay.openSettings();
+                        }
                     }
                 }
             }
