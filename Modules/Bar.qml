@@ -34,10 +34,10 @@ Variants {
 
         property int margin: Styles.marginSm
         margins {
-            top: margin
             // Hyprland takes care of this margin, so you don't have to.
+            top: top ? margin : 0
             bottom: top ? 0 : margin
-            left: !top ? margin : 0
+            left: margin
             right: margin
         }
 
