@@ -43,7 +43,10 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: Styles.marginSm
         TextStyled {
-            text: "Hello Computer"
+            text: Settings.register({
+                name: 'Welcome Message',
+                value: 'Hello world!'
+            }).value
             font.pointSize: Styles.textLg
         }
         Rectangle {

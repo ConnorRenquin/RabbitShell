@@ -16,39 +16,40 @@ Variants {
 
         required property var modelData
 
+        property bool top: Settings.register({
+            name: 'Bar Position',
+            value: true
+        }).value
+
         screen: modelData
         implicitHeight: 48
         color: "transparent"
 
         anchors {
-            top: true
+            top: top
             left: true
             right: true
+            bottom: !top
         }
 
         property int margin: Styles.marginSm
         margins {
             top: margin
-            bottom: 0 // Hyprland takes care of this margin, so you don't have to.
-            left: margin
+            // Hyprland takes care of this margin, so you don't have to.
+            bottom: top ? 0 : margin
+            left: !top ? margin : 0
             right: margin
-        }
-
-        component BarRow: RowLayout {
-            height: parent.height
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.top: parent.top
-            spacing: Styles.marginXS
-        }
-
-        component BarButton: ButtonStyled {
-            Layout.fillHeight: true
         }
 
         Rectangle {
             anchors.fill: parent
             radius: Styles.radiusMd
-            color: Colors.background
+
+            property bool barBackground: Settings.register({
+                name: 'Bar Background',
+                value: true
+            }).value
+            color: barBackground ? Colors.background : 'transparent'
             BarRow {
                 id: leftGroup
                 anchors.left: parent.left
@@ -61,7 +62,7 @@ Variants {
                     monitorName: root.modelData.name
                 }
                 WindowTitleWidget {}
-                }
+            }
             BarRow {
                 id: centerGroup
                 anchors.centerIn: parent
@@ -95,4 +96,14 @@ Variants {
         }
     }
 
+    component BarRow: RowLayout {
+        height: parent.height
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.top: parent.top
+        spacing: Styles.marginXS
+    }
+
+    component BarButton: ButtonStyled {
+        Layout.fillHeight: true
+    }
 }

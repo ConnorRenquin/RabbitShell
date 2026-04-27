@@ -75,6 +75,10 @@ Loader {
                     color: Colors.surfaceLighter
                     Layout.preferredWidth: 300
                     Layout.fillWidth: true
+                    GeneratedView {
+                        readonly property string name:  Icons.info + ' Generated'
+                        anchors.fill: parent
+                    }
                     UpdateSettingsView {
                         readonly property string name:  Icons.info + ' About'
                         anchors.fill: parent
