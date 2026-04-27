@@ -20,15 +20,21 @@ Rectangle {
 
     // Reactive derived values — referencing Settings.settings in the binding
     // creates a QML dependency so these update automatically when Settings.change() is called.
-    property string wallpaperDirectory: { Settings.settings; return Settings.get('Wallpaper Directory')?.value ?? '' }
-    property string wallpaperTransition: { Settings.settings; return Settings.get('Wallpaper Transition')?.value ?? 'fade' }
-    property int wallpaperTransitionDuration: { Settings.settings; return Settings.get('Wallpaper Transition Duration')?.value ?? 5 }
-
-    Component.onCompleted: {
-        Settings.register({ name: 'Wallpaper Directory', value: '/home', category: 'wallpaper' })
-        Settings.register({ name: 'Wallpaper Transition', value: 'fade', category: 'wallpaper' })
-        Settings.register({ name: 'Wallpaper Transition Duration', value: 5, category: 'wallpaper' })
-    }
+    property string wallpaperDirectory: Settings.register({
+        name: 'Wallpaper Directory',
+        value: '/home',
+        category: 'wallpaper'
+    }).value
+    property string wallpaperTransition: Settings.register({
+        name: 'Wallpaper Transition',
+        value: 'fade',
+        category: 'wallpaper'
+    }).value
+    property int wallpaperTransitionDuration: Settings.register({
+        name: 'Wallpaper Transition Duration',
+        value: 5,
+        category: 'wallpaper'
+    }).value
 
     function setWallpaper(imagePath) {
         Quickshell.execDetached(["awww", "img", imagePath, "--transition-type", root.wallpaperTransition, "--transition-duration", root.wallpaperTransitionDuration.toString()]);
@@ -89,7 +95,10 @@ Rectangle {
                         text: "Apply"
                         onClicked: {
                             if (directoryField.text) {
-                                Settings.change({ name: 'Wallpaper Directory', value: directoryField.text })
+                                Settings.change({
+                                    name: 'Wallpaper Directory',
+                                    value: directoryField.text
+                                });
                             }
                         }
                     }
@@ -126,7 +135,10 @@ Rectangle {
 
                         onCurrentTextChanged: {
                             if (currentText) {
-                                Settings.change({ name: 'Wallpaper Transition', value: currentText })
+                                Settings.change({
+                                    name: 'Wallpaper Transition',
+                                    value: currentText
+                                });
                             }
                         }
                     }
@@ -157,9 +169,12 @@ Rectangle {
                             text: "Set"
                             Layout.preferredHeight: 30
                             onClicked: {
-                                var duration = parseInt(durationField.text)
+                                var duration = parseInt(durationField.text);
                                 if (duration >= 1 && duration <= 10) {
-                                    Settings.change({ name: 'Wallpaper Transition Duration', value: duration })
+                                    Settings.change({
+                                        name: 'Wallpaper Transition Duration',
+                                        value: duration
+                                    });
                                 }
                             }
                         }
@@ -251,7 +266,6 @@ Rectangle {
                     }
                 }
             }
-
         }
 
         TextStyled {
@@ -321,7 +335,6 @@ Rectangle {
                                     }
                                 }
                             }
-
 
                             RowLayout {
                                 Layout.fillWidth: true
@@ -395,10 +408,10 @@ Rectangle {
         property string dominantColor: matugenDominantColor.currentText
 
         onRunningChanged: {
-            console.log(command)
+            console.log(command);
             if (!running && path) {
-                GlobalSettings.currentTheme = ''
-                GlobalSettings.currentTheme = 'matugen.json'
+                GlobalSettings.currentTheme = '';
+                GlobalSettings.currentTheme = 'matugen.json';
             }
         }
     }
