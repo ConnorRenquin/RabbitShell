@@ -61,7 +61,7 @@ Variants {
         DoubleText {
             id: clockText
             anchors.horizontalCenter: parent.horizontalCenter
-            pointSize: 160
+            pointSize: 120
             text: Time.timeShort
         }
     }
