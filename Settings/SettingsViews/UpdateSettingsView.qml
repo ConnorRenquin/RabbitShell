@@ -43,11 +43,13 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: Styles.marginSm
         TextStyled {
-            text: Settings.register({
+            text: { Settings.settings; return Settings.get('Welcome Message')?.value ?? 'Hello world!' }
+            font.pointSize: Styles.textLg
+
+            Component.onCompleted: Settings.register({
                 name: 'Welcome Message',
                 value: 'Hello world!'
-            }).value
-            font.pointSize: Styles.textLg
+            })
         }
         Rectangle {
             Layout.fillWidth: true

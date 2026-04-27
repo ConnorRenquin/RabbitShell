@@ -31,7 +31,6 @@ Loader {
         HyprlandFocusGrab {
             active: loader.active
             windows: [root]
-            onCleared: loader.active = false
         }
 
         Rectangle {

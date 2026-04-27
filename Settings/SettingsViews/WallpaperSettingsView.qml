@@ -1,10 +1,13 @@
 pragma ComponentBehavior: Bound
 
+import Quickshell
 import Quickshell.Io
 
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+
+import Qt.labs.folderlistmodel
 
 import qs.Settings
 import qs.Components
@@ -15,7 +18,28 @@ Rectangle {
     anchors.fill: parent
     color: Colors.surfaceLighter
 
-    property string pendingThemeName: ""
+    // Reactive derived values — referencing Settings.settings in the binding
+    // creates a QML dependency so these update automatically when Settings.change() is called.
+    property string wallpaperDirectory: { Settings.settings; return Settings.get('Wallpaper Directory')?.value ?? '' }
+    property string wallpaperTransition: { Settings.settings; return Settings.get('Wallpaper Transition')?.value ?? 'fade' }
+    property int wallpaperTransitionDuration: { Settings.settings; return Settings.get('Wallpaper Transition Duration')?.value ?? 5 }
+
+    Component.onCompleted: {
+        Settings.register({ name: 'Wallpaper Directory', value: '/home', category: 'wallpaper' })
+        Settings.register({ name: 'Wallpaper Transition', value: 'fade', category: 'wallpaper' })
+        Settings.register({ name: 'Wallpaper Transition Duration', value: 5, category: 'wallpaper' })
+    }
+
+    function setWallpaper(imagePath) {
+        Quickshell.execDetached(["awww", "img", imagePath, "--transition-type", root.wallpaperTransition, "--transition-duration", root.wallpaperTransitionDuration.toString()]);
+    }
+
+    FolderListModel {
+        id: folderModel
+        folder: root.wallpaperDirectory ? "file://" + root.wallpaperDirectory : ""
+        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.gif", "*.JPG", "*.JPEG", "*.PNG"]
+        showDirs: false
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -52,7 +76,7 @@ Rectangle {
                         id: directoryField
                         Layout.fillWidth: true
                         Layout.preferredHeight: 35
-                        text: WallpaperSettings.wallpaperDirectory
+                        text: root.wallpaperDirectory
                         placeholderText: "Enter wallpaper directory path..."
                     }
 
@@ -65,7 +89,7 @@ Rectangle {
                         text: "Apply"
                         onClicked: {
                             if (directoryField.text) {
-                                WallpaperSettings.setWallpaperDirectory(directoryField.text);
+                                Settings.change({ name: 'Wallpaper Directory', value: directoryField.text })
                             }
                         }
                     }
@@ -98,11 +122,11 @@ Rectangle {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 30
                         model: ["fade", "wipe", "grow", "outer", "center", "simple"]
-                        Component.onCompleted: currentIndex = model.indexOf(WallpaperSettings.transition)
+                        Component.onCompleted: currentIndex = model.indexOf(root.wallpaperTransition)
 
                         onCurrentTextChanged: {
                             if (currentText) {
-                                WallpaperSettings.setTransition(currentText);
+                                Settings.change({ name: 'Wallpaper Transition', value: currentText })
                             }
                         }
                     }
@@ -122,7 +146,7 @@ Rectangle {
                         TextFieldStyled {
                             id: durationField
                             Layout.preferredWidth: 60
-                            text: WallpaperSettings.transitionDuration.toString()
+                            text: root.wallpaperTransitionDuration
                             validator: IntValidator {
                                 bottom: 1
                                 top: 10
@@ -133,9 +157,9 @@ Rectangle {
                             text: "Set"
                             Layout.preferredHeight: 30
                             onClicked: {
-                                var duration = parseInt(durationField.text);
+                                var duration = parseInt(durationField.text)
                                 if (duration >= 1 && duration <= 10) {
-                                    WallpaperSettings.setTransitionDuration(duration);
+                                    Settings.change({ name: 'Wallpaper Transition Duration', value: duration })
                                 }
                             }
                         }
@@ -250,7 +274,7 @@ Rectangle {
                     rowSpacing: Styles.marginSm
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    model: WallpaperSettings.folderModel
+                    model: folderModel
                     delegate: Rectangle {
                         id: wallpaperItem
 
@@ -293,7 +317,7 @@ Rectangle {
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: {
                                         var path = wallpaperItem.fileUrl.toString().replace("file://", "");
-                                        WallpaperSettings.setWallpaper(path);
+                                        root.setWallpaper(path);
                                     }
                                 }
                             }
@@ -326,17 +350,17 @@ Rectangle {
             // Placeholder when no wallpapers
             ColumnLayout {
                 anchors.centerIn: parent
-                visible: WallpaperSettings.folderModel.count === 0
+                visible: folderModel.count === 0
                 spacing: Styles.marginSm
 
                 TextStyled {
-                    text: WallpaperSettings.wallpaperDirectory ? "No wallpapers found" : "Select a directory"
+                    text: root.wallpaperDirectory ? "No wallpapers found" : "Select a directory"
                     font.pointSize: Styles.textLg
                     Layout.alignment: Qt.AlignHCenter
                 }
 
                 TextStyled {
-                    text: WallpaperSettings.wallpaperDirectory ? "Check if the directory contains image files" : "Click 'Browse' or enter a path above"
+                    text: root.wallpaperDirectory ? "Check if the directory contains image files" : "Click 'Browse' or enter a path above"
                     font.pointSize: Styles.textSm
                     opacity: 0.7
                     Layout.alignment: Qt.AlignHCenter
