@@ -75,10 +75,6 @@ Loader {
                     color: Colors.surfaceLighter
                     Layout.preferredWidth: 300
                     Layout.fillWidth: true
-                    GeneratedView {
-                        readonly property string name:  Icons.info + ' Generated'
-                        anchors.fill: parent
-                    }
                     UpdateSettingsView {
                         readonly property string name:  Icons.info + ' About'
                         anchors.fill: parent
@@ -88,7 +84,7 @@ Loader {
                         anchors.fill: parent
                     }
                     AppearanceSettingsView {
-                        readonly property string name: Icons.appearance + ' Appearance'
+                        readonly property string name: Icons.appearance + ' Colors'
                         anchors.fill: parent
                     }
                     PipewireSettingsView {
@@ -105,6 +101,10 @@ Loader {
                     }
                     Cheatsheet {
                         readonly property string name: Icons.cheatsheet + ' Cheatsheet'
+                        anchors.fill: parent
+                    }
+                    GeneratedView {
+                        readonly property string name:  Icons.info + ' Misc'
                         anchors.fill: parent
                     }
                 }
