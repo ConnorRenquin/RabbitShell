@@ -12,11 +12,6 @@ import qs.Services
 Rectangle {
     id: root
 
-    readonly property var clockSymbols: [
-        "󱐿", "󱑀", "󱑁", "󱑂", "󱑃", "󱑄",
-        "󱑅", "󱑆", "󱑇", "󱑈", "󱑉", "󱑊"
-    ]
-
     property real matchedWidth: Math.max(clock.implicitWidth, date.implicitWidth)
 
     implicitWidth: contentRow.implicitWidth + Styles.marginSm * 2
@@ -32,7 +27,7 @@ Rectangle {
 
         TextStyled {
             id: clock
-            text: root.clockSymbols[Time.hour % 12 - 1] + " |- " + Time.getTime()
+            text: Time.getSymbol() + " |- " + Time.getTime()
             Layout.preferredWidth: root.matchedWidth
             horizontalAlignment: Text.AlignRight
         }
@@ -42,7 +37,7 @@ Rectangle {
             pointSize: Styles.textLg
             onClicked: mouse => {
                 if (mouse.button === Qt.LeftButton) {
-                    PatchBay.openAppLauncher()
+                    PatchBay.openAppLauncher();
                 } else if (mouse.button === Qt.MiddleButton) {
                     PatchBay.openPowerMenu();
                 } else if (mouse.button === Qt.RightButton) {

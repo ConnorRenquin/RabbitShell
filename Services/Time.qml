@@ -17,10 +17,21 @@ Singleton {
         value: false
     }).value
 
+    readonly property var clockSymbols: [
+        "󱐿", "󱑀", "󱑁", "󱑂", "󱑃", "󱑄",
+        "󱑅", "󱑆", "󱑇", "󱑈", "󱑉", "󱑊"
+    ]
+
     function getTime() {
         if (militaryTime)
             return time;
         return timeShort;
+    }
+
+    function getSymbol() {
+        const symbolIndex = (Time.hour % 12 - 1)
+        if (symbolIndex > 0) return clockSymbols[symbolIndex]
+        return clockSymbols[11]
     }
 
     SystemClock {
