@@ -62,7 +62,7 @@ Variants {
             id: clockText
             anchors.horizontalCenter: parent.horizontalCenter
             pointSize: 120
-            text: Time.timeShort
+            text: Time.getTime()
         }
     }
 }

@@ -32,7 +32,7 @@ Rectangle {
 
         TextStyled {
             id: clock
-            text: root.clockSymbols[Time.hour % 12 - 1] + " |- " + Time.time
+            text: root.clockSymbols[Time.hour % 12 - 1] + " |- " + Time.getTime()
             Layout.preferredWidth: root.matchedWidth
             horizontalAlignment: Text.AlignRight
         }
