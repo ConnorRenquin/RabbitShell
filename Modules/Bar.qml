@@ -84,13 +84,7 @@ Variants {
                 BarButton {
                     id: settingsButton
                     text: ""
-                    onClicked: mouse => {
-                        if (mouse.button === Qt.RightButton) {
-                            WallpaperSettings.setRandomWallpaper();
-                        } else if (mouse.button === Qt.LeftButton) {
-                            PatchBay.openSettings();
-                        }
-                    }
+                    onClicked: mouse => PatchBay.openSettings()
                 }
             }
         }
