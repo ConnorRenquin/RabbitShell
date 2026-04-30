@@ -17,7 +17,7 @@ Variants {
         required property var modelData
 
         property bool top: Settings.register({
-            name: 'Bar Position',
+            name: 'barPosition',
             value: true
         }).value
 
@@ -46,7 +46,7 @@ Variants {
             radius: Styles.radiusMd
 
             property bool barBackground: Settings.register({
-                name: 'Bar Background',
+                name: 'barBackground',
                 value: true
             }).value
             color: barBackground ? Colors.background : 'transparent'

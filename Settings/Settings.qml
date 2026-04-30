@@ -74,6 +74,14 @@ Singleton {
         return settings.find(s => s.name === name) ?? null
     }
 
+    // Converts a camelCase key into a human-readable Title Case label.
+    // e.g. 'wallpaperTransitionDuration' -> 'Wallpaper Transition Duration'
+    function toDisplayName(name) {
+        return name
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/^./, s => s.toUpperCase())
+    }
+
     // Only serialise values that the user has actually changed from the default.
     // This keeps the file minimal and means new settings added in code always
     // start from their defaultValue rather than being overridden by a stale file.

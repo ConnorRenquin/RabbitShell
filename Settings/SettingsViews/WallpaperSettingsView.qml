@@ -21,17 +21,17 @@ Rectangle {
     // Reactive derived values — referencing Settings.settings in the binding
     // creates a QML dependency so these update automatically when Settings.change() is called.
     property string wallpaperDirectory: Settings.register({
-        name: 'Wallpaper Directory',
+        name: 'wallpaperDirectory',
         value: '/home',
         category: 'wallpaper'
     }).value
     property string wallpaperTransition: Settings.register({
-        name: 'Wallpaper Transition',
+        name: 'wallpaperTransition',
         value: 'fade',
         category: 'wallpaper'
     }).value
     property int wallpaperTransitionDuration: Settings.register({
-        name: 'Wallpaper Transition Duration',
+        name: 'wallpaperTransitionDuration',
         value: 5,
         category: 'wallpaper'
     }).value
@@ -96,7 +96,7 @@ Rectangle {
                         onClicked: {
                             if (directoryField.text) {
                                 Settings.change({
-                                    name: 'Wallpaper Directory',
+                                    name: 'wallpaperDirectory',
                                     value: directoryField.text
                                 });
                             }
@@ -136,7 +136,7 @@ Rectangle {
                         onCurrentTextChanged: {
                             if (currentText) {
                                 Settings.change({
-                                    name: 'Wallpaper Transition',
+                                    name: 'wallpaperTransition',
                                     value: currentText
                                 });
                             }
@@ -172,7 +172,7 @@ Rectangle {
                                 var duration = parseInt(durationField.text);
                                 if (duration >= 1 && duration <= 10) {
                                     Settings.change({
-                                        name: 'Wallpaper Transition Duration',
+                                        name: 'wallpaperTransitionDuration',
                                         value: duration
                                     });
                                 }
@@ -410,7 +410,10 @@ Rectangle {
         onRunningChanged: {
             console.log(command);
             if (!running && path) {
-                Settings.change({name: 'currentTheme', value: 'matugen.json'});
+                Settings.change({
+                    name: 'currentTheme',
+                    value: 'matugen.json'
+                });
             }
         }
     }

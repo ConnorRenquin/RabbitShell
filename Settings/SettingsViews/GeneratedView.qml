@@ -41,7 +41,7 @@ Rectangle {
 
                     TextStyled {
                         Layout.fillWidth: true
-                        text: row.modelData.name
+                        text: Settings.toDisplayName(row.modelData.name)
                         font.pointSize: Styles.textMd
                         elide: Text.ElideRight
                         verticalAlignment: Text.AlignVCenter

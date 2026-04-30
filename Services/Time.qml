@@ -13,7 +13,7 @@ Singleton {
     readonly property int hour: parseInt(Qt.formatDateTime(clock.date, "h"))
 
     property bool militaryTime: Settings.register({
-        name: '24 Hour Clock',
+        name: 'militaryTime',
         value: false
     }).value
 
