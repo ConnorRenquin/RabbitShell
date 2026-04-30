@@ -17,5 +17,5 @@ Singleton {
     readonly property string cheatsheet: "?"
     readonly property string appearance: ""
     readonly property string misc: ""
-
+    readonly property string os: "󱄅"
 }

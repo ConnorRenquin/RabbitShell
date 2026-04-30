@@ -33,7 +33,7 @@ Rectangle {
         }
 
         ButtonStyled {
-            text: "󱄅"
+            text: Icons.os
             pointSize: Styles.textLg
             onClicked: mouse => {
                 if (mouse.button === Qt.LeftButton) {
