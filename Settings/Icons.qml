@@ -18,4 +18,5 @@ Singleton {
     readonly property string appearance: ""
     readonly property string misc: ""
     readonly property string os: "󱄅"
+    readonly property string notificationBell: ""
 }

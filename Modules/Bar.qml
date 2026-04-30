@@ -69,7 +69,7 @@ Variants {
                 BarButton {
                     id: notificationsButton
                     visible: Notifications.notifications.values.length > 0
-                    text: " " + Notifications.notifications.values.length
+                    text: Icons.notificationBell + ' ' + Notifications.notifications.values.length
                     onClicked: PatchBay.openNotificationsManager()
                 }
                 ClockWidget {}
