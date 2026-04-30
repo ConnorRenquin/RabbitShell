@@ -83,7 +83,7 @@ Variants {
                 IdleInhibitorWidget {}
                 BarButton {
                     id: settingsButton
-                    text: ""
+                    text: Icons.settingsCog
                     onClicked: mouse => PatchBay.openSettings()
                 }
             }
