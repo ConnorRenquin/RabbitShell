@@ -8,7 +8,7 @@ import QtQuick
 Singleton {
     id: root
 
-    property string currentTheme: GlobalSettings.currentTheme ?? "default.json"
+    property string currentTheme: Settings.register({name: 'currentTheme', value: 'default.json', category: 'appearance'}).value
     readonly property string directory: '.data/colors/'
     property string themePath: directory + currentTheme
     property list<string> availableThemes: []
@@ -153,7 +153,7 @@ Singleton {
     }
 
     onCurrentThemeChanged: {
-        GlobalSettings.currentTheme = currentTheme;
+        Settings.change({name: 'currentTheme', value: currentTheme});
         persistantData.reload();
     }
 

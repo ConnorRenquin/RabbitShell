@@ -25,12 +25,12 @@ Rectangle {
         title: "Delete current theme?"
         warning: "This action can't be undone."
         onAccepted: {
-            var themePath = Colors.directory + GlobalSettings.currentTheme;
+            var themePath = Colors.directory + Settings.get('currentTheme').value;
             Quickshell.execDetached(['bash', '-c', 'rm "$XDG_CONFIG_HOME/quickshell/Settings/' + themePath + '"']);
             if (Colors.availableThemes.length > 1) {
-                var newTheme = Colors.availableThemes.find(t => t !== GlobalSettings.currentTheme);
+                var newTheme = Colors.availableThemes.find(t => t !== Colors.currentTheme);
                 if (newTheme) {
-                    GlobalSettings.currentTheme = newTheme;
+                    Settings.change({name: 'currentTheme', value: newTheme});
                 }
             }
             Colors.refreshThemes();
@@ -39,17 +39,17 @@ Rectangle {
     TextFieldDialog {
         id: renameDialog
         title: "Rename"
-        currentText: GlobalSettings.currentTheme.replace('.json', '')
+        currentText: Colors.currentTheme.replace('.json', '')
         onAccepted: {
             var newName = currentText.trim();
-            if (newName && newName !== GlobalSettings.currentTheme.replace('.json', '')) {
+            if (newName && newName !== Colors.currentTheme.replace('.json', '')) {
                 if (!newName.endsWith('.json')) {
                     newName += '.json';
                 }
-                var oldPath = '$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + GlobalSettings.currentTheme;
+                var oldPath = '$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + Colors.currentTheme;
                 var newPath = '$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + newName;
                 Quickshell.execDetached(['bash', '-c', 'mv "' + oldPath + '" "' + newPath + '"']);
-                GlobalSettings.currentTheme = newName;
+                Settings.change({name: 'currentTheme', value: newName});
                 Colors.refreshThemes();
             }
         }
@@ -64,10 +64,10 @@ Rectangle {
                 if (!newName.endsWith('.json')) {
                     newName += '.json';
                 }
-                var sourcePath = '$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + GlobalSettings.currentTheme;
+                var sourcePath = '$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + Colors.currentTheme;
                 var destPath = '$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + newName;
                 Quickshell.execDetached(['bash', '-c', 'cp "' + sourcePath + '" "' + destPath + '"']);
-                GlobalSettings.currentTheme = newName;
+                Settings.change({name: 'currentTheme', value: newName});
                 currentText.text = "";
             }
             Colors.refreshThemes();
@@ -96,8 +96,8 @@ Rectangle {
                 model: Colors.availableThemes
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                currentIndex: Colors.availableThemes.indexOf(GlobalSettings.currentTheme)
-                onActivated: GlobalSettings.currentTheme = model[currentIndex]
+                currentIndex: Colors.availableThemes.indexOf(Colors.currentTheme)
+                onActivated: Settings.change({name: 'currentTheme', value: model[currentIndex]})
             }
 
             ButtonStyled {

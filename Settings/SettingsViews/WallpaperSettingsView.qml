@@ -410,8 +410,7 @@ Rectangle {
         onRunningChanged: {
             console.log(command);
             if (!running && path) {
-                GlobalSettings.currentTheme = '';
-                GlobalSettings.currentTheme = 'matugen.json';
+                Settings.change({name: 'currentTheme', value: 'matugen.json'});
             }
         }
     }
