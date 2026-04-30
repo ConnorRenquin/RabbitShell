@@ -21,4 +21,12 @@ Singleton {
     readonly property string notificationBell: ""
     readonly property string settingsCog: ""
     readonly property string specialWorkspace: "󰘳"
+
+    // Power menu
+    readonly property string logout: "󰿅"
+    readonly property string lock: ""
+    readonly property string suspend: "󰤄"
+    readonly property string reboot: ""
+    readonly property string power: ""
+    readonly property string firmware: ""
 }

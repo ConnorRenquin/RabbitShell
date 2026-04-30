@@ -79,35 +79,35 @@ Loader {
                 spacing: Styles.marginSm
 
                 PowerMenuButton {
-                    text: "󰿅"
+                    text: Icons.logout
                     onClicked: loader.menuAction("hyprctl dispatch exit")
                     index: 0
                 }
                 PowerMenuButton {
-                    text: ""
+                    text: Icons.lock
                     onClicked: PatchBay.lockScreen()
                     index: 1
                 }
                 PowerMenuButton {
-                    text: "󰤄"
+                    text: Icons.suspend
                     onClicked: loader.menuAction("hyprctl dispatch global quickshell:lockscreen && systemctl suspend")
                     index: 2
                 }
 
                 PowerMenuButton {
-                    text: ""
+                    text: Icons.reboot
                     onClicked: loader.menuAction("systemctl reboot || loginctl reboot")
                     index: 3
                 }
 
                 PowerMenuButton {
-                    text: ""
+                    text: Icons.power
                     onClicked: loader.menuAction("systemctl poweroff || loginctl poweroff")
                     index: 4
                 }
 
                 PowerMenuButton {
-                    text: ""
+                    text: Icons.firmware
                     onClicked: loader.menuAction("systemctl reboot --firmware-setup || loginctl reboot --firmware-setup")
                     index: 5
                 }
