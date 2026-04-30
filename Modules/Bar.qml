@@ -55,7 +55,7 @@ Variants {
                 anchors.left: parent.left
                 BarButton {
                     id: appsButton
-                    text: "󰘳"
+                    text: Icons.specialWorkspace
                     onClicked: Hyprland.dispatch("togglespecialworkspace")
                 }
                 WorkspacesWidget {

@@ -20,4 +20,5 @@ Singleton {
     readonly property string os: "󱄅"
     readonly property string notificationBell: ""
     readonly property string settingsCog: ""
+    readonly property string specialWorkspace: "󰘳"
 }
