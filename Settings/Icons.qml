@@ -16,5 +16,6 @@ Singleton {
     readonly property string audio: "󰓃"
     readonly property string cheatsheet: "?"
     readonly property string appearance: ""
+    readonly property string misc: ""
 
 }

@@ -103,7 +103,7 @@ Loader {
                         anchors.fill: parent
                     }
                     GeneratedView {
-                        readonly property string name:  Icons.info + ' Misc'
+                        readonly property string name:  Icons.misc + ' Misc'
                         anchors.fill: parent
                     }
                 }
