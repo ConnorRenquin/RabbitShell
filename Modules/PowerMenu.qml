@@ -36,8 +36,9 @@ Loader {
     sourceComponent: PanelWindow {
         id: root
 
+        property bool topBar: Settings.get('barPosition').value
         anchors.top: true
-        margins.top: Styles.marginMd * 3
+        margins.top: topBar ? Styles.marginMd * 3 : Styles.marginSm
         exclusionMode: ExclusionMode.Ignore
         implicitWidth: menuBackground.implicitWidth
         implicitHeight: menuBackground.implicitHeight
@@ -47,13 +48,6 @@ Loader {
             active: loader.active
             windows: [root]
             onCleared: loader.active = false
-        }
-
-        component PowerMenuButton: ButtonStyled {
-            id: menuButton
-            required property int index
-            Layout.fillWidth: true
-            isFocused: index === loader.currentFocusIndex
         }
 
         Rectangle {
@@ -119,5 +113,12 @@ Loader {
                 }
             }
         }
+    }
+
+    component PowerMenuButton: ButtonStyled {
+        id: menuButton
+        required property int index
+        Layout.fillWidth: true
+        isFocused: index === loader.currentFocusIndex
     }
 }
