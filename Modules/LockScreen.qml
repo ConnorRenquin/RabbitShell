@@ -116,7 +116,7 @@ Scope {
                         id: clockText
                         anchors.centerIn: parent
                         font.pointSize: 80
-                        text: Time.time + ' 󱄅 ' + Time.date
+                        text: Time.getTime() + ' 󱄅 ' + Time.date
                     }
                 }
 
