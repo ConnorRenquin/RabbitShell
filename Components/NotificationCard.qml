@@ -38,6 +38,14 @@ Rectangle {
         return lines.map(line => line.slice(minIndent)).join('\n');
     }
 
+    component CloseButton: ButtonStyled {
+        id: closeButton
+        Layout.preferredWidth: 32
+        Layout.preferredHeight: 32
+        text: Icons.close
+        onClicked: root.dismissed()
+    }
+
     ColumnLayout {
         id: notificationContent
 
@@ -53,7 +61,7 @@ Rectangle {
             id: headerRow
             Layout.fillWidth: true
             spacing: Styles.marginSm
-            visible: root.notification
+            visible: root.notification && root.notification?.appName
 
             IconImage {
                 id: appIconImage
@@ -74,13 +82,8 @@ Rectangle {
                 Layout.fillWidth: true
             }
 
-            ButtonStyled {
-                id: closeButton
-                Layout.preferredWidth: 32
-                Layout.preferredHeight: 32
+            CloseButton {
                 visible: root.showCloseButton
-                text: Icons.close
-                onClicked: root.dismissed();
             }
         }
 
@@ -92,12 +95,17 @@ Rectangle {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
-                TextStyled {
-                    id: summaryText
-                    Layout.fillWidth: true
-                    visible: text
-                    text: root.notification?.summary ?? ""
-                    wrapMode: Text.WordWrap
+                RowLayout {
+                    TextStyled {
+                        id: summaryText
+                        Layout.fillWidth: true
+                        visible: text
+                        text: root.notification?.summary ?? ""
+                        wrapMode: Text.WordWrap
+                    }
+                    CloseButton {
+                        visible: root.showCloseButton && !root.notification?.appName
+                    }
                 }
 
                 TextStyled {
