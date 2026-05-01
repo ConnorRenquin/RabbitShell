@@ -394,10 +394,7 @@ FloatingWindow {
                                 ClipboardService.storeToNextAvailableSlot(button.itemText);
                             } else {
                                 const text = button.itemText.replace(/'/g, "'\\''");
-                                Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-                                utils.notify({
-                                    summary: 'Copied Item'
-                                });
+                                ClipboardService.copyToClipboard(text);
                                 root.exit();
                             }
                         }

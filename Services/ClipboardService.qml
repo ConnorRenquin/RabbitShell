@@ -100,6 +100,14 @@ Singleton {
         utils.notify({summary: 'Slot ' + (index === 9 ? 0 : index + 1) + ' Cleared'});
     }
 
+    function copyToClipboard(text: string) {
+        Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
+        utils.notify({
+            summary: 'Copied',
+            body: text
+        });
+    }
+
     function copySlotToClipboard(index) {
         const storedText = root.clipboardData.slots[index];
         if (!storedText) {
@@ -107,8 +115,7 @@ Singleton {
             return;
         }
         const text = storedText.replace(/'/g, "'\\''");
-        Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-        utils.notify({summary: 'Copied'});
+        copyToClipboard(text)
     }
 
     Utils {
