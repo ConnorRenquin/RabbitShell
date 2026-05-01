@@ -6,6 +6,7 @@ Text {
     color: Colors.onSurface
     elide: Text.ElideRight
     antialiasing: true
+    verticalAlignment: Text.AlignVCenter
     font {
         pointSize: Styles.textMd
         family: Styles.defaultFontFamily
