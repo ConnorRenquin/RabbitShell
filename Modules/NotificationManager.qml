@@ -49,7 +49,7 @@ Loader {
         Rectangle {
             id: base
             anchors.fill: parent
-            color: Colors.surface
+            color: Colors.primary
             radius: Styles.radiusMd
             focus: true
 
@@ -71,7 +71,7 @@ Loader {
                     id: controlSection
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
-                    color: Colors.surfaceLighter
+                    color: Colors.onPrimary
                     radius: Styles.radiusMd
 
                     RowLayout {
@@ -95,11 +95,12 @@ Loader {
                             implicitHeight: 40
                             implicitWidth: clearAllText.implicitWidth + Styles.marginLg
 
-                            defaultColor: Colors.surface
+                            defaultColor: Colors.secondary
                             onClicked: root.clear()
 
                             TextStyled {
                                 id: clearAllText
+                                color: Colors.onSecondary
                                 anchors.centerIn: parent
                                 textFormat: Text.MarkdownText
                                 text: '<u>C</u>lear All'
