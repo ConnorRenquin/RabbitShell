@@ -89,10 +89,11 @@ Variants {
             id: notificationList
             spacing: Styles.marginSm
             width: 400
+            property bool topBar: Settings.get('barPosition').value
             anchors {
                 top: parent.top
                 horizontalCenter: parent.horizontalCenter
-                margins: Styles.marginLg * 2
+                margins: topBar ? Styles.marginLg * 2 + Styles.marginSm: Styles.marginSm
             }
         }
     }
