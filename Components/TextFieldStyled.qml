@@ -9,10 +9,10 @@ TextField {
     property string backgroundColor: Colors.surface
 
     font.pointSize: Styles.textMd
-    color: Colors.onSurface
+    color: Colors.onBackground
     selectByMouse: true
     verticalAlignment: TextInput.AlignVCenter
-    placeholderTextColor: Colors.onSurface
+    placeholderTextColor: Colors.onBackground
     background: Rectangle {
         color: "transparent"
     }
