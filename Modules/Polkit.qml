@@ -37,7 +37,7 @@ Loader {
             Layout.preferredWidth: 300
             Layout.fillHeight: true
             radius: Styles.radiusLg
-            color: Colors.surface
+            color: Colors.onError
             Timer {
                 repeat: true
                 running: true
@@ -49,7 +49,7 @@ Loader {
 
                 anchors.centerIn: parent
                 text: ''
-                color: Colors.errorDarker
+                color: Colors.error
                 font.pointSize: 160
             }
         }
@@ -79,7 +79,7 @@ Loader {
                 id: passwordControls
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                color: Colors.error
+                color: Colors.onError
                 radius: Styles.radiusLg
                 ColumnLayout {
                     id: contentColumn
@@ -99,6 +99,7 @@ Loader {
                                 id: polkitMessage
                                 Layout.fillWidth: true
                                 text: polkitAgent.flow?.message || null
+                                wrapMode: Text.WrapAnywhere
                             }
                             Rectangle {
                                 id: errorIndicator
@@ -122,7 +123,7 @@ Loader {
                         id: passwordArea
                         Layout.fillWidth: true
                         Layout.preferredHeight: 50
-                        color: Colors.surfaceLighter
+                        color: Colors.background
                         radius: Styles.radiusMd
                         TextFieldStyled {
                             id: passwordInput
@@ -147,7 +148,6 @@ Loader {
                         spacing: 8
                         ButtonStyled {
                             text: "Cancel"
-                            defaultColor: Colors.errorDarker
                             onClicked: root.cancel()
                         }
 
@@ -156,7 +156,6 @@ Loader {
                             Layout.fillWidth: true
                             enabled: polkitAgent.flow && (passwordInput.text.length > 0 || !polkitAgent.flow.isResponseRequired)
                             text: "Submit"
-                            defaultColor: Colors.primaryDarker
                             onClicked: {
                                 if (polkitAgent.flow) {
                                     polkitAgent.flow.submit(passwordInput.text);
