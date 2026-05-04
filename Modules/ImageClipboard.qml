@@ -48,7 +48,7 @@ FloatingWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: Colors.surface
+        color: Colors.primaryContainer
         ScrollViewPlus {
             id: scrollView
             anchors.fill: parent
@@ -77,9 +77,7 @@ FloatingWindow {
                     ClippingRectangle {
                         anchors.fill: parent
                         radius: Styles.radiusSm
-                        border.width: Styles.marginSm
-                        border.color: Colors.surfaceLighter
-                        color: Colors.surfaceLighter
+                        color: Colors.background
                         Image {
                             id: imageComponent
                             anchors.fill: parent
