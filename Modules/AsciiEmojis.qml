@@ -471,7 +471,7 @@ FloatingWindow {
 
         anchors.fill: parent
 
-        color: Colors.surface
+        color: Colors.tertiaryContainer
         radius: Styles.radiusSm
 
         Keys.onPressed: event => {
@@ -487,7 +487,7 @@ FloatingWindow {
             contentWidth: availableWidth
             GridLayoutPlus {
                 id: emojiGrid
-                columns: Math.floor(parent.width / 220)
+                columns: Math.floor(parent.width / 420)
                 anchors.left: parent.left
                 anchors.right: parent.right
                 rowSpacing: Styles.marginSm
@@ -504,7 +504,6 @@ FloatingWindow {
                     Layout.preferredHeight: 100
 
                     radius: Styles.radiusMd
-                    defaultColor: Colors.surfaceLighter
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -514,15 +513,13 @@ FloatingWindow {
                         TextStyled {
                             Layout.fillWidth: true
                             text: emojiButton.modelData.emoji
+                            horizontalAlignment: Text.AlignHCenter
                             font.pointSize: 24
-                            color: Colors.onSurface
                         }
                         TextStyled {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 20
                             text: emojiButton.modelData.name
-                            color: Colors.onSurface
-                            font.pointSize: 12
                             horizontalAlignment: Text.AlignHCenter
                             elide: Text.ElideRight
                         }
