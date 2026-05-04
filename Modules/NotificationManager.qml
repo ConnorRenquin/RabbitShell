@@ -49,7 +49,7 @@ Loader {
         Rectangle {
             id: base
             anchors.fill: parent
-            color: Colors.primary
+            color: Colors.tertiaryContainer
             radius: Styles.radiusMd
             focus: true
 
@@ -71,7 +71,7 @@ Loader {
                     id: controlSection
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
-                    color: Colors.onPrimary
+                    color: Colors.onTertiary
                     radius: Styles.radiusMd
 
                     RowLayout {
@@ -94,13 +94,10 @@ Loader {
                             id: clearButton
                             implicitHeight: 40
                             implicitWidth: clearAllText.implicitWidth + Styles.marginLg
-
-                            defaultColor: Colors.secondary
                             onClicked: root.clear()
-
                             TextStyled {
                                 id: clearAllText
-                                color: Colors.onSecondary
+                                color: Colors.onSurface
                                 anchors.centerIn: parent
                                 textFormat: Text.MarkdownText
                                 text: '<u>C</u>lear All'
@@ -114,7 +111,7 @@ Loader {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     color: "transparent"
-                    radius: Styles.radiusMd
+                    radius: Styles.radiusSm
 
                     ListView {
                         id: notificationList
@@ -137,16 +134,13 @@ Loader {
                             id: emptyState
                             anchors.centerIn: parent
                             visible: notificationList.count === 0
-                            width: parent.width
-                            height: 100
-                            color: "transparent"
-
+                            radius: Styles.radiusLg
+                            implicitWidth: 300
+                            implicitHeight: 60
+                            color: Colors.onTertiary
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: "No notifications"
-                                color: Colors.onSurface
-                                opacity: 0.5
-                                font.pointSize: 16
                             }
                         }
                     }
