@@ -50,7 +50,7 @@ FloatingWindow {
 
         anchors.fill: parent
 
-        color: Colors.surface
+        color: Colors.secondaryContainer
         radius: Styles.radiusSm
 
         property int selectedEntryIndex: 0
@@ -180,7 +180,7 @@ FloatingWindow {
                 Layout.preferredHeight: 50
                 Layout.margins: Styles.marginSm
                 Layout.bottomMargin: 0
-                color: Colors.primaryDarker
+                color: Colors.tertiaryContainer
                 radius: Styles.radiusSm
 
                 RowLayoutPlus {
@@ -198,7 +198,8 @@ FloatingWindow {
                             id: slotButton
                             anchors.fill: parent
 
-                            color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.primary : Colors.surface
+                            property bool slotOccupied: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== ""
+                            color: slotOccupied ? Colors.tertiary : Colors.onTertiary
 
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
@@ -219,7 +220,7 @@ FloatingWindow {
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
-                                color: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "" ? Colors.surface : Colors.onSurface
+                                color: slotButton.slotOccupied ? Colors.onTertiary : Colors.tertiary
                             }
                         }
 
@@ -238,7 +239,7 @@ FloatingWindow {
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: Colors.surfaceLighter
+                                color: Colors.background
                                 radius: Styles.radiusMd
                                 TextStyled {
                                     id: tooltipContent
@@ -246,7 +247,7 @@ FloatingWindow {
                                     anchors.margins: Styles.marginSm
                                     text: utils.removeIndentation(ClipboardService.clipboardData.slots[slotButtonContainer.modelData]) || "Empty"
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: Colors.onSurface
+                                    color: Colors.onBackground
                                 }
                             }
                         }
@@ -258,7 +259,7 @@ FloatingWindow {
                 Layout.preferredHeight: 50
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
-                color: Colors.surfaceLighter
+                color: Colors.background
                 radius: Styles.radiusSm
 
                 RowLayout {
@@ -268,10 +269,9 @@ FloatingWindow {
 
                     TextFieldStyled {
                         id: searchField
-                        placeholderText: 'search (press / to focus)'
+                        placeholderText: '/search'
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        backgroundColor: Colors.surfaceLighter
                         onTextChanged: mainContent.searchText = text
                         Keys.onPressed: event => {
                             if (event.key === Qt.Key_Escape) {
@@ -282,30 +282,16 @@ FloatingWindow {
                         }
                     }
 
-                    ButtonStyled {
+                    ClipboardButton {
                         id: imageClipboardButton
-                        Layout.preferredWidth: 60
-                        Layout.fillHeight: true
                         onClicked: PatchBay.openImageClipboard()
-
-                        TextStyled {
-                            anchors.centerIn: parent
-                            text: Icons.image
-                            color: Colors.onSurface
-                        }
+                        text: Icons.image
                     }
 
-                    ButtonStyled {
+                    ClipboardButton {
                         id: emojiButton
-                        Layout.preferredWidth: 60
-                        Layout.fillHeight: true
                         onClicked: PatchBay.openAsciiEmojis()
-
-                        TextStyled {
-                            anchors.centerIn: parent
-                            text: "(ᵔᴥᵔ)"
-                            color: Colors.onSurface
-                        }
+                        text: "(ᵔᴥᵔ)"
                     }
                 }
             }
@@ -316,7 +302,7 @@ FloatingWindow {
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
                 color: "transparent"
-                radius: Styles.radiusMd
+                radius: Styles.radiusSm
 
                 ListView {
                     id: clipboardItems
@@ -352,7 +338,7 @@ FloatingWindow {
                                 Layout.preferredWidth: 50
                                 implicitHeight: 20
                                 Layout.fillHeight: true
-                                color: button.isFocused ? Colors.primary : Colors.surfaceLighter
+                                color: button.isFocused ? Colors.primaryContainer : Colors.onPrimary
                                 radius: Styles.radiusSm
                                 TextStyled {
                                     id: clipboardItemKeyText
@@ -365,7 +351,7 @@ FloatingWindow {
 
                             Rectangle {
                                 id: clipboardItemScreen
-                                color: Colors.surfaceDarker
+                                color: Colors.surface
                                 radius: Styles.radiusSm
 
                                 Layout.fillWidth: true
@@ -401,6 +387,19 @@ FloatingWindow {
                     }
                 }
             }
+        }
+    }
+
+    component ClipboardButton: ButtonStyled {
+        Layout.preferredWidth: 60
+        Layout.fillHeight: true
+        defaultColor: Colors.primaryContainer
+        hoverColor: Colors.onPrimary
+        property alias text: buttonText.text
+        TextStyled {
+            id: buttonText
+            anchors.centerIn: parent
+            color: Colors.primary
         }
     }
 }
