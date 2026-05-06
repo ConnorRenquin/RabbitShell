@@ -121,7 +121,7 @@ FloatingWindow {
                 clipboardItems.decrementCurrentIndex();
             } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
                 if (clipboardItems.currentItem) {
-                    clipboardItems.currentItem.clicked(null);
+                    clipboardItems.currentItem.clicked();
                 }
             } else if ([Qt.Key_G].includes(event.key)) {
                 clipboardItems.currentIndex = 0;
@@ -321,6 +321,10 @@ FloatingWindow {
 
                         property string itemText: modelData.text
                         property int originalIndex: modelData.originalIndex
+
+                        function clicked() {
+                            clipboardItemScreen.clicked(null);
+                        }
 
                         RowLayout {
                             id: clipboardItemContent
