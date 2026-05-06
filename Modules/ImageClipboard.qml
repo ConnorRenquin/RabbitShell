@@ -49,98 +49,111 @@ FloatingWindow {
     Rectangle {
         anchors.fill: parent
         color: Colors.primaryContainer
+
         ScrollViewPlus {
             id: scrollView
             anchors.fill: parent
             anchors.margins: Styles.marginSm
             contentWidth: availableWidth
-            GridLayoutPlus {
-                anchors.top: parent.top
+
+            Flow {
+                id: flow
                 anchors.left: parent.left
                 anchors.right: parent.right
-                columns: Math.floor(parent.width / 240)
+                anchors.top: parent.top
+                spacing: Styles.marginSm
 
-                model: folderModel
-                delegate: Rectangle {
-                    id: image
+                Repeater {
+                    model: folderModel
 
-                    required property string fileName
-                    required property url fileUrl
-                    required property int index
+                    Rectangle {
+                        id: image
 
-                    Layout.preferredHeight: 250
-                    Layout.fillWidth: true
-                    Layout.margins: Styles.marginSm / 2
+                        required property string fileName
+                        required property url fileUrl
+                        required property int index
 
-                    color: "transparent"
+                        // Height is fixed; width tracks the image's natural aspect ratio once loaded
+                        height: 250
+                        width: imageComponent.status === Image.Ready
+                            ? Math.round(250 * imageComponent.implicitWidth / imageComponent.implicitHeight)
+                            : 200
 
-                    ClippingRectangle {
-                        anchors.fill: parent
-                        radius: Styles.radiusSm
-                        color: Colors.primaryContainer
-                        Image {
-                            id: imageComponent
+                        Behavior on width {
+                            NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+                        }
+
+                        color: "transparent"
+
+                        ClippingRectangle {
                             anchors.fill: parent
-                            source: image.fileUrl
-                            asynchronous: true
-                            fillMode: Image.PreserveAspectFit
-                            cache: false
+                            radius: Styles.radiusSm
+                            color: Colors.primaryContainer
 
-                            property int retryCount: 0
-                            property int maxRetries: 5
+                            Image {
+                                id: imageComponent
+                                anchors.fill: parent
+                                source: image.fileUrl
+                                asynchronous: true
+                                fillMode: Image.PreserveAspectFit
+                                cache: false
 
+                                property int retryCount: 0
+                                property int maxRetries: 5
 
-                            onStatusChanged: {
-                                if (status === Image.Error && retryCount < maxRetries) {
-                                    retryTimer.start()
-                                }
-                            }
-
-                            Timer {
-                                id: retryTimer
-                                interval: 500
-                                repeat: false
-                                onTriggered: {
-                                    imageComponent.retryCount++
-                                    var oldSource = imageComponent.source
-                                    imageComponent.source = ""
-                                    imageComponent.source = oldSource
-                                }
-                            }
-
-                            LoadingIndicator {
-                                font.pointSize: Styles.textLg
-                                anchors.centerIn: parent
-                                visible: imageComponent.status === Image.Loading || imageComponent.status === Image.Error
-                            }
-
-                            ColumnLayout {
-                                id: modificationButtons
-                                height: 40
-                                anchors.top: parent.top
-                                anchors.right: parent.right
-                                anchors.margins: Styles.marginSm
-
-                                component LocalButton:  ButtonStyled {
-                                    Layout.fillWidth: true
-                                    defaultColor: Colors.primary
-                                    textColor: Colors.onPrimary
+                                onStatusChanged: {
+                                    if (status === Image.Error && retryCount < maxRetries) {
+                                        retryTimer.start()
+                                    }
                                 }
 
-                                LocalButton {
-                                    id: editButton
-                                    text: ""
-                                    onClicked: Quickshell.execDetached(['sh', '-c', 'satty --filename ' + String(image.fileUrl).replace('file://', '')])
+                                Timer {
+                                    id: retryTimer
+                                    interval: 500
+                                    repeat: false
+                                    onTriggered: {
+                                        imageComponent.retryCount++
+                                        var oldSource = imageComponent.source
+                                        imageComponent.source = ""
+                                        imageComponent.source = oldSource
+                                    }
                                 }
-                                LocalButton {
-                                    id: copyButton
-                                    text: ""
-                                    onClicked: Quickshell.execDetached(['sh', '-c', 'wl-copy --type image/png < ' + String(image.fileUrl).replace('file://', '')])
+
+                                LoadingIndicator {
+                                    font.pointSize: Styles.textLg
+                                    anchors.centerIn: parent
+                                    visible: imageComponent.status === Image.Loading || imageComponent.status === Image.Error
                                 }
-                                LocalButton {
-                                    id: deleteButton
-                                    text: ""
-                                    onClicked: Quickshell.execDetached(['sh', '-c', 'rm ' + String(image.fileUrl).replace('file://', '')])
+
+                                ColumnLayout {
+                                    id: modificationButtons
+                                    height: 40
+                                    width: 40
+                                    anchors.top: parent.top
+                                    anchors.right: parent.right
+                                    anchors.margins: Styles.marginSm
+
+                                    component LocalButton: ButtonStyled {
+                                        Layout.fillWidth: true
+                                        defaultColor: Colors.primary
+                                        textColor: Colors.onPrimary
+                                    }
+
+                                    LocalButton {
+                                        id: editButton
+                                        text: ""
+                                        onClicked: Quickshell.execDetached(['sh', '-c', 'satty --filename ' + String(image.fileUrl).replace('file://', '')])
+                                    }
+                                    LocalButton {
+                                        id: copyButton
+                                        text: ""
+                                        onClicked: Quickshell.execDetached(['sh', '-c', 'wl-copy --type image/png < ' + String(image.fileUrl).replace('file://', '')])
+                                    }
+                                    LocalButton {
+                                        id: deleteButton
+                                        text: ""
+                                        onClicked: Quickshell.execDetached(['sh', '-c', 'rm ' + String(image.fileUrl).replace('file://', '')])
+                                    }
                                 }
                             }
                         }
