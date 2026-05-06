@@ -407,13 +407,17 @@ Rectangle {
         property string resize: matugenResize.currentText
         property string dominantColor: matugenDominantColor.currentText
 
-        onRunningChanged: {
-            console.log(command);
-            if (!running && path) {
+        onExited: (exitCode, exitStatus) => {
+            console.log('[matugen] exited with code:', exitCode, 'path:', path);
+            if (exitCode === 0 && path) {
                 Settings.change({
                     name: 'currentTheme',
                     value: 'matugen.json'
                 });
+                // Always reload the file — if currentTheme was already 'matugen.json',
+                // onCurrentThemeChanged won't fire and the new colors won't be read.
+                Colors.reloadTheme();
+                Colors.refreshThemes();
             }
         }
     }

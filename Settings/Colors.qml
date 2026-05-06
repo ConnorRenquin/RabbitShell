@@ -8,9 +8,16 @@ import QtQuick
 Singleton {
     id: root
 
-    property string currentTheme: Settings.register({name: 'currentTheme', value: 'default.json', category: 'appearance'}).value
+    property string currentTheme: {
+        const s = Settings.register({name: 'currentTheme', value: 'default.json', category: 'appearance'});
+        // Create a dependency on Settings.settings so this re-evaluates when Settings.change() is called
+        const live = Settings.settings.find(x => x.name === 'currentTheme');
+        const result = live ? live.value : s.value;
+        console.log('[Colors] currentTheme binding evaluated ->', result, '| live:', !!live);
+        return result;
+    }
     readonly property string directory: '.data/colors/'
-    property string themePath: directory + currentTheme
+    readonly property string themePath: directory + currentTheme
     property list<string> availableThemes: []
     property bool isLoadingTheme: false
 
@@ -145,15 +152,24 @@ Singleton {
         listFiles.running = true;
     }
 
+    function reloadTheme() {
+        console.log('[Colors] reloadTheme() called, path:', persistantData.path);
+        persistantData.reload();
+    }
+
     onUserColorsChanged: {
+        console.log('[Colors] onUserColorsChanged, isLoadingTheme:', isLoadingTheme, '| persistantData.loaded:', persistantData.loaded);
         root.updateColors();
         if (persistantData.loaded && !isLoadingTheme) {
+            console.log('[Colors] saving userColors to disk');
             persistantData.setText(JSON.stringify(root.userColors));
         }
     }
 
     onCurrentThemeChanged: {
-        Settings.change({name: 'currentTheme', value: currentTheme});
+        console.log('[Colors] onCurrentThemeChanged ->', currentTheme);
+        console.log('[Colors] themePath is now ->', themePath);
+        console.log('[Colors] persistantData.path ->', persistantData.path);
         persistantData.reload();
     }
 
@@ -162,22 +178,27 @@ Singleton {
         path: Qt.resolvedUrl(root.themePath)
         blockLoading: false
         onLoaded: {
+            console.log('[Colors] FileView onLoaded, path:', persistantData.path);
+            const raw = text();
+            console.log('[Colors] raw file contents:', raw);
             root.isLoadingTheme = true;
             try {
-                root.userColors = JSON.parse(text());
+                root.userColors = JSON.parse(raw);
+                console.log('[Colors] parsed userColors, primary:', root.userColors["primary"]);
                 root.updateColors();
+                console.log('[Colors] updateColors() done, Colors.primary is now:', root.primary);
             } catch (e) {
-                console.log('Failed to parse userColors data:', e);
+                console.log('[Colors] Failed to parse userColors data:', e);
                 root.userColors = root.userColors;
             }
             root.isLoadingTheme = false;
         }
         onLoadFailed: {
-            console.log('Load failed, creating theme file:', root.themePath);
+            console.log('[Colors] onLoadFailed for path:', persistantData.path, '| themePath:', root.themePath);
             Quickshell.execDetached(['touch', root.themePath]);
             persistantData.setText(JSON.stringify(root.userColors));
         }
-        onSaveFailed: console.log('Failed to save userColors data')
+        onSaveFailed: console.log('[Colors] Failed to save userColors data')
     }
 
     Process {

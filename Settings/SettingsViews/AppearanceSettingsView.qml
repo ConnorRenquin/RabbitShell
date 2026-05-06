@@ -5,6 +5,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import Quickshell
+import Quickshell.Io
 
 import qs.Components
 import qs.Settings
@@ -64,11 +65,22 @@ Rectangle {
                 if (!newName.endsWith('.json')) {
                     newName += '.json';
                 }
-                var sourcePath = '$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + Colors.currentTheme;
-                var destPath = '$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + newName;
-                Quickshell.execDetached(['bash', '-c', 'cp "' + sourcePath + '" "' + destPath + '"']);
-                Settings.change({name: 'currentTheme', value: newName});
+                copyProcess.destName = newName;
+                copyProcess.command = ['bash', '-c', 'cp "$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + Colors.currentTheme + '" "$XDG_CONFIG_HOME/quickshell/Settings/' + Colors.directory + newName + '"'];
+                copyProcess.running = true;
                 currentText.text = "";
+            }
+        }
+    }
+
+    Process {
+        id: copyProcess
+        property string destName: ""
+        onExited: (code) => {
+            if (code === 0) {
+                Settings.change({name: 'currentTheme', value: copyProcess.destName});
+            } else {
+                console.log("Theme copy failed with exit code:", code);
             }
             Colors.refreshThemes();
         }
