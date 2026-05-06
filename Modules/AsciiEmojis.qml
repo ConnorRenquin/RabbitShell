@@ -498,30 +498,15 @@ FloatingWindow {
                     required property var modelData
                     required property int index
 
+                    defaultColor: Colors.tertiary
+                    text: emojiButton.modelData.emoji
+                    textColor: Colors.onTertiary
+                    pointSize: 34
+
                     Layout.fillWidth: true
                     Layout.preferredHeight: 100
 
                     radius: Styles.radiusMd
-
-                    ColumnLayout {
-                        anchors.fill: parent
-                        anchors.margins: Styles.marginSm
-                        spacing: Styles.marginSm
-
-                        TextStyled {
-                            Layout.fillWidth: true
-                            text: emojiButton.modelData.emoji
-                            horizontalAlignment: Text.AlignHCenter
-                            font.pointSize: 24
-                        }
-                        TextStyled {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 20
-                            text: emojiButton.modelData.name
-                            horizontalAlignment: Text.AlignHCenter
-                            elide: Text.ElideRight
-                        }
-                    }
 
                     onClicked: {
                         const emoji = emojiButton.modelData.emoji;
