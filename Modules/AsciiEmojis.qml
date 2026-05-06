@@ -479,44 +479,63 @@ FloatingWindow {
             }
         }
 
-        ScrollView {
+        ColumnLayout {
             anchors.fill: parent
-            anchors.margins: Styles.marginSm
-            contentWidth: availableWidth
-            GridLayoutPlus {
-                id: emojiGrid
-                columns: Math.floor(parent.width / 420)
-                anchors.left: parent.left
-                anchors.right: parent.right
-                rowSpacing: Styles.marginSm
-                columnSpacing: Styles.marginSm
 
-                model: root.emojiList
-                delegate: ButtonStyled {
-                    id: emojiButton
+            Rectangle {
+                color: Colors.tertiary
+                Layout.fillWidth: true
+                Layout.preferredHeight: header.implicitHeight
+                radius: Styles.radiusSm
+                TextStyled {
+                    id: header
+                    text: Icons.emoji + ' Emojis'
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginMd
+                    color: Colors.onTertiary
+                    font.pointSize: Styles.textLg
+                }
+            }
+            ScrollView {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.margins: Styles.marginSm
+                contentWidth: availableWidth
+                GridLayoutPlus {
+                    id: emojiGrid
+                    columns: Math.floor(parent.width / 420)
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    rowSpacing: Styles.marginSm
+                    columnSpacing: Styles.marginSm
 
-                    required property var modelData
-                    required property int index
+                    model: root.emojiList
+                    delegate: ButtonStyled {
+                        id: emojiButton
 
-                    defaultColor: Colors.tertiary
-                    text: emojiButton.modelData.emoji
-                    textColor: Colors.onTertiary
-                    pointSize: 34
+                        required property var modelData
+                        required property int index
 
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 100
+                        defaultColor: Colors.tertiary
+                        text: emojiButton.modelData.emoji
+                        textColor: Colors.onTertiary
+                        pointSize: 34
 
-                    radius: Styles.radiusMd
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 100
 
-                    onClicked: {
-                        const emoji = emojiButton.modelData.emoji;
-                        const escapedEmoji = emoji.replace(/'/g, "'\\''");
-                        Quickshell.execDetached(['bash', '-c', "printf '%s' '" + escapedEmoji + "' | wl-copy"]);
-                        utils.notify({
-                            summary: 'Copied: ' + emojiButton.modelData.name,
-                            body: emoji
-                        });
-                        root.exit();
+                        radius: Styles.radiusMd
+
+                        onClicked: {
+                            const emoji = emojiButton.modelData.emoji;
+                            const escapedEmoji = emoji.replace(/'/g, "'\\''");
+                            Quickshell.execDetached(['bash', '-c', "printf '%s' '" + escapedEmoji + "' | wl-copy"]);
+                            utils.notify({
+                                summary: 'Copied: ' + emojiButton.modelData.name,
+                                body: emoji
+                            });
+                            root.exit();
+                        }
                     }
                 }
             }
