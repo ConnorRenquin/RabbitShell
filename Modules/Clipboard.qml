@@ -176,15 +176,13 @@ FloatingWindow {
             Rectangle {
                 id: storageSlots
                 Layout.fillWidth: true
-                Layout.preferredHeight: 50
-                Layout.margins: Styles.marginSm
-                Layout.bottomMargin: 0
-                color: Colors.tertiaryContainer
+                Layout.preferredHeight: 40
+                color: Colors.secondary
                 radius: Styles.radiusSm
 
                 RowLayoutPlus {
                     anchors.fill: parent
-                    anchors.margins: Styles.marginSm
+                    anchors.margins: Styles.marginXS
                     model: 10
                     delegate: Item {
                         id: slotButtonContainer
@@ -198,7 +196,7 @@ FloatingWindow {
                             anchors.fill: parent
 
                             property bool slotOccupied: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== ""
-                            color: slotOccupied ? Colors.tertiary : Colors.onTertiary
+                            color: slotOccupied ? Colors.secondaryContainer : Colors.onSecondary
 
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
@@ -219,7 +217,7 @@ FloatingWindow {
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
-                                color: slotButton.slotOccupied ? Colors.onTertiary : Colors.tertiary
+                                // color: slotButton.slotOccupied ? Colors.onSecondary : Colors.secondary
                             }
                         }
 
@@ -258,7 +256,7 @@ FloatingWindow {
                 Layout.preferredHeight: 50
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
-                color: Colors.background
+                color: Colors.secondary
                 radius: Styles.radiusSm
 
                 RowLayout {
@@ -271,6 +269,8 @@ FloatingWindow {
                         placeholderText: '/search'
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                        color: Colors.onSecondary
+                        placeholderTextColor: Colors.onSecondary
                         onTextChanged: mainContent.searchText = text
                         Keys.onPressed: event => {
                             if (event.key === Qt.Key_Escape) {
@@ -308,17 +308,16 @@ FloatingWindow {
                     anchors.fill: parent
                     spacing: Styles.marginSm
                     model: mainContent.filteredItems
-                    delegate: ButtonStyled {
+                    delegate: Item {
                         id: button
 
                         required property var modelData
                         required property int index
 
+                        property bool isFocused: ListView.isCurrentItem
+
                         implicitHeight: clipboardItemContent.implicitHeight
                         implicitWidth: rect.width
-                        radius: Styles.radiusMd
-
-                        isFocused: ListView.isCurrentItem
 
                         property string itemText: modelData.text
                         property int originalIndex: modelData.originalIndex
@@ -337,50 +336,51 @@ FloatingWindow {
                                 Layout.preferredWidth: 50
                                 implicitHeight: 20
                                 Layout.fillHeight: true
-                                color: button.isFocused ? Colors.primaryContainer : Colors.onPrimary
+                                color: button.isFocused ? Colors.secondary : Colors.onSecondary
                                 radius: Styles.radiusSm
                                 TextStyled {
                                     id: clipboardItemKeyText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: Colors.surface
+                                    color: !button.isFocused ? Colors.secondary : Colors.onSecondary
                                     anchors.centerIn: parent
-                                    text: button.originalIndex === 0 ? "Now" : button.originalIndex
+                                    text: button.originalIndex === 0 ? "Now" : button.originalIndex + ListView.isCurrentItem
                                 }
                             }
 
-                            Rectangle {
+                            ButtonStyled {
                                 id: clipboardItemScreen
-                                color: Colors.surface
                                 radius: Styles.radiusSm
 
+                                isFocused: button.isFocused
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: clipboardText.implicitHeight + Styles.marginSm * 2
                                 Layout.maximumHeight: 300
+
+                                onClicked: event => {
+                                    const ctrlHeld = event?.modifiers & Qt.ControlModifier;
+                                    const shiftHeld = event?.modifiers & Qt.ShiftModifier;
+
+                                    if (shiftHeld) {
+                                        ClipboardService.removeEntry(button.originalIndex);
+                                    } else if (ctrlHeld) {
+                                        ClipboardService.storeToNextAvailableSlot(button.itemText);
+                                    } else {
+                                        const text = button.itemText.replace(/'/g, "'\\''");
+                                        ClipboardService.copyToClipboard(text);
+                                        root.exit();
+                                    }
+                                }
 
                                 TextStyled {
                                     id: clipboardText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                     width: clipboardItemScreen.width - Styles.marginSm * 2
+                                    color: Colors.secondary
                                     anchors.fill: parent
                                     anchors.margins: Styles.marginSm
                                     anchors.centerIn: parent
                                     text: utils.removeIndentation(button.itemText) ?? ''
                                 }
-                            }
-                        }
-
-                        onClicked: event => {
-                            const ctrlHeld = event?.modifiers & Qt.ControlModifier;
-                            const shiftHeld = event?.modifiers & Qt.ShiftModifier;
-
-                            if (shiftHeld) {
-                                ClipboardService.removeEntry(button.originalIndex);
-                            } else if (ctrlHeld) {
-                                ClipboardService.storeToNextAvailableSlot(button.itemText);
-                            } else {
-                                const text = button.itemText.replace(/'/g, "'\\''");
-                                ClipboardService.copyToClipboard(text);
-                                root.exit();
                             }
                         }
                     }
@@ -392,12 +392,12 @@ FloatingWindow {
     component ClipboardButton: ButtonStyled {
         Layout.preferredWidth: 60
         Layout.fillHeight: true
-        defaultColor: Colors.primaryContainer
+        defaultColor: Colors.secondary
         property alias text: buttonText.text
         TextStyled {
             id: buttonText
             anchors.centerIn: parent
-            color: Colors.primary
+            color: Colors.onSecondary
         }
     }
 }
