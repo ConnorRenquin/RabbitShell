@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Widgets
-import Quickshell.Io
 import Quickshell.Hyprland
 
 import QtQuick
@@ -394,7 +393,6 @@ FloatingWindow {
         Layout.preferredWidth: 60
         Layout.fillHeight: true
         defaultColor: Colors.primaryContainer
-        hoverColor: Colors.onPrimary
         property alias text: buttonText.text
         TextStyled {
             id: buttonText

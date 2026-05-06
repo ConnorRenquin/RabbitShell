@@ -6,10 +6,8 @@ Rectangle {
     id: root
 
     color: {
-        if (mouseArea.containsMouse)
-            return hoverColor;
-        if (isFocused)
-            return focusedColor;
+        if (mouseArea.containsMouse || isFocused)
+            return Qt.lighter(defaultColor, 2.0);
         else
             return defaultColor;
     }
@@ -21,10 +19,10 @@ Rectangle {
 
     property string text
 
+    property string variant: Colors.primary
     property alias pointSize: buttonText.font.pointSize
-    property string hoverColor: Colors.surfaceLighter
+
     property string defaultColor: Colors.surface
-    property string focusedColor: Colors.surfaceLighter
     property bool isFocused: false
     property bool containsMouse: mouseArea.containsMouse
 
