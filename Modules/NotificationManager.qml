@@ -82,11 +82,13 @@ Loader {
                         TextStyled {
                             text: "Notifications"
                             font.pointSize: 18
+                            color: Colors.tertiary
                             font.bold: true
                             Layout.fillWidth: true
                         }
 
                         TextStyled {
+                            color: Colors.tertiary
                             text: `${Notifications.notifications.values.length} active`
                         }
 
@@ -95,9 +97,10 @@ Loader {
                             implicitHeight: 40
                             implicitWidth: clearAllText.implicitWidth + Styles.marginLg
                             onClicked: root.clear()
+                            defaultColor: Colors.tertiaryContainer
                             TextStyled {
                                 id: clearAllText
-                                color: Colors.onSurface
+                                color: Colors.tertiary
                                 anchors.centerIn: parent
                                 textFormat: Text.MarkdownText
                                 text: '<u>C</u>lear All'
@@ -141,6 +144,7 @@ Loader {
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: "No notifications"
+                                color: Colors.tertiary
                             }
                         }
                     }
