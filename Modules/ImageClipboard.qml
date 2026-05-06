@@ -77,7 +77,7 @@ FloatingWindow {
                     ClippingRectangle {
                         anchors.fill: parent
                         radius: Styles.radiusSm
-                        color: Colors.background
+                        color: Colors.primaryContainer
                         Image {
                             id: imageComponent
                             anchors.fill: parent
@@ -121,22 +121,25 @@ FloatingWindow {
                                 anchors.right: parent.right
                                 anchors.margins: Styles.marginSm
 
-                                ButtonStyled {
+                                component LocalButton:  ButtonStyled {
+                                    Layout.fillWidth: true
+                                    defaultColor: Colors.primary
+                                    textColor: Colors.onPrimary
+                                }
+
+                                LocalButton {
                                     id: editButton
                                     text: ""
-                                    Layout.fillWidth: true
                                     onClicked: Quickshell.execDetached(['sh', '-c', 'satty --filename ' + String(image.fileUrl).replace('file://', '')])
                                 }
-                                ButtonStyled {
+                                LocalButton {
                                     id: copyButton
                                     text: ""
-                                    Layout.fillWidth: true
                                     onClicked: Quickshell.execDetached(['sh', '-c', 'wl-copy --type image/png < ' + String(image.fileUrl).replace('file://', '')])
                                 }
-                                ButtonStyled {
+                                LocalButton {
                                     id: deleteButton
                                     text: ""
-                                    Layout.fillWidth: true
                                     onClicked: Quickshell.execDetached(['sh', '-c', 'rm ' + String(image.fileUrl).replace('file://', '')])
                                 }
                             }
