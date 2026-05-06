@@ -396,12 +396,12 @@ FloatingWindow {
     component ClipboardButton: ButtonStyled {
         Layout.preferredWidth: 60
         Layout.fillHeight: true
-        defaultColor: Colors.secondary
+        defaultColor: Colors.secondaryContainer
         property alias text: buttonText.text
         TextStyled {
             id: buttonText
             anchors.centerIn: parent
-            color: Colors.onSecondary
+            color: Colors.secondary
         }
     }
 }
