@@ -21,6 +21,9 @@ Singleton {
     readonly property string notificationBell: ""
     readonly property string settingsCog: ""
     readonly property string specialWorkspace: "󰘳"
+    readonly property string edit: ""
+    readonly property string copy: ""
+    readonly property string trash: ""
 
     // Power menu
     readonly property string logout: "󰿅"

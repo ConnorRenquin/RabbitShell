@@ -155,17 +155,17 @@ FloatingWindow {
 
                                         LocalButton {
                                             id: editButton
-                                            text: ""
+                                            text: Icons.edit
                                             onClicked: Quickshell.execDetached(['sh', '-c', 'satty --filename ' + String(image.fileUrl).replace('file://', '')])
                                         }
                                         LocalButton {
                                             id: copyButton
-                                            text: ""
+                                            text: Icons.copy
                                             onClicked: Quickshell.execDetached(['sh', '-c', 'wl-copy --type image/png < ' + String(image.fileUrl).replace('file://', '')])
                                         }
                                         LocalButton {
                                             id: deleteButton
-                                            text: ""
+                                            text: Icons.trash
                                             onClicked: Quickshell.execDetached(['sh', '-c', 'rm ' + String(image.fileUrl).replace('file://', '')])
                                         }
                                     }
