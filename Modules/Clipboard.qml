@@ -195,7 +195,7 @@ FloatingWindow {
                             id: slotButton
                             anchors.fill: parent
 
-                            property bool slotOccupied: ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== ""
+                            property bool slotOccupied: (ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "") ?? false
                             color: slotOccupied ? Colors.secondaryContainer : Colors.onSecondary
 
                             onClicked: mouse => {
