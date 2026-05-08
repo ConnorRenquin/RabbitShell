@@ -1,5 +1,4 @@
 import Quickshell
-import Quickshell.Io
 
 import QtQuick
 
@@ -11,7 +10,6 @@ ShellRoot {
     NotificationPopup {}
     Background {}
     AppLauncher {}
-    Workspaces {}
     Mixer {}
     PowerMenu {}
     ToplevelView {}
@@ -20,7 +18,6 @@ ShellRoot {
     LockScreen {}
     Polkit {}
     SettingsMenu {}
-    // Test {}
     Component.onCompleted: {
         Qt.callLater(function () {
             Audio.init();
