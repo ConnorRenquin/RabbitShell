@@ -21,6 +21,19 @@ Rectangle {
     visible: isActive
     property bool isActive: false
 
+    function navigationHandler(event) {
+        if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
+            root.requestTabCycle(true);
+            event.accepted = true;
+            return;
+        }
+        if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
+            root.requestTabCycle(false);
+            event.accepted = true;
+            return;
+        }
+    }
+
     onIsActiveChanged: {
         if (isActive) {
             console.log('hi')
@@ -90,16 +103,7 @@ Rectangle {
         }
 
         Keys.onPressed: event => {
-            if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
-                root.requestTabCycle(true);
-                event.accepted = true;
-                return;
-            }
-            if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
-                root.requestTabCycle(false);
-                event.accepted = true;
-                return;
-            }
+            root.navigationHandler(event)
             if (event.key === Qt.Key_Slash) {
                 searchField.focus = true;
                 event.accepted = true;
@@ -256,16 +260,7 @@ Rectangle {
                     placeholderTextColor: Colors.onSecondary
                     onTextChanged: mainContent.searchText = text
                     Keys.onPressed: event => {
-                        if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
-                            root.requestTabCycle(true);
-                            event.accepted = true;
-                            return;
-                        }
-                        if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
-                            root.requestTabCycle(false);
-                            event.accepted = true;
-                            return;
-                        }
+                        root.navigationHandler(event)
                         if (event.key === Qt.Key_Escape) {
                             base.focus = true
                             event.accepted = true;
