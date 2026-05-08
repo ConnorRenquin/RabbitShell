@@ -51,6 +51,10 @@ FloatingWindow {
         }
     }
 
+    Themer {
+        id: theme
+    }
+
     GlobalShortcut {
         name: 'clipboard'
         onPressed: root.toggle(0)
@@ -85,7 +89,7 @@ FloatingWindow {
     Rectangle {
         id: base
         anchors.fill: parent
-        color: Colors.secondaryContainer
+        color: theme.mainContainer
         radius: Styles.radiusSm
 
         Keys.onPressed: event => {
@@ -113,7 +117,7 @@ FloatingWindow {
                 id: tabBar
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
-                color: Colors.secondary
+                color: theme.main
                 radius: Styles.radiusSm
 
                 RowLayoutPlus {
@@ -132,7 +136,7 @@ FloatingWindow {
                         Layout.fillHeight: true
                         text: tabButton.modelData.name
                         isFocused: root.currentTab === tabButton.index
-                        defaultColor: Colors.onSecondary
+                        defaultColor: theme.onMain
                         onClicked: {
                             root.currentTab = tabButton.index;
                         }
