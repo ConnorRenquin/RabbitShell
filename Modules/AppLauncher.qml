@@ -32,7 +32,16 @@ Loader {
         Component.onCompleted: {
             textInput.focus = true;
             updateFilteredApplications();
-            DesktopEntries.applications.valuesChanged.connect(updateFilteredApplications);
+            if (DesktopEntries.applications.values.length === 0) {
+                DesktopEntries.applications.valuesChanged.connect(onEntriesLoaded);
+            }
+        }
+
+        function onEntriesLoaded() {
+            if (DesktopEntries.applications.values.length > 0) {
+                DesktopEntries.applications.valuesChanged.disconnect(onEntriesLoaded);
+                updateFilteredApplications();
+            }
         }
 
         property list<DesktopEntry> filteredApplications: []
@@ -75,6 +84,8 @@ Loader {
             var searchText = textInput.text;
 
             var allApps = DesktopEntries.applications.values;
+
+            filteredApplications = [];
 
             if (searchText === "") {
                 filteredApplications = allApps;
