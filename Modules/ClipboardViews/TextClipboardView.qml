@@ -36,10 +36,7 @@ Rectangle {
 
     onIsActiveChanged: {
         if (isActive) {
-            console.log('hi')
-            console.log(base.focus)
             base.focus = true;
-            console.log(base.focus)
         }
     }
 
@@ -103,7 +100,7 @@ Rectangle {
         }
 
         Keys.onPressed: event => {
-            root.navigationHandler(event)
+            root.navigationHandler(event);
             if (event.key === Qt.Key_Slash) {
                 searchField.focus = true;
                 event.accepted = true;
@@ -169,13 +166,15 @@ Rectangle {
             Rectangle {
                 id: storageSlots
                 Layout.fillWidth: true
-                Layout.preferredHeight: 40
+                Layout.preferredHeight: 80
                 color: Colors.secondary
                 radius: Styles.radiusSm
 
-                RowLayoutPlus {
+                GridLayoutPlus {
                     anchors.fill: parent
                     anchors.margins: Styles.marginXS
+                    columns: 5
+                    rows: 2
                     model: 10
                     delegate: Item {
                         id: slotButtonContainer
@@ -207,9 +206,18 @@ Rectangle {
                                 }
                             }
 
-                            TextStyled {
-                                anchors.centerIn: parent
-                                text: slotButtonContainer.modelData === 9 ? "0" : String(slotButtonContainer.modelData + 1)
+                            text: {
+                                var number = String(slotButtonContainer.modelData + 1)
+                                if (slotButtonContainer.modelData === 9) {
+                                    number = 0
+                                }
+                                var content = ClipboardService.clipboardData['slots'][slotButtonContainer.modelData]
+                                if (content) {
+                                    content = ' ' + content
+                                } else {
+                                    content = ''
+                                }
+                                return number + content;
                             }
                         }
 
@@ -260,9 +268,9 @@ Rectangle {
                     placeholderTextColor: Colors.onSecondary
                     onTextChanged: mainContent.searchText = text
                     Keys.onPressed: event => {
-                        root.navigationHandler(event)
+                        root.navigationHandler(event);
                         if (event.key === Qt.Key_Escape) {
-                            base.focus = true
+                            base.focus = true;
                             event.accepted = true;
                         }
                     }
