@@ -47,6 +47,18 @@ Rectangle {
                         verticalAlignment: Text.AlignVCenter
                     }
 
+                    // array (options)
+                    ComboBoxStyled {
+                        visible: !!row.modelData.options
+                        Layout.preferredWidth: 180
+                        model: visible ? row.modelData.options : []
+                        currentIndex: visible ? row.modelData.options.indexOf(row.modelData.value) : -1
+                        onActivated: index => Settings.change({
+                            name: row.modelData.name,
+                            value: row.modelData.options[index]
+                        })
+                    }
+
                     // bool
                     SwitchStyled {
                         visible: typeof row.modelData.value === 'boolean'
@@ -84,7 +96,7 @@ Rectangle {
 
                     // string
                     Rectangle {
-                        visible: typeof row.modelData.value === 'string'
+                        visible: typeof row.modelData.value === 'string' && !row.modelData.options
                         Layout.preferredWidth: 180
                         Layout.preferredHeight: 28
                         color: Colors.surface

@@ -46,6 +46,7 @@ Singleton {
                               : (setting.value ?? null),
             category:     setting.category ?? 'misc',
             type:         typeof setting.value,
+            options:      setting.options ?? null,
         }
         settings = [...settings, entry]
         return entry
