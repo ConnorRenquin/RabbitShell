@@ -46,7 +46,7 @@ Rectangle {
 
     Themer {
         id: theme
-        variant: 'secondary'
+        variant: Settings.get('clipboardColor').value
     }
 
     Rectangle {
@@ -212,15 +212,15 @@ Rectangle {
                             }
 
                             text: {
-                                var number = String(slotButtonContainer.modelData + 1)
+                                var number = String(slotButtonContainer.modelData + 1);
                                 if (slotButtonContainer.modelData === 9) {
-                                    number = 0
+                                    number = 0;
                                 }
-                                var content = ClipboardService.clipboardData['slots'][slotButtonContainer.modelData]
+                                var content = ClipboardService.clipboardData['slots'][slotButtonContainer.modelData];
                                 if (content) {
-                                    content = ' ' + content
+                                    content = ' ' + content;
                                 } else {
-                                    content = ''
+                                    content = '';
                                 }
                                 return number + content;
                             }

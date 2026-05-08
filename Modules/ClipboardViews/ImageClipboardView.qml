@@ -15,7 +15,10 @@ Rectangle {
     id: root
     color: "transparent"
 
-    Themer { id: theme }
+    Themer {
+        id: theme
+        variant: Settings.get('clipboardColor').value
+    }
 
     visible: isActive
     property bool isActive: false

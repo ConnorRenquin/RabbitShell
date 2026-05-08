@@ -53,6 +53,11 @@ FloatingWindow {
 
     Themer {
         id: theme
+        variant: Settings.register({
+            name: 'clipboardColor',
+            options: ['primary', 'secondary', 'tertiary', 'regular'],
+            value: 'regular'
+        }).value
     }
 
     GlobalShortcut {
