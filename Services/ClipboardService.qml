@@ -17,7 +17,7 @@ Singleton {
         "clipboardText": []
     }
 
-    property int maxClipboardEntries: 200
+    property int maxClipboardEntries: 1000
 
     function removeEntry(index) {
         const newClipboardText = root.clipboardData.clipboardText.filter((_, i) => i !== index);
