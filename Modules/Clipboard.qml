@@ -23,11 +23,7 @@ FloatingWindow {
     color: "transparent"
 
     property int currentTab: 0
-    readonly property var tabNames: [
-        Icons.copy + " Text",
-        Icons.image + " Images",
-        Icons.emoji + " Emojis"
-    ]
+    readonly property var tabNames: [Icons.copy + " Text", Icons.image + " Images", Icons.emoji + " Emojis"]
 
     function exit() {
         root.visible = false;
@@ -38,7 +34,6 @@ FloatingWindow {
         root.currentTab = tabIndex;
         root.visible = true;
         grab.active = true;
-        base.forceActiveFocus();
     }
 
     function cycleTab(forward: bool) {
@@ -49,11 +44,11 @@ FloatingWindow {
         }
     }
 
-    onCurrentTabChanged: {
-        if (currentTab !== 0) {
-            base.forceActiveFocus();
-        }
-    }
+    // onCurrentTabChanged: {
+    //     if (currentTab !== 0) {
+    //         base.forceActiveFocus();
+    //     }
+    // }
 
     function toggle(tabIndex: int) {
         if (root.visible && root.currentTab === tabIndex) {
@@ -80,8 +75,12 @@ FloatingWindow {
 
     Connections {
         target: PatchBay
-        function onOpenImageClipboard() { root.toggle(1); }
-        function onOpenAsciiEmojis() { root.toggle(2); }
+        function onOpenImageClipboard() {
+            root.toggle(1);
+        }
+        function onOpenAsciiEmojis() {
+            root.toggle(2);
+        }
     }
 
     HyprlandFocusGrab {
@@ -95,7 +94,6 @@ FloatingWindow {
         anchors.fill: parent
         color: Colors.secondaryContainer
         radius: Styles.radiusSm
-        focus: true
 
         Keys.onPressed: event => {
             if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
@@ -145,7 +143,6 @@ FloatingWindow {
                             defaultColor: Colors.onSecondary
                             onClicked: {
                                 root.currentTab = tabButton.index;
-                                base.forceActiveFocus();
                             }
                         }
                     }
@@ -160,7 +157,7 @@ FloatingWindow {
                 TextClipboardView {
                     id: textView
                     anchors.fill: parent
-                    isActive: root.currentTab === 0
+                    isActive: root.currentTab === 0 && root.visible
                     onRequestExit: root.exit()
                     onRequestTabCycle: forward => root.cycleTab(forward)
                 }
@@ -168,13 +165,13 @@ FloatingWindow {
                 ImageClipboardView {
                     id: imageView
                     anchors.fill: parent
-                    isActive: root.currentTab === 1
+                    isActive: root.currentTab === 1 && root.visible
                 }
 
                 AsciiEmojisView {
                     id: emojiView
                     anchors.fill: parent
-                    isActive: root.currentTab === 2
+                    isActive: root.currentTab === 2 && root.visible
                     onRequestExit: root.exit()
                 }
             }

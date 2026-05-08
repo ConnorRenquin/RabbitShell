@@ -23,7 +23,10 @@ Rectangle {
 
     onIsActiveChanged: {
         if (isActive) {
-            base.forceActiveFocus();
+            console.log('hi')
+            console.log(base.focus)
+            base.focus = true;
+            console.log(base.focus)
         }
     }
 
@@ -36,11 +39,6 @@ Rectangle {
 
         anchors.fill: parent
         color: "transparent"
-
-        focus: {
-            focus
-            return root.isActive;
-        }
 
         property int selectedEntryIndex: 0
 
@@ -102,15 +100,12 @@ Rectangle {
                 event.accepted = true;
                 return;
             }
-
-            // Handle search activation
             if (event.key === Qt.Key_Slash) {
                 searchField.focus = true;
                 event.accepted = true;
                 return;
             }
 
-            // Handle numeric keys for storage/paste
             slotController(event);
 
             if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
@@ -272,8 +267,7 @@ Rectangle {
                             return;
                         }
                         if (event.key === Qt.Key_Escape) {
-                            searchField.focus = false;
-                            base.forceActiveFocus();
+                            base.focus = true
                             event.accepted = true;
                         }
                     }
