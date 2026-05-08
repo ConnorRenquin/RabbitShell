@@ -16,6 +16,7 @@ Rectangle {
     color: "transparent"
 
     signal requestExit()
+    signal requestTabCycle(bool forward)
 
     property bool isActive: false
 
@@ -87,8 +88,14 @@ Rectangle {
         }
 
         Keys.onPressed: event => {
-            // Let Tab/Backtab bubble up to the container for tab switching
-            if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+            if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
+                root.requestTabCycle(true);
+                event.accepted = true;
+                return;
+            }
+            if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
+                root.requestTabCycle(false);
+                event.accepted = true;
                 return;
             }
 
@@ -255,7 +262,14 @@ Rectangle {
                         placeholderTextColor: Colors.onSecondary
                         onTextChanged: mainContent.searchText = text
                         Keys.onPressed: event => {
-                            if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+                            if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
+                                root.requestTabCycle(true);
+                                event.accepted = true;
+                                return;
+                            }
+                            if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
+                                root.requestTabCycle(false);
+                                event.accepted = true;
                                 return;
                             }
                             if (event.key === Qt.Key_Escape) {

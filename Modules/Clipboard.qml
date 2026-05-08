@@ -41,6 +41,20 @@ FloatingWindow {
         base.forceActiveFocus();
     }
 
+    function cycleTab(forward: bool) {
+        if (forward) {
+            root.currentTab = (root.currentTab + 1) % 3;
+        } else {
+            root.currentTab = (root.currentTab + 2) % 3;
+        }
+    }
+
+    onCurrentTabChanged: {
+        if (currentTab !== 0) {
+            base.forceActiveFocus();
+        }
+    }
+
     function toggle(tabIndex: int) {
         if (root.visible && root.currentTab === tabIndex) {
             root.exit();
@@ -85,12 +99,12 @@ FloatingWindow {
 
         Keys.onPressed: event => {
             if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
-                root.currentTab = (root.currentTab + 1) % 3;
+                root.cycleTab(true);
                 event.accepted = true;
                 return;
             }
             if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
-                root.currentTab = (root.currentTab + 2) % 3;
+                root.cycleTab(false);
                 event.accepted = true;
                 return;
             }
@@ -149,6 +163,7 @@ FloatingWindow {
                     visible: root.currentTab === 0
                     isActive: root.currentTab === 0
                     onRequestExit: root.exit()
+                    onRequestTabCycle: forward => root.cycleTab(forward)
                 }
 
                 ImageClipboardView {
