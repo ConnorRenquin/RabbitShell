@@ -32,9 +32,9 @@ Loader {
         Component.onCompleted: {
             textInput.focus = true;
             updateFilteredApplications();
+            DesktopEntries.applications.valuesChanged.connect(updateFilteredApplications);
         }
 
-        property var allApps: DesktopEntries.applications.values
         property list<DesktopEntry> filteredApplications: []
         property int currentFocusIndex: -1
 
@@ -73,6 +73,8 @@ Loader {
 
         function updateFilteredApplications() {
             var searchText = textInput.text;
+
+            var allApps = DesktopEntries.applications.values;
 
             if (searchText === "") {
                 filteredApplications = allApps;
