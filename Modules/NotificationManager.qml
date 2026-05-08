@@ -27,6 +27,9 @@ Loader {
         name: "notification-manager"
         onPressed: loader.toggle()
     }
+    Themer {
+        id: theme
+    }
 
     sourceComponent: FloatingWindow {
         id: root
@@ -49,7 +52,7 @@ Loader {
         Rectangle {
             id: base
             anchors.fill: parent
-            color: Colors.tertiaryContainer
+            color: theme.mainContainer
             radius: Styles.radiusMd
             focus: true
 
@@ -71,7 +74,7 @@ Loader {
                     id: controlSection
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
-                    color: Colors.onTertiary
+                    color: theme.onMain
                     radius: Styles.radiusMd
 
                     RowLayout {
@@ -82,13 +85,13 @@ Loader {
                         TextStyled {
                             text: "Notifications"
                             font.pointSize: 18
-                            color: Colors.tertiary
+                            color: theme.main
                             font.bold: true
                             Layout.fillWidth: true
                         }
 
                         TextStyled {
-                            color: Colors.tertiary
+                            color: theme.main
                             text: `${Notifications.notifications.values.length} active`
                         }
 
@@ -97,10 +100,10 @@ Loader {
                             implicitHeight: 40
                             implicitWidth: clearAllText.implicitWidth + Styles.marginLg
                             onClicked: root.clear()
-                            defaultColor: Colors.tertiaryContainer
+                            defaultColor: theme.mainContainer
                             TextStyled {
                                 id: clearAllText
-                                color: Colors.tertiary
+                                color: theme.main
                                 anchors.centerIn: parent
                                 textFormat: Text.MarkdownText
                                 text: '<u>C</u>lear All'
@@ -140,11 +143,11 @@ Loader {
                             radius: Styles.radiusLg
                             implicitWidth: 300
                             implicitHeight: 60
-                            color: Colors.onTertiary
+                            color: theme.onMain
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: "No notifications"
-                                color: Colors.tertiary
+                                color: theme.main
                             }
                         }
                     }
