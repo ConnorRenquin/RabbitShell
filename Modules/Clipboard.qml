@@ -160,7 +160,6 @@ FloatingWindow {
                 TextClipboardView {
                     id: textView
                     anchors.fill: parent
-                    visible: root.currentTab === 0
                     isActive: root.currentTab === 0
                     onRequestExit: root.exit()
                     onRequestTabCycle: forward => root.cycleTab(forward)
@@ -169,14 +168,12 @@ FloatingWindow {
                 ImageClipboardView {
                     id: imageView
                     anchors.fill: parent
-                    visible: root.currentTab === 1
                     isActive: root.currentTab === 1
                 }
 
                 AsciiEmojisView {
                     id: emojiView
                     anchors.fill: parent
-                    visible: root.currentTab === 2
                     isActive: root.currentTab === 2
                     onRequestExit: root.exit()
                 }

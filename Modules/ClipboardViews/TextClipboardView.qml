@@ -15,9 +15,10 @@ Rectangle {
 
     color: "transparent"
 
-    signal requestExit()
+    signal requestExit
     signal requestTabCycle(bool forward)
 
+    visible: isActive
     property bool isActive: false
 
     onIsActiveChanged: {
@@ -36,7 +37,10 @@ Rectangle {
         anchors.fill: parent
         color: "transparent"
 
-        focus: root.isActive
+        focus: {
+            focus
+            return root.isActive;
+        }
 
         property int selectedEntryIndex: 0
 

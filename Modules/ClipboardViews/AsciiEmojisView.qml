@@ -17,6 +17,7 @@ Rectangle {
 
     signal requestExit()
 
+    visible: isActive
     property bool isActive: false
 
     Utils {

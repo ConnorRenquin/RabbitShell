@@ -15,6 +15,7 @@ Rectangle {
     id: root
     color: "transparent"
 
+    visible: isActive
     property bool isActive: false
 
     FolderListModel {
