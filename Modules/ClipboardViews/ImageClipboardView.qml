@@ -15,6 +15,8 @@ Rectangle {
     id: root
     color: "transparent"
 
+    Themer { id: theme }
+
     visible: isActive
     property bool isActive: false
 
@@ -70,7 +72,7 @@ Rectangle {
                         ClippingRectangle {
                             anchors.fill: parent
                             radius: Styles.radiusSm
-                            color: Colors.primaryContainer
+                            color: theme.mainContainer
 
                             Image {
                                 id: imageComponent
@@ -141,7 +143,7 @@ Rectangle {
 
     component LocalButton: ButtonStyled {
         Layout.fillWidth: true
-        defaultColor: Colors.primary
-        textColor: Colors.onPrimary
+        defaultColor: theme.main
+        textColor: theme.onMain
     }
 }

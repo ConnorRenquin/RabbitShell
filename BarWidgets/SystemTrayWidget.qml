@@ -9,12 +9,15 @@ import QtQuick.Layouts
 
 import qs.Components
 import qs.Settings
+import qs.Services
 
 Rectangle {
     id: root
 
     visible: SystemTray.items.values.length != 0
     property var currentOpenMenu: null
+
+    Themer { id: theme }
 
     radius: Styles.radiusSm
     color: Colors.surface
@@ -222,7 +225,7 @@ Rectangle {
                                                 id: checkBox
                                                 text: menuLoader?.modelData?.checkState === Qt.Checked ? "✓" : ""
                                                 font.pointSize: Styles.textSm
-                                                color: Colors.primary
+                                                color: theme.main
                                                 visible: menuLoader?.modelData?.buttonType !== 0
                                             }
 

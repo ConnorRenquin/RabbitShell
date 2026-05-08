@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Settings
+import qs.Services
 
 Rectangle {
     id: root
@@ -14,6 +15,8 @@ Rectangle {
     height: column.implicitHeight + Styles.marginSm * 2
     signal accepted
     signal canceled
+
+    Themer { id: theme; variant: 'tertiary' }
     property string title
     property string body
     property string warning
@@ -40,7 +43,7 @@ Rectangle {
             visible: text
             text: root.warning
             font.pointSize: Styles.textSm
-            color: Colors.tertiary
+            color: theme.main
             Layout.fillWidth: true
         }
         RowLayout {

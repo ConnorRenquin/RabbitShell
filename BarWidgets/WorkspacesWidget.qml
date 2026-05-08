@@ -6,10 +6,14 @@ import QtQuick
 
 import qs.Components
 import qs.Settings
+import qs.Services
 
 Rectangle {
     id: root
     required property string monitorName
+
+    Themer { id: theme }
+
     radius: Styles.radiusSm
     color: Colors.surface
     implicitHeight: parent.height
@@ -70,7 +74,7 @@ Rectangle {
             DoubleText {
                 id: workspaceIcon
                 elide: Text.ElideNone
-                primaryColor: Colors.primary
+                primaryColor: theme.main
                 anchors.centerIn: parent
                 text: workspaceButton.modelData?.focused ? "󰜋" : "󰜌"
             }

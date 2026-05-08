@@ -9,7 +9,9 @@ import qs.Services
 
 Rectangle {
     id: root
-    color: Colors.onSecondary
+    color: theme.onMain
+
+    Themer { id: theme; variant: 'secondary' }
 
     Utils {
         id: utils

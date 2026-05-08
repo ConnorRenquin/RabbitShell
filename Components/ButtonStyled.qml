@@ -20,7 +20,7 @@ Rectangle {
     property string text
     property alias textColor: buttonText.color
 
-    property string variant: Colors.primary
+
     property alias pointSize: buttonText.font.pointSize
 
     property string defaultColor: Colors.surface

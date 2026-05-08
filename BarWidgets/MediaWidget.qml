@@ -6,6 +6,7 @@ import QtQuick
 
 import qs.Components
 import qs.Settings
+import qs.Services
 
 Rectangle {
     id: root
@@ -17,12 +18,14 @@ Rectangle {
 
     property MprisPlayer player: Mpris.players.values.filter(player => player.identity === "Spotify")[0] || null
 
+    Themer { id: theme }
+
     component ButtonStyledLocal: ButtonStyled {
         id: buttonLocal
 
         property string iconText: ""
         property string iconColor: Colors.surface
-        property string backgroundColor: Colors.primary
+        property string backgroundColor: theme.main
 
         implicitWidth: iconTextItem.width + Styles.marginSm * 2
         implicitHeight: root.height - Styles.marginSm

@@ -24,6 +24,11 @@ Rectangle {
         id: utils
     }
 
+    Themer {
+        id: theme
+        variant: 'tertiary'
+    }
+
     property var emojiList: [
         { name: "shrug", emoji: "¯\\_(ツ)_/¯" },
         { name: "tableflip", emoji: "(ノ ゜Д゜)ノ ︵ ┻━┻" },
@@ -152,9 +157,9 @@ Rectangle {
                     required property var modelData
                     required property int index
 
-                    defaultColor: Colors.tertiary
+                    defaultColor: theme.main
                     text: emojiButton.modelData.emoji
-                    textColor: Colors.onTertiary
+                    textColor: theme.onMain
                     pointSize: 34
 
                     Layout.fillWidth: true

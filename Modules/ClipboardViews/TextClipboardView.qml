@@ -44,6 +44,11 @@ Rectangle {
         id: utils
     }
 
+    Themer {
+        id: theme
+        variant: 'secondary'
+    }
+
     Rectangle {
         id: base
 
@@ -167,7 +172,7 @@ Rectangle {
                 id: storageSlots
                 Layout.fillWidth: true
                 Layout.preferredHeight: 80
-                color: Colors.secondary
+                color: theme.main
                 radius: Styles.radiusSm
 
                 GridLayoutPlus {
@@ -188,7 +193,7 @@ Rectangle {
                             anchors.fill: parent
 
                             property bool slotOccupied: (ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "") ?? false
-                            color: slotOccupied ? Colors.secondaryContainer : Colors.onSecondary
+                            color: slotOccupied ? theme.mainContainer : theme.onMain
 
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
@@ -256,7 +261,7 @@ Rectangle {
                 Layout.preferredHeight: 50
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
-                color: Colors.secondary
+                color: theme.main
                 radius: Styles.radiusSm
 
                 TextFieldStyled {
@@ -264,8 +269,8 @@ Rectangle {
                     placeholderText: '/search'
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
-                    color: Colors.onSecondary
-                    placeholderTextColor: Colors.onSecondary
+                    color: theme.onMain
+                    placeholderTextColor: theme.onMain
                     onTextChanged: mainContent.searchText = text
                     Keys.onPressed: event => {
                         root.navigationHandler(event);
@@ -322,12 +327,12 @@ Rectangle {
                                 Layout.preferredWidth: 50
                                 implicitHeight: 20
                                 Layout.fillHeight: true
-                                color: button.isFocused ? Colors.secondary : Colors.onSecondary
+                                color: button.isFocused ? theme.main : theme.onMain
                                 radius: Styles.radiusSm
                                 TextStyled {
                                     id: clipboardItemKeyText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: !button.isFocused ? Colors.secondary : Colors.onSecondary
+                                    color: !button.isFocused ? theme.main : theme.onMain
                                     anchors.centerIn: parent
                                     text: button.originalIndex === 0 ? "Now" : button.originalIndex + ListView.isCurrentItem
                                 }
@@ -361,7 +366,7 @@ Rectangle {
                                     id: clipboardText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                     width: clipboardItemScreen.width - Styles.marginSm * 2
-                                    color: Colors.secondary
+                                    color: theme.main
                                     anchors.fill: parent
                                     anchors.margins: Styles.marginSm
                                     anchors.centerIn: parent
