@@ -23,7 +23,6 @@ FloatingWindow {
     color: "transparent"
 
     property int currentTab: 0
-    readonly property var tabNames: [Icons.copy + " Text", Icons.image + " Images", Icons.emoji + " Emojis"]
 
     function exit() {
         root.visible = false;
@@ -43,12 +42,6 @@ FloatingWindow {
             root.currentTab = (root.currentTab + 2) % 3;
         }
     }
-
-    // onCurrentTabChanged: {
-    //     if (currentTab !== 0) {
-    //         base.forceActiveFocus();
-    //     }
-    // }
 
     function toggle(tabIndex: int) {
         if (root.visible && root.currentTab === tabIndex) {
@@ -123,27 +116,37 @@ FloatingWindow {
                 color: Colors.secondary
                 radius: Styles.radiusSm
 
-                RowLayout {
+                RowLayoutPlus {
                     anchors.fill: parent
                     anchors.margins: Styles.marginXS
                     spacing: Styles.marginSm
 
-                    Repeater {
-                        model: root.tabNames
-                        delegate: ButtonStyled {
-                            id: tabButton
+                    model: viewContainer.children
+                    delegate: ButtonStyled {
+                        id: tabButton
 
-                            required property string modelData
-                            required property int index
+                        required property var modelData
+                        required property int index
 
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            text: tabButton.modelData
-                            isFocused: root.currentTab === tabButton.index
-                            defaultColor: Colors.onSecondary
-                            onClicked: {
-                                root.currentTab = tabButton.index;
-                            }
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        text: tabButton.modelData.name
+                        isFocused: root.currentTab === tabButton.index
+                        defaultColor: Colors.onSecondary
+                        onClicked: {
+                            root.currentTab = tabButton.index;
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillHeight: true
+                        Layout.preferredWidth: clock.implicitWidth + Styles.marginLg * 2
+                        color: Colors.background
+                        radius: Styles.marginSm
+                        TextStyled {
+                            anchors.centerIn: parent
+                            id: clock
+                            text: Time.getTime() + ' | ' + Time.date
                         }
                     }
                 }
@@ -153,9 +156,9 @@ FloatingWindow {
                 id: viewContainer
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-
                 TextClipboardView {
                     id: textView
+                    property string name: Icons.copy
                     anchors.fill: parent
                     isActive: root.currentTab === 0 && root.visible
                     onRequestExit: root.exit()
@@ -164,12 +167,14 @@ FloatingWindow {
 
                 ImageClipboardView {
                     id: imageView
+                    property string name: Icons.image
                     anchors.fill: parent
                     isActive: root.currentTab === 1 && root.visible
                 }
 
                 AsciiEmojisView {
                     id: emojiView
+                    property string name: Icons.emoji
                     anchors.fill: parent
                     isActive: root.currentTab === 2 && root.visible
                     onRequestExit: root.exit()
