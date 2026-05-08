@@ -252,35 +252,29 @@ Rectangle {
                 color: Colors.secondary
                 radius: Styles.radiusSm
 
-                RowLayout {
+                TextFieldStyled {
+                    id: searchField
+                    placeholderText: '/search'
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
-                    spacing: Styles.marginSm
-
-                    TextFieldStyled {
-                        id: searchField
-                        placeholderText: '/search'
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        color: Colors.onSecondary
-                        placeholderTextColor: Colors.onSecondary
-                        onTextChanged: mainContent.searchText = text
-                        Keys.onPressed: event => {
-                            if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
-                                root.requestTabCycle(true);
-                                event.accepted = true;
-                                return;
-                            }
-                            if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
-                                root.requestTabCycle(false);
-                                event.accepted = true;
-                                return;
-                            }
-                            if (event.key === Qt.Key_Escape) {
-                                searchField.focus = false;
-                                base.forceActiveFocus();
-                                event.accepted = true;
-                            }
+                    color: Colors.onSecondary
+                    placeholderTextColor: Colors.onSecondary
+                    onTextChanged: mainContent.searchText = text
+                    Keys.onPressed: event => {
+                        if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
+                            root.requestTabCycle(true);
+                            event.accepted = true;
+                            return;
+                        }
+                        if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
+                            root.requestTabCycle(false);
+                            event.accepted = true;
+                            return;
+                        }
+                        if (event.key === Qt.Key_Escape) {
+                            searchField.focus = false;
+                            base.forceActiveFocus();
+                            event.accepted = true;
                         }
                     }
                 }
