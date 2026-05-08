@@ -16,12 +16,10 @@ ShellRoot {
     PowerMenu {}
     ToplevelView {}
     Clipboard {}
-    ImageClipboard {}
     NotificationManager {}
     LockScreen {}
     Polkit {}
     SettingsMenu {}
-    AsciiEmojis {}
     // Test {}
     Component.onCompleted: {
         Qt.callLater(function () {
