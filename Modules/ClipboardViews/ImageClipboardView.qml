@@ -147,6 +147,6 @@ Rectangle {
     component LocalButton: ButtonStyled {
         Layout.fillWidth: true
         defaultColor: theme.main
-        textColor: theme.onMain
+        textColor: theme.containerText
     }
 }

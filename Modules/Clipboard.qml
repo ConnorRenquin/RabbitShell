@@ -141,7 +141,7 @@ FloatingWindow {
                         Layout.fillHeight: true
                         text: tabButton.modelData.name
                         isFocused: root.currentTab === tabButton.index
-                        defaultColor: theme.onMain
+                        defaultColor: theme.containerText
                         onClicked: {
                             root.currentTab = tabButton.index;
                         }

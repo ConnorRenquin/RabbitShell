@@ -465,7 +465,7 @@ Rectangle {
 
                     defaultColor: theme.main
                     text: emojiButton.modelData.emoji
-                    textColor: theme.onMain
+                    textColor: theme.containerText
                     pointSize: 34
 
                     Layout.fillWidth: true

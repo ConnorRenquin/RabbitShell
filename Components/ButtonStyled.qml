@@ -23,7 +23,7 @@ Rectangle {
 
     property alias pointSize: buttonText.font.pointSize
 
-    property string defaultColor: Colors.surface
+    property string defaultColor: Colors.background
     property bool isFocused: false
     property bool containsMouse: mouseArea.containsMouse
 

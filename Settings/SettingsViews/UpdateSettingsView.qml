@@ -9,7 +9,7 @@ import qs.Services
 
 Rectangle {
     id: root
-    color: theme.onMain
+    color: theme.containerText
 
     Themer { id: theme; variant: 'secondary' }
 

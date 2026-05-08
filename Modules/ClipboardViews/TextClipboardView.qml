@@ -193,7 +193,7 @@ Rectangle {
                             anchors.fill: parent
 
                             property bool slotOccupied: (ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "") ?? false
-                            color: slotOccupied ? theme.mainContainer : theme.onMain
+                            color: slotOccupied ? theme.mainContainer : theme.containerText
 
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
@@ -269,8 +269,8 @@ Rectangle {
                     placeholderText: '/search'
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
-                    color: theme.onMain
-                    placeholderTextColor: theme.onMain
+                    color: theme.containerText
+                    placeholderTextColor: theme.containerText
                     onTextChanged: mainContent.searchText = text
                     Keys.onPressed: event => {
                         root.navigationHandler(event);
@@ -327,12 +327,12 @@ Rectangle {
                                 Layout.preferredWidth: 50
                                 implicitHeight: 20
                                 Layout.fillHeight: true
-                                color: button.isFocused ? theme.main : theme.onMain
+                                color: button.isFocused ? theme.main : theme.containerText
                                 radius: Styles.radiusSm
                                 TextStyled {
                                     id: clipboardItemKeyText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: !button.isFocused ? theme.main : theme.onMain
+                                    color: !button.isFocused ? theme.main : theme.containerText
                                     anchors.centerIn: parent
                                     text: button.originalIndex === 0 ? "Now" : button.originalIndex + ListView.isCurrentItem
                                 }

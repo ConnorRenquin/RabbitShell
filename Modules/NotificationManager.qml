@@ -29,6 +29,11 @@ Loader {
     }
     Themer {
         id: theme
+        variant: Settings.register({
+            name: 'notificationManagerColor',
+            options: ['primary', 'secondary', 'tertiary', 'regular'],
+            value: 'primary'
+        }).value
     }
 
     sourceComponent: FloatingWindow {
@@ -74,7 +79,7 @@ Loader {
                     id: controlSection
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
-                    color: theme.onMain
+                    color: theme.containerText
                     radius: Styles.radiusMd
 
                     RowLayout {
@@ -143,7 +148,7 @@ Loader {
                             radius: Styles.radiusLg
                             implicitWidth: 300
                             implicitHeight: 60
-                            color: theme.onMain
+                            color: theme.containerText
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: "No notifications"

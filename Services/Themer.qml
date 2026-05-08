@@ -12,7 +12,7 @@ Item {
        return Colors.background
    }
 
-   property string onMain: {
+   property string containerText: {
        if (variant === 'primary') return Colors.onPrimary
        if (variant === 'secondary') return Colors.onSecondary
        if (variant === 'tertiary') return Colors.onTertiary
