@@ -71,8 +71,9 @@ Rectangle {
                 visible: root.notification?.appIcon ?? false
             }
 
-            TextStyled {
+            TextEditStyled {
                 id: appNameText
+                readOnly: true
                 font.pointSize: Styles.textLg
                 visible: text
                 text: root.notification?.appName ?? "Notification"
@@ -96,8 +97,9 @@ Rectangle {
                 Layout.fillWidth: true
 
                 RowLayout {
-                    TextStyled {
+                    TextEditStyled {
                         id: summaryText
+                        readOnly: true
                         Layout.fillWidth: true
                         visible: text
                         text: root.notification?.summary ?? ""
@@ -108,8 +110,9 @@ Rectangle {
                     }
                 }
 
-                TextStyled {
+                TextEditStyled {
                     id: bodyText
+                    readOnly: true
                     Layout.fillWidth: true
                     font.pointSize: Styles.textSm
                     visible: text
