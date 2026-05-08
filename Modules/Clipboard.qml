@@ -73,6 +73,7 @@ FloatingWindow {
     HyprlandFocusGrab {
         id: grab
         windows: [root]
+        onCleared: root.exit()
     }
 
     Rectangle {
