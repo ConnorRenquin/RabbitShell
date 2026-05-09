@@ -63,7 +63,7 @@ ComboBox {
     popup: Popup {
         y: root.height + 2
         width: root.width
-        implicitHeight: contentItem.implicitHeight
+        implicitHeight: Math.min(contentItem.contentHeight, root.delegateHeight * 6) + 2
         padding: 1
 
         contentItem: ListView {
@@ -83,8 +83,11 @@ ComboBox {
         }
     }
 
+    readonly property real delegateHeight: Math.ceil(font.pixelSize * 2.2)
+
     delegate: ItemDelegate {
         width: root.width
+        height: root.delegateHeight
         contentItem: TextStyled {
             text: modelData
             verticalAlignment: Text.AlignVCenter

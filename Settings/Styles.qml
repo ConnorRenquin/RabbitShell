@@ -1,6 +1,7 @@
 pragma Singleton
 
 import Quickshell
+import Quickshell.Io
 
 import QtQuick
 
@@ -8,6 +9,7 @@ Singleton {
     id: root
 
     property string defaultFontFamily: 'RobotoMono Nerd Font Propo'
+    property list<string> availableFonts: []
 
     readonly property int barTextOffset: 2
 
@@ -25,11 +27,29 @@ Singleton {
     readonly property int textMd: textSm * 1.2
     readonly property int textLg: textSm * 2.0
 
-    Component.onCompleted: {
-        defaultFontFamily = Settings.register({ name: 'fontFamily', value: 'RobotoMono Nerd Font Propo' }).value;
-        marginSm = Settings.register({ name: 'margin', value: 10 }).value;
-        radiusSm = Settings.register({ name: 'radius', value: 5 }).value;
-        textSm = Settings.register({ name: 'textSize', value: 10 }).value;
+    // Fetch all system fonts via fc-list then register the setting once the list is ready.
+    Process {
+        id: fontListProcess
+        command: ['bash', '-c', "fc-list : family | sed 's/,.*$//' | sort -u"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.availableFonts = text.trim().split('\n').filter(f => f.length > 0);
+                // Register with options (no-op if already registered from saved settings).
+                // Then always patch options in via change() so the dropdown is populated
+                // regardless of whether the setting was registered before or after font list loaded.
+                root.defaultFontFamily = Settings.register({
+                    name: 'fontFamily',
+                    value: 'RobotoMono Nerd Font Propo',
+                    options: root.availableFonts,
+                    category: 'misc'
+                }).value;
+                Settings.change({ name: 'fontFamily', options: root.availableFonts });
+                root.marginSm = Settings.register({ name: 'margin', value: 10 }).value;
+                root.radiusSm = Settings.register({ name: 'radius', value: 5 }).value;
+                root.textSm = Settings.register({ name: 'textSize', value: 10 }).value;
+            }
+        }
     }
 
     Connections {
