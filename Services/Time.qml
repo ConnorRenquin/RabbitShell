@@ -12,10 +12,19 @@ Singleton {
     readonly property string date: Qt.formatDateTime(clock.date, "MM-dd-yyyy")
     readonly property int hour: parseInt(Qt.formatDateTime(clock.date, "h"))
 
-    property bool militaryTime: Settings.register({
-        name: 'militaryTime',
-        value: false
-    }).value
+    property bool militaryTime: false
+
+    Component.onCompleted: {
+        militaryTime = Settings.register({ name: 'militaryTime', value: false }).value;
+    }
+
+    Connections {
+        target: Settings
+        function onSettingsChanged() {
+            const s = Settings.settings.find(x => x.name === 'militaryTime');
+            if (s) militaryTime = s.value;
+        }
+    }
 
     readonly property var clockSymbols: [
         "󱐿", "󱑀", "󱑁", "󱑂", "󱑃", "󱑄",

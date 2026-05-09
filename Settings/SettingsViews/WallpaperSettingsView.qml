@@ -18,23 +18,28 @@ Rectangle {
     anchors.fill: parent
     color: Colors.surfaceLighter
 
-    // Reactive derived values — referencing Settings.settings in the binding
-    // creates a QML dependency so these update automatically when Settings.change() is called.
-    property string wallpaperDirectory: Settings.register({
-        name: 'wallpaperDirectory',
-        value: '/home',
-        category: 'wallpaper'
-    }).value
-    property string wallpaperTransition: Settings.register({
-        name: 'wallpaperTransition',
-        value: 'fade',
-        category: 'wallpaper'
-    }).value
-    property int wallpaperTransitionDuration: Settings.register({
-        name: 'wallpaperTransitionDuration',
-        value: 5,
-        category: 'wallpaper'
-    }).value
+    property string wallpaperDirectory: '/home'
+    property string wallpaperTransition: 'fade'
+    property int wallpaperTransitionDuration: 5
+
+    Component.onCompleted: {
+        wallpaperDirectory = Settings.register({ name: 'wallpaperDirectory', value: '/home', category: 'wallpaper' }).value;
+        wallpaperTransition = Settings.register({ name: 'wallpaperTransition', value: 'fade', category: 'wallpaper' }).value;
+        wallpaperTransitionDuration = Settings.register({ name: 'wallpaperTransitionDuration', value: 5, category: 'wallpaper' }).value;
+    }
+
+    Connections {
+        target: Settings
+        function onSettingsChanged() {
+            const s = Settings.settings;
+            const dir = s.find(x => x.name === 'wallpaperDirectory');
+            if (dir) root.wallpaperDirectory = dir.value;
+            const transition = s.find(x => x.name === 'wallpaperTransition');
+            if (transition) root.wallpaperTransition = transition.value;
+            const duration = s.find(x => x.name === 'wallpaperTransitionDuration');
+            if (duration) root.wallpaperTransitionDuration = duration.value;
+        }
+    }
 
     function setWallpaper(imagePath) {
         Quickshell.execDetached(["awww", "img", imagePath, "--transition-type", root.wallpaperTransition, "--transition-duration", root.wallpaperTransitionDuration.toString()]);

@@ -16,10 +16,19 @@ Variants {
 
         required property var modelData
 
-        property bool top: Settings.register({
-            name: 'barPosition',
-            value: true
-        }).value
+        property bool top: true
+
+        Component.onCompleted: {
+            top = Settings.register({ name: 'barPosition', value: true }).value;
+        }
+
+        Connections {
+            target: Settings
+            function onSettingsChanged() {
+                const s = Settings.settings.find(x => x.name === 'barPosition');
+                if (s) root.top = s.value;
+            }
+        }
 
         screen: modelData
         implicitHeight: 48
@@ -42,13 +51,24 @@ Variants {
         }
 
         Rectangle {
+            id: barRect
             anchors.fill: parent
             radius: Styles.radiusMd
 
-            property bool barBackground: Settings.register({
-                name: 'barBackground',
-                value: true
-            }).value
+            property bool barBackground: true
+
+            Component.onCompleted: {
+                barBackground = Settings.register({ name: 'barBackground', value: true }).value;
+            }
+
+            Connections {
+                target: Settings
+                function onSettingsChanged() {
+                    const s = Settings.settings.find(x => x.name === 'barBackground');
+                    if (s) barRect.barBackground = s.value;
+                }
+            }
+
             color: barBackground ? Colors.background : 'transparent'
             BarRow {
                 id: leftGroup

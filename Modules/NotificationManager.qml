@@ -29,11 +29,23 @@ Loader {
     }
     Themer {
         id: theme
-        variant: Settings.register({
-            name: 'notificationManagerColor',
-            options: ['primary', 'secondary', 'tertiary', 'regular'],
-            value: 'primary'
-        }).value
+        variant: 'primary'
+
+        Component.onCompleted: {
+            variant = Settings.register({
+                name: 'notificationManagerColor',
+                options: ['primary', 'secondary', 'tertiary', 'regular'],
+                value: 'primary'
+            }).value;
+        }
+
+        Connections {
+            target: Settings
+            function onSettingsChanged() {
+                const s = Settings.settings.find(x => x.name === 'notificationManagerColor');
+                if (s) theme.variant = s.value;
+            }
+        }
     }
 
     sourceComponent: FloatingWindow {

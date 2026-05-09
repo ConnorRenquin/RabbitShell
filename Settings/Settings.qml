@@ -7,6 +7,10 @@ import Quickshell.Io
 Singleton {
     id: root
 
+    function init() {
+        console.log('Settings -----------------------------------------');
+    }
+
     // Internal JS array so standard array methods (.find, .filter, etc.) work.
     // Each entry shape: { name, defaultValue, value, category, type }
     // defaultValue mirrors setting.value at registration time and never changes —

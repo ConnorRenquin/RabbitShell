@@ -27,10 +27,12 @@ Loader {
     function updateToplevels() {
         if (!Hyprland.toplevels)
             return;
+        if (!Hyprland.focusedWorkspace)
+            return;
 
         workspaceGroups = Hyprland.toplevels.values.reduce((groups, toplevel) => {
             var workspaceId = toplevel?.workspace?.id;
-            if (workspaceId === undefined || workspaceId === null || workspaceId === Hyprland.focusedWorkspace.id) {
+            if (workspaceId === undefined || workspaceId === null || workspaceId === Hyprland.focusedWorkspace?.id) {
                 return groups;
             }
             if (!groups[workspaceId]) {
@@ -39,7 +41,7 @@ Loader {
             groups[workspaceId].push(toplevel);
             return groups;
         }, {});
-        toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace.id);
+        toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace?.id);
         allToplevels = toplevels.concat(Object.keys(workspaceGroups).sort((a, b) => parseInt(a) - parseInt(b)).map(id => workspaceGroups[id]).reduce((acc, arr) => acc.concat(arr), []));
         currentIndex = toplevels.findIndex(toplevel => toplevel.activated);
         if (currentIndex === -1 && toplevels.length > 0) {
@@ -236,7 +238,7 @@ Loader {
         }
 
         Repeater {
-            model: root.toplevels.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace.id)
+            model: root.toplevels.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace?.id)
             delegate: Rectangle {
                 id: onScreen
 

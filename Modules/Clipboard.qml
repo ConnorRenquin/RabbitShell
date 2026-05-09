@@ -53,11 +53,23 @@ FloatingWindow {
 
     Themer {
         id: theme
-        variant: Settings.register({
-            name: 'clipboardColor',
-            options: ['primary', 'secondary', 'tertiary', 'regular'],
-            value: 'regular'
-        }).value
+        variant: 'regular'
+
+        Component.onCompleted: {
+            variant = Settings.register({
+                name: 'clipboardColor',
+                options: ['primary', 'secondary', 'tertiary', 'regular'],
+                value: 'regular'
+            }).value;
+        }
+
+        Connections {
+            target: Settings
+            function onSettingsChanged() {
+                const s = Settings.settings.find(x => x.name === 'clipboardColor');
+                if (s) theme.variant = s.value;
+            }
+        }
     }
 
     GlobalShortcut {

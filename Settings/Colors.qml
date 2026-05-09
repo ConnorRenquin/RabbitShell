@@ -8,13 +8,20 @@ import QtQuick
 Singleton {
     id: root
 
-    property string currentTheme: {
-        const s = Settings.register({name: 'currentTheme', value: 'default.json', category: 'appearance'});
-        // Create a dependency on Settings.settings so this re-evaluates when Settings.change() is called
-        const live = Settings.settings.find(x => x.name === 'currentTheme');
-        const result = live ? live.value : s.value;
-        console.log('[Colors] currentTheme binding evaluated ->', result, '| live:', !!live);
-        return result;
+    property string currentTheme: 'default.json'
+
+    Component.onCompleted: {
+        currentTheme = Settings.register({ name: 'currentTheme', value: 'default.json', category: 'appearance' }).value;
+    }
+
+    Connections {
+        target: Settings
+        function onSettingsChanged() {
+            const live = Settings.settings.find(x => x.name === 'currentTheme');
+            if (live && live.value !== root.currentTheme) {
+                root.currentTheme = live.value;
+            }
+        }
     }
     readonly property string directory: '.data/colors/'
     readonly property string themePath: directory + currentTheme
@@ -153,23 +160,17 @@ Singleton {
     }
 
     function reloadTheme() {
-        console.log('[Colors] reloadTheme() called, path:', persistantData.path);
         persistantData.reload();
     }
 
     onUserColorsChanged: {
-        console.log('[Colors] onUserColorsChanged, isLoadingTheme:', isLoadingTheme, '| persistantData.loaded:', persistantData.loaded);
         root.updateColors();
         if (persistantData.loaded && !isLoadingTheme) {
-            console.log('[Colors] saving userColors to disk');
             persistantData.setText(JSON.stringify(root.userColors));
         }
     }
 
     onCurrentThemeChanged: {
-        console.log('[Colors] onCurrentThemeChanged ->', currentTheme);
-        console.log('[Colors] themePath is now ->', themePath);
-        console.log('[Colors] persistantData.path ->', persistantData.path);
         persistantData.reload();
     }
 
@@ -178,27 +179,20 @@ Singleton {
         path: Qt.resolvedUrl(root.themePath)
         blockLoading: false
         onLoaded: {
-            console.log('[Colors] FileView onLoaded, path:', persistantData.path);
             const raw = text();
-            console.log('[Colors] raw file contents:', raw);
             root.isLoadingTheme = true;
             try {
                 root.userColors = JSON.parse(raw);
-                console.log('[Colors] parsed userColors, primary:', root.userColors["primary"]);
                 root.updateColors();
-                console.log('[Colors] updateColors() done, Colors.primary is now:', root.primary);
             } catch (e) {
-                console.log('[Colors] Failed to parse userColors data:', e);
                 root.userColors = root.userColors;
             }
             root.isLoadingTheme = false;
         }
         onLoadFailed: {
-            console.log('[Colors] onLoadFailed for path:', persistantData.path, '| themePath:', root.themePath);
             Quickshell.execDetached(['touch', root.themePath]);
             persistantData.setText(JSON.stringify(root.userColors));
         }
-        onSaveFailed: console.log('[Colors] Failed to save userColors data')
     }
 
     Process {

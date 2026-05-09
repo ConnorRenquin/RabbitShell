@@ -1,7 +1,7 @@
 import Quickshell
 import Quickshell.Widgets
 
-import QtCore
+import QtCore as QtCoreLib
 
 import QtQuick
 import QtQuick.Layouts
@@ -17,7 +17,20 @@ Rectangle {
 
     Themer {
         id: theme
-        variant: Settings.get('clipboardColor').value
+        variant: 'regular'
+
+        Component.onCompleted: {
+            const s = Settings.get('clipboardColor');
+            if (s) variant = s.value;
+        }
+
+        Connections {
+            target: Settings
+            function onSettingsChanged() {
+                const s = Settings.settings.find(x => x.name === 'clipboardColor');
+                if (s) theme.variant = s.value;
+            }
+        }
     }
 
     visible: isActive
@@ -25,8 +38,8 @@ Rectangle {
 
     FolderListModel {
         id: folderModel
-        folder: StandardPaths.writableLocation(StandardPaths.HomeLocation) + "/Pictures/clipboard"
-        rootFolder: StandardPaths.writableLocation(StandardPaths.HomeLocation) + "/Pictures/clipboard"
+        folder: QtCoreLib.StandardPaths.writableLocation(QtCoreLib.StandardPaths.HomeLocation) + "/Pictures/clipboard"
+        rootFolder: QtCoreLib.StandardPaths.writableLocation(QtCoreLib.StandardPaths.HomeLocation) + "/Pictures/clipboard"
         sortReversed: true
         showDirs: false
     }

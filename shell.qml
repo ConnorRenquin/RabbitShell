@@ -3,6 +3,7 @@ import Quickshell
 import QtQuick
 
 import qs.Services
+import qs.Settings
 import qs.Modules
 
 ShellRoot {
@@ -20,6 +21,7 @@ ShellRoot {
     SettingsMenu {}
     Component.onCompleted: {
         Qt.callLater(function () {
+            Settings.init();
             Audio.init();
             Notifications.init();
             IdleInhibitorSingleton.init();
