@@ -122,7 +122,7 @@ FloatingWindow {
                 id: tabBar
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
-                color: theme.main
+                color: theme.mainContainer
                 radius: Styles.radiusSm
 
                 RowLayoutPlus {
@@ -150,7 +150,7 @@ FloatingWindow {
                     Rectangle {
                         Layout.fillHeight: true
                         Layout.preferredWidth: clock.implicitWidth + Styles.marginLg * 2
-                        color: Colors.background
+                        color: theme.containerText
                         radius: Styles.marginSm
                         TextStyled {
                             anchors.centerIn: parent

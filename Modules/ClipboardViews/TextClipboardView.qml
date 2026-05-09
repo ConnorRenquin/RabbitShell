@@ -172,7 +172,7 @@ Rectangle {
                 id: storageSlots
                 Layout.fillWidth: true
                 Layout.preferredHeight: 80
-                color: theme.main
+                color: theme.containerText
                 radius: Styles.radiusSm
 
                 GridLayoutPlus {
@@ -241,7 +241,7 @@ Rectangle {
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: Colors.background
+                                color: theme.mainContainer
                                 radius: Styles.radiusMd
                                 TextStyled {
                                     id: tooltipContent
@@ -249,7 +249,7 @@ Rectangle {
                                     anchors.margins: Styles.marginSm
                                     text: utils.removeIndentation(ClipboardService.clipboardData.slots[slotButtonContainer.modelData]) || "Empty"
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: Colors.onBackground
+                                    color: theme.main
                                 }
                             }
                         }
