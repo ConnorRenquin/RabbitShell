@@ -327,7 +327,7 @@ Rectangle {
                                 Layout.preferredWidth: 50
                                 implicitHeight: 20
                                 Layout.fillHeight: true
-                                color: button.isFocused ? theme.main : theme.containerText
+                                color: button.isFocused ? theme.main : theme.mainContainer
                                 radius: Styles.radiusSm
                                 TextStyled {
                                     id: clipboardItemKeyText
