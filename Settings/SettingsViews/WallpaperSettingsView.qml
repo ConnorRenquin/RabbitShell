@@ -18,14 +18,26 @@ Rectangle {
     anchors.fill: parent
     color: Colors.surfaceLighter
 
-    property string wallpaperDirectory: '/home'
-    property string wallpaperTransition: 'fade'
-    property int wallpaperTransitionDuration: 5
+    property string wallpaperDirectory
+    property string wallpaperTransition
+    property int wallpaperTransitionDuration
 
     Component.onCompleted: {
-        wallpaperDirectory = Settings.register({ name: 'wallpaperDirectory', value: '/home', category: 'wallpaper' }).value;
-        wallpaperTransition = Settings.register({ name: 'wallpaperTransition', value: 'fade', category: 'wallpaper' }).value;
-        wallpaperTransitionDuration = Settings.register({ name: 'wallpaperTransitionDuration', value: 5, category: 'wallpaper' }).value;
+        root.wallpaperDirectory = Settings.register({
+            name: 'wallpaperDirectory',
+            value: '/home',
+            category: 'wallpaper'
+        }).value;
+        root.wallpaperTransition = Settings.register({
+            name: 'wallpaperTransition',
+            value: 'fade',
+            category: 'wallpaper'
+        }).value;
+        root.wallpaperTransitionDuration = Settings.register({
+            name: 'wallpaperTransitionDuration',
+            value: 5,
+            category: 'wallpaper'
+        }).value;
     }
 
     Connections {
@@ -33,11 +45,14 @@ Rectangle {
         function onSettingsChanged() {
             const s = Settings.settings;
             const dir = s.find(x => x.name === 'wallpaperDirectory');
-            if (dir) root.wallpaperDirectory = dir.value;
+            if (dir)
+                root.wallpaperDirectory = dir.value;
             const transition = s.find(x => x.name === 'wallpaperTransition');
-            if (transition) root.wallpaperTransition = transition.value;
+            if (transition)
+                root.wallpaperTransition = transition.value;
             const duration = s.find(x => x.name === 'wallpaperTransitionDuration');
-            if (duration) root.wallpaperTransitionDuration = duration.value;
+            if (duration)
+                root.wallpaperTransitionDuration = duration.value;
         }
     }
 
@@ -115,17 +130,18 @@ Rectangle {
             id: transitionsSection
 
             Layout.fillWidth: true
-            Layout.preferredHeight: 100
+            Layout.preferredHeight: things.implicitHeight + Styles.marginMd
             color: Colors.surface
             radius: Styles.radiusSm
 
-            RowLayout {
+            Flow {
+                id: things
                 anchors.fill: parent
                 anchors.margins: Styles.marginSm
                 spacing: Styles.marginMd
 
                 ColumnLayout {
-                    Layout.fillWidth: true
+                    // Layout.fillWidth: true
                     spacing: Styles.marginSm
 
                     TextStyled {
@@ -186,88 +202,85 @@ Rectangle {
                     }
                 }
 
-                RowLayout {
-                    Layout.preferredWidth: 300
-                    spacing: Styles.marginMd
-                    ColumnLayout {
-                        spacing: Styles.marginSm
+                ColumnLayout {
+                    spacing: Styles.marginSm
 
-                        TextStyled {
-                            text: "Contrast"
-                        }
-
-                        ComboBoxStyled {
-                            id: matugenContrast
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 30
-                            model: ["-1", "0", "1"]
-                            currentIndex: 1
-                        }
+                    TextStyled {
+                        text: "Contrast"
                     }
 
-                    ColumnLayout {
-                        spacing: Styles.marginSm
+                    ComboBoxStyled {
+                        id: matugenContrast
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 30
+                        model: ["-1", "0", "1"]
+                        currentIndex: 1
+                    }
+                }
 
-                        TextStyled {
-                            text: "Dominant Color"
-                        }
+                ColumnLayout {
+                    spacing: Styles.marginSm
 
-                        ComboBoxStyled {
-                            id: matugenDominantColor
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 30
-                            model: ["0", "1", "2", "3", "4"]
-                            currentIndex: 1
-                        }
+                    TextStyled {
+                        text: "Dominant Color"
                     }
 
-                    ColumnLayout {
-                        spacing: Styles.marginSm
+                    ComboBoxStyled {
+                        id: matugenDominantColor
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 30
+                        model: ["0", "1", "2", "3", "4"]
+                        currentIndex: 1
+                    }
+                }
 
-                        TextStyled {
-                            text: "Resize"
-                        }
+                ColumnLayout {
+                    spacing: Styles.marginSm
 
-                        ComboBoxStyled {
-                            id: matugenResize
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 30
-                            model: ['nearest', 'triangle', 'catmull-rom', 'gaussian', 'lanczos3']
-                            currentIndex: 1
-                        }
+                    TextStyled {
+                        text: "Resize"
                     }
 
-                    ColumnLayout {
-                        spacing: Styles.marginSm
+                    ComboBoxStyled {
+                        id: matugenResize
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 30
+                        model: ['nearest', 'triangle', 'catmull-rom', 'gaussian', 'lanczos3']
+                        currentIndex: 1
+                    }
+                }
 
-                        TextStyled {
-                            text: "Type"
-                        }
+                ColumnLayout {
+                    spacing: Styles.marginSm
 
-                        ComboBoxStyled {
-                            id: matugenType
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 30
-                            Layout.preferredWidth: 100
-                            model: ['scheme-content', 'scheme-expressive', 'scheme-fidelity', 'scheme-fruit-salad', 'scheme-monochrome', 'scheme-neutral', 'scheme-rainbow', 'scheme-tonal-spot', 'scheme-vibrant']
-                            currentIndex: 7
-                        }
+                    TextStyled {
+                        text: "Type"
                     }
 
-                    ColumnLayout {
-                        Layout.preferredWidth: 50
-                        spacing: Styles.marginSm
+                    ComboBoxStyled {
+                        id: matugenType
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 30
+                        Layout.preferredWidth: 100
+                        model: ['scheme-content', 'scheme-expressive', 'scheme-fidelity', 'scheme-fruit-salad', 'scheme-monochrome', 'scheme-neutral', 'scheme-rainbow', 'scheme-tonal-spot', 'scheme-vibrant']
+                        currentIndex: 7
+                    }
+                }
 
-                        TextStyled {
-                            Layout.fillWidth: true
-                            text: "DarkMode"
-                        }
+                ColumnLayout {
 
-                        SwitchStyled {
-                            id: matugenDarkmode
-                            Layout.fillWidth: true
-                            checked: true
-                        }
+                    Layout.preferredWidth: 50
+                    spacing: Styles.marginSm
+
+                    TextStyled {
+                        Layout.fillWidth: true
+                        text: "DarkMode"
+                    }
+
+                    SwitchStyled {
+                        id: matugenDarkmode
+                        Layout.fillWidth: true
+                        checked: true
                     }
                 }
             }
@@ -365,8 +378,8 @@ Rectangle {
                 }
             }
 
-            // Placeholder when no wallpapers
             ColumnLayout {
+                id: noWallpaperPlaceholder
                 anchors.centerIn: parent
                 visible: folderModel.count === 0
                 spacing: Styles.marginSm
@@ -413,14 +426,11 @@ Rectangle {
         property string dominantColor: matugenDominantColor.currentText
 
         onExited: (exitCode, exitStatus) => {
-            console.log('[matugen] exited with code:', exitCode, 'path:', path);
             if (exitCode === 0 && path) {
                 Settings.change({
                     name: 'currentTheme',
                     value: 'matugen.json'
                 });
-                // Always reload the file — if currentTheme was already 'matugen.json',
-                // onCurrentThemeChanged won't fire and the new colors won't be read.
                 Colors.reloadTheme();
                 Colors.refreshThemes();
             }
