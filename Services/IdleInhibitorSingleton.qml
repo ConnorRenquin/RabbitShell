@@ -14,17 +14,11 @@ Singleton {
     }
 
     function enabled() {
-        return persist.isEnabled;
+        return inhibitor.enabled
     }
 
     function toggle() {
-        persist.isEnabled = !persist.isEnabled;
-    }
-
-    PersistentProperties {
-        id: persist
-        reloadableId: "persistedStates"
-        property bool isEnabled: false
+        inhibitor.enabled = !inhibitor.enabled;
     }
 
     GlobalShortcut {
@@ -33,7 +27,8 @@ Singleton {
     }
 
     IdleInhibitor {
-        enabled: persist.isEnabled
+        id: inhibitor
+        enabled: true
         window: PanelWindow {
             implicitWidth: 0
             implicitHeight: 0
