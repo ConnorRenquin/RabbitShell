@@ -28,8 +28,8 @@ Singleton {
     Component.onCompleted: {
         root.defaultFontFamily = Settings.register({
             name: 'fontFamily',
-            value: 'RobotoMono Nerd Font Propo',
-            options: ['RobotoMono Nerd Font Propo', 'JetBrainsMono Nerd Font', 'UbuntuMono Nerd Font'],
+            value: 'JetBrainsMono Nerd Font Mono Propo',
+            options: ['RobotoMono Nerd Font Propo', 'Agave Nerd Font Propo', 'JetBrainsMono Nerd Font Mono', 'SpaceMono Nerd Font Propo', 'Terminuss Nerd Font Mono'],
             category: 'misc'
         }).value;
         root.marginSm = Settings.register({
