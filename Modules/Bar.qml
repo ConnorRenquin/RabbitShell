@@ -98,7 +98,9 @@ Variants {
             BarRow {
                 id: rightGroup
                 anchors.right: parent.right
-                MediaWidget {}
+                MediaWidget {
+                    Layout.fillHeight: true
+                }
                 SystemTrayWidget {}
                 IdleInhibitorWidget {}
                 BarButton {

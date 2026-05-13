@@ -2,7 +2,9 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
+
 import QtQuick
+import QtQuick.Layouts
 
 import qs.Components
 import qs.Settings
@@ -10,8 +12,7 @@ import qs.Services
 
 Rectangle {
     id: root
-    width: row.implicitWidth + Styles.marginMd
-    height: parent.height
+    Layout.preferredWidth: row.implicitWidth + Styles.marginMd
     color: Colors.surface
     radius: Styles.radiusSm
     visible: root.player !== null
@@ -44,24 +45,21 @@ Rectangle {
     PopupWindow {
         id: popup
         implicitWidth: 400
+        visible: albumArtMouse.containsMouse
         implicitHeight: 400
         color: "transparent"
+
+        property bool topBarSetting: Settings.get('barPosition').value
+        property var yValue: topBarSetting ? albumArt.height + Styles.marginSm : -430
+
+        Component.onCompleted: {
+            console.log('height' + root.implicitHeight)
+        }
 
         anchor {
             item: albumArt
             rect.x: albumArt.x - root.width
-            rect.y: albumArt.height + Styles.marginSm
-        }
-
-        Connections {
-            target: albumArtMouse
-            function onContainsMouseChanged() {
-                if (albumArtMouse.containsMouse) {
-                    popup.visible = true;
-                } else {
-                    popup.visible = false;
-                }
-            }
+            rect.y: yValue
         }
 
         ClippingRectangle {
