@@ -3,15 +3,21 @@ import QtQuick
 
 import qs.Components
 import qs.Settings
+import qs.Services
 
 Rectangle {
     id: root
 
     radius: Styles.radiusSm
-    color: Colors.surface
+    color: theme.mainContainer
 
     implicitWidth: Math.min(windowTitle.implicitWidth + Styles.marginSm * 2, 300)
     implicitHeight: parent.height
+
+    Themer {
+        id: theme
+        settingName: 'titleColor'
+    }
 
     NumberAnimation on implicitWidth {
         duration: 100
@@ -22,5 +28,6 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: Styles.marginSm
         text: ToplevelManager?.activeToplevel?.appId ?? "Desktop"
+        color: theme.main
     }
 }
