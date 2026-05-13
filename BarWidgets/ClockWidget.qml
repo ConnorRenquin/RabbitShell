@@ -1,8 +1,5 @@
 import QtQuick
 
-import Quickshell
-import Quickshell.Hyprland
-
 import QtQuick.Layouts
 
 import qs.Components
@@ -11,8 +8,6 @@ import qs.Services
 
 Rectangle {
     id: root
-
-    property real matchedWidth: Math.max(clock.implicitWidth, date.implicitWidth)
 
     implicitWidth: contentRow.implicitWidth + Styles.marginSm * 2
     radius: Styles.radiusSm
@@ -27,14 +22,13 @@ Rectangle {
 
         TextStyled {
             id: clock
-            text: Time.getSymbol() + " |- " + Time.getTime()
-            Layout.preferredWidth: root.matchedWidth
+            text: Time.getSymbol() + " " + Time.getTime()
             horizontalAlignment: Text.AlignRight
         }
 
         ButtonStyled {
             text: Icons.os
-            pointSize: Styles.textLg
+            pointSize: Styles.textMd + Styles.marginXS
             onClicked: mouse => {
                 if (mouse.button === Qt.LeftButton) {
                     PatchBay.openAppLauncher();
@@ -48,9 +42,8 @@ Rectangle {
 
         TextStyled {
             id: date
-            text: Time.date + "  󰃭 "
+            text: Time.date + " 󰃭"
             horizontalAlignment: Text.AlignLeft
-            Layout.preferredWidth: root.matchedWidth
         }
     }
 }

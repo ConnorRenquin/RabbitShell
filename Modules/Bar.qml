@@ -92,7 +92,9 @@ Variants {
                     text: Icons.notificationBell + ' ' + Notifications.notifications.values.length
                     onClicked: PatchBay.openNotificationsManager()
                 }
-                ClockWidget {}
+                ClockWidget {
+                    Layout.fillHeight: true
+                }
             }
             BarRow {
                 id: rightGroup
