@@ -73,11 +73,6 @@ Variants {
             BarRow {
                 id: leftGroup
                 anchors.left: parent.left
-                BarButton {
-                    id: appsButton
-                    text: Icons.specialWorkspace
-                    onClicked: Hyprland.dispatch("togglespecialworkspace")
-                }
                 WorkspacesWidget {
                     monitorName: root.modelData.name
                 }
@@ -105,11 +100,6 @@ Variants {
                 SystemTrayWidget {}
                 IdleInhibitorWidget {}
                 BatteryWidget {}
-                BarButton {
-                    id: settingsButton
-                    text: Icons.settingsCog
-                    onClicked: mouse => PatchBay.openSettings()
-                }
             }
         }
     }
