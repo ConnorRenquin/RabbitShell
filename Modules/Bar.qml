@@ -93,7 +93,6 @@ Variants {
                     onClicked: PatchBay.openNotificationsManager()
                 }
                 ClockWidget {}
-                BatteryWidget {}
             }
             BarRow {
                 id: rightGroup
@@ -103,6 +102,7 @@ Variants {
                 }
                 SystemTrayWidget {}
                 IdleInhibitorWidget {}
+                BatteryWidget {}
                 BarButton {
                     id: settingsButton
                     text: Icons.settingsCog
