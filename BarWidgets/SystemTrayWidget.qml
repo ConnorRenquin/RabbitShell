@@ -17,7 +17,10 @@ Rectangle {
     visible: SystemTray.items.values.length != 0
     property var currentOpenMenu: null
 
-    Themer { id: theme }
+    Themer {
+        id: theme
+        settingName: 'systemTrayColor'
+    }
 
     radius: Styles.radiusSm
     color: Colors.surface

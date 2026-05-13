@@ -16,7 +16,10 @@ Rectangle {
     signal accepted
     signal canceled
 
-    Themer { id: theme; variant: 'tertiary' }
+    Themer {
+        id: theme
+        variant: 'tertiary'
+    }
     property string title
     property string body
     property string warning

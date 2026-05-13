@@ -12,7 +12,10 @@ Rectangle {
     id: root
     required property string monitorName
 
-    Themer { id: theme }
+    Themer {
+        id: theme
+        settingName: 'workspacesColor'
+    }
 
     radius: Styles.radiusSm
     color: Colors.surface
