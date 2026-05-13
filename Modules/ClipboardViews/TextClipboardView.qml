@@ -46,7 +46,7 @@ Rectangle {
 
     Themer {
         id: theme
-        variant: Settings.get('clipboardColor').value
+        settingName: 'clipboardColor'
     }
 
     Rectangle {
