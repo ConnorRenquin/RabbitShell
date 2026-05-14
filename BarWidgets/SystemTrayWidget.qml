@@ -23,29 +23,12 @@ Rectangle {
     }
 
     radius: Styles.radiusSm
-    color: Colors.surface
+    color: theme.containerText
     implicitHeight: parent.height
-    implicitWidth: row.implicitWidth + Styles.marginSm * 2
-
-    component AnimatedMenuBackground: Rectangle {
-        color: Colors.surface
-        radius: Styles.radiusLg
-        opacity: visible ? 1 : 0
-        scale: visible ? 1 : 0.95
-
-        NumberAnimation on opacity {
-            duration: 200
-            easing.type: Easing.OutCubic
-        }
-
-        NumberAnimation on scale {
-            duration: 200
-            easing.type: Easing.OutCubic
-        }
-    }
+    implicitWidth: widget.implicitWidth + Styles.marginSm * 2
 
     RowLayoutPlus {
-        id: row
+        id: widget
         anchors.centerIn: parent
         spacing: Styles.marginSm
         model: SystemTray.items
@@ -57,6 +40,8 @@ Rectangle {
 
             Layout.preferredWidth: icon.implicitWidth + Styles.marginSm
             Layout.preferredHeight: icon.implicitHeight + Styles.marginSm
+
+            defaultColor: theme.mainContainer
 
             onClicked: mouse => {
                 if (mouse.button === Qt.LeftButton && iconButton.modelData.hasMenu) {
@@ -80,227 +65,163 @@ Rectangle {
                 id: systemTrayMenu
 
                 implicitHeight: menuContent.implicitHeight + Styles.marginSm * 2
-                implicitWidth: menuContent.implicitWidth + Styles.marginSm * 2
+                implicitWidth: 200 + Styles.marginSm * 2
 
                 color: "transparent"
 
-                anchor {
-                    item: iconButton
-                    rect.y: iconButton.height + 10
-                    rect.x: iconButton.width / 2 - implicitWidth / 2
-                }
+                property var currentMenu: null
 
                 onVisibleChanged: {
-                    if (visible) {
-                        if (root.currentOpenMenu && root.currentOpenMenu !== systemTrayMenu) {
-                            root.currentOpenMenu.visible = false;
-                        }
-                        root.currentOpenMenu = systemTrayMenu;
-                        autoCloseManager.restart();
-                    } else {
-                        if (root.currentOpenMenu === systemTrayMenu) {
-                            root.currentOpenMenu = null;
-                        }
-                        autoCloseManager.stop();
-                    }
+                    if (!visible)
+                        currentMenu = null;
                 }
 
-                Timer {
-                    id: autoCloseManager
-
-                    interval: initialInterval
-                    repeat: false
-                    onTriggered: {
-                        interval = initialInterval;
-                        systemTrayMenu.visible = false;
-                        stop();
-                    }
-
-                    property int initialInterval: 3000
-                    property int hoverInterval: 500
-
-                    function notifyHover() {
-                        interval = hoverInterval;
-                        stop();
-                    }
+                property bool topBarSetting: Settings.get('barPosition').value
+                property var yValue: topBarSetting ? Styles.marginSm * 5 : -systemTrayMenu.height - Styles.marginMd
+                anchor {
+                    item: iconButton
+                    rect.x: iconButton.x - root.width
+                    rect.y: yValue
                 }
 
                 QsMenuOpener {
-                    id: menuOpener
+                    id: rootMenuOpener
                     menu: iconButton.modelData?.menu
                 }
 
-                AnimatedMenuBackground {
+                QsMenuOpener {
+                    id: subMenuOpener
+                    menu: systemTrayMenu.currentMenu
+                }
+
+                HoverHandler {
+                    id: hoverHandler
+                }
+
+                Timer {
+                    interval: 500
+                    running: !hoverHandler.hovered
+                    onTriggered: systemTrayMenu.visible = false
+                }
+
+                Rectangle {
                     id: menuBackground
                     anchors.fill: parent
                     visible: systemTrayMenu.visible
+                    radius: Styles.radiusSm
+                    color: theme.mainContainer
 
-                    ColumnLayoutPlus {
+                    ColumnLayout {
                         id: menuContent
                         anchors.fill: parent
                         anchors.margins: Styles.marginSm
                         spacing: 4
 
-                        model: menuOpener.children
-                        delegate: Loader {
-                            id: menuLoader
-
-                            required property QsMenuEntry modelData
-
+                        ButtonStyled {
+                            id: backButton
+                            visible: systemTrayMenu.currentMenu !== null
                             Layout.fillWidth: true
+                            Layout.preferredHeight: 30
+                            text: '< back'
+                            onClicked: systemTrayMenu.currentMenu = null
+                        }
 
-                            sourceComponent: modelData.isSeparator ? separatorComponent : menuItemComponent
+                        Rectangle {
+                            visible: systemTrayMenu.currentMenu !== null
+                            Layout.fillWidth: true
+                            implicitHeight: 1
+                            color: Colors.surfaceLighter
+                        }
 
-                            Component {
-                                id: separatorComponent
-                                Rectangle {
-                                    Layout.fillWidth: true
-                                    implicitHeight: 1
-                                    anchors.centerIn: parent
-                                    width: parent.width - Styles.marginSm * 2
-                                    color: Colors.surfaceLighter
+                        ColumnLayoutPlus {
+                            Layout.fillWidth: true
+                            spacing: 4
+                            model: systemTrayMenu.currentMenu !== null ? subMenuOpener.children : rootMenuOpener.children
+                            delegate: Loader {
+                                id: menuLoader
+
+                                required property QsMenuEntry modelData
+
+                                Layout.fillWidth: true
+
+                                sourceComponent: modelData.isSeparator ? separatorComponent : menuItemComponent
+
+                                Component {
+                                    id: separatorComponent
+                                    Rectangle {
+                                        Layout.fillWidth: true
+                                        implicitHeight: 1
+                                        anchors.centerIn: parent
+                                        width: parent.width - Styles.marginSm * 2
+                                        color: Colors.surfaceLighter
+                                    }
                                 }
-                            }
 
-                            Component {
-                                id: menuItemComponent
-                                Item {
-                                    id: menuItemWrapper
-                                    implicitWidth: menuButton.implicitWidth
-                                    implicitHeight: menuButton.implicitHeight
+                                Component {
+                                    id: menuItemComponent
+                                    Item {
+                                        id: menuItemWrapper
+                                        implicitWidth: menuButton.implicitWidth
+                                        implicitHeight: menuButton.implicitHeight
 
-                                    property bool submenuExpanded: false
+                                        ButtonStyled {
+                                            id: menuButton
 
-                                    ButtonStyled {
-                                        id: menuButton
+                                            anchors.fill: parent
 
-                                        anchors.fill: parent
+                                            implicitWidth: Math.max(180, itemText.implicitWidth + Styles.marginSm * 2)
+                                            implicitHeight: itemText.implicitHeight + Styles.marginSm
 
-                                        implicitWidth: Math.max(180, itemText.implicitWidth + Styles.marginSm * 2)
-                                        implicitHeight: itemText.implicitHeight + Styles.marginSm
+                                            enabled: menuLoader?.modelData?.enabled ?? false
 
-                                        enabled: menuLoader?.modelData?.enabled ?? false
-
-                                        onContainsMouseChanged: {
-                                            if (containsMouse) {
-                                                autoCloseManager.notifyHover();
-                                            } else {
-                                                autoCloseManager.restart();
-                                            }
-                                        }
-
-                                        onClicked: {
-                                            if (menuLoader.modelData.enabled) {
+                                            onClicked: {
+                                                if (!menuLoader.modelData.enabled)
+                                                    return;
                                                 if (menuLoader.modelData.hasChildren) {
-                                                    menuItemWrapper.submenuExpanded = !menuItemWrapper.submenuExpanded;
+                                                    systemTrayMenu.currentMenu = menuLoader.modelData;
                                                 } else {
                                                     menuLoader.modelData.triggered();
                                                     systemTrayMenu.visible = false;
                                                 }
                                             }
-                                        }
 
-                                        RowLayout {
-                                            id: gutterIcons
+                                            RowLayout {
+                                                id: gutterIcons
 
-                                            spacing: Styles.marginSm
+                                                spacing: Styles.marginSm
 
-                                            anchors.fill: parent
-                                            anchors.margins: Styles.marginSm / 2
-
-                                            IconImage {
-                                                visible: menuLoader?.modelData?.icon ?? false
-                                                Layout.preferredWidth: 16
-                                                Layout.preferredHeight: 16
-                                                source: menuLoader?.modelData?.icon ?? ""
-                                            }
-
-                                            TextStyled {
-                                                id: itemText
-                                                text: menuLoader?.modelData?.text || ""
-                                                font.pointSize: Styles.textSm
-                                                Layout.fillWidth: true
-                                                horizontalAlignment: Text.AlignLeft
-                                                color: menuLoader?.modelData?.enabled ? Colors.onSurface : Colors.surfaceLighter
-                                            }
-
-                                            TextStyled {
-                                                id: checkBox
-                                                text: menuLoader?.modelData?.checkState === Qt.Checked ? "✓" : ""
-                                                font.pointSize: Styles.textSm
-                                                color: theme.main
-                                                visible: menuLoader?.modelData?.buttonType !== 0
-                                            }
-
-                                            TextStyled {
-                                                id: submenu
-                                                text: "›"
-                                                font.pointSize: Styles.textSm
-                                                visible: menuLoader?.modelData?.hasChildren ?? false
-                                            }
-                                        }
-                                    }
-
-                                    Loader {
-                                        id: submenuLoader
-                                        active: menuItemWrapper.submenuExpanded && menuLoader.modelData.hasChildren
-                                        sourceComponent: PopupWindow {
-                                            id: submenuPopup
-
-                                            implicitHeight: submenuContent.implicitHeight + Styles.marginSm * 2
-                                            implicitWidth: submenuContent.implicitWidth + Styles.marginSm * 2
-
-                                            color: "transparent"
-                                            visible: menuItemWrapper.submenuExpanded
-
-                                            anchor {
-                                                item: menuButton
-                                                rect.x: menuButton.width + 5
-                                                rect.y: 0
-                                            }
-
-                                            QsMenuOpener {
-                                                id: submenuOpener
-                                                menu: menuLoader.modelData
-                                            }
-
-                                            AnimatedMenuBackground {
                                                 anchors.fill: parent
-                                                visible: submenuPopup.visible
+                                                anchors.margins: Styles.marginSm / 2
 
-                                                ColumnLayoutPlus {
-                                                    id: submenuContent
-                                                    anchors.fill: parent
-                                                    anchors.margins: Styles.marginSm
-                                                    spacing: 4
-                                                    model: submenuOpener.children
-                                                    delegate: ButtonStyled {
-                                                        id: submenuButton
+                                                IconImage {
+                                                    visible: menuLoader?.modelData?.icon ?? false
+                                                    Layout.preferredWidth: 16
+                                                    Layout.preferredHeight: 16
+                                                    source: menuLoader?.modelData?.icon ?? ""
+                                                }
 
-                                                        required property var modelData
+                                                TextStyled {
+                                                    id: itemText
+                                                    text: menuLoader?.modelData?.text || ""
+                                                    font.pointSize: Styles.textSm
+                                                    Layout.fillWidth: true
+                                                    horizontalAlignment: Text.AlignLeft
+                                                    color: menuLoader?.modelData?.enabled ? Colors.onSurface : Colors.surfaceLighter
+                                                }
 
-                                                        Layout.fillWidth: true
-                                                        visible: text
-                                                        pointSize: Styles.textSm
-                                                        text: submenuButton.modelData.text || null
-                                                        enabled: submenuButton.modelData.enabled
+                                                TextStyled {
+                                                    id: checkBox
+                                                    text: menuLoader?.modelData?.checkState === Qt.Checked ? "✓" : ""
+                                                    font.pointSize: Styles.textSm
+                                                    color: theme.main
+                                                    visible: menuLoader?.modelData?.buttonType !== 0
+                                                }
 
-                                                        onContainsMouseChanged: {
-                                                            if (containsMouse) {
-                                                                autoCloseManager.notifyHover();
-                                                            } else {
-                                                                autoCloseManager.restart();
-                                                            }
-                                                        }
-
-                                                        onClicked: {
-                                                            if (submenuButton.modelData.enabled) {
-                                                                submenuButton.modelData.triggered();
-                                                                menuItemWrapper.submenuExpanded = false;
-                                                                systemTrayMenu.visible = false;
-                                                            }
-                                                        }
-                                                    }
+                                                TextStyled {
+                                                    id: submenuArrow
+                                                    text: "›"
+                                                    font.pointSize: Styles.textSm
+                                                    visible: menuLoader?.modelData?.hasChildren ?? false
                                                 }
                                             }
                                         }
