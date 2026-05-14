@@ -1,15 +1,15 @@
 pragma ComponentBehavior: Bound
 
-import Quickshell
-import Quickshell.Widgets
-import Quickshell.Services.SystemTray
-
 import QtQuick
 import QtQuick.Layouts
 
+import Quickshell
+import Quickshell.Services.SystemTray
+import Quickshell.Widgets
+
 import qs.Components
-import qs.Settings
 import qs.Services
+import qs.Settings
 
 Rectangle {
     id: root
