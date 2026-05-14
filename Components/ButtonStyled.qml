@@ -25,7 +25,7 @@ Rectangle {
 
     property string defaultColor: Colors.background
     property bool isFocused: false
-    property bool containsMouse: mouseArea.containsMouse
+    property alias containsMouse: mouseArea.containsMouse
 
     default property alias content: contentItem.data
 
@@ -60,9 +60,10 @@ Rectangle {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
+        z: 0
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
-        // propagateComposedEvents: true
+        propagateComposedEvents: true
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
         onClicked: mouse => root.clicked(mouse)
     }
