@@ -1,12 +1,11 @@
+import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 
-import QtQuick
-import QtQuick.Layouts
-
 import qs.BarWidgets
-import qs.Services
 import qs.Components
+import qs.Services
 import qs.Settings
 
 Variants {
@@ -19,14 +18,18 @@ Variants {
         property bool top: true
 
         Component.onCompleted: {
-            top = Settings.register({ name: 'barPosition', value: true }).value;
+            top = Settings.register({
+                name: 'barPosition',
+                value: true
+            }).value;
         }
 
         Connections {
             target: Settings
             function onSettingsChanged() {
                 const s = Settings.settings.find(x => x.name === 'barPosition');
-                if (s) root.top = s.value;
+                if (s)
+                    root.top = s.value;
             }
         }
 
@@ -58,14 +61,18 @@ Variants {
             property bool barBackground: true
 
             Component.onCompleted: {
-                barBackground = Settings.register({ name: 'barBackground', value: true }).value;
+                barBackground = Settings.register({
+                    name: 'barBackground',
+                    value: true
+                }).value;
             }
 
             Connections {
                 target: Settings
                 function onSettingsChanged() {
                     const s = Settings.settings.find(x => x.name === 'barBackground');
-                    if (s) barRect.barBackground = s.value;
+                    if (s)
+                        barRect.barBackground = s.value;
                 }
             }
 
