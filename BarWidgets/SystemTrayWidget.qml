@@ -80,7 +80,7 @@ Rectangle {
                 property var yValue: topBarSetting ? Styles.marginSm * 5 : -systemTrayMenu.height - Styles.marginMd
                 anchor {
                     item: iconButton
-                    rect.x: iconButton.x - root.width
+                    rect.x:  -systemTrayMenu.width / 2
                     rect.y: yValue
                 }
 
