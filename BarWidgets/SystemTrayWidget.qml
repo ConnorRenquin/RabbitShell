@@ -27,6 +27,10 @@ Rectangle {
     implicitHeight: parent.height
     implicitWidth: widget.implicitWidth + Styles.marginSm * 2
 
+    HoverHandler {
+        id: systemTrayWidgetHover
+    }
+
     RowLayoutPlus {
         id: widget
         anchors.centerIn: parent
@@ -78,6 +82,7 @@ Rectangle {
 
                 property bool topBarSetting: Settings.get('barPosition').value
                 property var yValue: topBarSetting ? Styles.marginSm * 5 : -systemTrayMenu.height - Styles.marginMd
+
                 anchor {
                     item: iconButton
                     rect.x:  -systemTrayMenu.width / 2
@@ -99,8 +104,9 @@ Rectangle {
                 }
 
                 Timer {
-                    interval: 500
-                    running: !hoverHandler.hovered
+                    id: autoHideTimer
+                    interval: 1000
+                    running: !hoverHandler.hovered && !systemTrayWidgetHover.hovered
                     onTriggered: systemTrayMenu.visible = false
                 }
 
