@@ -150,10 +150,10 @@ Rectangle {
                                     id: separatorComponent
                                     Rectangle {
                                         Layout.fillWidth: true
-                                        implicitHeight: 1
+                                        implicitHeight: 2
                                         anchors.centerIn: parent
                                         width: parent.width - Styles.marginSm * 2
-                                        color: Colors.surfaceLighter
+                                        color: theme.containerText
                                     }
                                 }
 
