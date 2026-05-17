@@ -32,7 +32,7 @@ Rectangle {
     Process {
         id: updateConfigs
         running: false
-        command: ["sh", "-c", "/etc/nixos/update-configs.sh"]
+        command: ["sh", "-c", "/etc/nixos/scripts/update-configs.sh"]
         stdout: StdioCollector {
             onStreamFinished: utils.notify({
                 from: Icons.info + " System",
