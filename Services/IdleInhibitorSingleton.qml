@@ -36,4 +36,14 @@ Singleton {
             mask: Region {}
         }
     }
+
+    IdleMonitor {
+        respectInhibitors: true
+        timeout: 600
+        onIsIdleChanged: {
+            if (isIdle) {
+                Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.global(\"quickshell:lockscreen\")' && systemctl suspend"])
+            }
+        }
+    }
 }
