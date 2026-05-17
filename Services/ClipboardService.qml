@@ -5,6 +5,8 @@ import Quickshell.Io
 
 import QtQuick
 
+import qs.Settings
+
 Singleton {
     id: root
 
@@ -16,8 +18,6 @@ Singleton {
         "slots": [],
         "clipboardText": []
     }
-
-    property int maxClipboardEntries: 1000
 
     function removeEntry(index) {
         const newClipboardText = root.clipboardData.clipboardText.filter((_, i) => i !== index);
@@ -176,8 +176,10 @@ Singleton {
             let newClipboardText = [text, ...root.clipboardData.clipboardText];
 
             // Limit the number of entries, removing oldest ones
-            if (newClipboardText.length > root.maxClipboardEntries) {
-                newClipboardText = newClipboardText.slice(0, root.maxClipboardEntries + 1);
+            var clipboardLimit = Settings.get('clipboardLimit').value
+            if (clipboardLimit && newClipboardText.length > root.clipboardLimit) {
+                console.log('hi')
+                newClipboardText = newClipboardText.slice(0, root.clipboardLimit + 1);
             }
 
             root.clipboardData = {

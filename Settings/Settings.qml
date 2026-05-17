@@ -11,6 +11,10 @@ Singleton {
     function init() {
         console.log('Settings -----------------------------------------');
         register({
+            name: 'clipboardLimit',
+            value: 500
+        })
+        register({
             name: 'soundEffectsVolume',
             value: 70
         })
