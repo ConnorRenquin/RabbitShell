@@ -47,8 +47,10 @@ Scope {
 
         onCompleted: result => {
             if (result == PamResult.Success) {
+                SoundEffects.playWakeUp();
                 lockContext.unlocked();
             } else {
+                SoundEffects.playError();
                 lockContext.currentText = "";
                 lockContext.showFailure = true;
             }
