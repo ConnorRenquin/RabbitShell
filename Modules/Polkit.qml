@@ -8,6 +8,7 @@ import QtQuick.Layouts
 
 import qs.Components
 import qs.Settings
+import qs.Services
 
 Loader {
     id: loader
@@ -60,11 +61,22 @@ Loader {
         }
 
         Connections {
-            target: polkitAgent.flow
-            function onIsResponseRequiredChanged() {
+                target: polkitAgent.flow
+                function onFailedChanged() {
+                    if (polkitAgent.flow?.failed) {
+                        SoundEffects.playError();
+                    }
+                }
+                function onIsCompletedChanged() {
+                    if (polkitAgent.flow?.isCompleted) {
+                        SoundEffects.playNotification();
+                    }
+                }
+                function onIsResponseRequiredChanged() {
                 passwordInput.text = "";
-                if (polkitAgent.flow.isResponseRequired)
+                if (polkitAgent.flow.isResponseRequired) {
                     passwordInput.forceActiveFocus();
+                }
             }
         }
 

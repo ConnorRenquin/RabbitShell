@@ -7,8 +7,17 @@ import Quickshell.Io
 Singleton {
     id: root
 
+
     function init() {
         console.log('Settings -----------------------------------------');
+        register({
+            name: 'soundEffectsVolume',
+            value: 70
+        })
+        register({
+            name: 'soundEffectsEnabled',
+            value: true
+        })
     }
 
     property var settings: []

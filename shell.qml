@@ -28,6 +28,7 @@ ShellRoot {
             ClipboardService.init();
             HyprctlClients.init();
             HyprctlMonitors.init();
+            SoundEffects.init();
         });
     }
 }

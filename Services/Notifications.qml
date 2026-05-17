@@ -3,6 +3,8 @@ import Quickshell
 import Quickshell.Services.Notifications
 import QtQuick
 
+import qs.Services
+
 Singleton {
     id: root
 
@@ -41,6 +43,11 @@ Singleton {
         inlineReplySupported: true
         onNotification: notification => {
             notification.tracked = true;
+            if (notification.appName == '') {
+                SoundEffects.playBlip();
+            } else{
+                SoundEffects.playNotification();
+            }
             if (notification.lastGeneration)
                 return;
             root.onNotify(notification);
