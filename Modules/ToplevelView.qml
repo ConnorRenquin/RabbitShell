@@ -225,13 +225,15 @@ Loader {
                 Keys.onReturnPressed: event => {
                     const ctrlHeld = event.modifiers & Qt.ControlModifier;
                     const shiftHeld = event.modifiers & Qt.ShiftModifier;
+                    var lua;
                     if (ctrlHeld) {
-                        Hyprland.dispatch("movetoworkspace " + text);
+                        lua = 'hl.dsp.window.move({ workspace = "' + text + '" })';
                     } else if (shiftHeld) {
-                        Hyprland.dispatch("movetoworkspacesilent " + text);
+                        lua = 'hl.dsp.window.move({ workspace = "' + text + '", silent = true })';
                     } else {
-                        Hyprland.dispatch("workspace " + text);
+                        lua = 'hl.dsp.focus({ workspace = "' + text + '" })';
                     }
+                    Quickshell.execDetached(["hyprctl", "dispatch", lua]);
                     root.active = false;
                 }
             }

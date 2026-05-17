@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import Quickshell
 import Quickshell.Hyprland
 
 import QtQuick
@@ -67,7 +68,7 @@ Rectangle {
             implicitWidth: workspaceIcon.implicitWidth + Styles.marginSm
             radius: modelData?.focused ? Styles.radiusLg : Styles.radiusSm
 
-            onClicked: Hyprland.dispatch(`workspace ${modelData.id}`)
+            onClicked: Quickshell.execDetached(["hyprctl", "dispatch", `hl.dsp.focus({ workspace = "${modelData.id}" })`])
 
             NumberAnimation on radius {
                 duration: 400

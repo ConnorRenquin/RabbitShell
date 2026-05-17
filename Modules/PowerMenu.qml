@@ -80,7 +80,7 @@ Loader {
 
                 PowerMenuButton {
                     text: Icons.logout
-                    onClicked: loader.menuAction("hyprctl dispatch exit")
+                    onClicked: loader.menuAction("hyprctl dispatch 'hl.dsp.exit()'")
                     index: 0
                 }
                 PowerMenuButton {
@@ -90,7 +90,7 @@ Loader {
                 }
                 PowerMenuButton {
                     text: Icons.suspend
-                    onClicked: loader.menuAction("hyprctl dispatch global quickshell:lockscreen && systemctl suspend")
+                    onClicked: loader.menuAction("hyprctl dispatch 'hl.dsp.global(\"quickshell:lockscreen\")' && systemctl suspend")
                     index: 2
                 }
 

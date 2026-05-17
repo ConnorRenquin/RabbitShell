@@ -126,7 +126,6 @@ Loader {
                         }
 
                         onClicked: {
-                            wrapper.modelData.activate();
                             loader.active = false;
                         }
                     }

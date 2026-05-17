@@ -169,11 +169,11 @@ Scope {
 
                         ButtonStyled {
                             text: "󰿅"
-                            onClicked: Quickshell.execDetached(["bash", "-c","hyprctl dispatch exit"])
+                            onClicked: Quickshell.execDetached(["hyprctl", "dispatch", "hl.dsp.exit()"])
                         }
                         ButtonStyled {
                             text: "󰤄"
-                            onClicked: Quickshell.execDetached(["bash", "-c","hyprctl dispatch global quickshell:lockscreen && systemctl suspend"])
+                            onClicked: { Quickshell.execDetached(["hyprctl", "dispatch", 'hl.dsp.global("quickshell:lockscreen")']); Quickshell.execDetached(["systemctl", "suspend"]); }
                         }
 
                         ButtonStyled {

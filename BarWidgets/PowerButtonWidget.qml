@@ -96,7 +96,7 @@ ButtonStyled {
                 spacing: Styles.marginSm
                 PowerMenuButton {
                     text: "󰿅"
-                    onClicked: root.menuAction("hyprctl dispatch exit")
+                    onClicked: root.menuAction("hyprctl dispatch 'hl.dsp.exit()'")
                     index: 0
                 }
                 PowerMenuButton {
@@ -106,7 +106,7 @@ ButtonStyled {
                 }
                 PowerMenuButton {
                     text: "󰤄"
-                    onClicked: root.menuAction("hyprctl dispatch global quickshell:lockscreen && systemctl suspend")
+                    onClicked: root.menuAction("hyprctl dispatch 'hl.dsp.global(\"quickshell:lockscreen\")' && systemctl suspend")
                     index: 2
                 }
 
