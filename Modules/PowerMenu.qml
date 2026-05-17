@@ -21,11 +21,6 @@ Loader {
         loader.active = !loader.active;
     }
 
-    function menuAction(command) {
-        loader.active = false;
-        Quickshell.execDetached(["sh", "-c", command]);
-    }
-
     Component.onCompleted: PatchBay.openPowerMenu.connect(toggle)
 
     GlobalShortcut {
@@ -80,7 +75,7 @@ Loader {
 
                 PowerMenuButton {
                     text: Icons.logout
-                    onClicked: loader.menuAction("hyprctl dispatch 'hl.dsp.exit()'")
+                    onClicked: System.logout()
                     index: 0
                 }
                 PowerMenuButton {
@@ -90,25 +85,25 @@ Loader {
                 }
                 PowerMenuButton {
                     text: Icons.suspend
-                    onClicked: loader.menuAction("hyprctl dispatch 'hl.dsp.global(\"quickshell:lockscreen\")' && systemctl suspend")
+                    onClicked: System.suspend()
                     index: 2
                 }
 
                 PowerMenuButton {
                     text: Icons.reboot
-                    onClicked: loader.menuAction("systemctl reboot || loginctl reboot")
+                    onClicked: System.reboot()
                     index: 3
                 }
 
                 PowerMenuButton {
                     text: Icons.power
-                    onClicked: loader.menuAction("systemctl poweroff || loginctl poweroff")
+                    onClicked: System.shutdown()
                     index: 4
                 }
 
                 PowerMenuButton {
                     text: Icons.firmware
-                    onClicked: loader.menuAction("systemctl reboot --firmware-setup || loginctl reboot --firmware-setup")
+                    onClicked: System.firmware()
                     index: 5
                 }
             }

@@ -168,31 +168,41 @@ Scope {
                                 text: ""
                             }
                         }
-
-                        ButtonStyled {
-                            text: "󰿅"
-                            onClicked: Quickshell.execDetached(["hyprctl", "dispatch", "hl.dsp.exit()"])
-                        }
-                        ButtonStyled {
-                            text: "󰤄"
-                            onClicked: { Quickshell.execDetached(["hyprctl", "dispatch", 'hl.dsp.global("quickshell:lockscreen")']); Quickshell.execDetached(["systemctl", "suspend"]); }
-                        }
-
-                        ButtonStyled {
-                            text: ""
-                            onClicked: Quickshell.execDetached(["bash", "-c","reboot now"])
-                        }
-
-                        ButtonStyled {
-                            text: ""
-                            onClicked: Quickshell.execDetached(["bash", "-c","shutdown now"])
-                        }
                     }
 
                     TextStyled {
                         id: failureText
                         visible: lockContext.showFailure
                         text: "Incorrect password"
+                    }
+                }
+
+                ColumnLayout {
+                    anchors.bottom: lockScreenBackground.bottom
+                    anchors.right: lockScreenBackground.right
+                    anchors.margins: Styles.marginSm
+
+                    implicitWidth: 45
+                    implicitHeight: 300
+                    ButtonStyled {
+                        text: "󰿅"
+                        onClicked: System.logout()
+                        Layout.fillWidth: true
+                    }
+                    ButtonStyled {
+                        text: "󰤄"
+                        onClicked: System.suspend()
+                        Layout.fillWidth: true
+                    }
+                    ButtonStyled {
+                        text: ""
+                        onClicked: System.reboot()
+                        Layout.fillWidth: true
+                    }
+                    ButtonStyled {
+                        text: ""
+                        onClicked: System.shutdown()
+                        Layout.fillWidth: true
                     }
                 }
             }
