@@ -45,13 +45,8 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: Styles.marginSm
         TextStyled {
-            text: { Settings.settings; return Settings.get('welcomeMessage')?.value ?? 'Hello world!' }
+            text: 'Hey there!'
             font.pointSize: Styles.textLg
-
-            Component.onCompleted: Settings.register({
-                name: 'welcomeMessage',
-                value: 'Hello world!'
-            })
         }
         ColorPalette{
             Layout.fillWidth: true
