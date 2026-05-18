@@ -39,12 +39,6 @@ Loader {
             color: Colors.surface
             focus: true
 
-            Keys.onPressed: event => {
-                if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
-                    loader.active = false;
-                }
-            }
-
             RowLayout {
                 id: mainLayout
                 anchors.fill: parent
