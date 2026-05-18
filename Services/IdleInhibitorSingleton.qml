@@ -41,10 +41,10 @@ Singleton {
 
     IdleMonitor {
         respectInhibitors: true
-        timeout: 300
+        timeout: 60
         onIsIdleChanged: {
             if (isIdle) {
-                System.lock()
+                PatchBay.lockScreen()
                 suspendTimer.running = true;
                 suspendTimer.restart()
             } else {
@@ -55,7 +55,7 @@ Singleton {
     Timer {
         id: suspendTimer
         running: false
-        interval: 300 * 1000
+        interval: 120 * 1000
         onTriggered: System.suspend()
     }
 }
