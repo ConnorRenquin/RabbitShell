@@ -17,6 +17,10 @@ Rectangle {
         id: utils
     }
 
+    Component.onCompleted: {
+        System.loadSystemInfo();
+    }
+
     Process {
         id: update
         running: false
@@ -44,16 +48,69 @@ Rectangle {
     ColumnLayoutPlus {
         anchors.fill: parent
         anchors.margins: Styles.marginSm
-        TextStyled {
-            text: 'Hey there!'
-            font.pointSize: Styles.textLg
-        }
-        ColorPalette{
+
+        Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            color: theme.mainContainer
+            radius: Styles.radiusMd
+
+            visible: System.systemInfo !== null
+
+            ColumnLayout {
+                id: infoGrid
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                    right: parent.right
+                    margins: Styles.marginSm
+                }
+
+                component InformationGroup: ColumnLayout {
+                    id: informationGroup
+                    property string title
+                    property string info
+                    Layout.fillWidth: tue
+                    TextStyled {
+                        text: informationGroup.title
+                        font.pointSize: Styles.textLg
+                    }
+                    TextStyled {
+                        text: informationGroup.info
+                    }
+
+                }
+
+                InformationGroup {
+                    title: "Host"
+                    info: System.systemInfo?.hostName + " — " + (System.systemInfo?.hostModel || "")
+                }
+
+                InformationGroup {
+                    title: "OS"
+                    info: System.systemInfo?.os || ""
+                }
+
+                InformationGroup {
+                    title: "Kernel"
+                    info: System.systemInfo?.kernel || ""
+                }
+
+                InformationGroup {
+                    title: "CPU"
+                    info: System.systemInfo?.cpu || ""
+                }
+
+                InformationGroup {
+                    title: "Packages"
+                    info: System.systemInfo?.packages || ""
+                }
+            }
         }
-        Item {
-            Layout.fillHeight: true
+
+        ColorPalette {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
         }
         RowLayout {
             Layout.fillWidth: true
