@@ -34,45 +34,24 @@ Loader {
             }
         }
 
-        component Spacer: Rectangle {
-            Layout.preferredWidth: 300
-            Layout.fillHeight: true
-            radius: Styles.radiusLg
-            color: Colors.onError
-            Timer {
-                repeat: true
-                running: true
-                interval: 1000
-                onTriggered: spacerText.visible = !spacerText.visible
-            }
-            TextStyled {
-                id: spacerText
-
-                anchors.centerIn: parent
-                text: Icons.warning
-                color: Colors.error
-                font.pointSize: 160
-            }
-        }
-
         HyprlandFocusGrab {
             active: loader.active
             windows: [root]
         }
 
         Connections {
-                target: polkitAgent.flow
-                function onFailedChanged() {
-                    if (polkitAgent.flow?.failed) {
-                        SoundEffects.playError();
-                    }
+            target: polkitAgent.flow
+            function onFailedChanged() {
+                if (polkitAgent.flow?.failed) {
+                    SoundEffects.playError();
                 }
-                function onIsCompletedChanged() {
-                    if (polkitAgent.flow?.isCompleted) {
-                        SoundEffects.playNotification();
-                    }
+            }
+            function onIsCompletedChanged() {
+                if (polkitAgent.flow?.isCompleted) {
+                    SoundEffects.playNotification();
                 }
-                function onIsResponseRequiredChanged() {
+            }
+            function onIsResponseRequiredChanged() {
                 passwordInput.text = "";
                 if (polkitAgent.flow.isResponseRequired) {
                     passwordInput.forceActiveFocus();
@@ -111,7 +90,7 @@ Loader {
                                 id: polkitMessage
                                 Layout.fillWidth: true
                                 text: polkitAgent.flow?.message || null
-                                wrapMode: Text.WrapAnywhere
+                                wrapMode: Text.WordWrap
                             }
                             Rectangle {
                                 id: errorIndicator
@@ -120,12 +99,14 @@ Loader {
                                 radius: Styles.radiusLg
                                 color: {
                                     if (polkitAgent.flow?.failed) {
+                                        incorrectText.visible = true;
                                         return "red";
                                     } else if (polkitAgent.flow?.isSuccessful) {
                                         return Colors.primary;
                                     } else {
                                         return Colors.errorDarker;
                                     }
+                                    incorrectText.visible = false;
                                 }
                             }
                         }
@@ -137,19 +118,29 @@ Loader {
                         Layout.preferredHeight: 50
                         color: Colors.background
                         radius: Styles.radiusMd
-                        TextFieldStyled {
-                            id: passwordInput
-                            echoMode: polkitAgent.flow?.responseVisible ? TextInput.Normal : TextInput.Password
+                        RowLayout {
                             anchors.fill: parent
-                            placeholderText: "Password"
-                            anchors.margins: Styles.marginSm
-                            selectByMouse: true
-                            onAccepted: {
-                                if (polkitAgent.flow && (passwordInput.text.length > 0 || !polkitAgent.flow.isResponseRequired)) {
-                                    polkitAgent.flow.submit(passwordInput.text);
-                                    passwordInput.text = "";
-                                    passwordInput.forceActiveFocus();
+                            anchors.margins: Styles.marginXS
+                            TextFieldStyled {
+                                id: passwordInput
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                echoMode: polkitAgent.flow?.responseVisible ? TextInput.Normal : TextInput.Password
+                                placeholderText: "Password"
+                                selectByMouse: true
+                                onAccepted: {
+                                    if (polkitAgent.flow && (passwordInput.text.length > 0 || !polkitAgent.flow.isResponseRequired)) {
+                                        polkitAgent.flow.submit(passwordInput.text);
+                                        passwordInput.text = "";
+                                        passwordInput.forceActiveFocus();
+                                    }
                                 }
+                            }
+                            TextStyled {
+                                id: incorrectText
+                                Layout.preferredWidth: implicitWidth + Styles.marginSm
+                                visible: false
+                                text: '  INCORRECT  '
                             }
                         }
                     }
@@ -179,7 +170,25 @@ Loader {
                     }
                 }
             }
-            Spacer {}
+            Rectangle {
+                Layout.preferredWidth: 300
+                Layout.fillHeight: true
+                radius: Styles.radiusLg
+                color: Colors.onError
+                Timer {
+                    repeat: true
+                    running: true
+                    interval: 1000
+                    onTriggered: spacerText.visible = !spacerText.visible
+                }
+                TextStyled {
+                    id: spacerText
+                    anchors.centerIn: parent
+                    text: Icons.warning
+                    color: Colors.error
+                    font.pointSize: 160
+                }
+            }
         }
     }
 }
