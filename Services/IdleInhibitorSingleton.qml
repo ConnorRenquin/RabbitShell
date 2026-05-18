@@ -30,7 +30,7 @@ Singleton {
 
     IdleInhibitor {
         id: inhibitor
-        enabled: true
+        enabled: false
         window: PanelWindow {
             implicitWidth: 0
             implicitHeight: 0
