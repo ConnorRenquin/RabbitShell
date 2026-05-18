@@ -52,10 +52,6 @@ Rectangle {
         property bool topBarSetting: Settings.get('barPosition').value
         property var yValue: topBarSetting ? albumArt.height + Styles.marginSm : -430
 
-        Component.onCompleted: {
-            console.log('height' + root.implicitHeight)
-        }
-
         anchor {
             item: albumArt
             rect.x: albumArt.x - root.width
