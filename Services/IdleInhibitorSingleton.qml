@@ -6,6 +6,8 @@ import Quickshell.Wayland
 
 import QtQuick
 
+import qs.Services
+
 Singleton {
     id: root
 
@@ -39,11 +41,21 @@ Singleton {
 
     IdleMonitor {
         respectInhibitors: true
-        timeout: 600
+        timeout: 300
         onIsIdleChanged: {
             if (isIdle) {
-                Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.global(\"quickshell:lockscreen\")' && systemctl suspend"])
+                System.lock()
+                suspendTimer.running = true;
+                suspendTimer.restart()
+            } else {
+                suspendTimer.running = false;
             }
         }
+    }
+    Timer {
+        id: suspendTimer
+        running: false
+        interval: 300 * 1000
+        onTriggered: System.suspend()
     }
 }
