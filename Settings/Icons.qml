@@ -24,7 +24,8 @@ Singleton {
     readonly property string edit: ""
     readonly property string copy: ""
     readonly property string trash: ""
-    readonly property string emoji: "ʕ·͡ᴥ·ʔ"
+    readonly property string emoji: "󰞅"
+    readonly property string warning: ""
 
     // Power menu
     readonly property string logout: "󰿅"

@@ -49,7 +49,7 @@ Loader {
                 id: spacerText
 
                 anchors.centerIn: parent
-                text: ''
+                text: Icons.warning
                 color: Colors.error
                 font.pointSize: 160
             }

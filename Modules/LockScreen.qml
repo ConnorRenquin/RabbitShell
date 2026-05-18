@@ -185,22 +185,22 @@ Scope {
                     implicitWidth: 45
                     implicitHeight: 300
                     ButtonStyled {
-                        text: "󰿅"
+                        text: Icons.logout
                         onClicked: System.logout()
                         Layout.fillWidth: true
                     }
                     ButtonStyled {
-                        text: "󰤄"
+                        text: Icons.suspend
                         onClicked: System.suspend()
                         Layout.fillWidth: true
                     }
                     ButtonStyled {
-                        text: ""
+                        text: Icons.reboot
                         onClicked: System.reboot()
                         Layout.fillWidth: true
                     }
                     ButtonStyled {
-                        text: ""
+                        text: Icons.power
                         onClicked: System.shutdown()
                         Layout.fillWidth: true
                     }
