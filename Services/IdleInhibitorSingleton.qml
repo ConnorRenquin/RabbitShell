@@ -6,10 +6,14 @@ import Quickshell.Wayland
 
 import QtQuick
 
-import qs.Services
+import qs.Settings
 
 Singleton {
     id: root
+
+    property var lockTimeout: Settings.get('lockTimeout')?.value ?? 60
+    property var suspendTimeout: Settings.get('suspendTimeout')?.value ?? 120
+    property bool inhibitIdle: Settings.get('inhibitIdle')?.value ?? false
 
     function init() {
         console.log('IdleInhibitorSingleton -----------------------------------------');
@@ -20,7 +24,11 @@ Singleton {
     }
 
     function toggle() {
-        inhibitor.enabled = !inhibitor.enabled;
+        var currentStatus = Settings.get('inhibitIdle').value;
+        Settings.change({
+            name: 'inhibitIdle',
+            value: !currentStatus
+        });
     }
 
     GlobalShortcut {
@@ -30,7 +38,7 @@ Singleton {
 
     IdleInhibitor {
         id: inhibitor
-        enabled: false
+        enabled: root.inhibitIdle;
         window: PanelWindow {
             implicitWidth: 0
             implicitHeight: 0
@@ -41,7 +49,7 @@ Singleton {
 
     IdleMonitor {
         respectInhibitors: true
-        timeout: 60
+        timeout: root.lockTimeout
         onIsIdleChanged: {
             if (isIdle) {
                 PatchBay.lockScreen()
@@ -55,7 +63,7 @@ Singleton {
     Timer {
         id: suspendTimer
         running: false
-        interval: 120 * 1000
+        interval: root.suspendTimeout * 1000
         onTriggered: System.suspend()
     }
 }

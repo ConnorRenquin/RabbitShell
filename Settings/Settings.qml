@@ -22,6 +22,18 @@ Singleton {
             name: 'soundEffectsEnabled',
             value: true
         })
+        register({
+            name: 'inhibitIdle',
+            value:  false
+        })
+        register({
+            name: 'lockTimeout',
+            value:  60
+        })
+        register({
+            name: 'suspendTimeout',
+            value: 120
+        })
     }
 
     property var settings: []
