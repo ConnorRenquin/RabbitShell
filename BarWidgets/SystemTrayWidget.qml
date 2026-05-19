@@ -214,7 +214,7 @@ Rectangle {
 
                                             TextStyled {
                                                 id: checkBox
-                                                text: menuLoader?.modelData?.checkState === Qt.Checked ? Icons.checkboxChecked : Icons.checkboxUnChecked
+                                                text: menuLoader?.modelData?.checkState === Qt.Checked ? Icons.checkBoxChecked : Icons.checkBoxUnChecked
                                                 font.pointSize: Styles.textSm
                                                 color: theme.main
                                                 visible: menuLoader?.modelData?.buttonType !== 0
