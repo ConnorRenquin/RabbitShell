@@ -68,7 +68,7 @@ Rectangle {
             PopupWindow {
                 id: systemTrayMenu
 
-                implicitHeight: menuContent.implicitHeight + Styles.marginSm * 2
+                implicitHeight: menuContent.implicitHeight + Styles.marginXS * 2
                 implicitWidth: 200 + Styles.marginSm * 2
 
                 color: "transparent"
@@ -105,7 +105,7 @@ Rectangle {
 
                 Timer {
                     id: autoHideTimer
-                    interval: 1000
+                    interval: 500
                     running: !hoverHandler.hovered && !systemTrayWidgetHover.hovered
                     onTriggered: systemTrayMenu.visible = false
                 }
@@ -120,23 +120,28 @@ Rectangle {
                     ColumnLayout {
                         id: menuContent
                         anchors.fill: parent
-                        anchors.margins: Styles.marginSm
+                        anchors.margins: Styles.marginXS
                         spacing: 4
+
+                        readonly property var buttonHeight: 28
 
                         ButtonStyled {
                             id: backButton
                             visible: systemTrayMenu.currentMenu !== null
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 30
-                            text: '< back'
+                            textAlignment: Text.AlignLeft
+                            implicitHeight: menuContent.buttonHeight
+                            text: Icons.back + ' Back'
+                            pointSize: Styles.textSm
                             onClicked: systemTrayMenu.currentMenu = null
+                            defaultColor: theme.mainContainer
                         }
 
                         Rectangle {
                             visible: systemTrayMenu.currentMenu !== null
                             Layout.fillWidth: true
-                            implicitHeight: 1
-                            color: Colors.surfaceLighter
+                            implicitHeight: 2
+                            color: theme.main
                         }
 
                         ColumnLayoutPlus {
@@ -155,80 +160,72 @@ Rectangle {
                                 Component {
                                     id: separatorComponent
                                     Rectangle {
-                                        Layout.fillWidth: true
                                         implicitHeight: 2
-                                        anchors.centerIn: parent
-                                        width: parent.width - Styles.marginSm * 2
-                                        color: theme.containerText
+                                        color: theme.main
                                     }
                                 }
 
                                 Component {
                                     id: menuItemComponent
-                                    Item {
-                                        id: menuItemWrapper
-                                        implicitWidth: menuButton.implicitWidth
-                                        implicitHeight: menuButton.implicitHeight
 
-                                        ButtonStyled {
-                                            id: menuButton
+                                    ButtonStyled {
+                                        id: menuButton
+
+                                        implicitHeight: menuContent.buttonHeight
+                                        enabled: menuLoader?.modelData?.enabled ?? false
+                                        defaultColor: theme.mainContainer
+
+                                        onClicked: {
+                                            if (!menuLoader.modelData.enabled)
+                                                return;
+                                            if (menuLoader.modelData.hasChildren) {
+                                                systemTrayMenu.currentMenu = menuLoader.modelData;
+                                            } else {
+                                                menuLoader.modelData.triggered();
+                                                systemTrayMenu.visible = false;
+                                            }
+                                        }
+
+                                        RowLayout {
+                                            id: gutterIcons
+
+                                            spacing: Styles.marginSm
 
                                             anchors.fill: parent
+                                            anchors.centerIn: parent
+                                            anchors.leftMargin: Styles.marginSm
+                                            anchors.rightMargin: Styles.marginSm
 
-                                            implicitWidth: Math.max(180, itemText.implicitWidth + Styles.marginSm * 2)
-                                            implicitHeight: itemText.implicitHeight + Styles.marginSm
-
-                                            enabled: menuLoader?.modelData?.enabled ?? false
-
-                                            onClicked: {
-                                                if (!menuLoader.modelData.enabled)
-                                                    return;
-                                                if (menuLoader.modelData.hasChildren) {
-                                                    systemTrayMenu.currentMenu = menuLoader.modelData;
-                                                } else {
-                                                    menuLoader.modelData.triggered();
-                                                    systemTrayMenu.visible = false;
-                                                }
+                                            IconImage {
+                                                visible: menuLoader?.modelData?.icon ?? false
+                                                Layout.preferredWidth: 16
+                                                Layout.preferredHeight: 16
+                                                source: menuLoader?.modelData?.icon ?? ""
                                             }
 
-                                            RowLayout {
-                                                id: gutterIcons
+                                            TextStyled {
+                                                id: itemText
+                                                text: menuLoader?.modelData?.text || ""
+                                                font.pointSize: Styles.textSm
+                                                Layout.fillWidth: true
+                                                horizontalAlignment: Text.AlignLeft
+                                                color: theme.main
+                                            }
 
-                                                spacing: Styles.marginSm
+                                            TextStyled {
+                                                id: checkBox
+                                                text: menuLoader?.modelData?.checkState === Qt.Checked ? Icons.checkboxChecked : Icons.checkboxUnChecked
+                                                font.pointSize: Styles.textSm
+                                                color: theme.main
+                                                visible: menuLoader?.modelData?.buttonType !== 0
+                                            }
 
-                                                anchors.fill: parent
-                                                anchors.margins: Styles.marginSm / 2
-
-                                                IconImage {
-                                                    visible: menuLoader?.modelData?.icon ?? false
-                                                    Layout.preferredWidth: 16
-                                                    Layout.preferredHeight: 16
-                                                    source: menuLoader?.modelData?.icon ?? ""
-                                                }
-
-                                                TextStyled {
-                                                    id: itemText
-                                                    text: menuLoader?.modelData?.text || ""
-                                                    font.pointSize: Styles.textSm
-                                                    Layout.fillWidth: true
-                                                    horizontalAlignment: Text.AlignLeft
-                                                    color: menuLoader?.modelData?.enabled ? Colors.onSurface : Colors.surfaceLighter
-                                                }
-
-                                                TextStyled {
-                                                    id: checkBox
-                                                    text: menuLoader?.modelData?.checkState === Qt.Checked ? "✓" : ""
-                                                    font.pointSize: Styles.textSm
-                                                    color: theme.main
-                                                    visible: menuLoader?.modelData?.buttonType !== 0
-                                                }
-
-                                                TextStyled {
-                                                    id: submenuArrow
-                                                    text: "›"
-                                                    font.pointSize: Styles.textSm
-                                                    visible: menuLoader?.modelData?.hasChildren ?? false
-                                                }
+                                            TextStyled {
+                                                id: submenuArrow
+                                                text: Icons.rightChevron
+                                                font.pointSize: Styles.textSm
+                                                visible: menuLoader?.modelData?.hasChildren ?? false
+                                                color: theme.main
                                             }
                                         }
                                     }

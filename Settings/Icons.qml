@@ -26,6 +26,11 @@ Singleton {
     readonly property string trash: ""
     readonly property string emoji: "󰞅"
     readonly property string warning: ""
+    readonly property string back: "󰭜"
+    readonly property string rightChevron: ""
+
+    readonly property string checkBoxChecked: "󰡖"
+    readonly property string checkBoxUnChecked: ""
 
     // Power menu
     readonly property string logout: "󰿅"
