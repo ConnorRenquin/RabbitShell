@@ -47,24 +47,40 @@ Loader {
             onCleared: loader.active = false
         }
 
-        Keys.onPressed: event => {
-            if (event.key === Qt.Key_Escape) {
-                canvas.clearCanvas();
-                event.accepted = true;
-            }
-        }
 
         // Canvas for drawing
         Canvas {
             id: canvas
             anchors.fill: parent
 
+            focus: true
+
             property var shapes: []
             property var currentShape: null
 
-            property color paintColor: "#E67E80" // Default to soft red/coral
+            property color paintColor: "#E67E80"
             property int paintWidth: 6
-            property string paintMode: "draw" // "draw" (freehand), "line", "box", "erase"
+            property string paintMode: "draw"
+
+            function clearCanvas() {
+                shapes = [];
+                currentShape = null;
+                requestPaint();
+            }
+
+            function undo() {
+                if (shapes.length > 0) {
+                    shapes.pop();
+                    requestPaint();
+                }
+            }
+
+            Keys.onPressed: event => {
+                if (event.key === Qt.Key_Escape) {
+                    loader.active = false;
+                    event.accepted = true;
+                }
+            }
 
             onPaint: {
                 var ctx = getContext("2d");
@@ -113,19 +129,6 @@ Loader {
                     drawShape(currentShape);
                 }
             }
-
-            function clearCanvas() {
-                shapes = [];
-                currentShape = null;
-                requestPaint();
-            }
-
-            function undo() {
-                if (shapes.length > 0) {
-                    shapes.pop();
-                    requestPaint();
-                }
-            }
         }
 
         // MouseArea covering the entire screen to capture drawing gestures
@@ -143,7 +146,7 @@ Loader {
                     canvas.currentShape = {
                         type: canvas.paintMode,
                         points: [{ x: mouse.x, y: mouse.y }],
-                        color: canvas.paintColor,
+                        color: canvas.paintColor.toString(),
                         width: canvas.paintWidth
                     };
                 } else if (canvas.paintMode === "line" || canvas.paintMode === "box") {
@@ -153,7 +156,7 @@ Loader {
                         startY: mouse.y,
                         endX: mouse.x,
                         endY: mouse.y,
-                        color: canvas.paintColor,
+                        color: canvas.paintColor.toString(),
                         width: canvas.paintWidth
                     };
                 }
@@ -181,7 +184,6 @@ Loader {
             }
         }
 
-        // Floating Toolbar
         Rectangle {
             id: toolbar
             anchors.horizontalCenter: parent.horizontalCenter
@@ -192,7 +194,12 @@ Loader {
             color: Colors.surface
             radius: Styles.radiusSm
 
-            // Prevent clicks on the toolbar from drawing on the canvas
+            component Spacer: Rectangle {
+                Layout.fillHeight: true
+                Layout.preferredWidth: 1
+                color: Colors.outlineVariant
+            }
+
             MouseArea {
                 anchors.fill: parent
                 propagateComposedEvents: false
@@ -204,11 +211,8 @@ Loader {
                 anchors.fill: parent
                 anchors.margins: Styles.marginSm
                 spacing: Styles.marginMd
-
-                // Colors
                 RowLayout {
                     spacing: Styles.marginSm
-
                     Repeater {
                         model: [
                             { color: "#E67E80", name: "Red" },
@@ -217,7 +221,6 @@ Loader {
                             { color: "#DBBC7F", name: "Yellow" },
                             { color: "#FFFFFF", name: "White" }
                         ]
-
                         delegate: Rectangle {
                             id: colorCircle
                             required property var modelData
@@ -225,9 +228,6 @@ Loader {
                             height: 24
                             radius: 12
                             color: colorCircle.modelData.color
-                            border.color: canvas.paintColor === colorCircle.modelData.color && canvas.paintMode !== "erase" ? Colors.onSurface : "transparent"
-                            border.width: 2
-
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
@@ -242,14 +242,8 @@ Loader {
                     }
                 }
 
-                // Divider
-                Rectangle {
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: 1
-                    color: Colors.outlineVariant
-                }
+                Spacer{}
 
-                // Brush Sizes
                 RowLayout {
                     spacing: Styles.marginSm
 
@@ -276,21 +270,15 @@ Loader {
                     }
                 }
 
-                // Divider
-                Rectangle {
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: 1
-                    color: Colors.outlineVariant
-                }
+                Spacer {}
 
                 // Tools (Pen, Line, Box, Eraser)
                 RowLayout {
                     spacing: Styles.marginSm
 
                     ButtonStyled {
-                        implicitWidth: 50
                         implicitHeight: 30
-                        text: "Pen"
+                        text: Icons.pen
                         isFocused: canvas.paintMode === "draw"
                         defaultColor: canvas.paintMode === "draw" ? Colors.primary : Colors.surfaceVariant
                         textColor: canvas.paintMode === "draw" ? Colors.onPrimary : Colors.onSurface
@@ -298,9 +286,8 @@ Loader {
                     }
 
                     ButtonStyled {
-                        implicitWidth: 55
                         implicitHeight: 30
-                        text: "Line"
+                        text: Icons.line
                         isFocused: canvas.paintMode === "line"
                         defaultColor: canvas.paintMode === "line" ? Colors.primary : Colors.surfaceVariant
                         textColor: canvas.paintMode === "line" ? Colors.onPrimary : Colors.onSurface
@@ -308,9 +295,8 @@ Loader {
                     }
 
                     ButtonStyled {
-                        implicitWidth: 50
                         implicitHeight: 30
-                        text: "Box"
+                        text: Icons.box
                         isFocused: canvas.paintMode === "box"
                         defaultColor: canvas.paintMode === "box" ? Colors.primary : Colors.surfaceVariant
                         textColor: canvas.paintMode === "box" ? Colors.onPrimary : Colors.onSurface
@@ -318,9 +304,8 @@ Loader {
                     }
 
                     ButtonStyled {
-                        implicitWidth: 70
                         implicitHeight: 30
-                        text: "Eraser"
+                        text: Icons.eraser
                         isFocused: canvas.paintMode === "erase"
                         defaultColor: canvas.paintMode === "erase" ? Colors.primary : Colors.surfaceVariant
                         textColor: canvas.paintMode === "erase" ? Colors.onPrimary : Colors.onSurface
@@ -328,39 +313,31 @@ Loader {
                     }
                 }
 
-                // Divider
-                Rectangle {
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: 1
-                    color: Colors.outlineVariant
-                }
+                Spacer {}
 
-                // Actions (Undo, Clear, Close)
                 RowLayout {
+                    id: actionsRow
                     spacing: Styles.marginSm
 
                     ButtonStyled {
-                        implicitWidth: 60
                         implicitHeight: 30
-                        text: "Undo"
+                        text: Icons.undo
                         defaultColor: Colors.surfaceVariant
                         textColor: Colors.onSurface
                         onClicked: canvas.undo()
                     }
 
                     ButtonStyled {
-                        implicitWidth: 60
                         implicitHeight: 30
-                        text: "Clear"
+                        text: Icons.trash
                         defaultColor: Colors.surfaceVariant
                         textColor: Colors.onSurface
                         onClicked: canvas.clearCanvas()
                     }
 
                     ButtonStyled {
-                        implicitWidth: 70
                         implicitHeight: 30
-                        text: "Close"
+                        text: Icons.close
                         defaultColor: Colors.error
                         textColor: Colors.onError
                         onClicked: loader.active = false

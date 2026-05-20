@@ -28,9 +28,15 @@ Singleton {
     readonly property string warning: ""
     readonly property string back: "󰭜"
     readonly property string rightChevron: ""
+    readonly property string undo: ""
 
     readonly property string checkBoxChecked: "󰡖"
     readonly property string checkBoxUnChecked: ""
+
+    readonly property string pen: ""
+    readonly property string eraser: ""
+    readonly property string box: "󰙟"
+    readonly property string line: "󰕞"
 
     // Power menu
     readonly property string logout: "󰿅"
