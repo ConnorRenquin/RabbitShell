@@ -8,34 +8,46 @@ import qs.Services
 
 Rectangle {
     id: root
-
-    implicitWidth: contentRow.implicitWidth + Styles.marginSm * 2
     radius: Styles.radiusSm
-    color: Colors.surface
+    color: theme.background
 
-    Layout.fillHeight: true
+    Themer {
+        id: theme
+        settingName: 'clockColor'
+    }
+
+    implicitWidth: contentRow.implicitWidth + Styles.marginSm * 3
 
     RowLayout {
         id: contentRow
-        anchors.centerIn: parent
         spacing: Styles.marginSm
+        anchors.centerIn: parent
+
+        property int aWidth: 150
 
         TextStyled {
             id: clock
             text: Time.getSymbol() + " " + Time.getTime()
-            horizontalAlignment: Text.AlignRight
+            Layout.preferredWidth: contentRow.aWidth
+            horizontalAlignment: Text.AlignHCenter
         }
 
-        ButtonStyled {
-            text: Icons.os
-            pointSize: Styles.textMd + Styles.marginXS
-            onClicked: mouse => {
-                if (mouse.button === Qt.LeftButton) {
-                    PatchBay.openAppLauncher();
-                } else if (mouse.button === Qt.MiddleButton) {
-                    PatchBay.openPowerMenu();
-                } else if (mouse.button === Qt.RightButton) {
-                    PatchBay.openMixer();
+        Item {
+            Layout.fillHeight: true
+            Layout.preferredWidth: 40
+            ButtonStyled {
+                id: button
+                text: Icons.os
+                anchors.fill: parent
+                defaultColor: theme.foreground
+                onClicked: mouse => {
+                    if (mouse.button === Qt.LeftButton) {
+                        PatchBay.openAppLauncher();
+                    } else if (mouse.button === Qt.MiddleButton) {
+                        PatchBay.openPowerMenu();
+                    } else if (mouse.button === Qt.RightButton) {
+                        PatchBay.openMixer();
+                    }
                 }
             }
         }
@@ -43,7 +55,8 @@ Rectangle {
         TextStyled {
             id: date
             text: Time.date + " 󰃭"
-            horizontalAlignment: Text.AlignLeft
+            Layout.preferredWidth: contentRow.aWidth
+            horizontalAlignment: Text.AlignHCenter
         }
     }
 }

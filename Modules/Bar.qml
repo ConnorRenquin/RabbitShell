@@ -84,19 +84,16 @@ Variants {
                     monitorName: root.modelData.name
                 }
                 WindowTitleWidget {}
-            }
-            BarRow {
-                id: centerGroup
-                anchors.centerIn: parent
                 BarButton {
                     id: notificationsButton
                     visible: Notifications.notifications.values.length > 0
                     text: Icons.notificationBell + ' ' + Notifications.notifications.values.length
                     onClicked: PatchBay.openNotificationsManager()
                 }
-                ClockWidget {
-                    Layout.fillHeight: true
-                }
+            }
+            ClockWidget {
+                anchors.centerIn: parent
+                implicitHeight: parent.height
             }
             BarRow {
                 id: rightGroup
@@ -105,7 +102,6 @@ Variants {
                     Layout.fillHeight: true
                 }
                 SystemTrayWidget {}
-                IdleInhibitorWidget {}
                 BatteryWidget {}
             }
         }
