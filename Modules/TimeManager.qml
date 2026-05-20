@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Io
 
 import QtQuick
 import QtQuick.Layouts
@@ -70,6 +71,7 @@ FloatingWindowPlus {
 
             timersModel.append({ "duration": totalSeconds });
             console.log("Added timer to model, timersModel count:", timersModel.count);
+            saveTimers();
         } else {
             console.log("Failed to create timerInstance!");
         }
@@ -82,6 +84,113 @@ FloatingWindowPlus {
             activeTimers.splice(index, 1);
             activeTimers = [...activeTimers];
             timersModel.remove(index);
+            saveTimers();
+        }
+    }
+
+    function saveTimers() {
+        let timersData = [];
+        for (let i = 0; i < root.activeTimers.length; i++) {
+            let t = root.activeTimers[i];
+            timersData.push({
+                duration: t.duration,
+                remaining: t.remaining,
+                paused: t.paused,
+                running: t.running,
+                savedAt: Date.now()
+            });
+        }
+        persistentTimers.setText(JSON.stringify({
+            timers: timersData
+        }, null, 2));
+    }
+
+    // Periodic save for running timers
+    Timer {
+        interval: 5000 // 5 seconds
+        running: root.activeTimers.length > 0
+        repeat: true
+        onTriggered: saveTimers()
+    }
+
+    FileView {
+        id: persistentTimers
+        path: Qt.resolvedUrl('../Settings/.data/timers.json')
+        blockLoading: false
+
+        onLoaded: {
+            try {
+                const parsed = JSON.parse(persistentTimers.text());
+                if (parsed.timers && parsed.timers.length > 0) {
+                    let now = Date.now();
+                    for (let i = 0; i < parsed.timers.length; i++) {
+                        let savedTimer = parsed.timers[i];
+                        let remaining = savedTimer.remaining;
+
+                        if (savedTimer.running && !savedTimer.paused) {
+                            let elapsedMs = now - savedTimer.savedAt;
+                            let elapsedSecs = Math.floor(elapsedMs / 1000);
+                            remaining -= elapsedSecs;
+                        }
+
+                        if (remaining > 0) {
+                            let timerInstance = timerPlusComponent.createObject(root, {
+                                duration: savedTimer.duration,
+                                remaining: remaining,
+                                running: savedTimer.running,
+                                paused: savedTimer.paused
+                            });
+
+                            if (timerInstance) {
+                                timerInstance.triggered.connect(() => {
+                                    Quickshell.execDetached(['notify-send', '-a', 'Timer', 'Timer Finished!']);
+                                    SoundEffects.playUrgent();
+                                    removeTimerInstance(timerInstance);
+                                });
+
+                                if (savedTimer.running && !savedTimer.paused) {
+                                    timerInstance.internalTimer.start();
+                                }
+
+                                root.activeTimers.push(timerInstance);
+                                timersModel.append({ "duration": savedTimer.duration });
+                            }
+                        }
+                    }
+                    root.activeTimers = [...root.activeTimers];
+                }
+            } catch (e) {
+                console.log('TimeManager: failed to parse timers.json:', e);
+            }
+        }
+
+        onLoadFailed: {
+            console.log('TimeManager: timers.json not found, creating...');
+            Quickshell.execDetached(['touch', '../Settings/.data/timers.json']);
+            persistentTimers.setText(JSON.stringify({ timers: [] }, null, 2));
+        }
+    }
+
+    FileView {
+        id: persistentAlarms
+        path: Qt.resolvedUrl('../Settings/.data/alarms.json')
+        blockLoading: false
+
+        onLoaded: {
+            try {
+                const parsed = JSON.parse(persistentAlarms.text());
+                if (parsed.alarms) {
+                    root.alarms = parsed.alarms;
+                }
+            } catch (e) {
+                console.log('TimeManager: failed to parse alarms.json:', e);
+            }
+        }
+
+        onLoadFailed: {
+            console.log('TimeManager: alarms.json not found, creating...');
+            Quickshell.execDetached(['touch', '../Settings/.data/alarms.json']);
+            persistentAlarms.setText(JSON.stringify({ alarms: [] }, null, 2));
         }
     }
 
@@ -94,16 +203,25 @@ FloatingWindowPlus {
             enabled: true
         });
         alarms = [...alarms];
+        saveAlarms();
     }
 
     function removeAlarm(index) {
         alarms.splice(index, 1);
         alarms = [...alarms];
+        saveAlarms();
     }
 
     function toggleAlarm(index) {
         alarms[index].enabled = !alarms[index].enabled;
         alarms = [...alarms];
+        saveAlarms();
+    }
+
+    function saveAlarms() {
+        persistentAlarms.setText(JSON.stringify({
+            alarms: root.alarms
+        }, null, 2));
     }
 
     // Alarm Checker
@@ -116,8 +234,8 @@ FloatingWindowPlus {
             let currentHour = now.getHours();
             let currentMinute = now.getMinutes();
 
-            for (let i = 0; i < alarms.length; i++) {
-                let alarm = alarms[i];
+            for (let i = 0; i < root.alarms.length; i++) {
+                let alarm = root.alarms[i];
                 if (alarm.enabled) {
                     let parts = alarm.time.split(" ");
                     let timeParts = parts[0].split(":");
@@ -281,6 +399,7 @@ FloatingWindowPlus {
                                                         } else {
                                                             timerRow.timerInstance.pause();
                                                         }
+                                                        root.saveTimers();
                                                     }
                                                 }
                                             }
