@@ -28,6 +28,7 @@ FloatingWindowPlus {
     property bool vimEnabled: false
     property string vimMode: 'NORMAL' // 'NORMAL', 'INSERT', 'VISUAL', or 'VISUAL_LINE'
     property int visualAnchor: -1
+    property int visualCursor: -1
     property bool gPressed: false
     property bool dPressed: false
 
@@ -137,7 +138,7 @@ FloatingWindowPlus {
     function getCursorUpDownPos(down) {
         const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
         if (!textArea) return 0;
-        let pos = textArea.cursorPosition;
+        let pos = root.vimMode === 'VISUAL' || root.vimMode === 'VISUAL_LINE' ? root.visualCursor : textArea.cursorPosition;
         let lineStart = getLineStart(pos);
         let offset = pos - lineStart;
 
@@ -159,7 +160,7 @@ FloatingWindowPlus {
         const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
         if (!textArea) return 0;
         let text = textArea.text;
-        let pos = textArea.cursorPosition;
+        let pos = root.vimMode === 'VISUAL' || root.vimMode === 'VISUAL_LINE' ? root.visualCursor : textArea.cursorPosition;
         if (pos >= text.length) return pos;
 
         // Skip current word characters
@@ -174,7 +175,7 @@ FloatingWindowPlus {
         const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
         if (!textArea) return 0;
         let text = textArea.text;
-        let pos = textArea.cursorPosition;
+        let pos = root.vimMode === 'VISUAL' || root.vimMode === 'VISUAL_LINE' ? root.visualCursor : textArea.cursorPosition;
         if (pos <= 0) return pos;
 
         pos--;
@@ -189,6 +190,7 @@ FloatingWindowPlus {
     function updateVisualSelection(newPos) {
         const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
         if (!textArea) return;
+        root.visualCursor = newPos;
         let anchor = root.visualAnchor;
         if (newPos >= anchor) {
             textArea.select(anchor, Math.min(textArea.text.length, newPos + 1));
@@ -200,6 +202,7 @@ FloatingWindowPlus {
     function updateVisualLineSelection(newPos) {
         const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
         if (!textArea) return;
+        root.visualCursor = newPos;
         let anchor = root.visualAnchor;
         let anchorStart = getLineStart(anchor);
         let anchorEnd = getLineEnd(anchor);
@@ -386,10 +389,10 @@ FloatingWindowPlus {
                                     switch (event.text) {
                                         // Movement in Visual Mode
                                         case 'h':
-                                            root.updateVisualSelection(Math.max(0, textArea.cursorPosition - 1));
+                                            root.updateVisualSelection(Math.max(0, root.visualCursor - 1));
                                             break;
                                         case 'l':
-                                            root.updateVisualSelection(Math.min(textArea.text.length, textArea.cursorPosition + 1));
+                                            root.updateVisualSelection(Math.min(textArea.text.length, root.visualCursor + 1));
                                             break;
                                         case 'j':
                                             root.updateVisualSelection(root.getCursorUpDownPos(true));
@@ -404,10 +407,10 @@ FloatingWindowPlus {
                                             root.updateVisualSelection(root.getWordBackwardPos());
                                             break;
                                         case '0':
-                                            root.updateVisualSelection(root.getLineStart(textArea.cursorPosition));
+                                            root.updateVisualSelection(root.getLineStart(root.visualCursor));
                                             break;
                                         case '$':
-                                            root.updateVisualSelection(root.getLineEnd(textArea.cursorPosition));
+                                            root.updateVisualSelection(root.getLineEnd(root.visualCursor));
                                             break;
 
                                         // Actions in Visual Mode
