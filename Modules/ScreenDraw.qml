@@ -36,6 +36,7 @@ Loader {
         exclusionMode: ExclusionMode.Ignore
         color: "transparent"
 
+        onClosed: loader.active = false
         WlrLayershell.namespace: "screendraw"
         WlrLayershell.layer: WlrLayer.Overlay
 
@@ -71,7 +72,7 @@ Loader {
 
                 function drawShape(shape) {
                     if (!shape) return;
-                    
+
                     if (shape.type === "erase") {
                         ctx.globalCompositeOperation = "destination-out";
                     } else {
@@ -190,8 +191,6 @@ Loader {
             height: 50
             color: Colors.surface
             radius: Styles.radiusSm
-            border.color: Colors.outlineVariant
-            border.width: 1
 
             // Prevent clicks on the toolbar from drawing on the canvas
             MouseArea {
