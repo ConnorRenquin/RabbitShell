@@ -21,6 +21,7 @@ ShellRoot {
     SettingsMenu {}
     TextEditor {}
     ScreenDraw {}
+    TimeManager {}
     Component.onCompleted: {
         Qt.callLater(function () {
             Settings.init();
