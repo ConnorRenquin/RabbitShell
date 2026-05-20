@@ -146,7 +146,7 @@ Rectangle {
                 spacing: Styles.marginSm
 
                 Repeater {
-                    model: Object.keys(Colors.userColors)
+                    model: Object.keys(Colors.userColors).filter(key => ['primary', 'secondary', 'tertiary'].includes(key))
                     delegate: Rectangle {
                         id: colorEntry
 
