@@ -19,6 +19,7 @@ ShellRoot {
     LockScreen {}
     Polkit {}
     SettingsMenu {}
+    TextEditor {}
     Component.onCompleted: {
         Qt.callLater(function () {
             Settings.init();

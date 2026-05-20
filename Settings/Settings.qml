@@ -34,6 +34,11 @@ Singleton {
             name: 'suspendTimeout',
             value: 120
         })
+        register({
+            name: 'vimModeEnabled',
+            value: false,
+            category: 'misc'
+        })
     }
 
     property var settings: []
