@@ -73,6 +73,16 @@ Rectangle {
         }
     }
 
+    ColorPickerDialog {
+        id: colorPickerDialog
+        property var targetTextField: null
+        onAccepted: (hexColor) => {
+            if (targetTextField) {
+                targetTextField.text = hexColor;
+            }
+        }
+    }
+
     Process {
         id: copyProcess
         property string destName: ""
@@ -183,6 +193,17 @@ Rectangle {
                                     Layout.fillHeight: true
                                     color: root.isValidColor(colorTextField?.text) ? colorTextField.text : Colors.userColors[colorEntry.modelData] || "#000000"
                                     radius: Styles.radiusSm
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            colorPickerDialog.targetTextField = colorTextField;
+                                            colorPickerDialog.title = "Select " + colorEntry.modelData + " Color";
+                                            colorPickerDialog.initialColor = colorPreview.color;
+                                            colorPickerDialog.visible = true;
+                                        }
+                                    }
                                 }
 
                                 Rectangle {
