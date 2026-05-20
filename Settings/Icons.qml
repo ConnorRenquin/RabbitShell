@@ -30,6 +30,10 @@ Singleton {
     readonly property string rightChevron: ""
     readonly property string undo: ""
 
+    readonly property string hourGlass: ""
+    readonly property string clock: "󰥔"
+    readonly property string alarm: "󰀠"
+
     readonly property string checkBoxChecked: "󰡖"
     readonly property string checkBoxUnChecked: ""
 

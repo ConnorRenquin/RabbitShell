@@ -254,13 +254,10 @@ FloatingWindowPlus {
 
         ColumnLayout {
             anchors.fill: parent
-            spacing: 0
-
-            // Header / Tab Bar
             Rectangle {
                 id: tabBar
                 Layout.fillWidth: true
-                Layout.preferredHeight: 45
+                Layout.preferredHeight: 50
                 color: Colors.surface
                 radius: Styles.radiusSm
 
@@ -269,10 +266,26 @@ FloatingWindowPlus {
                     anchors.margins: Styles.marginSm
                     spacing: Styles.marginSm
 
-                    ButtonStyled {
+                    TextStyled {
+                        font.pointSize: Styles.textLg
+                        text: {
+                            if (root.currentTab === 0) {
+                                return "Timers"
+                            } else if (root.currentTab === 1) {
+                                return "Stopwatch"
+                            }  else if (root.currentTab === 2) {
+                                return "Alarms"
+                            }
+                        }
+                    }
+
+                    Item {
                         Layout.fillWidth: true
+                    }
+
+                    ButtonStyled {
                         Layout.fillHeight: true
-                        text: "Timers"
+                        text: Icons.hourGlass
                         isFocused: root.currentTab === 0
                         defaultColor: root.currentTab === 0 ? Colors.primary : Colors.surfaceVariant
                         textColor: root.currentTab === 0 ? Colors.onPrimary : Colors.onSurface
@@ -280,9 +293,8 @@ FloatingWindowPlus {
                     }
 
                     ButtonStyled {
-                        Layout.fillWidth: true
                         Layout.fillHeight: true
-                        text: "Stopwatch"
+                        text: Icons.clock
                         isFocused: root.currentTab === 1
                         defaultColor: root.currentTab === 1 ? Colors.primary : Colors.surfaceVariant
                         textColor: root.currentTab === 1 ? Colors.onPrimary : Colors.onSurface
@@ -290,23 +302,12 @@ FloatingWindowPlus {
                     }
 
                     ButtonStyled {
-                        Layout.fillWidth: true
                         Layout.fillHeight: true
-                        text: "Alarms"
+                        text: Icons.alarm
                         isFocused: root.currentTab === 2
                         defaultColor: root.currentTab === 2 ? Colors.primary : Colors.surfaceVariant
                         textColor: root.currentTab === 2 ? Colors.onPrimary : Colors.onSurface
                         onClicked: root.currentTab = 2
-                    }
-
-                    // Close Button
-                    ButtonStyled {
-                        Layout.preferredWidth: 40
-                        Layout.fillHeight: true
-                        text: "✕"
-                        defaultColor: Colors.error
-                        textColor: Colors.onError
-                        onClicked: root.exit()
                     }
                 }
             }
