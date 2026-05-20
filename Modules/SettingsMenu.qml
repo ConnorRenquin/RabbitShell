@@ -40,6 +40,46 @@ Loader {
             color: Colors.surface
             focus: true
 
+            Keys.onPressed: event => {
+                if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+                    event.accepted = true;
+                    
+                    // Filter children to only include actual views that have a 'name' property
+                    var views = [];
+                    for (var i = 0; i < settingsModuleUi.children.length; i++) {
+                        var child = settingsModuleUi.children[i];
+                        if (child.name !== undefined) {
+                            views.push(child);
+                        }
+                    }
+                    
+                    var currentIndex = -1;
+                    for (var i = 0; i < views.length; i++) {
+                        if (views[i].visible) {
+                            currentIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    if (currentIndex !== -1) {
+                        views[currentIndex].visible = false;
+                        var nextIndex;
+                        if (event.key === Qt.Key_Backtab || (event.modifiers & Qt.ShiftModifier)) {
+                            nextIndex = (currentIndex - 1 + views.length) % views.length;
+                        } else {
+                            nextIndex = (currentIndex + 1) % views.length;
+                        }
+                        views[nextIndex].visible = true;
+                        
+                        // Find the index of the selected view in the ListView's model
+                        var originalIndex = settingsModuleUi.children.indexOf(views[nextIndex]);
+                        if (originalIndex !== -1) {
+                            settingModules.positionViewAtIndex(originalIndex, ListView.Contain);
+                        }
+                    }
+                }
+            }
+
             RowLayout {
                 id: mainLayout
                 anchors.fill: parent
@@ -66,7 +106,7 @@ Loader {
                 Rectangle {
                     id: settingsModuleUi
                     Layout.fillHeight: true
-                    color: Colors.surfaceLighter
+                    color: Colors.background
                     Layout.preferredWidth: 300
                     Layout.fillWidth: true
                     UpdateSettingsView {
