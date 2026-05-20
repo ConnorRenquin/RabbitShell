@@ -35,6 +35,7 @@ Variants {
 
         property var modelData: null
         property bool focusGrabbed: false
+        property int displayTime: 500
 
         HyprlandFocusGrab {
             active: root.focusGrabbed
@@ -67,6 +68,8 @@ Variants {
             showCloseButton: true
             onDismissed: notificationPopup.destroy()
             onReplyFocused: root.focusGrabbed = true
+            showTimeLeft: true
+            timerLength: root.displayTime
 
             transformOrigin: Item.Top
             scale: scaleTarget
@@ -79,7 +82,7 @@ Variants {
             }
             Timer {
                 id: expireTimer
-                interval: 4000
+                interval: (root.displayTime + 100) * 10
                 running: true
                 onTriggered: notificationPopup.destroy()
             }

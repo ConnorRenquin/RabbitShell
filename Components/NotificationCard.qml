@@ -8,6 +8,7 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Settings
+import qs.Services
 
 Rectangle {
     id: root
@@ -17,6 +18,8 @@ Rectangle {
 
     property var notification: modelData
 
+    property bool showTimeLeft: false
+    property int timerLength: 500
     property bool autoExpire: true
     property bool showCloseButton: true
     property int maxHeight: 500
@@ -44,6 +47,22 @@ Rectangle {
         Layout.preferredHeight: 32
         text: Icons.close
         onClicked: root.dismissed()
+    }
+
+    component AThing: TextStyled {
+        id: countDown
+        text: Time.getSymbolAtIndex(0)
+        Timer {
+            property int index: 0
+            running: true
+            interval: root.timerLength
+            repeat: true
+            onTriggered: {
+                if (index > 11) index = 0;
+                else index++;
+                countDown.text = Time.getSymbolAtIndex(index)
+            }
+        }
     }
 
     ColumnLayout {
@@ -83,6 +102,10 @@ Rectangle {
                 Layout.fillWidth: true
             }
 
+            AThing{
+                visible: root.showTimeLeft && root.showCloseButton
+            }
+
             CloseButton {
                 visible: root.showCloseButton
             }
@@ -104,6 +127,9 @@ Rectangle {
                         visible: text
                         text: root.notification?.summary ?? ""
                         wrapMode: Text.WordWrap
+                    }
+                    AThing{
+                        visible: root.showTimeLeft  && !root.notification?.appName
                     }
                     CloseButton {
                         visible: root.showCloseButton && !root.notification?.appName

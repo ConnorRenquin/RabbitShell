@@ -43,6 +43,10 @@ Singleton {
         return clockSymbols[11]
     }
 
+    function getSymbolAtIndex(symbolIndex) {
+        return clockSymbols[symbolIndex]
+    }
+
     SystemClock {
         id: clock
         precision: SystemClock.Seconds
