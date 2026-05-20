@@ -33,7 +33,7 @@ Rectangle {
             Layout.preferredHeight: 40
 
             radius: Styles.radiusSm
-            color: Colors.surfaceVariant
+            color: "transparent"
 
             RowLayout {
                 anchors.fill: parent
