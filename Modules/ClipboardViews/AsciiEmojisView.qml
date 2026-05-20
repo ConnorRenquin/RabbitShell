@@ -463,9 +463,9 @@ Rectangle {
                     required property var modelData
                     required property int index
 
-                    defaultColor: theme.main
+                    defaultColor: theme.text
                     text: emojiButton.modelData.emoji
-                    textColor: theme.containerText
+                    textColor: theme.background
                     pointSize: 34
 
                     Layout.fillWidth: true

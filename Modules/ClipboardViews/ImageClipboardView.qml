@@ -88,7 +88,7 @@ Rectangle {
                         ClippingRectangle {
                             anchors.fill: parent
                             radius: Styles.radiusSm
-                            color: theme.mainContainer
+                            color: theme.foreground
 
                             Image {
                                 id: imageComponent
@@ -159,7 +159,7 @@ Rectangle {
 
     component LocalButton: ButtonStyled {
         Layout.fillWidth: true
-        defaultColor: theme.main
-        textColor: theme.containerText
+        defaultColor: theme.text
+        textColor: theme.background
     }
 }

@@ -26,7 +26,7 @@ Rectangle {
 
         property string iconText: ""
         property string iconColor: Colors.surface
-        property string backgroundColor: theme.main
+        property string backgroundColor: theme.text
 
         implicitWidth: iconTextItem.width + Styles.marginSm * 2
         implicitHeight: root.height - Styles.marginSm

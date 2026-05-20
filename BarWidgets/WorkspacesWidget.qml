@@ -78,7 +78,7 @@ Rectangle {
             DoubleText {
                 id: workspaceIcon
                 elide: Text.ElideNone
-                primaryColor: theme.main
+                primaryColor: theme.text
                 anchors.centerIn: parent
                 text: workspaceButton.modelData?.focused ? "󰜋" : "󰜌"
             }

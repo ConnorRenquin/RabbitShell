@@ -9,7 +9,7 @@ Rectangle {
     id: root
 
     radius: Styles.radiusSm
-    color: theme.mainContainer
+    color: theme.foreground
 
     implicitWidth: Math.min(windowTitle.implicitWidth + Styles.marginSm * 2, 300)
     implicitHeight: parent.height
@@ -28,6 +28,6 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: Styles.marginSm
         text: ToplevelManager?.activeToplevel?.appId ?? "Desktop"
-        color: theme.main
+        color: theme.text
     }
 }

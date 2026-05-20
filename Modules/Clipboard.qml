@@ -106,7 +106,7 @@ FloatingWindow {
     Rectangle {
         id: base
         anchors.fill: parent
-        color: theme.containerText
+        color: theme.background
         radius: Styles.radiusSm
 
         Keys.onPressed: event => {
@@ -134,7 +134,7 @@ FloatingWindow {
                 id: tabBar
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
-                color: theme.mainContainer
+                color: theme.foreground
                 radius: Styles.radiusSm
 
                 RowLayoutPlus {
@@ -153,7 +153,7 @@ FloatingWindow {
                         Layout.fillHeight: true
                         text: tabButton.modelData.name
                         isFocused: root.currentTab === tabButton.index
-                        defaultColor: theme.mainContainer
+                        defaultColor: theme.foreground
                         onClicked: {
                             root.currentTab = tabButton.index;
                         }
@@ -162,7 +162,7 @@ FloatingWindow {
                     Rectangle {
                         Layout.fillHeight: true
                         Layout.preferredWidth: clock.implicitWidth + Styles.marginLg * 2
-                        color: theme.containerText
+                        color: theme.background
                         radius: Styles.marginSm
                         TextStyled {
                             anchors.centerIn: parent

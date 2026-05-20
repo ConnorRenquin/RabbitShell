@@ -53,7 +53,7 @@ Loader {
         Rectangle {
             id: base
             anchors.fill: parent
-            color: theme.mainContainer
+            color: theme.foreground
             radius: Styles.radiusMd
             focus: true
 
@@ -75,7 +75,7 @@ Loader {
                     id: controlSection
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
-                    color: theme.containerText
+                    color: theme.background
                     radius: Styles.radiusMd
 
                     RowLayout {
@@ -86,13 +86,13 @@ Loader {
                         TextStyled {
                             text: "Notifications"
                             font.pointSize: 18
-                            color: theme.main
+                            color: theme.text
                             font.bold: true
                             Layout.fillWidth: true
                         }
 
                         TextStyled {
-                            color: theme.main
+                            color: theme.text
                             text: `${Notifications.notifications.values.length} active`
                         }
 
@@ -101,10 +101,10 @@ Loader {
                             implicitHeight: 40
                             implicitWidth: clearAllText.implicitWidth + Styles.marginLg
                             onClicked: root.clear()
-                            defaultColor: theme.mainContainer
+                            defaultColor: theme.foreground
                             TextStyled {
                                 id: clearAllText
-                                color: theme.main
+                                color: theme.text
                                 anchors.centerIn: parent
                                 textFormat: Text.MarkdownText
                                 text: '<u>C</u>lear All'
@@ -144,11 +144,11 @@ Loader {
                             radius: Styles.radiusLg
                             implicitWidth: 300
                             implicitHeight: 60
-                            color: theme.containerText
+                            color: theme.background
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: "No notifications"
-                                color: theme.main
+                                color: theme.text
                             }
                         }
                     }

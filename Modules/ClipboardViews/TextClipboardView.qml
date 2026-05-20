@@ -172,7 +172,7 @@ Rectangle {
                 id: storageSlots
                 Layout.fillWidth: true
                 Layout.preferredHeight: 80
-                color: theme.containerText
+                color: theme.background
                 radius: Styles.radiusSm
 
                 GridLayoutPlus {
@@ -193,7 +193,7 @@ Rectangle {
                             anchors.fill: parent
 
                             property bool slotOccupied: (ClipboardService.clipboardData.slots[slotButtonContainer.modelData] && ClipboardService.clipboardData.slots[slotButtonContainer.modelData] !== "") ?? false
-                            color: slotOccupied ? theme.mainContainer : theme.containerText
+                            color: slotOccupied ? theme.foreground : theme.background
 
                             onClicked: mouse => {
                                 if (mouse.button === Qt.RightButton) {
@@ -241,7 +241,7 @@ Rectangle {
 
                             Rectangle {
                                 anchors.fill: parent
-                                color: theme.mainContainer
+                                color: theme.foreground
                                 radius: Styles.radiusMd
                                 TextStyled {
                                     id: tooltipContent
@@ -249,7 +249,7 @@ Rectangle {
                                     anchors.margins: Styles.marginSm
                                     text: utils.removeIndentation(ClipboardService.clipboardData.slots[slotButtonContainer.modelData]) || "Empty"
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: theme.main
+                                    color: theme.text
                                 }
                             }
                         }
@@ -261,7 +261,7 @@ Rectangle {
                 Layout.preferredHeight: 50
                 Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
-                color: theme.main
+                color: theme.text
                 radius: Styles.radiusSm
 
                 TextFieldStyled {
@@ -269,8 +269,8 @@ Rectangle {
                     placeholderText: '/search'
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
-                    color: theme.containerText
-                    placeholderTextColor: theme.containerText
+                    color: theme.background
+                    placeholderTextColor: theme.background
                     onTextChanged: mainContent.searchText = text
                     Keys.onPressed: event => {
                         root.navigationHandler(event);
@@ -327,12 +327,12 @@ Rectangle {
                                 Layout.preferredWidth: 50
                                 implicitHeight: 20
                                 Layout.fillHeight: true
-                                color: button.isFocused ? theme.main : theme.mainContainer
+                                color: button.isFocused ? theme.text : theme.foreground
                                 radius: Styles.radiusSm
                                 TextStyled {
                                     id: clipboardItemKeyText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    color: !button.isFocused ? theme.main : theme.containerText
+                                    color: !button.isFocused ? theme.text : theme.background
                                     anchors.centerIn: parent
                                     text: button.originalIndex === 0 ? "Now" : button.originalIndex + ListView.isCurrentItem
                                 }
@@ -366,7 +366,7 @@ Rectangle {
                                     id: clipboardText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                     width: clipboardItemScreen.width - Styles.marginSm * 2
-                                    color: theme.main
+                                    color: theme.text
                                     anchors.fill: parent
                                     anchors.margins: Styles.marginSm
                                     anchors.centerIn: parent

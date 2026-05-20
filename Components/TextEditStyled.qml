@@ -8,8 +8,8 @@ TextEdit {
     color: Colors.onSurface
     antialiasing: true
     verticalAlignment: Text.AlignVCenter
-    selectedTextColor: theme.containerText
-    selectionColor: theme.main
+    selectedTextColor: theme.background
+    selectionColor: theme.text
     font {
         pointSize: Styles.textMd
         family: Styles.defaultFontFamily

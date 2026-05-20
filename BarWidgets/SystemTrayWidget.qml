@@ -23,7 +23,7 @@ Rectangle {
     }
 
     radius: Styles.radiusSm
-    color: theme.containerText
+    color: theme.background
     implicitHeight: parent.height
     implicitWidth: widget.implicitWidth + Styles.marginSm * 2
 
@@ -45,7 +45,7 @@ Rectangle {
             Layout.preferredWidth: icon.implicitWidth + Styles.marginSm
             Layout.preferredHeight: icon.implicitHeight + Styles.marginSm
 
-            defaultColor: theme.mainContainer
+            defaultColor: theme.foreground
 
             onClicked: mouse => {
                 if (mouse.button === Qt.LeftButton && iconButton.modelData.hasMenu) {
@@ -115,7 +115,7 @@ Rectangle {
                     anchors.fill: parent
                     visible: systemTrayMenu.visible
                     radius: Styles.radiusSm
-                    color: theme.mainContainer
+                    color: theme.foreground
 
                     ColumnLayout {
                         id: menuContent
@@ -134,14 +134,14 @@ Rectangle {
                             text: Icons.back + ' Back'
                             pointSize: Styles.textSm
                             onClicked: systemTrayMenu.currentMenu = null
-                            defaultColor: theme.mainContainer
+                            defaultColor: theme.foreground
                         }
 
                         Rectangle {
                             visible: systemTrayMenu.currentMenu !== null
                             Layout.fillWidth: true
                             implicitHeight: 2
-                            color: theme.main
+                            color: theme.text
                         }
 
                         ColumnLayoutPlus {
@@ -161,7 +161,7 @@ Rectangle {
                                     id: separatorComponent
                                     Rectangle {
                                         implicitHeight: 2
-                                        color: theme.main
+                                        color: theme.text
                                     }
                                 }
 
@@ -173,7 +173,7 @@ Rectangle {
 
                                         implicitHeight: menuContent.buttonHeight
                                         enabled: menuLoader?.modelData?.enabled ?? false
-                                        defaultColor: theme.mainContainer
+                                        defaultColor: theme.foreground
 
                                         onClicked: {
                                             if (!menuLoader.modelData.enabled)
@@ -209,14 +209,14 @@ Rectangle {
                                                 font.pointSize: Styles.textSm
                                                 Layout.fillWidth: true
                                                 horizontalAlignment: Text.AlignLeft
-                                                color: theme.main
+                                                color: theme.text
                                             }
 
                                             TextStyled {
                                                 id: checkBox
                                                 text: menuLoader?.modelData?.checkState === Qt.Checked ? Icons.checkBoxChecked : Icons.checkBoxUnChecked
                                                 font.pointSize: Styles.textSm
-                                                color: theme.main
+                                                color: theme.text
                                                 visible: menuLoader?.modelData?.buttonType !== 0
                                             }
 
@@ -225,7 +225,7 @@ Rectangle {
                                                 text: Icons.rightChevron
                                                 font.pointSize: Styles.textSm
                                                 visible: menuLoader?.modelData?.hasChildren ?? false
-                                                color: theme.main
+                                                color: theme.text
                                             }
                                         }
                                     }

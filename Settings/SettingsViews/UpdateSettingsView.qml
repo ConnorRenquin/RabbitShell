@@ -9,7 +9,7 @@ import qs.Services
 
 Rectangle {
     id: root
-    color: theme.containerText
+    color: theme.background
 
     Themer { id: theme; variant: 'secondary' }
 
@@ -52,7 +52,7 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: theme.mainContainer
+            color: theme.foreground
             radius: Styles.radiusMd
 
             visible: System.systemInfo !== null

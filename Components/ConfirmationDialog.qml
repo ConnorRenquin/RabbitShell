@@ -46,7 +46,7 @@ Rectangle {
             visible: text
             text: root.warning
             font.pointSize: Styles.textSm
-            color: theme.main
+            color: theme.text
             Layout.fillWidth: true
         }
         RowLayout {

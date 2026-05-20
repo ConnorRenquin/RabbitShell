@@ -20,7 +20,7 @@ Item {
         }
     }
 
-    property string main: {
+    property string text: {
         if (variant === 'primary')
             return Colors.primary;
         if (variant === 'secondary')
@@ -30,7 +30,7 @@ Item {
         return Colors.onBackground;
     }
 
-    property string containerText: {
+    property string background: {
         if (variant === 'primary')
             return Colors.onPrimary;
         if (variant === 'secondary')
@@ -40,7 +40,7 @@ Item {
         return Colors.background;
     }
 
-    property string mainContainer: {
+    property string foreground: {
         if (variant === 'primary')
             return Colors.primaryContainer;
         if (variant === 'secondary')
