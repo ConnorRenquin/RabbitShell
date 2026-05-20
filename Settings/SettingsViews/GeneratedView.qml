@@ -7,10 +7,11 @@ import qs.Settings
 Rectangle {
     id: root
 
-    anchors.fill: parent
     color: Colors.surface
 
     property string category: 'misc'
+
+    implicitHeight: Settings.getCategory(root.category).length * (40 + Styles.marginSm) + Styles.marginMd * 2
 
     ScrollViewPlus {
         anchors.fill: parent

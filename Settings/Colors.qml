@@ -12,6 +12,8 @@ Singleton {
 
     Component.onCompleted: {
         currentTheme = Settings.register({ name: 'currentTheme', value: 'default.json', category: 'appearance' }).value;
+        lighter = Settings.register({ name: 'lighter', value: 2.5, category: 'colors' }).value;
+        darker = Settings.register({ name: 'darker', value: 1.5, category: 'colors' }).value;
     }
 
     Connections {

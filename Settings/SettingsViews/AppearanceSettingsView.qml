@@ -145,6 +145,12 @@ Rectangle {
                 width: view.width
                 spacing: Styles.marginSm
 
+                GeneratedView {
+                    category: 'colors'
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: implicitHeight
+                }
+
                 Repeater {
                     model: Object.keys(Colors.userColors).filter(key => ['primary', 'secondary', 'tertiary'].includes(key))
                     delegate: Rectangle {

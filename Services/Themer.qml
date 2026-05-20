@@ -15,7 +15,8 @@ Item {
             Settings.register({
                 name: settingName,
                 options: ['primary', 'secondary', 'tertiary', 'regular'],
-                value: 'regular'
+                value: 'regular',
+                category: 'colors'
             });
         }
     }
