@@ -19,6 +19,7 @@ Rectangle {
 
     visible: isActive
     property bool isActive: false
+    focus: isActive
 
     Utils {
         id: utils

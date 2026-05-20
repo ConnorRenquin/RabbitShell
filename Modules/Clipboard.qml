@@ -12,28 +12,16 @@ import qs.Services
 
 import qs.Modules.ClipboardViews
 
-FloatingWindow {
+FloatingWindowPlus {
     id: root
 
-    visible: false
     title: 'Clipboard'
 
-    implicitWidth: 700
-    implicitHeight: 900
-    color: "transparent"
-
-    onClosed: exit()
     property int currentTab: 0
 
-    function exit() {
-        root.visible = false;
-        grab.active = false;
-    }
-
     function show(tabIndex: int) {
+        open()
         root.currentTab = tabIndex;
-        root.visible = true;
-        grab.active = true;
     }
 
     function cycleTab(forward: bool) {
@@ -44,71 +32,42 @@ FloatingWindow {
         }
     }
 
-    function toggle(tabIndex: int) {
-        if (root.visible && root.currentTab === tabIndex) {
-            root.exit();
-        } else {
-            root.show(tabIndex);
-        }
-    }
-
     Themer {
         id: theme
-        variant: 'regular'
-
-        Component.onCompleted: {
-            variant = Settings.register({
-                name: 'clipboardColor',
-                options: ['primary', 'secondary', 'tertiary', 'regular'],
-                value: 'regular'
-            }).value;
-        }
-
-        Connections {
-            target: Settings
-            function onSettingsChanged() {
-                const s = Settings.settings.find(x => x.name === 'clipboardColor');
-                if (s) theme.variant = s.value;
-            }
-        }
+        settingName: 'clipboardColor'
     }
 
     GlobalShortcut {
         name: 'clipboard'
-        onPressed: root.toggle(0)
+        onPressed: root.show(0)
     }
 
     GlobalShortcut {
         name: 'image-clipboard'
-        onPressed: root.toggle(1)
+        onPressed: root.show(1)
     }
 
     GlobalShortcut {
         name: 'asciimojis'
-        onPressed: root.toggle(2)
+        onPressed: root.show(2)
     }
 
     Connections {
         target: PatchBay
         function onOpenImageClipboard() {
-            root.toggle(1);
+            root.show(1);
         }
         function onOpenAsciiEmojis() {
-            root.toggle(2);
+            root.show(2);
         }
     }
 
-    HyprlandFocusGrab {
-        id: grab
-        windows: [root]
-        onCleared: root.exit()
-    }
-
-    Rectangle {
+    delegate: Rectangle {
         id: base
         anchors.fill: parent
         color: theme.background
         radius: Styles.radiusSm
+        focus: true
 
         Keys.onPressed: event => {
             if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
@@ -178,11 +137,13 @@ FloatingWindow {
                 id: viewContainer
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                focus: true
                 TextClipboardView {
                     id: textView
                     property string name: Icons.copy
                     anchors.fill: parent
                     isActive: root.currentTab === 0 && root.visible
+                    focus: isActive
                     onRequestExit: root.exit()
                     onRequestTabCycle: forward => root.cycleTab(forward)
                 }
@@ -192,6 +153,7 @@ FloatingWindow {
                     property string name: Icons.image
                     anchors.fill: parent
                     isActive: root.currentTab === 1 && root.visible
+                    focus: isActive
                 }
 
                 AsciiEmojisView {
@@ -199,6 +161,7 @@ FloatingWindow {
                     property string name: Icons.emoji
                     anchors.fill: parent
                     isActive: root.currentTab === 2 && root.visible
+                    focus: isActive
                     onRequestExit: root.exit()
                 }
             }

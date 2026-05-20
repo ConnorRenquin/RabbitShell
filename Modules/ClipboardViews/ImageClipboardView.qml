@@ -14,6 +14,7 @@ import qs.Services
 Rectangle {
     id: root
     color: "transparent"
+    focus: isActive
 
     Themer {
         id: theme

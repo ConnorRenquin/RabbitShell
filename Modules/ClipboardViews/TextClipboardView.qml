@@ -20,6 +20,7 @@ Rectangle {
 
     visible: isActive
     property bool isActive: false
+    focus: isActive
 
     function navigationHandler(event) {
         if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
@@ -34,9 +35,19 @@ Rectangle {
         }
     }
 
-    onIsActiveChanged: {
-        if (isActive) {
-            base.focus = true;
+    onVisibleChanged: {
+        if (visible) {
+            Qt.callLater(() => {
+                base.forceActiveFocus();
+            });
+        }
+    }
+
+    Component.onCompleted: {
+        if (visible) {
+            Qt.callLater(() => {
+                base.forceActiveFocus();
+            });
         }
     }
 
@@ -54,6 +65,7 @@ Rectangle {
 
         anchors.fill: parent
         color: "transparent"
+        focus: true
 
         property int selectedEntryIndex: 0
 
