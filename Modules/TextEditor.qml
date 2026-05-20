@@ -335,6 +335,26 @@ FloatingWindowPlus {
                         placeholderText: "Type something here..."
                         placeholderTextColor: Colors.outline
 
+                        cursorDelegate: Rectangle {
+                            id: customCursor
+                            width: root.vimEnabled && root.vimMode !== 'INSERT' ? Math.max(8, parent.positionToRectangle(parent.cursorPosition).width) : 2
+                            height: parent.cursorRectangle.height
+                            color: !root.vimEnabled ? Colors.onBackground : (root.vimMode === 'INSERT' ? Colors.onBackground : (root.vimMode === 'NORMAL' ? Colors.primary : "transparent"))
+                            border.color: root.vimEnabled && (root.vimMode === 'VISUAL' || root.vimMode === 'VISUAL_LINE') ? Colors.tertiary : "transparent"
+                            border.width: root.vimEnabled && (root.vimMode === 'VISUAL' || root.vimMode === 'VISUAL_LINE') ? 1 : 0
+                            opacity: root.vimEnabled && root.vimMode === 'NORMAL' ? 0.6 : 1.0
+
+                            Timer {
+                                interval: 500
+                                running: parent.parent.activeFocus && !parent.parent.readOnly
+                                repeat: true
+                                onTriggered: parent.visible = !parent.visible
+                                onRunningChanged: {
+                                    if (!running) parent.visible = true;
+                                }
+                            }
+                        }
+
                         background: Rectangle {
                             color: "transparent"
                         }
