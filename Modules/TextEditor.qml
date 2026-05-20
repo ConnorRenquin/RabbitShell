@@ -264,7 +264,7 @@ FloatingWindow {
                             required property int index
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            text: "Tab " + (index + 1)
+                            text: (index + 1)
                             isFocused: root.currentTab === index
                             defaultColor: root.currentTab === index ? Colors.primary : Colors.surfaceVariant
                             textColor: root.currentTab === index ? Colors.onPrimary : Colors.onSurface
@@ -272,19 +272,6 @@ FloatingWindow {
                             onClicked: {
                                 root.selectTab(index);
                             }
-                        }
-                    }
-
-                    // Close Button
-                    ButtonStyled {
-                        Layout.preferredWidth: 40
-                        Layout.fillHeight: true
-                        text: "✕"
-                        defaultColor: Colors.error
-                        textColor: Colors.onError
-
-                        onClicked: {
-                            root.exit();
                         }
                     }
                 }
@@ -647,7 +634,7 @@ FloatingWindow {
                     anchors.rightMargin: Styles.marginMd
 
                     TextStyled {
-                        text: root.vimEnabled ? ("VIM: " + root.vimMode + " | i: insert | v/V: visual | Esc: normal/close | Ctrl+Tab: cycle") : "Ctrl+Tab to cycle | Ctrl+1-4 to switch | Esc to close"
+                        text: root.vimEnabled ? ("VIM: " + root.vimMode + " | i: insert | v/V: visual | Ctrl+Tab: cycle") : "Ctrl+Tab to cycle | Ctrl+1-4 to switch"
                         font.pointSize: Styles.textSm
                         color: root.vimEnabled && (root.vimMode === 'NORMAL' || root.vimMode === 'VISUAL' || root.vimMode === 'VISUAL_LINE') ? Colors.onPrimary : Colors.outline
                         Layout.fillWidth: true
