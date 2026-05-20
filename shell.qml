@@ -20,6 +20,7 @@ ShellRoot {
     Polkit {}
     SettingsMenu {}
     TextEditor {}
+    ScreenDraw {}
     Component.onCompleted: {
         Qt.callLater(function () {
             Settings.init();
