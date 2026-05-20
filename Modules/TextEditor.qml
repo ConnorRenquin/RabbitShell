@@ -12,15 +12,13 @@ import qs.Settings
 import qs.Components
 import qs.Services
 
-FloatingWindow {
+FloatingWindowPlus {
     id: root
 
-    visible: false
     title: 'Scratchpad Editor'
-
-    implicitWidth: 750
-    implicitHeight: 450
-    color: "transparent"
+    windowImplicitWidth: 750
+    windowImplicitHeight: 450
+    shortcutName: "texteditor"
 
     property int currentTab: 0
     property var tabContents: ["", "", "", ""]
@@ -41,7 +39,10 @@ FloatingWindow {
                 root.vimEnabled = s.value;
                 if (!s.value) {
                     root.vimMode = 'INSERT'; // Fallback to standard insert if disabled
-                    textArea.select(textArea.cursorPosition, textArea.cursorPosition);
+                    const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+                    if (textArea) {
+                        textArea.select(textArea.cursorPosition, textArea.cursorPosition);
+                    }
                 }
             }
         }
@@ -57,33 +58,26 @@ FloatingWindow {
         }
     }
 
-    onClosed: exit()
-
     function exit() {
         root.visible = false;
-        grab.active = false;
         saveTabs();
     }
 
-    function show() {
+    function open() {
         root.visible = true;
-        grab.active = true;
         if (root.vimEnabled) {
             root.vimMode = 'NORMAL';
-            textArea.select(textArea.cursorPosition, textArea.cursorPosition);
-        }
-        textArea.forceActiveFocus();
-    }
-
-    function toggle() {
-        if (root.visible) {
-            root.exit();
-        } else {
-            root.show();
+            const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+            if (textArea) {
+                textArea.select(textArea.cursorPosition, textArea.cursorPosition);
+            }
         }
     }
 
     function cycleTab(forward: bool) {
+        const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+        if (!textArea) return;
+
         tabContents[currentTab] = textArea.text;
         
         if (forward) {
@@ -98,6 +92,9 @@ FloatingWindow {
 
     function selectTab(index: int) {
         if (index < 0 || index >= 4) return;
+        const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+        if (!textArea) return;
+
         tabContents[currentTab] = textArea.text;
         currentTab = index;
         textArea.text = tabContents[currentTab];
@@ -105,70 +102,93 @@ FloatingWindow {
     }
 
     function saveTabs() {
-        if (!isReady) return;
-        tabContents[currentTab] = textArea.text;
+        const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+        if (textArea) {
+            tabContents[currentTab] = textArea.text;
+        }
         persistantData.setText(JSON.stringify({
-            tabs: tabContents,
-            lastActiveTab: currentTab
+            tabs: root.tabContents,
+            lastActiveTab: root.currentTab
         }, null, 2));
     }
 
-    // Vim Helper Functions
     function getLineStart(pos) {
+        const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+        if (!textArea) return 0;
         let text = textArea.text;
-        let start = text.lastIndexOf('\n', pos - 1);
-        return start === -1 ? 0 : start + 1;
+        let start = pos;
+        while (start > 0 && text[start - 1] !== '\n') {
+            start--;
+        }
+        return start;
     }
 
     function getLineEnd(pos) {
+        const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+        if (!textArea) return 0;
         let text = textArea.text;
-        let end = text.indexOf('\n', pos);
-        return end === -1 ? text.length : end;
+        let end = pos;
+        while (end < text.length && text[end] !== '\n') {
+            end++;
+        }
+        return end;
     }
 
     function getCursorUpDownPos(down) {
-        let text = textArea.text;
+        const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+        if (!textArea) return 0;
         let pos = textArea.cursorPosition;
         let lineStart = getLineStart(pos);
-        let lineEnd = getLineEnd(pos);
-        let col = pos - lineStart;
+        let offset = pos - lineStart;
 
         if (down) {
-            if (lineEnd >= text.length) return pos;
+            let lineEnd = getLineEnd(pos);
+            if (lineEnd >= textArea.text.length) return pos; // Already on last line
             let nextLineStart = lineEnd + 1;
-            let nextLineEnd = text.indexOf('\n', nextLineStart);
-            if (nextLineEnd === -1) nextLineEnd = text.length;
-            let nextLineLength = nextLineEnd - nextLineStart;
-            return nextLineStart + Math.min(col, nextLineLength);
+            let nextLineEnd = getLineEnd(nextLineStart);
+            return Math.min(nextLineEnd, nextLineStart + offset);
         } else {
-            if (lineStart <= 0) return pos;
+            if (lineStart === 0) return pos; // Already on first line
             let prevLineEnd = lineStart - 1;
-            let prevLineStart = text.lastIndexOf('\n', prevLineEnd - 1);
-            prevLineStart = prevLineStart === -1 ? 0 : prevLineStart + 1;
-            let prevLineLength = prevLineEnd - prevLineStart;
-            return prevLineStart + Math.min(col, prevLineLength);
+            let prevLineStart = getLineStart(prevLineEnd);
+            return Math.min(prevLineEnd, prevLineStart + offset);
         }
     }
 
     function getWordForwardPos() {
+        const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+        if (!textArea) return 0;
         let text = textArea.text;
         let pos = textArea.cursorPosition;
+        if (pos >= text.length) return pos;
+
+        // Skip current word characters
         while (pos < text.length && /\w/.test(text[pos])) pos++;
-        while (pos < text.length && /\W/.test(text[pos])) pos++;
+        // Skip non-word characters (whitespace, punctuation)
+        while (pos < text.length && !/\w/.test(text[pos])) pos++;
+
         return pos;
     }
 
     function getWordBackwardPos() {
+        const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+        if (!textArea) return 0;
         let text = textArea.text;
         let pos = textArea.cursorPosition;
         if (pos <= 0) return pos;
+
         pos--;
-        while (pos > 0 && /\W/.test(text[pos])) pos--;
+        // Skip trailing whitespace/punctuation
+        while (pos > 0 && !/\w/.test(text[pos])) pos--;
+        // Skip word characters
         while (pos > 0 && /\w/.test(text[pos - 1])) pos--;
+
         return pos;
     }
 
     function updateVisualSelection(newPos) {
+        const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+        if (!textArea) return;
         let anchor = root.visualAnchor;
         if (newPos >= anchor) {
             textArea.select(anchor, Math.min(textArea.text.length, newPos + 1));
@@ -178,6 +198,8 @@ FloatingWindow {
     }
 
     function updateVisualLineSelection(newPos) {
+        const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+        if (!textArea) return;
         let anchor = root.visualAnchor;
         let anchorStart = getLineStart(anchor);
         let anchorEnd = getLineEnd(anchor);
@@ -189,16 +211,6 @@ FloatingWindow {
         } else {
             textArea.select(Math.min(textArea.text.length, anchorEnd + 1), currentStart);
         }
-    }
-
-    GlobalShortcut {
-        name: "texteditor"
-        onPressed: root.toggle()
-    }
-
-    HyprlandFocusGrab {
-        id: grab
-        windows: [root]
     }
 
     FileView {
@@ -215,7 +227,10 @@ FloatingWindow {
                 if (parsed.hasOwnProperty('lastActiveTab')) {
                     root.currentTab = parsed.lastActiveTab;
                 }
-                textArea.text = root.tabContents[root.currentTab];
+                const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+                if (textArea) {
+                    textArea.text = root.tabContents[root.currentTab];
+                }
             } catch (e) {
                 console.log('TextEditor: failed to parse text_editor_tabs.json:', e);
             }
@@ -233,7 +248,7 @@ FloatingWindow {
         }
     }
 
-    Rectangle {
+    delegate: Rectangle {
         id: base
         anchors.fill: parent
         color: Colors.background
@@ -241,6 +256,29 @@ FloatingWindow {
         border.color: Colors.outlineVariant
         border.width: 1
         focus: true
+
+        readonly property alias textAreaItem: textArea
+
+        onVisibleChanged: {
+            if (visible) {
+                if (root.vimEnabled) {
+                    root.vimMode = 'NORMAL';
+                    textArea.select(textArea.cursorPosition, textArea.cursorPosition);
+                }
+                Qt.callLater(() => {
+                    textArea.forceActiveFocus();
+                });
+            }
+        }
+
+        Component.onCompleted: {
+            textArea.text = root.tabContents[root.currentTab];
+            if (visible) {
+                Qt.callLater(() => {
+                    textArea.forceActiveFocus();
+                });
+            }
+        }
 
         ColumnLayout {
             anchors.fill: parent

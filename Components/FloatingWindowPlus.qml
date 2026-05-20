@@ -14,6 +14,8 @@ FloatingWindow {
 
     required property Component delegate
 
+    readonly property alias baseLoader: baseLoader
+
     property string shortcutName: ""
 
     property int windowWidth: 0
@@ -56,6 +58,7 @@ FloatingWindow {
     }
 
     Loader {
+        id: baseLoader
         anchors.fill: parent
         active: root.visible
         focus: true

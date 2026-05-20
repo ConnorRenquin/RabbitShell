@@ -13,15 +13,13 @@ import qs.Services
 
 import "../Components"
 
-FloatingWindow {
+FloatingWindowPlus {
     id: root
 
-    visible: false
     title: 'Time Manager'
-
-    implicitWidth: 550
-    implicitHeight: 450
-    color: "transparent"
+    windowImplicitWidth: 550
+    windowImplicitHeight: 450
+    shortcutName: "timemanager"
 
     property int currentTab: 0 // 0: Timers, 1: Stopwatch, 2: Alarms
 
@@ -33,26 +31,6 @@ FloatingWindow {
 
     // Alarms State
     property var alarms: []
-
-    onClosed: exit()
-
-    function exit() {
-        root.visible = false;
-        grab.active = false;
-    }
-
-    function show() {
-        root.visible = true;
-        grab.active = true;
-    }
-
-    function toggle() {
-        if (root.visible) {
-            root.exit();
-        } else {
-            root.show();
-        }
-    }
 
     // Dynamic Timer Component
     Component {
@@ -100,7 +78,6 @@ FloatingWindow {
     function removeTimerInstance(instance) {
         let index = activeTimers.indexOf(instance);
         if (index !== -1) {
-            instance.stop();
             instance.destroy();
             activeTimers.splice(index, 1);
             activeTimers = [...activeTimers];
@@ -110,10 +87,10 @@ FloatingWindow {
 
     // Alarm Management
     function addAlarm(name, hour, minute, ampm) {
-        let alarmTime = (hour < 10 ? "0" : "") + hour + ":" + (minute < 10 ? "0" : "") + minute + " " + ampm;
+        let formattedTime = `${hour}:${minute < 10 ? '0' + minute : minute} ${ampm}`;
         alarms.push({
             name: name || "Alarm",
-            time: alarmTime,
+            time: formattedTime,
             enabled: true
         });
         alarms = [...alarms];
@@ -129,34 +106,31 @@ FloatingWindow {
         alarms = [...alarms];
     }
 
-    // Alarm Checker Timer
+    // Alarm Checker
     Timer {
-        interval: 1000
+        interval: 60000 // Check every minute
         running: true
         repeat: true
         onTriggered: {
             let now = new Date();
             let currentHour = now.getHours();
             let currentMinute = now.getMinutes();
-            let currentSecond = now.getSeconds();
 
-            if (currentSecond === 0) {
-                for (let i = 0; i < root.alarms.length; i++) {
-                    let alarm = root.alarms[i];
-                    if (alarm.enabled) {
-                        let parts = alarm.time.split(" ");
-                        let timeParts = parts[0].split(":");
-                        let alarmHour = parseInt(timeParts[0]);
-                        let alarmMinute = parseInt(timeParts[1]);
-                        let ampm = parts[1];
+            for (let i = 0; i < alarms.length; i++) {
+                let alarm = alarms[i];
+                if (alarm.enabled) {
+                    let parts = alarm.time.split(" ");
+                    let timeParts = parts[0].split(":");
+                    let alarmHour = parseInt(timeParts[0]);
+                    let alarmMinute = parseInt(timeParts[1]);
+                    let ampm = parts[1];
 
-                        if (ampm === "PM" && alarmHour < 12) alarmHour += 12;
-                        if (ampm === "AM" && alarmHour === 12) alarmHour = 0;
+                    if (ampm === "PM" && alarmHour < 12) alarmHour += 12;
+                    if (ampm === "AM" && alarmHour === 12) alarmHour = 0;
 
-                        if (currentHour === alarmHour && currentMinute === alarmMinute) {
-                            Quickshell.execDetached(['notify-send', '-a', 'Alarm', 'Alarm Triggered!', alarm.name]);
-                            SoundEffects.playWakeUp();
-                        }
+                    if (currentHour === alarmHour && currentMinute === alarmMinute) {
+                        Quickshell.execDetached(['notify-send', '-a', 'Alarm', 'Alarm Triggered!', alarm.name]);
+                        SoundEffects.playWakeUp();
                     }
                 }
             }
@@ -175,17 +149,7 @@ FloatingWindow {
         id: timersModel
     }
 
-    GlobalShortcut {
-        name: "timemanager"
-        onPressed: root.toggle()
-    }
-
-    HyprlandFocusGrab {
-        id: grab
-        windows: [root]
-    }
-
-    Rectangle {
+    delegate: Rectangle {
         id: base
         anchors.fill: parent
         color: Colors.background

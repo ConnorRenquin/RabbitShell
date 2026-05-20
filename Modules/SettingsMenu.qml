@@ -13,141 +13,125 @@ import qs.Services
 import qs.Settings
 import qs.Settings.SettingsViews
 
-Loader {
-    id: loader
-
-    active: false
-
-    function toggle() {
-        loader.active = !loader.active;
-    }
+FloatingWindowPlus {
+    id: root
+    color: Colors.surface
+    title: 'Settings'
 
     Component.onCompleted: PatchBay.openSettings.connect(toggle)
 
-    sourceComponent: FloatingWindow {
-        id: root
+    delegate: Rectangle {
+        id: base
+        anchors.fill: parent
         color: Colors.surface
-        title: 'Settings'
+        focus: true
 
-        HyprlandFocusGrab {
-            active: loader.active
-            windows: [root]
-        }
-
-        onClosed: loader.active = false
-        Rectangle {
-            id: base
-            anchors.fill: parent
-            color: Colors.surface
-            focus: true
-
-            Keys.onPressed: event => {
-                if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
-                    event.accepted = true;
-                    
-                    // Filter children to only include actual views that have a 'name' property
-                    var views = [];
-                    for (var i = 0; i < settingsModuleUi.children.length; i++) {
-                        var child = settingsModuleUi.children[i];
-                        if (child.name !== undefined) {
-                            views.push(child);
-                        }
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+                event.accepted = true;
+                
+                // Filter children to only include actual views that have a 'name' property
+                var views = [];
+                for (var i = 0; i < settingsModuleUi.children.length; i++) {
+                    var child = settingsModuleUi.children[i];
+                    if (child.name !== undefined) {
+                        views.push(child);
                     }
-                    
-                    var currentIndex = -1;
-                    for (var i = 0; i < views.length; i++) {
-                        if (views[i].visible) {
-                            currentIndex = i;
-                            break;
-                        }
+                }
+                
+                var currentIndex = -1;
+                for (var i = 0; i < views.length; i++) {
+                    if (views[i].visible) {
+                        currentIndex = i;
+                        break;
                     }
+                }
+                
+                if (currentIndex !== -1) {
+                    views[currentIndex].visible = false;
+                    var nextIndex;
+                    if (event.key === Qt.Key_Backtab || (event.modifiers & Qt.ShiftModifier)) {
+                        nextIndex = (currentIndex - 1 + views.length) % views.length;
+                    } else {
+                        nextIndex = (currentIndex + 1) % views.length;
+                    }
+                    views[nextIndex].visible = true;
                     
-                    if (currentIndex !== -1) {
-                        views[currentIndex].visible = false;
-                        var nextIndex;
-                        if (event.key === Qt.Key_Backtab || (event.modifiers & Qt.ShiftModifier)) {
-                            nextIndex = (currentIndex - 1 + views.length) % views.length;
-                        } else {
-                            nextIndex = (currentIndex + 1) % views.length;
-                        }
-                        views[nextIndex].visible = true;
-                        
-                        // Find the index of the selected view in the ListView's model
-                        var originalIndex = settingsModuleUi.children.indexOf(views[nextIndex]);
-                        if (originalIndex !== -1) {
-                            settingModules.positionViewAtIndex(originalIndex, ListView.Contain);
-                        }
+                    // Find the index of the selected view in the ListView's model
+                    var originalIndex = settingsModuleUi.children.indexOf(views[nextIndex]);
+                    if (originalIndex !== -1) {
+                        settingModules.positionViewAtIndex(originalIndex, ListView.Contain);
                     }
                 }
             }
+        }
 
-            RowLayout {
-                id: mainLayout
-                anchors.fill: parent
-                ListView {
-                    id: settingModules
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    Layout.margins: Styles.marginSm
-                    Layout.preferredWidth: 50
-                    spacing: Styles.marginSm
-                    model: settingsModuleUi.children
-                    delegate: ButtonStyled {
-                        required property var modelData
-                        textAlignment: Text.AlignLeft
-                        width: parent.width
-                        text: modelData.name
-                        isFocused: modelData.visible
-                        onClicked: {
-                            settingsModuleUi.children.forEach(item => item.visible = false);
-                            modelData.visible = true;
-                        }
+        RowLayout {
+            id: mainLayout
+            anchors.fill: parent
+            ListView {
+                id: settingModules
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.margins: Styles.marginSm
+                Layout.preferredWidth: 50
+                spacing: Styles.marginSm
+                model: settingsModuleUi.children
+                delegate: ButtonStyled {
+                    required property var modelData
+                    textAlignment: Text.AlignLeft
+                    width: parent.width
+                    text: modelData.name
+                    isFocused: modelData.visible
+                    onClicked: {
+                        settingsModuleUi.children.forEach(item => item.visible = false);
+                        modelData.visible = true;
                     }
                 }
-                Rectangle {
-                    id: settingsModuleUi
-                    Layout.fillHeight: true
-                    color: Colors.background
-                    Layout.preferredWidth: 300
-                    Layout.fillWidth: true
-                    UpdateSettingsView {
-                        readonly property string name:  Icons.info + ' About'
-                        anchors.fill: parent
-                    }
-                    BluetoothSettingsView {
-                        readonly property string name: Icons.bluetooth + ' Bluetooth'
-                        anchors.fill: parent
-                    }
-                    AppearanceSettingsView {
-                        readonly property string name: Icons.appearance + ' Colors'
-                        anchors.fill: parent
-                    }
-                    PipewireSettingsView {
-                        readonly property string name: Icons.audio + ' Audio'
-                        anchors.fill: parent
-                    }
-                    DisplaySettingsView {
-                        readonly property string name: Icons.display + ' Display'
-                        anchors.fill: parent
-                    }
-                    WallpaperSettingsView {
-                        readonly property string name: Icons.wallpaper + ' Wallpaper'
-                        anchors.fill: parent
-                    }
-                    Cheatsheet {
-                        readonly property string name: Icons.cheatsheet + ' Cheatsheet'
-                        anchors.fill: parent
-                    }
-                    ScrollView {
-                        readonly property string name:  Icons.misc + ' Misc'
-                        anchors.fill: parent
-                        contentWidth: availableWidth
-                        clip: true
+            }
+            Rectangle {
+                id: settingsModuleUi
+                Layout.fillHeight: true
+                color: Colors.background
+                Layout.preferredWidth: 300
+                Layout.fillWidth: true
+                UpdateSettingsView {
+                    readonly property string name:  Icons.info + ' About'
+                    anchors.fill: parent
+                }
+                BluetoothSettingsView {
+                    readonly property string name: Icons.bluetooth + ' Bluetooth'
+                    anchors.fill: parent
+                }
+                AppearanceSettingsView {
+                    readonly property string name: Icons.appearance + ' Colors'
+                    anchors.fill: parent
+                }
+                PipewireSettingsView {
+                    readonly property string name: Icons.audio + ' Audio'
+                    anchors.fill: parent
+                }
+                DisplaySettingsView {
+                    readonly property string name: Icons.display + ' Display'
+                    anchors.fill: parent
+                }
+                WallpaperSettingsView {
+                    readonly property string name: Icons.wallpaper + ' Wallpaper'
+                    anchors.fill: parent
+                }
+                Cheatsheet {
+                    readonly property string name: Icons.cheatsheet + ' Cheatsheet'
+                    anchors.fill: parent
+                }
+                ScrollView {
+                    readonly property string name:  Icons.misc + ' Misc'
+                    anchors.fill: parent
+                    contentWidth: availableWidth
+                    clip: true
 
-                        GeneratedView {
-                            category: 'misc'
-                            width: parent.width
-                        }
+                    GeneratedView {
+                        category: 'misc'
+                        width: parent.width
                     }
                 }
             }
