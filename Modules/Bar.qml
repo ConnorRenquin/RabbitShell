@@ -84,6 +84,7 @@ Variants {
                     monitorName: root.modelData.name
                 }
                 WindowTitleWidget {}
+                IdleInhibitorWidget{}
                 BarButton {
                     id: notificationsButton
                     visible: Notifications.notifications.values.length > 0
