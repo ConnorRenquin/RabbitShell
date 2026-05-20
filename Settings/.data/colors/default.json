@@ -1,7 +1,1 @@
-{
-  "surface": "#2D353B",
-  "onSurface": "#D3C6AA",
-  "primary": "#A7C080",
-  "error": "#E67E80",
-  "tertiary": "#DBBC7F"
-}
+{"primary":"#A7C080","onPrimary":"#FFFFFF","primaryContainer":"#D8F0BB","onPrimaryContainer":"#1F3A0F","inversePrimary":"#4A7C45","secondary":"#8DA9A0","onSecondary":"#FFFFFF","secondaryContainer":"#C8E3D9","onSecondaryContainer":"#0F2D27","tertiary":"#DBBC7F","onTertiary":"#FFFFFF","tertiaryContainer":"#F5DFA8","onTertiaryContainer":"#3A2D00","error":"#E67E80","onError":"#FFFFFF","surface":"#2D353B","onSurface":"#D3C6AA","surfaceVariant":"#3D4A51","onSurfaceVariant":"#A0B0B8","outline":"#6A7F88","outlineVariant":"#3D4A51","background":"#232A2E","onBackground":"#D3C6AA","shadow":"#000000","scrim":"#000000"}

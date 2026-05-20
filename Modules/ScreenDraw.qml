@@ -10,7 +10,6 @@ import QtQuick.Controls
 
 import qs.Settings
 import qs.Components
-import qs.Services
 
 Loader {
     id: loader
