@@ -154,8 +154,6 @@ FloatingWindowPlus {
         anchors.fill: parent
         color: Colors.background
         radius: Styles.radiusSm
-        border.color: Colors.outlineVariant
-        border.width: 1
         focus: true
 
         ColumnLayout {
@@ -251,8 +249,6 @@ FloatingWindowPlus {
                                         Layout.preferredHeight: 50
                                         color: Colors.surface
                                         radius: Styles.radiusSm
-                                        border.color: Colors.outlineVariant
-                                        border.width: 1
 
                                         readonly property var timerInstance: root.activeTimers[index]
 
@@ -313,8 +309,6 @@ FloatingWindowPlus {
                             Layout.preferredHeight: 80
                             color: Colors.surface
                             radius: Styles.radiusSm
-                            border.color: Colors.outlineVariant
-                            border.width: 1
 
                             RowLayout {
                                 anchors.fill: parent
@@ -355,7 +349,6 @@ FloatingWindowPlus {
                                 }
 
                                 ButtonStyled {
-                                    Layout.preferredWidth: 80
                                     Layout.preferredHeight: 40
                                     text: "Add Timer"
                                     defaultColor: Colors.primary
@@ -456,8 +449,8 @@ FloatingWindowPlus {
                             }
                         }
 
-                        // Laps List
                         ScrollView {
+                            id: lapsList
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             clip: true
@@ -501,10 +494,9 @@ FloatingWindowPlus {
                     }
                 }
 
-                // 3. Alarms Tab
                 Rectangle {
+                    id: alarmsTab
                     color: "transparent"
-
                     ColumnLayout {
                         anchors.fill: parent
                         anchors.margins: Styles.marginMd
@@ -530,8 +522,6 @@ FloatingWindowPlus {
                                         Layout.preferredHeight: 65
                                         color: Colors.surface
                                         radius: Styles.radiusSm
-                                        border.color: Colors.outlineVariant
-                                        border.width: 1
 
                                         RowLayout {
                                             anchors.fill: parent
@@ -552,6 +542,10 @@ FloatingWindowPlus {
                                                 }
                                             }
 
+                                            Item {
+                                                Layout.fillWidth: true
+                                            }
+
                                             SwitchStyled {
                                                 checked: alarmRow.modelData.enabled
                                                 onToggled: {
@@ -560,7 +554,6 @@ FloatingWindowPlus {
                                             }
 
                                             ButtonStyled {
-                                                implicitWidth: 60
                                                 implicitHeight: 30
                                                 text: "Delete"
                                                 defaultColor: Colors.error
@@ -581,8 +574,6 @@ FloatingWindowPlus {
                             Layout.preferredHeight: 80
                             color: Colors.surface
                             radius: Styles.radiusSm
-                            border.color: Colors.outlineVariant
-                            border.width: 1
 
                             RowLayout {
                                 anchors.fill: parent
@@ -632,7 +623,6 @@ FloatingWindowPlus {
                                 }
 
                                 ButtonStyled {
-                                    Layout.preferredWidth: 60
                                     Layout.preferredHeight: 40
                                     text: "Add"
                                     defaultColor: Colors.primary
