@@ -5,6 +5,7 @@ import Quickshell.Hyprland
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 import qs.Components
 import qs.Services
@@ -96,9 +97,16 @@ Loader {
                         readonly property string name: Icons.cheatsheet + ' Cheatsheet'
                         anchors.fill: parent
                     }
-                    GeneratedView {
+                    ScrollView {
                         readonly property string name:  Icons.misc + ' Misc'
                         anchors.fill: parent
+                        contentWidth: availableWidth
+                        clip: true
+
+                        GeneratedView {
+                            category: 'misc'
+                            width: parent.width
+                        }
                     }
                 }
             }
