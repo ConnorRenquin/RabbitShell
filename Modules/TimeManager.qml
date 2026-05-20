@@ -34,6 +34,8 @@ FloatingWindow {
     // Alarms State
     property var alarms: []
 
+    onClosed: exit()
+
     function exit() {
         root.visible = false;
         grab.active = false;

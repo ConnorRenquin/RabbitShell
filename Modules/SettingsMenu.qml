@@ -34,6 +34,7 @@ Loader {
             windows: [root]
         }
 
+        onClosed: loader.active = false
         Rectangle {
             id: base
             anchors.fill: parent

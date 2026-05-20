@@ -57,6 +57,8 @@ FloatingWindow {
         }
     }
 
+    onClosed: exit()
+
     function exit() {
         root.visible = false;
         grab.active = false;

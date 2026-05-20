@@ -40,6 +40,7 @@ Loader {
         implicitWidth: 600
         implicitHeight: 900
 
+        onClosed: loader.active = false
         function clear() {
             Notifications.clear();
         }

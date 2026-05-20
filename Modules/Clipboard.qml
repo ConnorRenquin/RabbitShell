@@ -22,6 +22,7 @@ FloatingWindow {
     implicitHeight: 900
     color: "transparent"
 
+    onClosed: exit()
     property int currentTab: 0
 
     function exit() {
