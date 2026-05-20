@@ -4,6 +4,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Components
+
 Singleton {
     id: root
 
@@ -101,40 +103,25 @@ Singleton {
 
     onSettingsChanged: {
         if (root.isReady) {
-            persistantData.setText(JSON.stringify(root.toSaveData(), null, 2))
+            persistantData.save(root.toSaveData());
         }
     }
 
-    FileView {
+    FileViewPlus {
         id: persistantData
         path: Qt.resolvedUrl('./.data/settings.json')
-        blockLoading: false
+        defaultValue: ({})
 
-        onLoaded: {
-            try {
-                const parsed = JSON.parse(persistantData.text())
-                root.savedValues = parsed
+        onDataLoaded: parsed => {
+            root.savedValues = parsed
 
-                const next = root.settings.map(s =>
-                    parsed.hasOwnProperty(s.name)
-                        ? Object.assign({}, s, { value: parsed[s.name] })
-                        : s
-                )
-                root.settings = next
-            } catch (e) {
-                console.log('Settings: failed to parse settings.json:', e)
-                root.savedValues = ({})
-            }
+            const next = root.settings.map(s =>
+                parsed.hasOwnProperty(s.name)
+                    ? Object.assign({}, s, { value: parsed[s.name] })
+                    : s
+            )
+            root.settings = next
             root.isReady = true
         }
-
-        onLoadFailed: {
-            console.log('Settings: settings.json not found, creating...')
-            Quickshell.execDetached(['touch', '.data/settings.json'])
-            persistantData.setText('{}')
-            root.isReady = true
-        }
-
-        onSaveFailed: console.log('Settings: failed to save settings.json')
     }
 }

@@ -100,9 +100,9 @@ FloatingWindowPlus {
                 savedAt: Date.now()
             });
         }
-        persistentTimers.setText(JSON.stringify({
+        persistentTimers.save({
             timers: timersData
-        }, null, 2));
+        });
     }
 
     // Periodic save for running timers
@@ -113,40 +113,38 @@ FloatingWindowPlus {
         onTriggered: saveTimers()
     }
 
-    FileView {
+    FileViewPlus {
         id: persistentTimers
         path: Qt.resolvedUrl('../Settings/.data/timers.json')
-        blockLoading: false
+        defaultValue: ({ "timers": [] })
 
-        onLoaded: {
-            try {
-                const parsed = JSON.parse(persistentTimers.text());
-                if (parsed.timers && parsed.timers.length > 0) {
-                    let now = Date.now();
-                    for (let i = 0; i < parsed.timers.length; i++) {
-                        let savedTimer = parsed.timers[i];
-                        let remaining = savedTimer.remaining;
+        onDataLoaded: parsed => {
+            if (parsed.timers && parsed.timers.length > 0) {
+                let now = Date.now();
+                for (let i = 0; i < parsed.timers.length; i++) {
+                    let savedTimer = parsed.timers[i];
+                    let remaining = savedTimer.remaining;
 
-                        if (savedTimer.running && !savedTimer.paused) {
-                            let elapsedMs = now - savedTimer.savedAt;
-                            let elapsedSecs = Math.floor(elapsedMs / 1000);
-                            remaining -= elapsedSecs;
-                        }
+                    if (savedTimer.running && !savedTimer.paused) {
+                        let elapsedMs = now - savedTimer.savedAt;
+                        let elapsedSecs = Math.floor(elapsedMs / 1000);
+                        remaining -= elapsedSecs;
+                    }
 
-                        if (remaining > 0) {
-                            let timerInstance = timerPlusComponent.createObject(root, {
-                                duration: savedTimer.duration,
-                                remaining: remaining,
-                                running: savedTimer.running,
-                                paused: savedTimer.paused
+                    if (remaining > 0) {
+                        let timerInstance = timerPlusComponent.createObject(root, {
+                            duration: savedTimer.duration,
+                            remaining: remaining,
+                            running: savedTimer.running,
+                            paused: savedTimer.paused
+                        });
+
+                        if (timerInstance) {
+                            timerInstance.triggered.connect(() => {
+                                Quickshell.execDetached(['notify-send', '-a', 'Timer', 'Timer Finished!']);
+                                SoundEffects.playUrgent();
+                                removeTimerInstance(timerInstance);
                             });
-
-                            if (timerInstance) {
-                                timerInstance.triggered.connect(() => {
-                                    Quickshell.execDetached(['notify-send', '-a', 'Timer', 'Timer Finished!']);
-                                    SoundEffects.playUrgent();
-                                    removeTimerInstance(timerInstance);
-                                });
 
                                 if (savedTimer.running && !savedTimer.paused) {
                                     timerInstance.internalTimer.start();
@@ -159,38 +157,18 @@ FloatingWindowPlus {
                     }
                     root.activeTimers = [...root.activeTimers];
                 }
-            } catch (e) {
-                console.log('TimeManager: failed to parse timers.json:', e);
             }
         }
 
-        onLoadFailed: {
-            console.log('TimeManager: timers.json not found, creating...');
-            Quickshell.execDetached(['touch', '../Settings/.data/timers.json']);
-            persistentTimers.setText(JSON.stringify({ timers: [] }, null, 2));
-        }
-    }
-
-    FileView {
+    FileViewPlus {
         id: persistentAlarms
         path: Qt.resolvedUrl('../Settings/.data/alarms.json')
-        blockLoading: false
+        defaultValue: ({ "alarms": [] })
 
-        onLoaded: {
-            try {
-                const parsed = JSON.parse(persistentAlarms.text());
-                if (parsed.alarms) {
-                    root.alarms = parsed.alarms;
-                }
-            } catch (e) {
-                console.log('TimeManager: failed to parse alarms.json:', e);
+        onDataLoaded: parsed => {
+            if (parsed.alarms) {
+                root.alarms = parsed.alarms;
             }
-        }
-
-        onLoadFailed: {
-            console.log('TimeManager: alarms.json not found, creating...');
-            Quickshell.execDetached(['touch', '../Settings/.data/alarms.json']);
-            persistentAlarms.setText(JSON.stringify({ alarms: [] }, null, 2));
         }
     }
 
@@ -219,9 +197,9 @@ FloatingWindowPlus {
     }
 
     function saveAlarms() {
-        persistentAlarms.setText(JSON.stringify({
+        persistentAlarms.save({
             alarms: root.alarms
-        }, null, 2));
+        });
     }
 
     // Alarm Checker

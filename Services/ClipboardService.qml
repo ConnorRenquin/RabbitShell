@@ -6,6 +6,7 @@ import Quickshell.Io
 import QtQuick
 
 import qs.Settings
+import qs.Components
 
 Singleton {
     id: root
@@ -124,34 +125,24 @@ Singleton {
 
     onClipboardDataChanged: {
         if (persistantData.loaded) {
-            persistantData.setText(JSON.stringify(root.clipboardData));
+            persistantData.save(root.clipboardData);
         }
     }
 
-    FileView {
+    FileViewPlus {
         id: persistantData
         path: Qt.resolvedUrl('./.data/clipboard.json')
-        blockLoading: false
-        onLoaded: {
-            try {
-                const parsedFile = JSON.parse(persistantData.text());
-                root.clipboardData = {
-                    "slots": parsedFile.slots || [],
-                    "clipboardText": parsedFile.clipboardText || []
-                };
-            } catch (e) {
-                console.log('Failed to parse clipboard data:', e);
-                root.clipboardData = {
-                    "slots": [],
-                    "clipboardText": []
-                };
-            }
+        defaultValue: ({
+            "slots": [],
+            "clipboardText": []
+        })
+
+        onDataLoaded: parsedFile => {
+            root.clipboardData = {
+                "slots": parsedFile.slots || [],
+                "clipboardText": parsedFile.clipboardText || []
+            };
         }
-        onLoadFailed: {
-            Quickshell.execDetached(['touch', '.data/clipboard.json']);
-            persistantData.setText(JSON.stringify(root.clipboardData));
-        }
-        onSaveFailed: console.log('Failed to save clipboard data')
     }
 
     IpcHandler {

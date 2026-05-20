@@ -4,6 +4,8 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 
+import qs.Components
+
 
 Singleton {
     id: root
@@ -168,7 +170,7 @@ Singleton {
     onUserColorsChanged: {
         root.updateColors();
         if (persistantData.loaded && !isLoadingTheme) {
-            persistantData.setText(JSON.stringify(root.userColors));
+            persistantData.save(root.userColors);
         }
     }
 
@@ -176,24 +178,16 @@ Singleton {
         persistantData.reload();
     }
 
-    FileView {
+    FileViewPlus {
         id: persistantData
         path: Qt.resolvedUrl(root.themePath)
-        blockLoading: false
-        onLoaded: {
-            const raw = text();
+        defaultValue: root.userColors
+
+        onDataLoaded: parsed => {
             root.isLoadingTheme = true;
-            try {
-                root.userColors = JSON.parse(raw);
-                root.updateColors();
-            } catch (e) {
-                root.userColors = root.userColors;
-            }
+            root.userColors = parsed;
+            root.updateColors();
             root.isLoadingTheme = false;
-        }
-        onLoadFailed: {
-            Quickshell.execDetached(['touch', root.themePath]);
-            persistantData.setText(JSON.stringify(root.userColors));
         }
     }
 

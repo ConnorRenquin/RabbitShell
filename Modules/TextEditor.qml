@@ -106,10 +106,10 @@ FloatingWindowPlus {
         if (textArea) {
             tabContents[currentTab] = textArea.text;
         }
-        persistantData.setText(JSON.stringify({
+        persistantData.save({
             tabs: root.tabContents,
             lastActiveTab: root.currentTab
-        }, null, 2));
+        });
     }
 
     function getLineStart(pos) {
@@ -213,37 +213,25 @@ FloatingWindowPlus {
         }
     }
 
-    FileView {
+    FileViewPlus {
         id: persistantData
         path: Qt.resolvedUrl('../Settings/.data/text_editor_tabs.json')
-        blockLoading: false
+        defaultValue: ({
+            tabs: ["", "", "", ""],
+            lastActiveTab: 0
+        })
 
-        onLoaded: {
-            try {
-                const parsed = JSON.parse(persistantData.text());
-                if (parsed.tabs && parsed.tabs.length === 4) {
-                    root.tabContents = parsed.tabs;
-                }
-                if (parsed.hasOwnProperty('lastActiveTab')) {
-                    root.currentTab = parsed.lastActiveTab;
-                }
-                const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
-                if (textArea) {
-                    textArea.text = root.tabContents[root.currentTab];
-                }
-            } catch (e) {
-                console.log('TextEditor: failed to parse text_editor_tabs.json:', e);
+        onDataLoaded: parsed => {
+            if (parsed.tabs && parsed.tabs.length === 4) {
+                root.tabContents = parsed.tabs;
             }
-            root.isReady = true;
-        }
-
-        onLoadFailed: {
-            console.log('TextEditor: text_editor_tabs.json not found, creating...');
-            Quickshell.execDetached(['touch', '../Settings/.data/text_editor_tabs.json']);
-            persistantData.setText(JSON.stringify({
-                tabs: ["", "", "", ""],
-                lastActiveTab: 0
-            }, null, 2));
+            if (parsed.hasOwnProperty('lastActiveTab')) {
+                root.currentTab = parsed.lastActiveTab;
+            }
+            const textArea = root.baseLoader.item ? root.baseLoader.item.textAreaItem : null;
+            if (textArea) {
+                textArea.text = root.tabContents[root.currentTab];
+            }
             root.isReady = true;
         }
     }
