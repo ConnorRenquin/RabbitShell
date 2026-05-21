@@ -32,15 +32,18 @@ Loader {
         let prefixes = new Array(items.length).fill("");
 
         // 1. Find which slot keys are active (i.e. the window is currently open)
+        // Normalize addresses by stripping any leading '0x' for comparison
+        function normalizeAddr(a) { return a ? a.replace(/^0x/i, '') : ''; }
+
         let addressToSlot = {};
         for (let slotKey in root.storedSlots) {
-            let addr = root.storedSlots[slotKey];
+            let addr = normalizeAddr(root.storedSlots[slotKey]);
             addressToSlot[addr] = slotKey;
         }
 
         // Assign the slot keys as prefixes first
         for (let i = 0; i < items.length; i++) {
-            let addr = items[i].address;
+            let addr = normalizeAddr(items[i].address);
             if (addressToSlot[addr]) {
                 prefixes[i] = addressToSlot[addr];
             }
@@ -400,6 +403,114 @@ Loader {
         }
 
         Rectangle {
+            id: slotsPanel
+            visible: Object.keys(root.storedSlots).some(key => {
+                var addr = (root.storedSlots[key] ?? "").replace(/^0x/i, '');
+                return root.allToplevels.some(t => t.address.replace(/^0x/i, '') === addr);
+            })
+            anchors.bottom: saveModeBanner.visible ? saveModeBanner.top : parent.bottom
+            anchors.right: parent.right
+            anchors.margins: Styles.marginLg * 2
+            width: slotsColumn.implicitWidth + Styles.marginSm * 2
+            height: slotsColumn.implicitHeight + Styles.marginSm * 2
+            color: Colors.surfaceLighter
+            radius: Styles.radiusMd
+
+            ColumnLayout {
+                id: slotsColumn
+                anchors.centerIn: parent
+                spacing: Styles.marginSm
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    TextStyled {
+                        text: "Saved Slots"
+                        font.pointSize: Styles.textSm
+                        color: Colors.outline
+                        Layout.fillWidth: true
+                    }
+                    ButtonStyled {
+                        text: "󰌍"
+                        implicitWidth: 24
+                        implicitHeight: 24
+                        pointSize: Styles.textSm
+                        defaultColor: Colors.errorContainer
+                        textColor: Colors.onErrorContainer
+                        onClicked: {
+                            root.storedSlots = {};
+                            persistentSlots.save(root.storedSlots);
+                            root.updateToplevels();
+                        }
+                    }
+                }
+
+                Repeater {
+                    model: Object.keys(root.storedSlots).sort().filter(key => {
+                        var addr = (root.storedSlots[key] ?? "").replace(/^0x/i, '');
+                        return root.allToplevels.some(t => t.address.replace(/^0x/i, '') === addr);
+                    })
+                    delegate: RowLayout {
+                        id: slotRow
+                        required property var modelData
+                        property string slotKey: modelData
+                        property string slotAddress: root.storedSlots[modelData] ?? ""
+                        property var slotToplevel: root.allToplevels.find(t => t.address.replace(/^0x/i, '') === slotAddress.replace(/^0x/i, '')) ?? null
+
+                        Layout.fillWidth: true
+                        spacing: Styles.marginSm
+
+                        Rectangle {
+                            implicitWidth: slotKeyText.implicitWidth + Styles.marginSm * 2
+                            implicitHeight: slotKeyText.implicitHeight + Styles.marginSm
+                            color: Colors.primary
+                            radius: Styles.radiusLg
+                            TextStyled {
+                                id: slotKeyText
+                                anchors.centerIn: parent
+                                text: slotRow.slotKey.toUpperCase()
+                                color: Colors.onPrimary
+                                font.pointSize: Styles.textSm
+                            }
+                        }
+
+                        IconImage {
+                            implicitWidth: 20
+                            implicitHeight: 20
+                            source: {
+                                var t = slotRow.slotToplevel;
+                                return t ? Quickshell.iconPath(DesktopEntries.byId(t.wayland?.appId)?.icon, "applications-other") : "";
+                            }
+                        }
+
+                        TextStyled {
+                            Layout.fillWidth: true
+                            font.pointSize: Styles.textSm
+                            elide: Text.ElideRight
+                            text: slotRow.slotToplevel ? (slotRow.slotToplevel.wayland?.title ?? "Unknown") : "(closed)"
+                            color: slotRow.slotToplevel ? Colors.onSurface : Colors.outline
+                        }
+
+                        ButtonStyled {
+                            text: "󰅖"
+                            implicitWidth: 24
+                            implicitHeight: 24
+                            pointSize: Styles.textSm
+                            defaultColor: Colors.surface
+                            textColor: Colors.onSurface
+                            onClicked: {
+                                var newSlots = Object.assign({}, root.storedSlots);
+                                delete newSlots[slotRow.slotKey];
+                                root.storedSlots = newSlots;
+                                persistentSlots.save(root.storedSlots);
+                                root.updateToplevels();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
             id: saveModeBanner
             visible: root.saveModeActive
             anchors.bottom: parent.bottom
@@ -436,6 +547,14 @@ Loader {
                     root.saveModeActive = !root.saveModeActive;
                     root.targetToplevel = null;
                     root.typedKeys = "";
+                    event.accepted = true;
+                    return;
+                }
+
+                if (event.key === Qt.Key_Backspace) {
+                    root.storedSlots = {};
+                    persistentSlots.save(root.storedSlots);
+                    root.updateToplevels();
                     event.accepted = true;
                     return;
                 }
@@ -496,7 +615,9 @@ Loader {
                             }
                         }
                     } else {
-                        root.storedSlots[pressedChar] = root.targetToplevel.address;
+                        var newSlots = Object.assign({}, root.storedSlots);
+                        newSlots[pressedChar] = root.targetToplevel.address;
+                        root.storedSlots = newSlots;
                         persistentSlots.save(root.storedSlots);
                         root.saveModeActive = false;
                         root.targetToplevel = null;
