@@ -29,7 +29,7 @@ FloatingWindowPlus {
         Keys.onPressed: event => {
             if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
                 event.accepted = true;
-                
+
                 // Filter children to only include actual views that have a 'name' property
                 var views = [];
                 for (var i = 0; i < settingsModuleUi.children.length; i++) {
@@ -38,7 +38,7 @@ FloatingWindowPlus {
                         views.push(child);
                     }
                 }
-                
+
                 var currentIndex = -1;
                 for (var i = 0; i < views.length; i++) {
                     if (views[i].visible) {
@@ -46,7 +46,7 @@ FloatingWindowPlus {
                         break;
                     }
                 }
-                
+
                 if (currentIndex !== -1) {
                     views[currentIndex].visible = false;
                     var nextIndex;
@@ -56,7 +56,7 @@ FloatingWindowPlus {
                         nextIndex = (currentIndex + 1) % views.length;
                     }
                     views[nextIndex].visible = true;
-                    
+
                     // Find the index of the selected view in the ListView's model
                     var originalIndex = settingsModuleUi.children.indexOf(views[nextIndex]);
                     if (originalIndex !== -1) {
@@ -127,8 +127,6 @@ FloatingWindowPlus {
                     readonly property string name:  Icons.misc + ' Misc'
                     anchors.fill: parent
                     contentWidth: availableWidth
-                    clip: true
-
                     GeneratedView {
                         category: 'misc'
                         width: parent.width
