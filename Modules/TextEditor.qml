@@ -1,8 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
-import Quickshell.Hyprland
-import Quickshell.Io
 
 import QtQuick
 import QtQuick.Layouts
@@ -242,8 +240,6 @@ FloatingWindowPlus {
         anchors.fill: parent
         color: Colors.background
         radius: Styles.radiusSm
-        border.color: Colors.outlineVariant
-        border.width: 1
         focus: true
 
         readonly property alias textAreaItem: textArea
@@ -270,56 +266,38 @@ FloatingWindowPlus {
         }
 
         ColumnLayout {
+            id: basePage
             anchors.fill: parent
-            spacing: 0
-
-            // Header / Tab Bar
-            Rectangle {
+            spacing: Styles.marginSm
+            anchors.margins: Styles.marginSm
+            RowLayoutPlus {
                 id: tabBar
-                Layout.fillWidth: true
                 Layout.preferredHeight: 45
-                color: Colors.surface
-                radius: Styles.radiusSm
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: Styles.marginSm
-                    spacing: Styles.marginSm
-
-                    Repeater {
-                        model: 4
-                        delegate: ButtonStyled {
-                            id: tabButton
-                            required property int index
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            text: (index + 1)
-                            isFocused: root.currentTab === index
-                            defaultColor: root.currentTab === index ? Colors.primary : Colors.surfaceVariant
-                            textColor: root.currentTab === index ? Colors.onPrimary : Colors.onSurface
-
-                            onClicked: {
-                                root.selectTab(index);
-                            }
-                        }
+                spacing: Styles.marginSm
+                model: 4
+                delegate: ButtonStyled {
+                    id: tabButton
+                    required property int index
+                    text: (index + 1)
+                    isFocused: root.currentTab === index
+                    defaultColor: root.currentTab === index ? Colors.primary : Colors.surfaceVariant
+                    textColor: root.currentTab === index ? Colors.onPrimary : Colors.onSurface
+                    onClicked: {
+                        root.selectTab(index);
                     }
                 }
             }
-
-            // Editor Area
             Rectangle {
+                id: textBackground
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: Colors.background
+                color: Qt.darker(Colors.background, 1.2)
                 radius: Styles.radiusSm
-                clip: true
-
                 ScrollView {
+                    clip: true
                     anchors.fill: parent
-                    anchors.margins: Styles.marginMd
                     ScrollBar.vertical.policy: ScrollBar.AsNeeded
                     ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-
                     TextArea {
                         id: textArea
                         focus: true
@@ -330,18 +308,13 @@ FloatingWindowPlus {
                         font.pointSize: Styles.textMd
                         selectByMouse: true
                         persistentSelection: true
-                        placeholderText: "Type something here..."
-                        placeholderTextColor: Colors.outline
-
                         cursorDelegate: Rectangle {
                             id: customCursor
                             width: root.vimEnabled && root.vimMode !== 'INSERT' ? Math.max(8, parent.positionToRectangle(parent.cursorPosition).width) : 2
-                            height: parent.cursorRectangle.height
                             color: !root.vimEnabled ? Colors.onBackground : (root.vimMode === 'INSERT' ? Colors.onBackground : (root.vimMode === 'NORMAL' ? Colors.primary : "transparent"))
                             border.color: root.vimEnabled && (root.vimMode === 'VISUAL' || root.vimMode === 'VISUAL_LINE') ? Colors.tertiary : "transparent"
                             border.width: root.vimEnabled && (root.vimMode === 'VISUAL' || root.vimMode === 'VISUAL_LINE') ? 1 : 0
                             opacity: root.vimEnabled && root.vimMode === 'NORMAL' ? 0.6 : 1.0
-
                             Timer {
                                 interval: 500
                                 running: parent.parent.activeFocus && !parent.parent.readOnly
