@@ -29,6 +29,7 @@ Singleton {
     readonly property string back: "󰭜"
     readonly property string rightChevron: ""
     readonly property string undo: ""
+    readonly property string colors: ""
 
     readonly property string hourGlass: ""
     readonly property string clock: "󰥔"

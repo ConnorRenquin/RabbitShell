@@ -104,7 +104,7 @@ FloatingWindowPlus {
                     anchors.fill: parent
                 }
                 AppearanceSettingsView {
-                    readonly property string name: Icons.appearance + ' Colors'
+                    readonly property string name: Icons.colors + ' Colors'
                     anchors.fill: parent
                 }
                 PipewireSettingsView {
