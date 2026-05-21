@@ -33,10 +33,14 @@ FloatingWindowPlus {
         radius: Styles.radiusMd
         focus: true
 
+        Controls {
+            id: controls
+        }
+
         Keys.onPressed: event => {
-            if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+            if (controls.quitPressed(event)) {
                 root.exit();
-            } else if ([Qt.Key_C].includes(event.key)) {
+            } else if (controls.cPressed(event)) {
                 clearButton.clicked(null);
             }
         }

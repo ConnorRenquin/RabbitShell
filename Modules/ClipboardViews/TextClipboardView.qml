@@ -23,12 +23,12 @@ Rectangle {
     focus: isActive
 
     function navigationHandler(event) {
-        if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
+        if (controls.tabPressed(event)) {
             root.requestTabCycle(true);
             event.accepted = true;
             return;
         }
-        if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
+        if (controls.backtabPressed(event)) {
             root.requestTabCycle(false);
             event.accepted = true;
             return;
@@ -53,6 +53,10 @@ Rectangle {
 
     Utils {
         id: utils
+    }
+
+    Controls {
+        id: controls
     }
 
     Themer {
@@ -118,19 +122,20 @@ Rectangle {
 
         Keys.onPressed: event => {
             root.navigationHandler(event);
-            if (event.key === Qt.Key_Slash) {
+            if (controls.slashPressed(event)) {
                 searchField.focus = true;
                 event.accepted = true;
                 return;
             }
+            const shiftHeld = event?.modifiers & Qt.ShiftModifier;
 
             slotController(event);
 
-            if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
+            if (controls.downPressed(event)) {
                 clipboardItems.incrementCurrentIndex();
-            } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
+            } else if (controls.upPressed(event)) {
                 clipboardItems.decrementCurrentIndex();
-            } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
+            } else if (controls.enterPressed(event)) {
                 if (clipboardItems.currentItem) {
                     clipboardItems.currentItem.clicked();
                 }
@@ -286,7 +291,7 @@ Rectangle {
                     onTextChanged: mainContent.searchText = text
                     Keys.onPressed: event => {
                         root.navigationHandler(event);
-                        if (event.key === Qt.Key_Escape) {
+                        if (controls.escapePressed(event)) {
                             base.focus = true;
                             event.accepted = true;
                         }

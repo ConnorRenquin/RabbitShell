@@ -28,6 +28,10 @@ FloatingWindowPlus {
     property bool gPressed: false
     property bool dPressed: false
 
+    Controls {
+        id: controls
+    }
+
     Connections {
         target: Settings
         function onSettingsChanged() {
@@ -359,7 +363,7 @@ FloatingWindowPlus {
                             // 2. Vim mode handling
                             if (root.vimEnabled) {
                                 if (root.vimMode === 'INSERT') {
-                                    if (event.key === Qt.Key_Escape) {
+                                    if (controls.escapePressed(event)) {
                                         root.vimMode = 'NORMAL';
                                         event.accepted = true;
                                         return;
@@ -368,7 +372,7 @@ FloatingWindowPlus {
                                 }
 
                                 if (root.vimMode === 'VISUAL') {
-                                    if (event.key === Qt.Key_Escape) {
+                                    if (controls.escapePressed(event)) {
                                         root.vimMode = 'NORMAL';
                                         textArea.select(textArea.cursorPosition, textArea.cursorPosition);
                                         event.accepted = true;
@@ -433,7 +437,7 @@ FloatingWindowPlus {
                                 }
 
                                 if (root.vimMode === 'VISUAL_LINE') {
-                                    if (event.key === Qt.Key_Escape) {
+                                    if (controls.escapePressed(event)) {
                                         root.vimMode = 'NORMAL';
                                         textArea.select(textArea.cursorPosition, textArea.cursorPosition);
                                         event.accepted = true;

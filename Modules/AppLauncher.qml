@@ -51,6 +51,10 @@ Loader {
             id: utils
         }
 
+        Controls {
+            id: controls
+        }
+
         function calculateRelevance(app, searchText) {
             if (searchText === "")
                 return 1;
@@ -118,20 +122,19 @@ Loader {
         }
 
         function gridNavigationController(event) {
-            const ctrlHeld = event.modifiers & Qt.ControlModifier;
-            if ([Qt.Key_Escape].includes(event.key)) {
+            if (controls.escapePressed(event)) {
                 textInput.text = "";
                 loader.active = false;
-            } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
+            } else if (controls.enterPressed(event)) {
                 appGridView.currentItem.clicked(null);
                 loader.active = false;
-            } else if (event.key === Qt.Key_Down || (ctrlHeld && event.key === Qt.Key_J)) {
+            } else if (controls.downPressed(event, true)) {
                 appGridView.moveCurrentIndexDown();
-            } else if (event.key === Qt.Key_Up || (ctrlHeld && event.key === Qt.Key_K)) {
+            } else if (controls.upPressed(event, true)) {
                 appGridView.moveCurrentIndexUp();
-            } else if (event.key === Qt.Key_Left || (ctrlHeld && event.key === Qt.Key_H)) {
+            } else if (controls.leftPressed(event, true)) {
                 appGridView.moveCurrentIndexLeft();
-            } else if (event.key === Qt.Key_Right || (ctrlHeld && event.key === Qt.Key_L)) {
+            } else if (controls.rightPressed(event, true)) {
                 appGridView.moveCurrentIndexRight();
             }
         }

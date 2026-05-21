@@ -53,14 +53,18 @@ Loader {
             implicitWidth: buttons.implicitWidth + Styles.marginSm * 2
             focus: true
 
+            Controls {
+                id: controls
+            }
+
             Keys.onPressed: event => {
-                if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+                if (controls.quitPressed(event)) {
                     loader.active = false;
-                } else if ([Qt.Key_Right, Qt.Key_L].includes(event.key)) {
+                } else if (controls.rightPressed(event)) {
                     loader.currentFocusIndex = Math.min(loader.currentFocusIndex + 1, buttons.children.length - 1);
-                } else if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
+                } else if (controls.leftPressed(event)) {
                     loader.currentFocusIndex = Math.max(loader.currentFocusIndex - 1, 0);
-                } else if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
+                } else if (controls.enterPressed(event)) {
                     if (loader.currentFocusIndex >= 0 && loader.currentFocusIndex < buttons.children.length) {
                         buttons.children[loader.currentFocusIndex].clicked(null);
                     }

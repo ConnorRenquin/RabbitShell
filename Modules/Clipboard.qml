@@ -69,18 +69,22 @@ FloatingWindowPlus {
         radius: Styles.radiusSm
         focus: true
 
+        Controls {
+            id: controls
+        }
+
         Keys.onPressed: event => {
-            if (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier)) {
+            if (controls.tabPressed(event)) {
                 root.cycleTab(true);
                 event.accepted = true;
                 return;
             }
-            if (event.key === Qt.Key_Backtab || (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
+            if (controls.backtabPressed(event)) {
                 root.cycleTab(false);
                 event.accepted = true;
                 return;
             }
-            if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+            if (controls.quitPressed(event)) {
                 root.exit();
                 event.accepted = true;
                 return;

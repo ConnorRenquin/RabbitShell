@@ -55,24 +55,28 @@ Loader {
             color: Colors.surface
             radius: Styles.radiusSm
 
+            Controls {
+                id: controls
+            }
+
             Keys.onPressed: event => {
-                if ([Qt.Key_Escape, Qt.Key_Q].includes(event.key)) {
+                if (controls.quitPressed(event)) {
                     loader.active = false;
-                } else if ([Qt.Key_Down, Qt.Key_J].includes(event.key)) {
+                } else if (controls.downPressed(event)) {
                     mixerList.incrementCurrentIndex();
                     scrollView.scrollToItem();
-                } else if ([Qt.Key_Up, Qt.Key_K].includes(event.key)) {
+                } else if (controls.upPressed(event)) {
                     mixerList.decrementCurrentIndex();
                     scrollView.scrollToItem();
-                } else if ([Qt.Key_Left, Qt.Key_H].includes(event.key)) {
+                } else if (controls.leftPressed(event)) {
                     if (mixerList.currentItem && mixerList.currentItem.modelData) {
                         mixerList.currentItem.decrease();
                     }
-                } else if ([Qt.Key_Right, Qt.Key_L].includes(event.key)) {
+                } else if (controls.rightPressed(event)) {
                     if (mixerList.currentItem && mixerList.currentItem.modelData) {
                         mixerList.currentItem.increase();
                     }
-                } else if ([Qt.Key_M].includes(event.key)) {
+                } else if (controls.mPressed(event)) {
                     if (mixerList.currentItem && mixerList.currentItem.modelData) {
                         mixerList.currentItem.toggleMute();
                     }

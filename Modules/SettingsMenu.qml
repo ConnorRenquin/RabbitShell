@@ -26,8 +26,12 @@ FloatingWindowPlus {
         color: Colors.surface
         focus: true
 
+        Controls {
+            id: controls
+        }
+
         Keys.onPressed: event => {
-            if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+            if (controls.tabPressed(event) || controls.backtabPressed(event)) {
                 event.accepted = true;
 
                 // Filter children to only include actual views that have a 'name' property
@@ -50,7 +54,7 @@ FloatingWindowPlus {
                 if (currentIndex !== -1) {
                     views[currentIndex].visible = false;
                     var nextIndex;
-                    if (event.key === Qt.Key_Backtab || (event.modifiers & Qt.ShiftModifier)) {
+                    if (controls.backtabPressed(event)) {
                         nextIndex = (currentIndex - 1 + views.length) % views.length;
                     } else {
                         nextIndex = (currentIndex + 1) % views.length;

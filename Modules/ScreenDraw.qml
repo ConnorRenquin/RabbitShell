@@ -55,6 +55,10 @@ Loader {
 
             focus: true
 
+            Controls {
+                id: controls
+            }
+
             property var shapes: []
             property var currentShape: null
 
@@ -76,7 +80,7 @@ Loader {
             }
 
             Keys.onPressed: event => {
-                if (event.key === Qt.Key_Escape) {
+                if (controls.escapePressed(event)) {
                     loader.active = false;
                     event.accepted = true;
                 }

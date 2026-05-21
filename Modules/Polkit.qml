@@ -62,8 +62,11 @@ Loader {
         RowLayout {
             anchors.fill: parent
             spacing: Styles.marginMd
+            Controls {
+                id: controls
+            }
             Keys.onPressed: event => {
-                if (event.key === Qt.Key_Escape)
+                if (controls.escapePressed(event))
                     root.cancel();
             }
             Rectangle {
