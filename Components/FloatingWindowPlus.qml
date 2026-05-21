@@ -18,16 +18,6 @@ FloatingWindow {
 
     property string shortcutName: ""
 
-    property int windowWidth: 0
-    property int windowHeight: 0
-    property int windowImplicitWidth: 0
-    property int windowImplicitHeight: 0
-
-    width: windowWidth > 0 ? windowWidth : undefined
-    height: windowHeight > 0 ? windowHeight : undefined
-    implicitWidth: windowImplicitWidth > 0 ? windowImplicitWidth : undefined
-    implicitHeight: windowImplicitHeight > 0 ? windowImplicitHeight : undefined
-
     function open() {
         root.visible = true;
     }

@@ -16,8 +16,6 @@ FloatingWindowPlus {
     id: root
 
     title: 'Scratchpad Editor'
-    windowImplicitWidth: 750
-    windowImplicitHeight: 450
     shortcutName: "texteditor"
 
     property int currentTab: 0
@@ -80,13 +78,13 @@ FloatingWindowPlus {
         if (!textArea) return;
 
         tabContents[currentTab] = textArea.text;
-        
+
         if (forward) {
             currentTab = (currentTab + 1) % 4;
         } else {
             currentTab = (currentTab + 3) % 4;
         }
-        
+
         textArea.text = tabContents[currentTab];
         textArea.forceActiveFocus();
     }
@@ -652,7 +650,7 @@ FloatingWindowPlus {
                                         default:
                                             root.dPressed = false;
                                             root.gPressed = false;
-                                            
+
                                             if (event.key === Qt.Key_Escape) {
                                                 root.exit();
                                             }

@@ -16,8 +16,6 @@ FloatingWindowPlus {
     id: root
 
     title: 'Notification Manager'
-    windowImplicitWidth: 600
-    windowImplicitHeight: 900
     shortcutName: "notification-manager"
 
     Component.onCompleted: PatchBay.openNotificationsManager.connect(toggle)

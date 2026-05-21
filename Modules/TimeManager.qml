@@ -18,8 +18,6 @@ FloatingWindowPlus {
     id: root
 
     title: 'Time Manager'
-    windowImplicitWidth: 550
-    windowImplicitHeight: 450
     shortcutName: "timemanager"
 
     property int currentTab: 0 // 0: Timers, 1: Stopwatch, 2: Alarms
