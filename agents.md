@@ -94,9 +94,11 @@ Connections {
 ## 4. Development & Testing Workflow
 
 1. **Verify Syntax & Formatting**:
-   - Follow the rules in `.qmlformat.ini` and `.editorconfig`.
+   - Follow the rules in `.qmlformat.ini`.
 2. **Run in Preview Mode**:
    - You can test changes by running `quickshell` in the terminal.
-   - To prevent replacing your active desktop shell, run with appropriate preview flags or test scripts in `/TestScripts`.
+   - To prevent replacing your active desktop shell, run with appropriate preview
+     flags or test scripts in `/TestScripts`.
 3. **Check Logs**:
-   - Monitor stdout/stderr for QML binding loops, type mismatches, or missing import warnings.
+   - Monitor stdout/stderr for QML binding loops, type mismatches, or missing
+     import warnings.
