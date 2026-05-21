@@ -95,7 +95,7 @@ FloatingWindowPlus {
                 color: Colors.background
                 Layout.preferredWidth: 300
                 Layout.fillWidth: true
-                UpdateSettingsView {
+                AboutSettingsView {
                     readonly property string name:  Icons.info + ' About'
                     anchors.fill: parent
                 }
