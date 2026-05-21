@@ -1,8 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
-import Quickshell.Hyprland
-import Quickshell.Io
 
 import QtQuick
 import QtQuick.Layouts
@@ -12,8 +10,6 @@ import qs.Settings
 import qs.Components
 import qs.Services
 
-import "../Components"
-
 FloatingWindowPlus {
     id: root
 
@@ -22,56 +18,36 @@ FloatingWindowPlus {
 
     property int currentTab: 0 // 0: Timers, 1: Stopwatch, 2: Alarms
 
-    // Timers State
     property var activeTimers: []
-
-    // Stopwatch State
     property var laps: []
-
-    // Alarms State
     property var alarms: []
 
-    // Dynamic Timer Component
     Component {
         id: timerPlusComponent
         TimerPlus {}
     }
 
-    // Dynamic Timer Management
     function addTimer(hours, minutes, seconds) {
-        console.log("addTimer called with:", hours, "hours,", minutes, "minutes,", seconds, "seconds");
         let totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
-        console.log("totalSeconds calculated:", totalSeconds);
         if (totalSeconds <= 0) {
-            console.log("totalSeconds is <= 0, returning");
             return;
         }
-
         let timerInstance = timerPlusComponent.createObject(root, {
             duration: totalSeconds,
             running: true
         });
-        console.log("timerInstance created:", timerInstance);
-
         if (timerInstance) {
             timerInstance.triggered.connect(() => {
-                console.log("Timer triggered!");
                 Quickshell.execDetached(['notify-send', '-a', 'Timer', 'Timer Finished!']);
                 SoundEffects.playUrgent();
                 removeTimerInstance(timerInstance);
             });
-
             timerInstance.start();
-            console.log("timerInstance started, remaining:", timerInstance.remaining);
-
             activeTimers.push(timerInstance);
             activeTimers = [...activeTimers];
 
             timersModel.append({ "duration": totalSeconds });
-            console.log("Added timer to model, timersModel count:", timersModel.count);
             saveTimers();
-        } else {
-            console.log("Failed to create timerInstance!");
         }
     }
 
@@ -103,7 +79,6 @@ FloatingWindowPlus {
         });
     }
 
-    // Periodic save for running timers
     Timer {
         interval: 5000 // 5 seconds
         running: root.activeTimers.length > 0
@@ -365,8 +340,6 @@ FloatingWindowPlus {
                                             }
 
                                             ButtonStyled {
-                                                implicitWidth: 60
-                                                implicitHeight: 30
                                                 text: timerRow.timerInstance && timerRow.timerInstance.paused ? "Resume" : "Pause"
                                                 defaultColor: Colors.surfaceVariant
                                                 onClicked: {
@@ -382,8 +355,6 @@ FloatingWindowPlus {
                                             }
 
                                             ButtonStyled {
-                                                implicitWidth: 60
-                                                implicitHeight: 30
                                                 text: "Delete"
                                                 defaultColor: Colors.error
                                                 textColor: Colors.onError
@@ -503,8 +474,6 @@ FloatingWindowPlus {
                             spacing: Styles.marginMd
 
                             ButtonStyled {
-                                implicitWidth: 100
-                                implicitHeight: 40
                                 text: stopwatch.running ? (stopwatch.paused ? "Resume" : "Pause") : "Start"
                                 defaultColor: stopwatch.running && !stopwatch.paused ? Colors.error : Colors.primary
                                 textColor: stopwatch.running && !stopwatch.paused ? Colors.onError : Colors.onPrimary
@@ -520,8 +489,6 @@ FloatingWindowPlus {
                             }
 
                             ButtonStyled {
-                                implicitWidth: 100
-                                implicitHeight: 40
                                 text: "Lap"
                                 defaultColor: Colors.surfaceVariant
                                 textColor: Colors.onSurface
@@ -533,8 +500,6 @@ FloatingWindowPlus {
                             }
 
                             ButtonStyled {
-                                implicitWidth: 100
-                                implicitHeight: 40
                                 text: "Reset"
                                 defaultColor: Colors.surfaceVariant
                                 textColor: Colors.onSurface
@@ -650,7 +615,6 @@ FloatingWindowPlus {
                                             }
 
                                             ButtonStyled {
-                                                implicitHeight: 30
                                                 text: "Delete"
                                                 defaultColor: Colors.error
                                                 textColor: Colors.onError
