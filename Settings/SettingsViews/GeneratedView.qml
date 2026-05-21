@@ -7,18 +7,17 @@ import qs.Settings
 Rectangle {
     id: root
 
-    color: Colors.surface
-
     property string category: 'misc'
 
-    implicitHeight: Settings.getCategory(root.category).length * (40 + Styles.marginSm) + Styles.marginMd * 2
+    color: Colors.surface
+    implicitHeight: column.implicitHeight
 
     ColumnLayoutPlus {
+        id: column
         anchors {
             top: parent.top
             left: parent.left
             right: parent.right
-            margins: Styles.marginMd
         }
         spacing: Styles.marginSm
         model: Settings.getCategory(root.category)
@@ -37,22 +36,16 @@ Rectangle {
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: Styles.marginMd
-                anchors.rightMargin: Styles.marginMd
                 spacing: Styles.marginMd
 
                 TextStyled {
                     Layout.fillWidth: true
                     text: Settings.toDisplayName(row.modelData.name)
-                    font.pointSize: Styles.textMd
-                    elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
                 }
-
-                // array (options)
                 ComboBoxStyled {
+                    id: optionsArray
                     visible: !!row.modelData.options
-                    Layout.preferredWidth: 180
+                    Layout.fillHeight: true
                     model: visible ? row.modelData.options : []
                     currentIndex: visible ? row.modelData.options.indexOf(row.modelData.value) : -1
                     onActivated: index => Settings.change({
@@ -61,8 +54,8 @@ Rectangle {
                     })
                 }
 
-                // bool
                 SwitchStyled {
+                    id: boolSwitch
                     visible: typeof row.modelData.value === 'boolean'
                     checked: visible ? row.modelData.value : false
                     onToggled: Settings.change({
@@ -71,12 +64,12 @@ Rectangle {
                     })
                 }
 
-                // number
                 Rectangle {
+                    id: numberInput
                     visible: row.modelData.type === 'number'
                     Layout.preferredWidth: 180
-                    Layout.preferredHeight: 28
-                    color: Colors.surface
+                    Layout.fillHeight: true
+                    color: Qt.darker(Colors.background, 1.1)
                     radius: Styles.radiusSm
 
                     TextFieldStyled {
@@ -96,12 +89,12 @@ Rectangle {
                     }
                 }
 
-                // string
                 Rectangle {
+                    id: stringInput
                     visible: typeof row.modelData.value === 'string' && !row.modelData.options
                     Layout.preferredWidth: 180
-                    Layout.preferredHeight: 28
-                    color: Colors.surface
+                    Layout.fillHeight: true
+                    color: Qt.darker(Colors.background, 1.1)
                     radius: Styles.radiusSm
 
                     TextFieldStyled {
