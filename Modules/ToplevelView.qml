@@ -216,9 +216,10 @@ Loader {
 
             visible: Object.keys(root.workspaceGroups).length > 0
 
+            property bool topBar: Settings.get('barPosition').value
             anchors.top: parent.top
+            anchors.margins: topBar ? Styles.marginMd * 3 : Styles.marginSm
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.margins: Styles.marginLg * 2
 
             width: offMonitorFlow.implicitWidth + Styles.marginSm
             height: offMonitorFlow.implicitHeight + Styles.marginSm
@@ -524,8 +525,8 @@ Loader {
             TextStyled {
                 id: bannerText
                 anchors.centerIn: parent
-                text: root.targetToplevel === null 
-                    ? "SAVE MODE: Press a window key..." 
+                text: root.targetToplevel === null
+                    ? "SAVE MODE: Press a window key..."
                     : "SAVE MODE: Press an alias key (a-z) to assign to '" + (root.targetToplevel?.wayland?.title ?? "App") + "'"
                 color: Colors.onPrimary
                 font.bold: true
