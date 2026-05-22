@@ -28,13 +28,12 @@ Loader {
     property var allToplevels: []
     property int currentIndex: -1
 
+    function normalizeAddr(a) { return a ? a.replace(/^0x/i, '') : ''; }
+
     function generateUniquePrefixes(items) {
         let prefixes = new Array(items.length).fill("");
 
         // 1. Find which slot keys are active (i.e. the window is currently open)
-        // Normalize addresses by stripping any leading '0x' for comparison
-        function normalizeAddr(a) { return a ? a.replace(/^0x/i, '') : ''; }
-
         let addressToSlot = {};
         for (let slotKey in root.storedSlots) {
             let addr = normalizeAddr(root.storedSlots[slotKey]);
@@ -124,13 +123,39 @@ Loader {
             return groups;
         }, {});
         toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace?.id);
-        allToplevels = toplevels.concat(Object.keys(workspaceGroups).sort((a, b) => parseInt(a) - parseInt(b)).map(id => workspaceGroups[id]).reduce((acc, arr) => acc.concat(arr), []));
+        const sortedOtherToplevels = Object.keys(workspaceGroups)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .map(id => workspaceGroups[id])
+            .reduce((acc, arr) => acc.concat(arr), []);
+        allToplevels = toplevels.concat(sortedOtherToplevels);
         currentIndex = toplevels.findIndex(toplevel => toplevel.activated);
         if (currentIndex === -1 && toplevels.length > 0) {
             currentIndex = 0;
         }
 
         toplevelPrefixes = generateUniquePrefixes(allToplevels);
+    }
+
+    // Appends char to typedKeys and returns the unambiguously matched toplevel index,
+    // or -1 if still ambiguous/typing. Clears typedKeys on a successful match.
+    function resolveTypedKey(char) {
+        root.typedKeys += char;
+        let idx = root.toplevelPrefixes.indexOf(root.typedKeys);
+        let ambiguous = root.toplevelPrefixes.some(p => p !== root.typedKeys && p.startsWith(root.typedKeys));
+        if (idx !== -1 && !ambiguous) {
+            root.typedKeys = "";
+            return idx;
+        }
+        if (!root.toplevelPrefixes.some(p => p.startsWith(root.typedKeys))) {
+            root.typedKeys = char;
+            idx = root.toplevelPrefixes.indexOf(root.typedKeys);
+            ambiguous = root.toplevelPrefixes.some(p => p !== root.typedKeys && p.startsWith(root.typedKeys));
+            if (idx !== -1 && !ambiguous) {
+                root.typedKeys = "";
+                return idx;
+            }
+        }
+        return -1;
     }
 
     onActiveChanged: {
@@ -201,9 +226,7 @@ Loader {
             item: offMonitorBar
         }
 
-        function getToplevelIndex(toplevel) {
-            return root.allToplevels.indexOf(toplevel);
-        }
+
 
         HyprlandFocusGrab {
             active: root.active
@@ -270,8 +293,7 @@ Loader {
 
                             onClicked: modelData.wayland.activate()
 
-                            property int globalIndex: toplevelView.getToplevelIndex(modelData)
-                            property string keyLabel: globalIndex >= 0 && globalIndex < root.toplevelPrefixes.length ? root.toplevelPrefixes[globalIndex] : ""
+                            property string keyLabel: root.toplevelPrefixes[root.allToplevels.indexOf(modelData)] ?? ""
                             property string matchedPart: root.typedKeys !== "" && keyLabel.startsWith(root.typedKeys) ? root.typedKeys : ""
                             property string unmatchedPart: matchedPart !== "" ? keyLabel.substring(matchedPart.length) : keyLabel
 
@@ -351,15 +373,14 @@ Loader {
         }
 
         Repeater {
-            model: root.toplevels.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace?.id)
+            model: root.toplevels
             delegate: Rectangle {
                 id: onScreen
 
                 required property var modelData
                 required property int index
 
-                property int globalIndex: toplevelView.getToplevelIndex(modelData)
-                property string keyLabel: globalIndex >= 0 && globalIndex < root.toplevelPrefixes.length ? root.toplevelPrefixes[globalIndex] : ""
+                property string keyLabel: root.toplevelPrefixes[root.allToplevels.indexOf(modelData)] ?? ""
                 property string matchedPart: root.typedKeys !== "" && keyLabel.startsWith(root.typedKeys) ? root.typedKeys : ""
                 property string unmatchedPart: matchedPart !== "" ? keyLabel.substring(matchedPart.length) : keyLabel
 
@@ -405,10 +426,9 @@ Loader {
 
         Rectangle {
             id: slotsPanel
-            visible: Object.keys(root.storedSlots).some(key => {
-                var addr = (root.storedSlots[key] ?? "").replace(/^0x/i, '');
-                return root.allToplevels.some(t => t.address.replace(/^0x/i, '') === addr);
-            })
+            visible: Object.keys(root.storedSlots).some(key =>
+                root.allToplevels.some(t => root.normalizeAddr(t.address) === root.normalizeAddr(root.storedSlots[key] ?? ""))
+            )
             anchors.bottom: saveModeBanner.visible ? saveModeBanner.top : parent.bottom
             anchors.right: parent.right
             anchors.margins: Styles.marginLg * 2
@@ -435,8 +455,8 @@ Loader {
                         implicitWidth: 24
                         implicitHeight: 24
                         pointSize: Styles.textSm
-                        defaultColor: Colors.errorContainer
-                        textColor: Colors.onErrorContainer
+                        defaultColor: Colors.error
+                        textColor: Colors.onError
                         onClicked: {
                             root.storedSlots = {};
                             persistentSlots.save(root.storedSlots);
@@ -446,16 +466,15 @@ Loader {
                 }
 
                 Repeater {
-                    model: Object.keys(root.storedSlots).sort().filter(key => {
-                        var addr = (root.storedSlots[key] ?? "").replace(/^0x/i, '');
-                        return root.allToplevels.some(t => t.address.replace(/^0x/i, '') === addr);
-                    })
+                    model: Object.keys(root.storedSlots).sort().filter(key =>
+                        root.allToplevels.some(t => root.normalizeAddr(t.address) === root.normalizeAddr(root.storedSlots[key] ?? ""))
+                    )
                     delegate: RowLayout {
                         id: slotRow
                         required property var modelData
                         property string slotKey: modelData
                         property string slotAddress: root.storedSlots[modelData] ?? ""
-                        property var slotToplevel: root.allToplevels.find(t => t.address.replace(/^0x/i, '') === slotAddress.replace(/^0x/i, '')) ?? null
+                        property var slotToplevel: root.allToplevels.find(t => root.normalizeAddr(t.address) === root.normalizeAddr(slotAddress)) ?? null
 
                         Layout.fillWidth: true
                         spacing: Styles.marginSm
@@ -560,63 +579,41 @@ Loader {
                     return;
                 }
 
-                if ([Qt.Key_Return, Qt.Key_Enter].includes(event.key)) {
-                    var matchIndex = root.toplevelPrefixes.indexOf(root.typedKeys);
+                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    let matchIndex = root.toplevelPrefixes.indexOf(root.typedKeys);
                     if (matchIndex !== -1) {
-                        var toplevel = root.allToplevels[matchIndex].wayland;
                         root.active = false;
                         root.typedKeys = "";
-                        toplevel.activate();
+                        root.allToplevels[matchIndex].wayland.activate();
                         event.accepted = true;
                         return;
                     }
                 }
 
-                if ([Qt.Key_Escape].includes(event.key)) { // Quit
+                if (event.key === Qt.Key_Escape) {
                     if (root.saveModeActive) {
                         root.saveModeActive = false;
                         root.targetToplevel = null;
-                        root.typedKeys = "";
-                        event.accepted = true;
-                        return;
+                    } else {
+                        root.active = false;
                     }
-                    root.active = false;
                     root.typedKeys = "";
                     event.accepted = true;
                     return;
                 }
 
                 if (root.saveModeActive) {
-                    var pressedChar = event.text.toLowerCase();
+                    let pressedChar = event.text.toLowerCase();
                     if (pressedChar === "" || !/^[a-z]$/.test(pressedChar))
                         return;
-
                     event.accepted = true;
 
                     if (root.targetToplevel === null) {
-                        root.typedKeys += pressedChar;
-
-                        // Only select when the typed keys match exactly one prefix
-                        var exactIndex = root.toplevelPrefixes.indexOf(root.typedKeys);
-                        var stillAmbiguous = root.toplevelPrefixes.some(p => p !== root.typedKeys && p.startsWith(root.typedKeys));
-                        if (exactIndex !== -1 && !stillAmbiguous) {
-                            root.targetToplevel = root.allToplevels[exactIndex];
-                            root.typedKeys = "";
-                            return;
-                        }
-
-                        var hasPotentialMatch = root.toplevelPrefixes.some(p => p.startsWith(root.typedKeys));
-                        if (!hasPotentialMatch) {
-                            root.typedKeys = pressedChar;
-                            exactIndex = root.toplevelPrefixes.indexOf(root.typedKeys);
-                            stillAmbiguous = root.toplevelPrefixes.some(p => p !== root.typedKeys && p.startsWith(root.typedKeys));
-                            if (exactIndex !== -1 && !stillAmbiguous) {
-                                root.targetToplevel = root.allToplevels[exactIndex];
-                                root.typedKeys = "";
-                            }
-                        }
+                        let idx = root.resolveTypedKey(pressedChar);
+                        if (idx !== -1)
+                            root.targetToplevel = root.allToplevels[idx];
                     } else {
-                        var newSlots = Object.assign({}, root.storedSlots);
+                        let newSlots = Object.assign({}, root.storedSlots);
                         newSlots[pressedChar] = root.targetToplevel.address;
                         root.storedSlots = newSlots;
                         persistentSlots.save(root.storedSlots);
@@ -633,42 +630,17 @@ Loader {
                     workspaceInput.visible = true;
                     workspaceInputField.focus = true;
                     return;
-                } else { // Select a window
-                    var pressedChar = event.text.toLowerCase();
-                    if (pressedChar === "" || !/^[a-z]$/.test(pressedChar))
-                        return;
+                }
 
-                    root.typedKeys += pressedChar;
-                    event.accepted = true;
-
-                    // Activate when typed keys exactly match a prefix and no other prefix starts with it
-                    var matchIndex = root.toplevelPrefixes.indexOf(root.typedKeys);
-                    var isAmbiguous = root.toplevelPrefixes.some(p => p !== root.typedKeys && p.startsWith(root.typedKeys));
-                    if (matchIndex !== -1 && !isAmbiguous) {
-                        var toplevel = root.allToplevels[matchIndex].wayland;
-                        root.active = false;
-                        root.typedKeys = "";
-                        toplevel.activate();
-                        return;
-                    }
-
-                    // If Enter is pressed, force-activate the first match
-                    // (handled separately via Qt.Key_Return above)
-
-                    // Check if typedKeys is no longer a prefix of any window's prefix.
-                    var hasPotentialMatch = root.toplevelPrefixes.some(p => p.startsWith(root.typedKeys));
-                    if (!hasPotentialMatch) {
-                        // Reset typedKeys to the last pressed char to see if it starts a new match
-                        root.typedKeys = pressedChar;
-                        matchIndex = root.toplevelPrefixes.indexOf(root.typedKeys);
-                        isAmbiguous = root.toplevelPrefixes.some(p => p !== root.typedKeys && p.startsWith(root.typedKeys));
-                        if (matchIndex !== -1 && !isAmbiguous) {
-                            var toplevel = root.allToplevels[matchIndex].wayland;
-                            root.active = false;
-                            root.typedKeys = "";
-                            toplevel.activate();
-                        }
-                    }
+                // Select a window by prefix
+                let pressedChar = event.text.toLowerCase();
+                if (pressedChar === "" || !/^[a-z]$/.test(pressedChar))
+                    return;
+                event.accepted = true;
+                let idx = root.resolveTypedKey(pressedChar);
+                if (idx !== -1) {
+                    root.active = false;
+                    root.allToplevels[idx].wayland.activate();
                 }
             }
         }
