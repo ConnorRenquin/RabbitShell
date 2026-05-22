@@ -71,8 +71,8 @@ Rectangle {
 
             // Color Wheel
             Item {
-                width: 160
-                height: 160
+                Layout.preferredHeight: 160
+                Layout.preferredWidth: 160
                 Layout.alignment: Qt.AlignVCenter
 
                 Canvas {
@@ -289,13 +289,6 @@ Rectangle {
                 Layout.preferredHeight: 30
                 color: root.initialColor
                 radius: Styles.radiusSm
-
-                TextStyled {
-                    anchors.centerIn: parent
-                    text: "Old"
-                    font.pointSize: Styles.textXS
-                    color: Qt.luminance(parent.color) > 0.5 ? "black" : "white"
-                }
             }
 
             Rectangle {
@@ -303,13 +296,6 @@ Rectangle {
                 Layout.preferredHeight: 30
                 color: root.currentColor
                 radius: Styles.radiusSm
-
-                TextStyled {
-                    anchors.centerIn: parent
-                    text: "New"
-                    font.pointSize: Styles.textXS
-                    color: Qt.luminance(parent.color) > 0.5 ? "black" : "white"
-                }
             }
 
             TextStyled {
