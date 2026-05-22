@@ -261,7 +261,7 @@ Rectangle {
                         id: matugenType
                         Layout.fillWidth: true
                         Layout.preferredHeight: 30
-                        Layout.preferredWidth: 100
+                        Layout.preferredWidth: 250
                         model: ['scheme-content', 'scheme-expressive', 'scheme-fidelity', 'scheme-fruit-salad', 'scheme-monochrome', 'scheme-neutral', 'scheme-rainbow', 'scheme-tonal-spot', 'scheme-vibrant']
                         currentIndex: 7
                     }
