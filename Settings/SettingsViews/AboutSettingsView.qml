@@ -25,12 +25,6 @@ Rectangle {
 
         ColumnLayout {
             id: infoGrid
-            anchors {
-                top: parent.top
-                left: parent.left
-                right: parent.right
-                margins: Styles.marginSm
-            }
 
             component InformationGroup: ColumnLayout {
                 id: informationGroup
