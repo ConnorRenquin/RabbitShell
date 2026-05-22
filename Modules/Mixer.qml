@@ -35,8 +35,9 @@ Loader {
 
         exclusionMode: ExclusionMode.Ignore
 
+        property bool topBar: Settings.get('barPosition').value
         anchors.top: true
-        margins.top: 60
+        margins.top: topBar ? Styles.marginMd * 3 : Styles.marginSm
 
         implicitWidth: 650
         implicitHeight: Math.min(300, mixerList.implicitHeight + Styles.marginSm * 2)
