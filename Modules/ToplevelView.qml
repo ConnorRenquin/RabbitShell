@@ -18,91 +18,79 @@ Loader {
 
     property bool searchAll: false
 
-    property var toplevelPrefixes: []
     property string typedKeys: ""
     property bool saveModeActive: false
+    property bool deleteModeActive: false
     property var targetToplevel: null
+    property var pendingActivation: null
     property var storedSlots: ({})
     property var toplevels: []
     property var workspaceGroups: []
     property var allToplevels: []
     property int currentIndex: -1
 
+    property var hotkeys: []
+
+    function getHotkey(toplevel) {
+        const existing = hotkeys.find(h => h.toplevel === toplevel);
+        if (existing) return existing.hotkey;
+        const hotkey = generateHotkey(toplevel, hotkeys);
+        setHotkey(toplevel, hotkey, false);
+        return hotkey;
+    }
+
+    // assigned: array of already-committed {hotkey} entries to check against.
+    // Passing it explicitly avoids relying on root.hotkeys mid-update.
+    function generateHotkey(toplevel, assigned) {
+        const useAppId = Settings.get('toplevelLabel')?.value === 'appId';
+        const raw = useAppId
+            ? (toplevel?.wayland?.appId || toplevel?.wayland?.title || "unknown")
+            : (toplevel?.wayland?.title || toplevel?.wayland?.appId || "unknown");
+        const name = raw.toLowerCase().replace(/[^a-z]/g, '') || "unknown";
+
+        const taken = key =>
+            assigned.some(h => h.hotkey === key) ||
+            Object.keys(root.storedSlots).some(k =>
+                k === key && normalizeAddr(root.storedSlots[k]) !== normalizeAddr(toplevel.address)
+            );
+
+        for (let len = 1; len <= Math.min(2, name.length); len++) {
+            const prefix = name.substring(0, len);
+            if (!taken(prefix)) return prefix;
+        }
+
+        const base = name.substring(0, Math.min(2, name.length));
+        for (let i = 0; i < 26; i++) {
+            const prefix = base + String.fromCharCode(97 + i);
+            if (!taken(prefix)) return prefix;
+        }
+
+        return name.substring(0, 3) || "unk";
+    }
+
+    function setHotkey(toplevel, hotkey, persist) {
+        const idx = hotkeys.findIndex(h => h.toplevel === toplevel);
+        const next = [...hotkeys];
+        const entry = { toplevel, hotkey, persist };
+        if (idx !== -1) {
+            next[idx] = entry;
+        } else {
+            next.push(entry);
+        }
+        hotkeys = next;
+    }
+
+    function removeHotkey(toplevel) {
+        hotkeys = hotkeys.filter(h => h.toplevel !== toplevel);
+    }
+
     function normalizeAddr(a) { return a ? a.replace(/^0x/i, '') : ''; }
 
-    function generateUniquePrefixes(items) {
-        let prefixes = new Array(items.length).fill("");
-
-        // 1. Find which slot keys are active (i.e. the window is currently open)
-        let addressToSlot = {};
-        for (let slotKey in root.storedSlots) {
-            let addr = normalizeAddr(root.storedSlots[slotKey]);
-            addressToSlot[addr] = slotKey;
-        }
-
-        // Assign the slot keys as prefixes first
-        for (let i = 0; i < items.length; i++) {
-            let addr = normalizeAddr(items[i].address);
-            if (addressToSlot[addr]) {
-                prefixes[i] = addressToSlot[addr];
-            }
-        }
-
-        // 2. Clean titles for the remaining items
-        let cleanTitles = items.map(t => {
-            let title = (t?.wayland?.title || t?.wayland?.appId || "unknown").toLowerCase();
-            // Only allow alpha characters (a-z)
-            return title.replace(/[^a-z]/g, '');
-        });
-
-        // 3. Generate unique prefixes sequentially
-        for (let i = 0; i < items.length; i++) {
-            if (prefixes[i] !== "") continue; // Already assigned via slot
-
-            let title = cleanTitles[i];
-            if (title === "") {
-                prefixes[i] = "unknown";
-                continue;
-            }
-
-            let len = 1;
-            let maxLen = 3; // Limit prefix to 3 characters max
-            while (len <= title.length && len <= maxLen) {
-                let prefix = title.substring(0, len);
-                let conflict = false;
-
-                // Check conflict ONLY with exact matches of already assigned prefixes
-                for (let j = 0; j < items.length; j++) {
-                    if (prefixes[j] === prefix) {
-                        conflict = true;
-                        break;
-                    }
-                }
-
-                // Also check conflict with any stored slot keys that are NOT currently open
-                if (!conflict) {
-                    for (let slotKey in root.storedSlots) {
-                        if (slotKey === prefix) {
-                            if (root.storedSlots[slotKey] !== items[i].address) {
-                                conflict = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (!conflict) {
-                    prefixes[i] = prefix;
-                    break;
-                }
-                len++;
-            }
-            if (prefixes[i] === "") {
-                prefixes[i] = title.substring(0, maxLen);
-            }
-        }
-
-        return prefixes;
+    function toplevelLabel(toplevel) {
+        const useAppId = Settings.get('toplevelLabel')?.value === 'appId';
+        return useAppId
+            ? (toplevel?.wayland?.appId ?? "Unknown App")
+            : (toplevel?.wayland?.title ?? "Unknown App");
     }
 
     function updateToplevels() {
@@ -133,28 +121,75 @@ Loader {
             currentIndex = 0;
         }
 
-        toplevelPrefixes = generateUniquePrefixes(allToplevels);
+        // Build into a local array so conflict checks are always against a
+        // consistent snapshot rather than the QML property mid-mutation.
+        const newHotkeys = [];
+
+        // Pass 1: persisted slot hotkeys first so auto-gen sees them as taken
+        for (const t of allToplevels) {
+            const addr = normalizeAddr(t.address);
+            for (const key in root.storedSlots) {
+                if (normalizeAddr(root.storedSlots[key]) === addr) {
+                    newHotkeys.push({ toplevel: t, hotkey: key, persist: true });
+                    break;
+                }
+            }
+        }
+
+        // Pass 2: auto-generate for everything else
+        for (const t of allToplevels) {
+            if (newHotkeys.some(h => h.toplevel === t)) continue;
+            const hotkey = generateHotkey(t, newHotkeys);
+            newHotkeys.push({ toplevel: t, hotkey, persist: false });
+        }
+
+        hotkeys = newHotkeys;
     }
 
     // Appends char to typedKeys and returns the unambiguously matched toplevel index,
     // or -1 if still ambiguous/typing. Clears typedKeys on a successful match.
     function resolveTypedKey(char) {
         root.typedKeys += char;
-        let idx = root.toplevelPrefixes.indexOf(root.typedKeys);
-        let ambiguous = root.toplevelPrefixes.some(p => p !== root.typedKeys && p.startsWith(root.typedKeys));
-        if (idx !== -1 && !ambiguous) {
-            root.typedKeys = "";
+        console.log('[resolveTypedKey] char:', char, '| typedKeys:', root.typedKeys, '| hotkeys:', JSON.stringify(root.hotkeys.map(h => h.hotkey)));
+
+        let match = root.hotkeys.find(h => h.hotkey === root.typedKeys);
+        let ambiguous = root.hotkeys.some(h => h.hotkey !== root.typedKeys && h.hotkey.startsWith(root.typedKeys));
+        console.log('[resolveTypedKey] match:', match ? match.hotkey : 'none', '| ambiguous:', ambiguous);
+
+        if (match) {
+            const idx = root.allToplevels.indexOf(match.toplevel);
+            if (!ambiguous) {
+                // Unambiguous: clear typed buffer, fire immediately via timer
+                console.log('[resolveTypedKey] unambiguous match -> idx:', idx);
+                root.typedKeys = "";
+            } else {
+                // Ambiguous: an exact match exists but longer hotkeys share this prefix.
+                // Return the match so the timer starts; keep typedKeys so the user can
+                // still type more characters to land on a longer hotkey instead.
+                console.log('[resolveTypedKey] ambiguous exact match -> idx:', idx, '(timer will fire unless overridden)');
+            }
             return idx;
         }
-        if (!root.toplevelPrefixes.some(p => p.startsWith(root.typedKeys))) {
+
+        if (!root.hotkeys.some(h => h.hotkey.startsWith(root.typedKeys))) {
+            // Nothing at all starts with the accumulated buffer - reset to just this char
+            console.log('[resolveTypedKey] no prefix match, resetting to:', char);
             root.typedKeys = char;
-            idx = root.toplevelPrefixes.indexOf(root.typedKeys);
-            ambiguous = root.toplevelPrefixes.some(p => p !== root.typedKeys && p.startsWith(root.typedKeys));
-            if (idx !== -1 && !ambiguous) {
-                root.typedKeys = "";
+            match = root.hotkeys.find(h => h.hotkey === root.typedKeys);
+            ambiguous = root.hotkeys.some(h => h.hotkey !== root.typedKeys && h.hotkey.startsWith(root.typedKeys));
+            if (match) {
+                const idx = root.allToplevels.indexOf(match.toplevel);
+                if (!ambiguous) {
+                    console.log('[resolveTypedKey] unambiguous match after reset -> idx:', idx);
+                    root.typedKeys = "";
+                } else {
+                    console.log('[resolveTypedKey] ambiguous match after reset -> idx:', idx);
+                }
                 return idx;
             }
         }
+
+        console.log('[resolveTypedKey] no match, returning -1');
         return -1;
     }
 
@@ -168,7 +203,11 @@ Loader {
         if (!active) {
             typedKeys = "";
             saveModeActive = false;
+            deleteModeActive = false;
             targetToplevel = null;
+            hotkeys = hotkeys.filter(h => h.persist);
+            activateTimer.stop();
+            pendingActivation = null;
         }
     }
 
@@ -215,6 +254,25 @@ Loader {
         onTriggered: root.active = false
     }
 
+    Timer {
+        id: activateTimer
+        interval: 200
+        onTriggered: {
+            // Save target first — setting active=false triggers onActiveChanged
+            // which clears pendingActivation, so we must grab it before that.
+            const target = root.pendingActivation;
+            console.log('[activateTimer] fired | target:', target?.wayland?.title ?? target?.wayland?.appId ?? 'null');
+            root.pendingActivation = null;
+            root.active = false;
+            if (target) {
+                console.log('[activateTimer] activating:', target.wayland?.title ?? target.wayland?.appId);
+                target.wayland.activate();
+            } else {
+                console.log('[activateTimer] fired but target was null, nothing to do');
+            }
+        }
+    }
+
     sourceComponent: PanelWindow {
         id: toplevelView
 
@@ -231,8 +289,6 @@ Loader {
         mask: Region {
             item: offMonitorBar
         }
-
-
 
         HyprlandFocusGrab {
             active: root.active
@@ -297,13 +353,15 @@ Loader {
                             implicitHeight: 50
                             isFocused: modelData.activated
 
-                            defaultColor: theme.background
-
                             onClicked: modelData.wayland.activate()
 
-                            property string keyLabel: root.toplevelPrefixes[root.allToplevels.indexOf(modelData)] ?? ""
+                            property var hotkeyEntry: root.hotkeys.find(h => h.toplevel === modelData)
+                            property string keyLabel: hotkeyEntry?.hotkey ?? ""
+                            property bool isPersisted: hotkeyEntry?.persist ?? false
                             property string matchedPart: root.typedKeys !== "" && keyLabel.startsWith(root.typedKeys) ? root.typedKeys : ""
                             property string unmatchedPart: matchedPart !== "" ? keyLabel.substring(matchedPart.length) : keyLabel
+
+                            defaultColor: isPersisted ? Qt.lighter(theme.background, 1.4) : theme.background
 
                             RowLayout {
                                 anchors.fill: parent
@@ -336,7 +394,7 @@ Loader {
                                 }
                                 TextStyled {
                                     Layout.fillWidth: true
-                                    text: (offMonitor.modelData?.wayland?.title ?? "Unknown App")
+                                    text: root.toplevelLabel(offMonitor.modelData)
                                     elide: Text.ElideRight
                                     font.pointSize: Styles.textSm
                                 }
@@ -387,7 +445,9 @@ Loader {
                 required property var modelData
                 required property int index
 
-                property string keyLabel: root.toplevelPrefixes[root.allToplevels.indexOf(modelData)] ?? ""
+                property var hotkeyEntry: root.hotkeys.find(h => h.toplevel === modelData)
+                property string keyLabel: hotkeyEntry?.hotkey ?? ""
+                property bool isPersisted: hotkeyEntry?.persist ?? false
                 property string matchedPart: root.typedKeys !== "" && keyLabel.startsWith(root.typedKeys) ? root.typedKeys : ""
                 property string unmatchedPart: matchedPart !== "" ? keyLabel.substring(matchedPart.length) : keyLabel
 
@@ -400,7 +460,10 @@ Loader {
                 x: clientInfo ? clientInfo.at[0] - (clientMonitor?.x ?? 0) + clientInfo.size[0] / 2 - width / 2 : 0
                 y: clientInfo ? clientInfo.at[1] - (clientMonitor?.y ?? 0) + clientInfo.size[1] / 2 - height / 2 : 0
 
-                color: modelData.activated ? theme.background: theme.foreground
+                color: {
+                    const base = modelData.activated ? theme.background : theme.foreground;
+                    return isPersisted ? Qt.lighter(base, 1.4) : base;
+                }
                 radius: Styles.radiusMd
 
                 RowLayout {
@@ -433,9 +496,7 @@ Loader {
 
         Rectangle {
             id: slotsPanel
-            visible: Object.keys(root.storedSlots).some(key =>
-                root.allToplevels.some(t => root.normalizeAddr(t.address) === root.normalizeAddr(root.storedSlots[key] ?? ""))
-            )
+            visible: root.hotkeys.some(h => h.persist)
             anchors.bottom: saveModeBanner.visible ? saveModeBanner.top : parent.bottom
             anchors.right: parent.right
             anchors.margins: Styles.marginLg * 2
@@ -447,22 +508,24 @@ Loader {
 
         Rectangle {
             id: saveModeBanner
-            visible: root.saveModeActive
+            visible: root.saveModeActive || root.deleteModeActive
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.margins: Styles.marginLg * 2
             width: bannerText.implicitWidth + Styles.marginLg * 2
             height: bannerText.implicitHeight + Styles.marginSm * 2
-            color: theme.acent
+            color: root.deleteModeActive ? Colors.error : theme.acent
             radius: Styles.radiusMd
 
             TextStyled {
                 id: bannerText
                 anchors.centerIn: parent
-                text: root.targetToplevel === null
-                    ? "SAVE MODE: Press a window key..."
-                    : "SAVE MODE: Press an alias key (a-z) to assign to '" + (root.targetToplevel?.wayland?.title ?? "App") + "'"
-                color: theme.text
+                text: root.deleteModeActive
+                    ? "DELETE MODE: Press a hotkey to remove its alias"
+                    : (root.targetToplevel === null
+                        ? "SAVE MODE: Press a window key..."
+                        : "SAVE MODE: Press an alias key (a-z) to assign to '" + root.toplevelLabel(root.targetToplevel) + "'")
+                color: root.deleteModeActive ? Colors.onError : theme.text
                 font.bold: true
                 font.pointSize: Styles.textMd
             }
@@ -480,6 +543,16 @@ Loader {
 
                 if (event.key === Qt.Key_Control) {
                     root.saveModeActive = !root.saveModeActive;
+                    root.deleteModeActive = false;
+                    root.targetToplevel = null;
+                    root.typedKeys = "";
+                    event.accepted = true;
+                    return;
+                }
+
+                if (event.key === Qt.Key_Shift) {
+                    root.deleteModeActive = !root.deleteModeActive;
+                    root.saveModeActive = false;
                     root.targetToplevel = null;
                     root.typedKeys = "";
                     event.accepted = true;
@@ -487,19 +560,22 @@ Loader {
                 }
 
                 if (event.key === Qt.Key_Backspace) {
+                    root.hotkeys = root.hotkeys.filter(h => !h.persist);
                     root.storedSlots = {};
-                    persistentSlots.save(root.storedSlots);
+                    persistentSlots.save({});
                     root.updateToplevels();
                     event.accepted = true;
                     return;
                 }
 
                 if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                    let matchIndex = root.toplevelPrefixes.indexOf(root.typedKeys);
-                    if (matchIndex !== -1) {
+                    const enterMatch = root.hotkeys.find(h => h.hotkey === root.typedKeys) ?? (root.pendingActivation ? { toplevel: root.pendingActivation } : null);
+                    if (enterMatch) {
+                        activateTimer.stop();
+                        root.pendingActivation = null;
                         root.active = false;
                         root.typedKeys = "";
-                        root.allToplevels[matchIndex].wayland.activate();
+                        enterMatch.toplevel.wayland.activate();
                         event.accepted = true;
                         return;
                     }
@@ -509,11 +585,35 @@ Loader {
                     if (root.saveModeActive) {
                         root.saveModeActive = false;
                         root.targetToplevel = null;
+                    } else if (root.deleteModeActive) {
+                        root.deleteModeActive = false;
                     } else {
                         root.active = false;
                     }
+                    activateTimer.stop();
+                    root.pendingActivation = null;
                     root.typedKeys = "";
                     event.accepted = true;
+                    return;
+                }
+
+                if (root.deleteModeActive) {
+                    const pressedChar = event.text.toLowerCase();
+                    if (pressedChar === "" || !/^[a-z]$/.test(pressedChar))
+                        return;
+                    event.accepted = true;
+
+                    const toDelete = root.hotkeys.find(h => h.hotkey === pressedChar && h.persist);
+                    if (toDelete) {
+                        root.hotkeys = root.hotkeys.filter(h => !(h.hotkey === pressedChar && h.persist));
+                        const newSlots = {};
+                        root.hotkeys.filter(h => h.persist).forEach(h => { newSlots[h.hotkey] = h.toplevel.address; });
+                        root.storedSlots = newSlots;
+                        persistentSlots.save(newSlots);
+                        root.updateToplevels();
+                    }
+                    root.deleteModeActive = false;
+                    root.typedKeys = "";
                     return;
                 }
 
@@ -528,14 +628,14 @@ Loader {
                         if (idx !== -1)
                             root.targetToplevel = root.allToplevels[idx];
                     } else {
-                        let newSlots = Object.assign({}, root.storedSlots);
-                        newSlots[pressedChar] = root.targetToplevel.address;
+                        root.setHotkey(root.targetToplevel, pressedChar, true);
+                        const newSlots = {};
+                        root.hotkeys.filter(h => h.persist).forEach(h => { newSlots[h.hotkey] = h.toplevel.address; });
                         root.storedSlots = newSlots;
-                        persistentSlots.save(root.storedSlots);
+                        persistentSlots.save(newSlots);
                         root.saveModeActive = false;
                         root.targetToplevel = null;
                         root.typedKeys = "";
-                        root.updateToplevels();
                     }
                     return;
                 }
@@ -553,9 +653,14 @@ Loader {
                     return;
                 event.accepted = true;
                 let idx = root.resolveTypedKey(pressedChar);
+                console.log('[keyHandler] idx:', idx, '| pendingActivation:', root.pendingActivation?.wayland?.title ?? root.pendingActivation?.wayland?.appId ?? 'null');
                 if (idx !== -1) {
-                    root.active = false;
-                    root.allToplevels[idx].wayland.activate();
+                    root.pendingActivation = root.allToplevels[idx];
+                    console.log('[keyHandler] set pendingActivation:', root.pendingActivation?.wayland?.title ?? root.pendingActivation?.wayland?.appId);
+                    activateTimer.restart();
+                } else if (root.pendingActivation !== null) {
+                    console.log('[keyHandler] no new match, keeping pendingActivation and resetting timer');
+                    activateTimer.restart();
                 }
             }
         }

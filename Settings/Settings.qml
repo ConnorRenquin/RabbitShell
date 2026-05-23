@@ -41,6 +41,12 @@ Singleton {
             value: false,
             category: 'misc'
         })
+        register({
+            name: 'toplevelLabel',
+            value: 'title',
+            options: ['title', 'appId'],
+            category: 'misc'
+        })
     }
 
     property var settings: []
