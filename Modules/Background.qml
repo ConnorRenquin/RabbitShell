@@ -42,19 +42,17 @@ Variants {
 
             Image {
                 anchors.fill: parent
-                source: root.player !== null ? root.player.trackArtUrl : ""
+                source: root.player !== null ? root.player.trackArtUrl : ''
             }
 
             DoubleText {
                 pointSize: 34
                 offset: 4
-                text: "󰎄 " + root.player?.trackTitle + " - " + root.player?.trackArtist
-
-                anchors {
-                    bottom: parent.bottom
-                    bottomMargin: root.clockMargin + Styles.marginSm
-                    horizontalCenter: parent.horizontalCenter
-                }
+                width: albumArt.width - Styles.marginSm * 2
+                anchors.bottom: parent.bottom
+                anchors.margins: root.clockMargin + Styles.marginSm
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: Icons.nowPlaying + ' ' + root.player?.trackTitle + ' - ' + root.player?.trackArtist
             }
         }
 

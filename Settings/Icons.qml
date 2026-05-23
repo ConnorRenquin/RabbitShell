@@ -32,6 +32,8 @@ Singleton {
     readonly property string undo: ""
     readonly property string colors: ""
 
+    readonly property string nowPlaying: "󰎄"
+
     readonly property string hourGlass: ""
     readonly property string clock: "󰥔"
     readonly property string alarm: "󰀠"
