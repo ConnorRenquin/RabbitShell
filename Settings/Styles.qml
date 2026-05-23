@@ -12,7 +12,7 @@ Singleton {
     readonly property int barTextOffset: 2
 
     readonly property int marginXS: marginSm / 2
-    property int marginSm
+    property int marginSm: 10
     readonly property int marginMd: marginSm * 2
     readonly property int marginLg: marginSm * 3
 
@@ -30,11 +30,6 @@ Singleton {
             name: 'fontFamily',
             value: 'JetBrainsMono Nerd Font Mono Propo',
             options: ['RobotoMono Nerd Font Propo', 'Agave Nerd Font Propo', 'JetBrainsMono Nerd Font Mono', 'SpaceMono Nerd Font Propo', 'Terminuss Nerd Font Mono'],
-            category: 'appearance'
-        }).value;
-        root.marginSm = Settings.register({
-            name: 'margin',
-            value: 10,
             category: 'appearance'
         }).value;
         root.radiusSm = Settings.register({
