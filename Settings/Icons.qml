@@ -44,7 +44,6 @@ Singleton {
     readonly property string box: "󰙟"
     readonly property string line: "󰕞"
 
-    // Power menu
     readonly property string logout: "󰿅"
     readonly property string lock: ""
     readonly property string suspend: "󰤄"
