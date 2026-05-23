@@ -14,8 +14,6 @@ Singleton {
 
     Component.onCompleted: {
         currentTheme = Settings.register({ name: 'currentTheme', value: 'default.json', category: 'hide'}).value;
-        lighter = Settings.register({ name: 'lighter', value: 2.5, category: 'colors' }).value;
-        darker = Settings.register({ name: 'darker', value: 1.5, category: 'colors' }).value;
     }
 
     Connections {
@@ -61,7 +59,7 @@ Singleton {
     }
 
     property double lighter: 2.5
-    property double darker: 1.5
+    property double darker: 2.5
 
     // Primary
     property string primary: userColors["primary"] ?? "#A7C080"
