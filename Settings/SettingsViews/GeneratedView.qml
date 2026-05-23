@@ -69,7 +69,7 @@ Rectangle {
                     visible: row.modelData.type === 'number'
                     Layout.preferredWidth: 180
                     Layout.fillHeight: true
-                    color: Qt.darker(Colors.background, 1.1)
+                    color: Qt.darker(Colors.background, Colors.darker)
                     radius: Styles.radiusSm
 
                     TextFieldStyled {
@@ -94,7 +94,7 @@ Rectangle {
                     visible: typeof row.modelData.value === 'string' && !row.modelData.options
                     Layout.preferredWidth: 180
                     Layout.fillHeight: true
-                    color: Qt.darker(Colors.background, 1.1)
+                    color: Qt.darker(Colors.background, Colors.darker)
                     radius: Styles.radiusSm
 
                     TextFieldStyled {
