@@ -158,6 +158,12 @@ Loader {
         return -1;
     }
 
+
+    Themer {
+        id: theme
+        settingName: 'toplevel'
+    }
+
     onActiveChanged: {
         if (!active) {
             typedKeys = "";
@@ -247,7 +253,7 @@ Loader {
             width: offMonitorFlow.implicitWidth + Styles.marginSm
             height: offMonitorFlow.implicitHeight + Styles.marginSm
 
-            color: Colors.surfaceLighter
+            color: theme.foreground
             radius: Styles.radiusMd
 
             GridLayoutPlus {
@@ -268,7 +274,7 @@ Loader {
                         Layout.preferredHeight: workspaceId.implicitHeight + Styles.marginSm
                         Layout.fillWidth: true
                         radius: Styles.radiusMd
-                        color: Colors.surface
+                        color: theme.background
                         TextStyled {
                             id: workspaceId
                             anchors.fill: parent
@@ -291,6 +297,8 @@ Loader {
                             implicitHeight: 50
                             isFocused: modelData.activated
 
+                            defaultColor: theme.background
+
                             onClicked: modelData.wayland.activate()
 
                             property string keyLabel: root.toplevelPrefixes[root.allToplevels.indexOf(modelData)] ?? ""
@@ -308,20 +316,20 @@ Loader {
                                 Rectangle {
                                     Layout.preferredHeight: textRow.implicitHeight + Styles.marginSm
                                     Layout.preferredWidth: Math.max(30, textRow.implicitWidth + Styles.marginSm)
-                                    color: Colors.surfaceLighter
+                                    color: theme.background
                                     radius: Styles.radiusLg
                                     Row {
                                         id: textRow
                                         anchors.centerIn: parent
                                         TextStyled {
                                             text: offMonitor.matchedPart.toUpperCase()
-                                            color: Colors.primary
+                                            color: theme.background
                                             font.bold: true
                                             font.pointSize: Styles.textSm
                                         }
                                         TextStyled {
                                             text: offMonitor.unmatchedPart.toUpperCase()
-                                            color: Colors.onSurface
+                                            color: theme.text
                                             font.pointSize: Styles.textSm
                                         }
                                     }
@@ -345,14 +353,13 @@ Loader {
             anchors.top: offMonitorBar.bottom
             anchors.horizontalCenter: offMonitorBar.horizontalCenter
             anchors.margins: Styles.marginSm
-            color: Colors.surfaceLighter
+            color: theme.background
             width: 50
             height: 50
             radius: Styles.radiusMd
             TextFieldStyled {
                 id: workspaceInputField
                 placeholderText: 'workspace'
-                backgroundColor: Colors.surface
                 anchors.fill: parent
                 Keys.onEscapePressed: root.active = false;
                 Keys.onReturnPressed: event => {
@@ -393,7 +400,7 @@ Loader {
                 x: clientInfo ? clientInfo.at[0] - (clientMonitor?.x ?? 0) + clientInfo.size[0] / 2 - width / 2 : 0
                 y: clientInfo ? clientInfo.at[1] - (clientMonitor?.y ?? 0) + clientInfo.size[1] / 2 - height / 2 : 0
 
-                color: modelData.activated ? Colors.surfaceLighter: Colors.surface
+                color: modelData.activated ? theme.background: theme.foreground
                 radius: Styles.radiusMd
 
                 RowLayout {
@@ -409,13 +416,13 @@ Loader {
                         Row {
                             TextStyled {
                                 text: onScreen.matchedPart.toUpperCase()
-                                color: Colors.primary
+                                color: theme.background
                                 font.bold: true
                                 font.pointSize: Styles.textSm
                             }
                             TextStyled {
                                 text: onScreen.unmatchedPart.toUpperCase()
-                                color: Colors.onSurface
+                                color: theme.text
                                 font.pointSize: Styles.textSm
                             }
                         }
@@ -434,100 +441,8 @@ Loader {
             anchors.margins: Styles.marginLg * 2
             width: slotsColumn.implicitWidth + Styles.marginSm * 2
             height: slotsColumn.implicitHeight + Styles.marginSm * 2
-            color: Colors.surfaceLighter
+            color: theme.background
             radius: Styles.radiusMd
-
-            ColumnLayout {
-                id: slotsColumn
-                anchors.centerIn: parent
-                spacing: Styles.marginSm
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    TextStyled {
-                        text: "Saved Slots"
-                        font.pointSize: Styles.textSm
-                        color: Colors.outline
-                        Layout.fillWidth: true
-                    }
-                    ButtonStyled {
-                        text: "󰌍"
-                        implicitWidth: 24
-                        implicitHeight: 24
-                        pointSize: Styles.textSm
-                        defaultColor: Colors.error
-                        textColor: Colors.onError
-                        onClicked: {
-                            root.storedSlots = {};
-                            persistentSlots.save(root.storedSlots);
-                            root.updateToplevels();
-                        }
-                    }
-                }
-
-                Repeater {
-                    model: Object.keys(root.storedSlots).sort().filter(key =>
-                        root.allToplevels.some(t => root.normalizeAddr(t.address) === root.normalizeAddr(root.storedSlots[key] ?? ""))
-                    )
-                    delegate: RowLayout {
-                        id: slotRow
-                        required property var modelData
-                        property string slotKey: modelData
-                        property string slotAddress: root.storedSlots[modelData] ?? ""
-                        property var slotToplevel: root.allToplevels.find(t => root.normalizeAddr(t.address) === root.normalizeAddr(slotAddress)) ?? null
-
-                        Layout.fillWidth: true
-                        spacing: Styles.marginSm
-
-                        Rectangle {
-                            implicitWidth: slotKeyText.implicitWidth + Styles.marginSm * 2
-                            implicitHeight: slotKeyText.implicitHeight + Styles.marginSm
-                            color: Colors.primary
-                            radius: Styles.radiusLg
-                            TextStyled {
-                                id: slotKeyText
-                                anchors.centerIn: parent
-                                text: slotRow.slotKey.toUpperCase()
-                                color: Colors.onPrimary
-                                font.pointSize: Styles.textSm
-                            }
-                        }
-
-                        IconImage {
-                            implicitWidth: 20
-                            implicitHeight: 20
-                            source: {
-                                var t = slotRow.slotToplevel;
-                                return t ? Quickshell.iconPath(DesktopEntries.byId(t.wayland?.appId)?.icon, "applications-other") : "";
-                            }
-                        }
-
-                        TextStyled {
-                            Layout.fillWidth: true
-                            font.pointSize: Styles.textSm
-                            elide: Text.ElideRight
-                            text: slotRow.slotToplevel ? (slotRow.slotToplevel.wayland?.title ?? "Unknown") : "(closed)"
-                            color: slotRow.slotToplevel ? Colors.onSurface : Colors.outline
-                        }
-
-                        ButtonStyled {
-                            text: "󰅖"
-                            implicitWidth: 24
-                            implicitHeight: 24
-                            pointSize: Styles.textSm
-                            defaultColor: Colors.surface
-                            textColor: Colors.onSurface
-                            onClicked: {
-                                var newSlots = Object.assign({}, root.storedSlots);
-                                delete newSlots[slotRow.slotKey];
-                                root.storedSlots = newSlots;
-                                persistentSlots.save(root.storedSlots);
-                                root.updateToplevels();
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         Rectangle {
@@ -538,7 +453,7 @@ Loader {
             anchors.margins: Styles.marginLg * 2
             width: bannerText.implicitWidth + Styles.marginLg * 2
             height: bannerText.implicitHeight + Styles.marginSm * 2
-            color: Colors.primary
+            color: theme.acent
             radius: Styles.radiusMd
 
             TextStyled {
@@ -547,7 +462,7 @@ Loader {
                 text: root.targetToplevel === null
                     ? "SAVE MODE: Press a window key..."
                     : "SAVE MODE: Press an alias key (a-z) to assign to '" + (root.targetToplevel?.wayland?.title ?? "App") + "'"
-                color: Colors.onPrimary
+                color: theme.text
                 font.bold: true
                 font.pointSize: Styles.textMd
             }
