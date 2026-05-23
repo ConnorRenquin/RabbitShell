@@ -12,6 +12,7 @@ import qs.Services
 
 import qs.Settings
 import qs.Settings.SettingsViews
+import "../Settings/SettingsViews" as SettingsViews
 
 FloatingWindowPlus {
     id: root
@@ -128,6 +129,10 @@ FloatingWindowPlus {
                 }
                 DisplaySettingsView {
                     readonly property string name: Icons.display + ' Display'
+                    anchors.fill: parent
+                }
+                SettingsViews.HyprlandSettingsView {
+                    readonly property string name: Icons.hyprland + ' Hyprland'
                     anchors.fill: parent
                 }
                 WallpaperSettingsView {

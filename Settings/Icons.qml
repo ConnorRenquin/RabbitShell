@@ -31,6 +31,7 @@ Singleton {
     readonly property string rightChevron: ""
     readonly property string undo: ""
     readonly property string colors: ""
+    readonly property string hyprland: ""
 
     readonly property string nowPlaying: "󰎄"
 
