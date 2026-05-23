@@ -31,6 +31,16 @@ Item {
         return Colors.onBackground;
     }
 
+    property string acent: {
+        if (variant === 'primary')
+            return Colors.onTertiary;
+        if (variant === 'secondary')
+            return Colors.onSecondary;
+        if (variant === 'tertiary')
+            return Colors.background;
+        return Colors.onPrimary;
+    }
+
     property string background: {
         if (variant === 'primary')
             return Colors.onPrimary;
