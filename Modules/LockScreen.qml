@@ -106,7 +106,7 @@ Scope {
                     id: clock
                     implicitWidth: clockText.implicitWidth + Styles.marginSm * 2
                     implicitHeight: clockText.implicitHeight
-                    color: Colors.surfaceLighter
+                    color: Qt.lighter(Colors.surface, Colors.lighter)
                     radius: Styles.radiusMd
 
                     anchors {
@@ -136,7 +136,7 @@ Scope {
                                 id: passwordTextField
                                 anchors.fill: parent
                                 anchors.centerIn: parent
-                                backgroundColor: Colors.surfaceLighter
+                                backgroundColor: Qt.lighter(Colors.surface, Colors.lighter)
                                 padding: Styles.marginSm
                                 enabled: !lockContext.unlockInProgress
                                 echoMode: TextInput.Password
@@ -159,7 +159,7 @@ Scope {
                             implicitWidth: unlockButtonText.implicitWidth + Styles.marginMd
                             Layout.fillHeight: true
 
-                            defaultColor: Colors.surfaceLighter
+                            defaultColor: Qt.lighter(Colors.surface, Colors.lighter)
                             onClicked: lockContext.tryUnlock()
                             enabled: !lockContext.unlockInProgress
                             TextStyled {

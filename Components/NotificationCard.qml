@@ -170,7 +170,7 @@ Rectangle {
                 Layout.fillHeight: true
                 placeholderText: root.notification?.inlineReplyPlaceholder || "Reply..."
                 onActiveFocusChanged: if (activeFocus) root.replyFocused()
-                backgroundColor: Colors.surfaceLighter
+                backgroundColor: Qt.lighter(Colors.surface, Colors.lighter)
                 background: Rectangle {
                     color: inlineReplyInput.backgroundColor
                     radius: Styles.radiusSm

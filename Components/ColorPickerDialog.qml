@@ -13,7 +13,7 @@ Rectangle {
     width: 480
     height: column.implicitHeight + Styles.marginSm * 2
     radius: Styles.radiusLg
-    color: Colors.surfaceLighter
+    color: Qt.lighter(Colors.surface, Colors.lighter)
 
     property string title: "Select Color"
     property color initialColor: "#ffffff"

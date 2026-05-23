@@ -12,7 +12,7 @@ Rectangle {
     id: root
 
     anchors.fill: parent
-    color: Colors.surfaceLighter
+    color: Qt.lighter(Colors.surface, Colors.lighter)
 
     Component.onCompleted: forceActiveFocus()
 

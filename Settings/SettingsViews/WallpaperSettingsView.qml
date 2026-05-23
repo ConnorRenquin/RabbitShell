@@ -16,7 +16,7 @@ Rectangle {
     id: root
 
     anchors.fill: parent
-    color: Colors.surfaceLighter
+    color: Qt.lighter(Colors.surface, Colors.lighter)
 
     property string wallpaperDirectory
     property string wallpaperTransition
@@ -316,7 +316,7 @@ Rectangle {
 
                         Layout.fillWidth: true
                         Layout.preferredHeight: 300
-                        color: Colors.surfaceLighter
+                        color: Qt.lighter(Colors.surface, Colors.lighter)
                         radius: Styles.radiusSm
 
                         ColumnLayout {
@@ -327,7 +327,7 @@ Rectangle {
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                color: Colors.surfaceLighter
+                                color: Qt.lighter(Colors.surface, Colors.lighter)
                                 radius: Styles.radiusSm
                                 clip: true
 

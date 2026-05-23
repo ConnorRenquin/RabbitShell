@@ -8,9 +8,9 @@ Switch {
 
     property color backgroundColor: Colors.surface
     property color checkedColor: Colors.onSurface
-    property color uncheckedColor: Colors.surfaceLighter
+    property color uncheckedColor: Qt.lighter(Colors.surface, Colors.lighter)
     property color handleColor: Colors.onSurface
-    property color handleCheckedColor: Colors.surfaceLighter
+    property color handleCheckedColor: Qt.lighter(Colors.surface, Colors.lighter)
 
     indicator: Rectangle {
         implicitWidth: 40

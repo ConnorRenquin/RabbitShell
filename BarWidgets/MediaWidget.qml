@@ -125,7 +125,7 @@ Rectangle {
             onClicked: root.player.previous()
         }
         ButtonStyledLocal {
-            backgroundColor: root.player?.isPlaying ? Colors.error : Colors.surfaceLighter
+            backgroundColor: root.player?.isPlaying ? Colors.error : Qt.lighter(Colors.surface, Colors.lighter)
             iconColor: root.player?.isPlaying ? Colors.surface : Colors.onSurface
             iconText: "󰐎"
             onClicked: root.player.togglePlaying()

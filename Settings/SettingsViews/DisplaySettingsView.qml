@@ -14,7 +14,7 @@ Rectangle {
     id: root
 
     anchors.fill: parent
-    color: Colors.surfaceLighter
+    color: Qt.lighter(Colors.surface, Colors.lighter)
 
     property double viewScale: 0.1
     property var selectedMonitorIndex: 0
@@ -124,7 +124,7 @@ Rectangle {
                 id: displayPlacer
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: Colors.surfaceLighter
+                color: Qt.lighter(Colors.surface, Colors.lighter)
                 clip: true
 
                 ScrollView {
@@ -255,7 +255,7 @@ Rectangle {
                                 id: displayInfoCard
                                 required property var modelData
                                 required property int index
-                                defaultColor: Colors.surfaceLighter
+                                defaultColor: Qt.lighter(Colors.surface, Colors.lighter)
                                 onClicked: {
                                     root.selectedMonitorIndex = index;
                                 }

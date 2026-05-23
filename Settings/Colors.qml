@@ -63,49 +63,31 @@ Singleton {
 
     // Primary
     property string primary: userColors["primary"] ?? "#A7C080"
-    property string primaryLighter: Qt.lighter(root.primary, lighter)
-    property string primaryDarker: Qt.darker(root.primary, darker)
     property string onPrimary: userColors["onPrimary"] ?? "#FFFFFF"
     property string primaryContainer: userColors["primaryContainer"] ?? "#D8F0BB"
-    property string primaryContainerLighter: Qt.lighter(root.primaryContainer, lighter)
-    property string primaryContainerDarker: Qt.darker(root.primaryContainer, darker)
     property string onPrimaryContainer: userColors["onPrimaryContainer"] ?? "#1F3A0F"
     property string inversePrimary: userColors["inversePrimary"] ?? "#4A7C45"
 
     // Secondary
     property string secondary: userColors["secondary"] ?? "#8DA9A0"
-    property string secondaryLighter: Qt.lighter(root.secondary, lighter)
-    property string secondaryDarker: Qt.darker(root.secondary, darker)
     property string onSecondary: userColors["onSecondary"] ?? "#FFFFFF"
     property string secondaryContainer: userColors["secondaryContainer"] ?? "#C8E3D9"
-    property string secondaryContainerLighter: Qt.lighter(root.secondaryContainer, lighter)
-    property string secondaryContainerDarker: Qt.darker(root.secondaryContainer, darker)
     property string onSecondaryContainer: userColors["onSecondaryContainer"] ?? "#0F2D27"
 
     // Tertiary
     property string tertiary: userColors["tertiary"] ?? "#DBBC7F"
-    property string tertiaryLighter: Qt.lighter(root.tertiary, lighter)
-    property string tertiaryDarker: Qt.darker(root.tertiary, darker)
     property string onTertiary: userColors["onTertiary"] ?? "#FFFFFF"
     property string tertiaryContainer: userColors["tertiaryContainer"] ?? "#F5DFA8"
-    property string tertiaryContainerLighter: Qt.lighter(root.tertiaryContainer, lighter)
-    property string tertiaryContainerDarker: Qt.darker(root.tertiaryContainer, darker)
     property string onTertiaryContainer: userColors["onTertiaryContainer"] ?? "#3A2D00"
 
     // Error
     property string error: userColors["error"] ?? "#E67E80"
-    property string errorLighter: Qt.lighter(root.error, lighter)
-    property string errorDarker: Qt.darker(root.error, darker)
     property string onError: userColors["onError"] ?? "#FFFFFF"
 
     // Surface
     property string surface: userColors["surface"] ?? "#2D353B"
-    property string surfaceLighter: Qt.lighter(root.surface, lighter)
-    property string surfaceDarker: Qt.darker(root.surface, darker)
     property string onSurface: userColors["onSurface"] ?? "#D3C6AA"
     property string surfaceVariant: userColors["surfaceVariant"] ?? "#3D4A51"
-    property string surfaceVariantLighter: Qt.lighter(root.surfaceVariant, lighter)
-    property string surfaceVariantDarker: Qt.darker(root.surfaceVariant, darker)
     property string onSurfaceVariant: userColors["onSurfaceVariant"] ?? "#A0B0B8"
 
     // Outline
@@ -114,8 +96,6 @@ Singleton {
 
     // Background
     property string background: userColors["background"] ?? "#232A2E"
-    property string backgroundLighter: Qt.lighter(root.background, lighter)
-    property string backgroundDarker: Qt.darker(root.background, darker)
     property string onBackground: userColors["onBackground"] ?? "#D3C6AA"
 
     // Misc

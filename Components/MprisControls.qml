@@ -36,7 +36,7 @@ ColumnLayout {
         }
 
         Rectangle {
-            color: root.isCurrentItem ? Colors.surfaceLighter : Colors.surface
+            color: root.isCurrentItem ? Qt.lighter(Colors.surface, Colors.lighter) : Colors.surface
             Layout.fillWidth: true
             Layout.preferredHeight: 35
             radius: Styles.radiusLg

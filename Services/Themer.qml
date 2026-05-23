@@ -58,6 +58,6 @@ Item {
             return Colors.secondaryContainer;
         if (variant === 'tertiary')
             return Colors.tertiaryContainer;
-        return Colors.backgroundLighter;
+        return Qt.lighter(Colors.background, Colors.lighter);
     }
 }

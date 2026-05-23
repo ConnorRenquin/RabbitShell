@@ -107,7 +107,7 @@ Loader {
                                     } else if (polkitAgent.flow?.isSuccessful) {
                                         return Colors.primary;
                                     } else {
-                                        return Colors.errorDarker;
+                                        return Qt.darker(Colors.errorDarker, Colors.darker)
                                     }
                                     incorrectText.visible = false;
                                 }

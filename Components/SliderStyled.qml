@@ -15,7 +15,7 @@ Slider {
     property color progressColor: Colors.onSurface
     property color handleColor: Colors.onSurface
     property color handleHoverColor: Colors.onSurface
-    property color handleTextColor: Colors.surfaceLighter
+    property color handleTextColor: Qt.lighter(Colors.surface, Colors.lighter)
     property int handleHeight: 30
     property bool showPercentage: true
 

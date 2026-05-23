@@ -9,7 +9,7 @@ Rectangle {
     z: 5
     visible: false
     anchors.centerIn: parent
-    color: Colors.surfaceLighter
+    color: Qt.lighter(Colors.surface, Colors.lighter)
     radius: Styles.radiusLg
     width: 400
     height: column.implicitHeight + Styles.marginSm * 2

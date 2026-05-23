@@ -12,7 +12,7 @@ Rectangle {
     width: 500
     height: column.implicitHeight + Styles.marginSm * 2
     radius: Styles.radiusLg
-    color: Colors.surfaceLighter
+    color: Qt.lighter(Colors.surface, Colors.lighter)
 
     property alias title: header.text
     property alias currentText: textField.text
