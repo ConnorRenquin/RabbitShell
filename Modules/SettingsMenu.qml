@@ -99,6 +99,17 @@ FloatingWindowPlus {
                 color: Colors.background
                 Layout.preferredWidth: 300
                 Layout.fillWidth: true
+                component GeneralView: ScrollView {
+                    required property string name
+                    property alias category: genView.category
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginSm
+                    contentWidth: availableWidth
+                    GeneratedView {
+                        id: genView
+                        width: parent.width
+                    }
+                }
                 AboutSettingsView {
                     readonly property string name:  Icons.info + ' About'
                     anchors.fill: parent
@@ -127,15 +138,13 @@ FloatingWindowPlus {
                     readonly property string name: Icons.cheatsheet + ' Cheatsheet'
                     anchors.fill: parent
                 }
-                ScrollView {
-                    readonly property string name:  Icons.misc + ' Misc'
-                    anchors.fill: parent
-                    anchors.margins: Styles.marginSm
-                    contentWidth: availableWidth
-                    GeneratedView {
-                        category: 'misc'
-                        width: parent.width
-                    }
+                GeneralView {
+                    name: Icons.appearance + ' Appearance'
+                    category: 'appearance'
+                }
+                GeneralView {
+                    name: Icons.misc + ' Misc'
+                    category: 'misc'
                 }
             }
         }

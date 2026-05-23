@@ -30,19 +30,22 @@ Singleton {
             name: 'fontFamily',
             value: 'JetBrainsMono Nerd Font Mono Propo',
             options: ['RobotoMono Nerd Font Propo', 'Agave Nerd Font Propo', 'JetBrainsMono Nerd Font Mono', 'SpaceMono Nerd Font Propo', 'Terminuss Nerd Font Mono'],
-            category: 'misc'
+            category: 'appearance'
         }).value;
         root.marginSm = Settings.register({
             name: 'margin',
-            value: 10
+            value: 10,
+            category: 'appearance'
         }).value;
         root.radiusSm = Settings.register({
             name: 'radius',
-            value: 5
+            value: 5,
+            category: 'appearance'
         }).value;
         root.textSm = Settings.register({
             name: 'textSize',
-            value: 10
+            value: 10,
+            category: 'appearance'
         }).value;
     }
 

@@ -45,7 +45,7 @@ Singleton {
             name: 'toplevelLabel',
             value: 'title',
             options: ['title', 'appId'],
-            category: 'misc'
+            category: 'appearance'
         })
     }
 

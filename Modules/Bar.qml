@@ -20,7 +20,8 @@ Variants {
         Component.onCompleted: {
             top = Settings.register({
                 name: 'barPosition',
-                value: true
+                value: true,
+                category: 'appearance'
             }).value;
         }
 
@@ -63,7 +64,8 @@ Variants {
             Component.onCompleted: {
                 barBackground = Settings.register({
                     name: 'barBackground',
-                    value: true
+                    value: true,
+                    category: 'appearance'
                 }).value;
             }
 

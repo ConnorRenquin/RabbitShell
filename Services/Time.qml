@@ -15,7 +15,7 @@ Singleton {
     property bool militaryTime: false
 
     Component.onCompleted: {
-        militaryTime = Settings.register({ name: 'militaryTime', value: false }).value;
+        militaryTime = Settings.register({ name: 'militaryTime', value: false, category: 'appearance' }).value;
     }
 
     Connections {
