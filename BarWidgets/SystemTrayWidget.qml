@@ -123,7 +123,7 @@ Rectangle {
                         anchors.margins: Styles.marginXS
                         spacing: 4
 
-                        readonly property var buttonHeight: 28
+                        readonly property int buttonHeight: 28
 
                         ButtonStyled {
                             id: backButton
@@ -132,6 +132,7 @@ Rectangle {
                             textAlignment: Text.AlignLeft
                             implicitHeight: menuContent.buttonHeight
                             text: Icons.back + ' Back'
+                            textColor: theme.text
                             pointSize: Styles.textSm
                             onClicked: systemTrayMenu.currentMenu = null
                             defaultColor: theme.foreground

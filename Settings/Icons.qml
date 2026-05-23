@@ -16,6 +16,7 @@ Singleton {
     readonly property string audio: "󰓃"
     readonly property string cheatsheet: "?"
     readonly property string appearance: ""
+    readonly property string apps: ""
     readonly property string misc: ""
     readonly property string os: "󱄅"
     readonly property string notificationBell: ""
