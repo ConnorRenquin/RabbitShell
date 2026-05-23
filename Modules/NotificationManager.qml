@@ -29,7 +29,7 @@ FloatingWindowPlus {
     delegate: Rectangle {
         id: base
         anchors.fill: parent
-        color: theme.foreground
+        color: theme.background
         radius: Styles.radiusMd
         focus: true
 
