@@ -72,7 +72,6 @@ Rectangle {
             }
         }
     }
-
     ColorPickerDialog {
         id: colorPickerDialog
         property var targetTextField: null
@@ -99,18 +98,22 @@ Rectangle {
     ColumnLayout {
         id: appearanceSettings
         anchors.fill: parent
-        anchors.margins: Styles.marginSm
-        spacing: Styles.marginLg
+        spacing: Styles.marginSm
 
         TextStyled {
-            text: "Appearance"
+            text: "Colors"
             font.pointSize: Styles.textLg
+        }
+
+        ColorPalette {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
         }
 
         RowLayout {
             id: topBar
             Layout.fillWidth: true
-            Layout.maximumHeight: 30
+            Layout.maximumHeight: 40
             spacing: Styles.marginSm
 
             ComboBoxStyled {
