@@ -130,6 +130,7 @@ FloatingWindowPlus {
                 ScrollView {
                     readonly property string name:  Icons.misc + ' Misc'
                     anchors.fill: parent
+                    anchors.margins: Styles.marginSm
                     contentWidth: availableWidth
                     GeneratedView {
                         category: 'misc'
