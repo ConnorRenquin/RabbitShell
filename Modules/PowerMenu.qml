@@ -117,6 +117,7 @@ Loader {
     component PowerMenuButton: ButtonStyled {
         id: menuButton
         required property int index
+        radius: Styles.radiusLg
         Layout.fillWidth: true
         isFocused: index === loader.currentFocusIndex
     }
