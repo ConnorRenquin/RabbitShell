@@ -1,26 +1,25 @@
 import QtQuick
 import QtQuick.Controls
 
+import qs.Services
 import qs.Settings
 
 ComboBox {
     id: root
 
-    property color backgroundColor: Colors.surface
-    property color highlightColor: Colors.surfaceLighter
-    property color textColor: Colors.onSurface
-    property color borderColor: Colors.surfaceLighter
+    readonly property real delegateHeight: Math.ceil(font.pixelSize * 2.2)
 
     font.pointSize: Styles.textMd
     font.family: Styles.defaultFontFamily
     font.bold: true
 
-    background: Rectangle {
-        color: root.backgroundColor
-        radius: Styles.radiusSm
-        border.width: 1
-        border.color: root.borderColor
+    Themer {
+        id: theme
+    }
 
+    background: Rectangle {
+        color: Qt.darker(theme.background, Colors.darker)
+        radius: Styles.radiusSm
         ColorAnimation on color {
             duration: 50
         }
@@ -34,75 +33,40 @@ ComboBox {
         elide: Text.ElideRight
     }
 
-    indicator: Canvas {
-        id: canvas
-        x: root.width - width - Styles.marginSm
-        y: root.topPadding + (root.availableHeight - height) / 2
-        width: 12
-        height: 8
-        contextType: "2d"
-
-        Connections {
-            target: root
-            function onPressedChanged() {
-                canvas.requestPaint();
-            }
-        }
-
-        onPaint: {
-            context.reset();
-            context.moveTo(0, 0);
-            context.lineTo(width, 0);
-            context.lineTo(width / 2, height);
-            context.closePath();
-            context.fillStyle = root.textColor;
-            context.fill();
-        }
-    }
-
     popup: Popup {
         y: root.height + 2
         width: root.width
         implicitHeight: Math.min(contentItem.contentHeight, root.delegateHeight * 6) + 2
         padding: 1
-
         contentItem: ListView {
             clip: true
             implicitHeight: contentHeight
             model: root.popup.visible ? root.delegateModel : null
             currentIndex: root.highlightedIndex
-
             ScrollIndicator.vertical: ScrollIndicator {}
         }
-
         background: Rectangle {
-            color: root.backgroundColor
-            border.color: root.borderColor
-            border.width: 1
+            color: Qt.lighter(theme.background, 1.1)
             radius: Styles.radiusSm
         }
     }
 
-    readonly property real delegateHeight: Math.ceil(font.pixelSize * 2.2)
-
     delegate: ItemDelegate {
         width: root.width
         height: root.delegateHeight
+        highlighted: root.highlightedIndex === index
         contentItem: TextStyled {
             text: modelData
             verticalAlignment: Text.AlignVCenter
             leftPadding: Styles.marginSm
         }
-
         background: Rectangle {
-            color: highlighted ? root.highlightColor : "transparent"
+            color: highlighted ? theme.foreground : "transparent"
             radius: Styles.radiusSm
 
             ColorAnimation on color {
                 duration: 50
             }
         }
-
-        highlighted: root.highlightedIndex === index
     }
 }
