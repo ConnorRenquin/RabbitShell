@@ -2,19 +2,19 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Networking
-import Quickshell.Widgets
 
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Settings
+import qs.Settings.SettingsViews.Components
 import qs.Components
 
 Rectangle {
     id: root
 
-    color: Qt.lighter(Colors.surface, Colors.lighter)
+    color: "transparent"
 
     property string manualStatus: ""
 
@@ -166,28 +166,19 @@ Rectangle {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 56
+                Layout.preferredHeight: connectivity.implicitHeight + Styles.marginSm * 2
                 color: Colors.surface
                 radius: Styles.radiusLg
 
                 RowLayout {
+                    id: connectivity
                     anchors.fill: parent
                     anchors.margins: Styles.marginSm
                     spacing: Styles.marginSm
 
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 0
-
-                        TextStyled {
-                            text: "Connectivity"
-                            font.pointSize: Styles.textMd
-                        }
-
-                        TextStyled {
-                            text: NetworkConnectivity.toString(Networking.connectivity)
-                            font.pointSize: Styles.textSm
-                        }
+                    SectionHeader {
+                        title: "Connectivity"
+                        subtitle: NetworkConnectivity.toString(Networking.connectivity)
                     }
 
                     ButtonStyled {
@@ -195,22 +186,15 @@ Rectangle {
                         text: "check"
                         onClicked: Networking.checkConnectivity()
                     }
-                }
-            }
+                    SwitchStyled {
+                        checked: Networking.wifiEnabled
+                        enabled: Networking.wifiHardwareEnabled
+                        onToggled: Networking.wifiEnabled = checked
+                    }
 
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 40
-                spacing: Styles.marginSm
-
-                SwitchStyled {
-                    checked: Networking.wifiEnabled
-                    enabled: Networking.wifiHardwareEnabled
-                    onToggled: Networking.wifiEnabled = checked
-                }
-
-                TextStyled {
-                    text: Networking.wifiHardwareEnabled ? "Wi-Fi" : "Wi-Fi hardware disabled"
+                    TextStyled {
+                        text: Networking.wifiHardwareEnabled ? "Wi-Fi" : "Wi-Fi hardware disabled"
+                    }
                 }
             }
 
@@ -218,88 +202,86 @@ Rectangle {
                 Layout.fillWidth: true
 
                 TextStyled {
-                        text: "Manual Wi-Fi Connection"
-                        font.pointSize: Styles.textLg
-                    }
+                    text: "Manual Wi-Fi Connection"
+                    font.pointSize: Styles.textLg
+                }
 
-                    TextStyled {
-                        text: "Add or connect to hidden/non-broadcast networks. Interface can be left blank to let NetworkManager choose."
-                        font.pointSize: Styles.textSm
-                        wrapMode: Text.WordWrap
+                TextStyled {
+                    text: "Add or connect to hidden/non-broadcast networks. Interface can be left blank to let NetworkManager choose."
+                    font.pointSize: Styles.textSm
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Styles.marginSm
+
+                    TextFieldStyled {
+                        id: manualSsid
+
                         Layout.fillWidth: true
+                        Layout.preferredHeight: 35
+                        placeholderText: "SSID"
                     }
 
-                    RowLayout {
+                    TextFieldStyled {
+                        id: manualIfname
+
+                        Layout.preferredWidth: 110
+                        Layout.preferredHeight: 35
+                        placeholderText: "Interface"
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Styles.marginSm
+
+                    TextFieldStyled {
+                        id: manualPassword
+
                         Layout.fillWidth: true
-                        spacing: Styles.marginSm
-
-                        TextFieldStyled {
-                            id: manualSsid
-
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 35
-                            placeholderText: "SSID"
-                        }
-
-                        TextFieldStyled {
-                            id: manualIfname
-
-                            Layout.preferredWidth: 110
-                            Layout.preferredHeight: 35
-                            placeholderText: "Interface"
-                        }
+                        Layout.preferredHeight: 35
+                        echoMode: TextInput.Password
+                        placeholderText: manualSecure.checked ? "Password" : "Password (optional)"
+                        onAccepted: root.connectManualWifi(manualSsid.text, text, manualIfname.text, manualHidden.checked)
                     }
 
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: Styles.marginSm
+                    SwitchStyled {
+                        id: manualSecure
 
-                        TextFieldStyled {
-                            id: manualPassword
-
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 35
-                            echoMode: TextInput.Password
-                            placeholderText: manualSecure.checked ? "Password" : "Password (optional)"
-                            onAccepted: root.connectManualWifi(manualSsid.text, text, manualIfname.text, manualHidden.checked)
-                        }
-
-                        SwitchStyled {
-                            id: manualSecure
-
-                            text: "secured"
-                            checked: true
-                        }
-
-                        SwitchStyled {
-                            id: manualHidden
-
-                            text: "hidden"
-                            checked: true
-                        }
+                        text: "secured"
+                        checked: true
                     }
 
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: Styles.marginSm
+                    SwitchStyled {
+                        id: manualHidden
 
-                        ButtonStyled {
-                            text: "connect"
-                            onClicked: root.connectManualWifi(manualSsid.text, manualPassword.text, manualIfname.text, manualHidden.checked)
-                        }
-
-                        ButtonStyled {
-                            text: "add"
-                            onClicked: root.addManualWifi(manualSsid.text, manualPassword.text, manualIfname.text, manualSecure.checked, false)
-                        }
-
-                        ButtonStyled {
-                            text: "add + connect"
-                            onClicked: root.connectManualWifi(manualSsid.text, manualPassword.text, manualIfname.text, manualHidden.checked)
-                        }
-
-                        RowSpacer {}
+                        text: "hidden"
+                        checked: true
                     }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Styles.marginSm
+
+                    ButtonStyled {
+                        text: "connect"
+                        onClicked: root.connectManualWifi(manualSsid.text, manualPassword.text, manualIfname.text, manualHidden.checked)
+                    }
+
+                    ButtonStyled {
+                        text: "add"
+                        onClicked: root.addManualWifi(manualSsid.text, manualPassword.text, manualIfname.text, manualSecure.checked, false)
+                    }
+
+                    ButtonStyled {
+                        text: "add + connect"
+                        onClicked: root.connectManualWifi(manualSsid.text, manualPassword.text, manualIfname.text, manualHidden.checked)
+                    }
+                }
 
                 TextStyled {
                     visible: root.manualStatus.length > 0
@@ -346,19 +328,9 @@ Rectangle {
                                 font.pointSize: Styles.textLg
                             }
 
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 0
-
-                                TextStyled {
-                                    text: deviceCard.modelData.name || DeviceType.toString(deviceCard.modelData.type)
-                                    font.pointSize: Styles.textMd
-                                }
-
-                                TextStyled {
-                                    text: `${DeviceType.toString(deviceCard.modelData.type)} • ${ConnectionState.toString(deviceCard.modelData.state)}${deviceCard.modelData.address ? " • " + deviceCard.modelData.address : ""}`
-                                    font.pointSize: Styles.textSm
-                                }
+                            SectionHeader {
+                                title: deviceCard.modelData.name || DeviceType.toString(deviceCard.modelData.type)
+                                subtitle: `${DeviceType.toString(deviceCard.modelData.type)} • ${ConnectionState.toString(deviceCard.modelData.state)}${deviceCard.modelData.address ? " • " + deviceCard.modelData.address : ""}`
                             }
 
                             ButtonStyled {
@@ -386,60 +358,12 @@ Rectangle {
                                 checked: deviceCard.modelData.autoconnect ?? false
                                 onToggled: deviceCard.modelData.autoconnect = checked
                             }
-                        }
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            visible: root.isWifiDevice(deviceCard.modelData)
-                            spacing: Styles.marginSm
-
-                            TextStyled {
-                                text: `Mode: ${deviceCard.modelData.mode === undefined ? "Unknown" : WifiDeviceMode.toString(deviceCard.modelData.mode)}`
-                                font.pointSize: Styles.textSm
-                            }
-
-                            RowSpacer {}
 
                             SwitchStyled {
                                 text: "scan"
                                 checked: deviceCard.modelData.scannerEnabled ?? false
+                                visible: root.isWifiDevice(deviceCard.modelData)
                                 onToggled: deviceCard.modelData.scannerEnabled = checked
-                            }
-                        }
-
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            visible: root.isWiredDevice(deviceCard.modelData) && deviceCard.modelData.network
-                            spacing: Styles.marginSm
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: Styles.marginSm
-
-                                TextStyled {
-                                    Layout.fillWidth: true
-                                    text: deviceCard.modelData.network?.name || "Wired connection"
-                                }
-
-                                TextStyled {
-                                    text: deviceCard.modelData.hasLink ? `${deviceCard.modelData.linkSpeed} Mb/s` : "no link"
-                                    font.pointSize: Styles.textSm
-                                }
-
-                                LoadingIndicator {
-                                    visible: deviceCard.modelData.network?.stateChanging ?? false
-                                }
-
-                                ButtonStyled {
-                                    text: deviceCard.modelData.network?.connected ? "disconnect" : "connect"
-                                    onClicked: {
-                                        if (deviceCard.modelData.network.connected) {
-                                            deviceCard.modelData.network.disconnect();
-                                        } else {
-                                            deviceCard.modelData.network.connect();
-                                        }
-                                    }
-                                }
                             }
                         }
 
@@ -450,7 +374,6 @@ Rectangle {
 
                             TextStyled {
                                 text: "Wi-Fi Networks"
-                                font.pointSize: Styles.textMd
                             }
 
                             Repeater {
@@ -465,7 +388,7 @@ Rectangle {
                                     property string errorText: ""
 
                                     Layout.fillWidth: true
-                                    implicitHeight: networkColumn.implicitHeight + Styles.marginSm
+                                    implicitHeight: networkColumn.implicitHeight + Styles.marginSm * 2
                                     color: Qt.lighter(Colors.surface, Colors.lighter)
                                     radius: Styles.radiusMd
 
@@ -495,18 +418,9 @@ Rectangle {
                                                 text: root.signalIcon(networkCard.modelData.signalStrength ?? 0)
                                             }
 
-                                            ColumnLayout {
-                                                Layout.fillWidth: true
-                                                spacing: 0
-
-                                                TextStyled {
-                                                    text: networkCard.modelData.name || "Hidden network"
-                                                }
-
-                                                TextStyled {
-                                                    text: `${ConnectionState.toString(networkCard.modelData.state)} • ${Math.round((networkCard.modelData.signalStrength ?? 0) * 100)}% • ${root.networkSecurityText(networkCard.modelData)}${networkCard.modelData.known ? " • known" : ""}`
-                                                    font.pointSize: Styles.textSm
-                                                }
+                                            SectionHeader {
+                                                title: networkCard.modelData.name || "Hidden network"
+                                                subtitle: `${ConnectionState.toString(networkCard.modelData.state)} • ${Math.round((networkCard.modelData.signalStrength ?? 0) * 100)}% • ${root.networkSecurityText(networkCard.modelData)}${networkCard.modelData.known ? " • known" : ""}`
                                             }
 
                                             LoadingIndicator {
