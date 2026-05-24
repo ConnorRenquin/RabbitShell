@@ -238,22 +238,30 @@ Singleton {
                 {
                     path: "general.border_size",
                     label: "Border size",
-                    type: "int"
+                    type: "int",
+                    min: 0,
+                    max: 20
                 },
                 {
                     path: "general.gaps_in",
                     label: "Inner gaps",
-                    type: "int"
+                    type: "int",
+                    min: 0,
+                    max: 100
                 },
                 {
                     path: "general.gaps_out",
                     label: "Outer gaps",
-                    type: "int"
+                    type: "int",
+                    min: 0,
+                    max: 100
                 },
                 {
                     path: "general.gaps_workspaces",
                     label: "Workspace gaps",
-                    type: "int"
+                    type: "int",
+                    min: 0,
+                    max: 100
                 },
                 {
                     path: "general.layout",
@@ -268,9 +276,11 @@ Singleton {
                 },
                 {
                     path: "general.extend_border_grab_area",
+                    visibleWhen: "general.resize_on_border",
                     label: "Border grab area",
                     type: "int",
-                    visibleWhen: "general.resize_on_border"
+                    min: 0,
+                    max: 100
                 },
                 {
                     path: "general.hover_icon_on_border",
@@ -329,12 +339,16 @@ Singleton {
                 {
                     path: "decoration.rounding",
                     label: "Rounding",
-                    type: "int"
+                    type: "int",
+                    min: 0,
+                    max: 100,
                 },
                 {
                     path: "decoration.rounding_power",
                     label: "Rounding power",
-                    type: "float"
+                    type: "float",
+                    min: 0,
+                    max: 10,
                 },
                 {
                     path: "decoration.active_opacity",
@@ -422,12 +436,16 @@ Singleton {
                     path: "decoration.blur.size",
                     label: "Size",
                     type: "int",
+                    min: 0,
+                    max: 100,
                     visibleWhen: "decoration.blur.enabled"
                 },
                 {
                     path: "decoration.blur.passes",
                     label: "Passes",
                     type: "int",
+                    min: 0,
+                    max: 100,
                     visibleWhen: "decoration.blur.enabled"
                 },
                 {
@@ -545,12 +563,16 @@ Singleton {
                     path: "decoration.shadow.range",
                     label: "Range",
                     type: "int",
+                    min: 0,
+                    max: 10,
                     visibleWhen: "decoration.shadow.enabled"
                 },
                 {
                     path: "decoration.shadow.render_power",
                     label: "Render power",
                     type: "int",
+                    min: 0,
+                    max: 10,
                     visibleWhen: "decoration.shadow.enabled"
                 },
                 {
