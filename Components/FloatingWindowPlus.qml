@@ -8,6 +8,7 @@ import QtQuick
 FloatingWindow {
     id: root
 
+    reloadableId: "floating-window-plus-" + persistId
     visible: false
     color: 'transparent'
     title: 'RabbitShell'
@@ -17,17 +18,38 @@ FloatingWindow {
     readonly property alias baseLoader: baseLoader
 
     property string shortcutName: ""
+    property string persistId: title
+
+    PersistentProperties {
+        id: persisted
+        reloadableId: "floating-window-plus-" + root.persistId
+
+        property bool wasVisible: false
+
+        function restoreVisibility() {
+            if (wasVisible)
+                Qt.callLater(root.open);
+        }
+
+        onLoaded: restoreVisibility()
+        onReloaded: restoreVisibility()
+    }
 
     function open() {
+        persisted.wasVisible = true;
         root.visible = true;
     }
 
     function exit() {
+        persisted.wasVisible = false;
         root.visible = false;
     }
 
     function toggle() {
-        root.visible = !root.visible;
+        if (root.visible)
+            root.exit();
+        else
+            root.open();
     }
 
     onClosed: root.exit()

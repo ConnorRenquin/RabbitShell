@@ -4,16 +4,27 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import Quickshell
+
 import qs.Components
 import qs.Services
 
 import qs.Settings
 import qs.Settings.SettingsViews
 
+
 FloatingWindowPlus {
     id: root
     color: Colors.surface
     title: 'Settings'
+    persistId: "settings-menu"
+
+    PersistentProperties {
+        id: persisted
+        reloadableId: "settings-menu-state"
+
+        property int selectedTabIndex: 0
+    }
 
     Component.onCompleted: PatchBay.openSettings.connect(toggle)
 
@@ -25,6 +36,33 @@ FloatingWindowPlus {
 
         Controls {
             id: controls
+        }
+
+        function childIndexOf(item) {
+            for (var i = 0; i < settingsModuleUi.children.length; i++) {
+                if (settingsModuleUi.children[i] === item)
+                    return i;
+            }
+
+            return -1;
+        }
+
+        function selectTabByIndex(index) {
+            var children = settingsModuleUi.children;
+            if (children.length === 0)
+                return;
+
+            if (index < 0 || index >= children.length || children[index].name === undefined)
+                index = 0;
+
+            children.forEach(item => {
+                if (item.name !== undefined)
+                    item.visible = false;
+            });
+
+            children[index].visible = true;
+            persisted.selectedTabIndex = index;
+            settingModules.positionViewAtIndex(index, ListView.Contain);
         }
 
         Keys.onPressed: event => {
@@ -56,13 +94,9 @@ FloatingWindowPlus {
                     } else {
                         nextIndex = (currentIndex + 1) % views.length;
                     }
-                    views[nextIndex].visible = true;
-
-                    // Find the index of the selected view in the ListView's model
-                    var originalIndex = settingsModuleUi.children.indexOf(views[nextIndex]);
-                    if (originalIndex !== -1) {
-                        settingModules.positionViewAtIndex(originalIndex, ListView.Contain);
-                    }
+                    var originalIndex = childIndexOf(views[nextIndex]);
+                    if (originalIndex !== -1)
+                        selectTabByIndex(originalIndex);
                 }
             }
         }
@@ -85,8 +119,7 @@ FloatingWindowPlus {
                     text: modelData.name
                     isFocused: modelData.visible
                     onClicked: {
-                        settingsModuleUi.children.forEach(item => item.visible = false);
-                        modelData.visible = true;
+                        base.selectTabByIndex(base.childIndexOf(modelData));
                     }
                 }
             }
@@ -154,9 +187,6 @@ FloatingWindowPlus {
             }
         }
 
-        Component.onCompleted: {
-            settingsModuleUi.children.forEach(item => item.visible = false);
-            settingsModuleUi.children[0].visible = true;
-        }
+        Component.onCompleted: Qt.callLater(() => selectTabByIndex(persisted.selectedTabIndex))
     }
 }
