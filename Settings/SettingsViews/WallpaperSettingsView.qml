@@ -116,7 +116,8 @@ Rectangle {
                             if (directoryField.text) {
                                 Settings.change({
                                     name: 'wallpaperDirectory',
-                                    value: directoryField.text
+                                    value: directoryField.text,
+                                    category: 'wallpaper'
                                 });
                             }
                         }
@@ -157,7 +158,8 @@ Rectangle {
                             if (currentText) {
                                 Settings.change({
                                     name: 'wallpaperTransition',
-                                    value: currentText
+                                    value: currentText,
+                                    category: 'wallpaper'
                                 });
                             }
                         }
@@ -193,7 +195,8 @@ Rectangle {
                                 if (duration >= 1 && duration <= 10) {
                                     Settings.change({
                                         name: 'wallpaperTransitionDuration',
-                                        value: duration
+                                        value: duration,
+                                        category: 'wallpaper'
                                     });
                                 }
                             }
