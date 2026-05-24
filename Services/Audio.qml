@@ -37,6 +37,9 @@ Singleton {
     readonly property list<PwNode> links: linkGroups.sources
     readonly property list<PwNode> sinks: nodes.sinks
     readonly property list<PwNode> sources: nodes.sources
+    readonly property var peaks: peakMonitor.peaks
+    readonly property var peakArray: peakMonitor.peaks
+    readonly property real peak: peakMonitor.peak
 
     function getName(node) {
         if (!node) {
@@ -56,6 +59,12 @@ Singleton {
     PwNodeLinkTracker {
         id: linkTracker
         node: Pipewire?.defaultAudioSink
+    }
+
+    PwNodePeakMonitor {
+        id: peakMonitor
+        node: root.sink
+        enabled: root.sink !== null
     }
 
     PwObjectTracker {

@@ -6,6 +6,7 @@ import QtQuick
 import qs.Settings
 import qs.Components
 import qs.Services
+import "../Components" as LocalComponents
 
 Variants {
     model: Quickshell.screens
@@ -45,7 +46,17 @@ Variants {
                 source: root.player !== null ? root.player.trackArtUrl : ''
             }
 
+            LocalComponents.PeakMeter {
+                id: peakMeter
+                x: Styles.marginLg
+                width: albumArt.width - Styles.marginLg * 2
+                height: 140
+                y: trackText.y - peakMeter.height - Styles.marginLg
+                peaks: Audio.peaks
+            }
+
             DoubleText {
+                id: trackText
                 pointSize: 34
                 offset: 4
                 width: albumArt.width - Styles.marginSm * 2
