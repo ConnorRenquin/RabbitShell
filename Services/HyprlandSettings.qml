@@ -11,7 +11,10 @@ Singleton {
     readonly property string configDir: homePath + "/.config/hypr/quickshell"
     readonly property string configPath: configDir + "/settings.lua"
     readonly property string configUrl: "file://" + configPath
+    readonly property string monitorConfigPath: homePath + "/.config/hypr/monitors.lua"
+    readonly property string monitorConfigUrl: "file://" + monitorConfigPath
     property var values: clone(defaultValues)
+    property var monitorItems: []
     property var bindItems: []
     property var windowRuleItems: []
     property var layerRuleItems: []
@@ -1856,6 +1859,163 @@ Singleton {
             index: openIndex + 1
         };
         return mergeDefaults(parseLuaTable(clean, state));
+    }
+
+    function parseMonitorObject(tableValue) {
+        if (!tableValue || !tableValue.output)
+            return null;
+        var item = {
+            output: String(tableValue.output),
+            mode: tableValue.mode !== undefined ? String(tableValue.mode) : "preferred",
+            position: tableValue.position !== undefined ? String(tableValue.position) : "auto",
+            scale: tableValue.scale !== undefined ? parseFloat(tableValue.scale) : 1,
+            transform: tableValue.transform !== undefined ? parseInt(tableValue.transform) : 0
+        };
+        item.disabled = item.mode === "disable";
+        var modeMatch = item.mode.match(/^(\d+)x(\d+)(?:@([\d.]+))?/);
+        if (modeMatch) {
+            item.width = parseInt(modeMatch[1]);
+            item.height = parseInt(modeMatch[2]);
+            item.refreshRate = modeMatch[3] !== undefined ? parseFloat(modeMatch[3]) : 60;
+        }
+        var posMatch = item.position.match(/^(-?\d+)x(-?\d+)$/);
+        if (posMatch) {
+            item.x = parseInt(posMatch[1]);
+            item.y = parseInt(posMatch[2]);
+        }
+        return item;
+    }
+
+    function parseMonitorConfigs(text) {
+        var clean = stripLuaComments(text);
+        var items = [];
+        var searchIndex = 0;
+        while (searchIndex < clean.length) {
+            var callIndex = clean.indexOf("hl.monitor", searchIndex);
+            if (callIndex < 0)
+                break;
+            var openIndex = clean.indexOf("{", callIndex);
+            if (openIndex < 0)
+                break;
+            var closeIndex = findMatchingBrace(clean, openIndex);
+            if (closeIndex < 0)
+                break;
+            var state = {
+                index: openIndex + 1
+            };
+            var item = parseMonitorObject(parseLuaTable(clean, state));
+            if (item)
+                items.push(item);
+            searchIndex = closeIndex + 1;
+        }
+        return items;
+    }
+
+    function loadMonitorsFromText(text) {
+        monitorItems = parseMonitorConfigs(text);
+    }
+
+    function monitorItemForOutput(output) {
+        for (var i = 0; i < monitorItems.length; i++) {
+            if (monitorItems[i].output === output)
+                return monitorItems[i];
+        }
+        return null;
+    }
+
+    function applyMonitorConfigToMonitor(monitor, item) {
+        if (!monitor || !item)
+            return;
+        monitor.disabled = !!item.disabled;
+        if (item.width !== undefined)
+            monitor.width = item.width;
+        if (item.height !== undefined)
+            monitor.height = item.height;
+        if (item.refreshRate !== undefined)
+            monitor.refreshRate = item.refreshRate;
+        if (item.x !== undefined)
+            monitor.x = item.x;
+        if (item.y !== undefined)
+            monitor.y = item.y;
+        if (item.scale !== undefined && !isNaN(item.scale))
+            monitor.scale = item.scale;
+        if (item.transform !== undefined && !isNaN(item.transform))
+            monitor.transform = item.transform;
+    }
+
+    function applyMonitorSettingsToList(monitorsList) {
+        for (var i = 0; i < monitorsList.length; i++) {
+            var monitor = monitorsList[i];
+            applyMonitorConfigToMonitor(monitor, monitorItemForOutput(monitor.name));
+        }
+    }
+
+    function monitorItemFromMonitor(monitor) {
+        var disabled = !!monitor.disabled;
+        return {
+            output: monitor.name,
+            description: monitor.description || "",
+            mode: disabled ? "disable" : monitor.width + "x" + monitor.height + "@" + monitor.refreshRate,
+            position: disabled ? "auto" : monitor.x + "x" + monitor.y,
+            scale: monitor.scale !== undefined ? monitor.scale : 1,
+            transform: monitor.transform !== undefined ? monitor.transform : 0,
+            disabled: disabled,
+            width: monitor.width,
+            height: monitor.height,
+            refreshRate: monitor.refreshRate,
+            x: monitor.x,
+            y: monitor.y
+        };
+    }
+
+    function mergedMonitorItems(monitorsList) {
+        var next = cloneList(monitorItems);
+        for (var i = 0; i < monitorsList.length; i++) {
+            var item = monitorItemFromMonitor(monitorsList[i]);
+            var found = false;
+            for (var j = 0; j < next.length; j++) {
+                if (next[j].output === item.output) {
+                    next[j] = item;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                next.push(item);
+        }
+        return next;
+    }
+
+    function generateMonitorConfigContent(monitorsList) {
+        var items = mergedMonitorItems(monitorsList);
+        monitorItems = items;
+        var config = "-- Monitor configuration generated by Quickshell::DisplaySettingsView\n";
+        config += "-- Save path: ~/.config/hypr/monitors.lua\n";
+        config += "-- Existing outputs are preserved and matching outputs are updated.\n\n";
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            if (item.description)
+                config += "-- " + item.output + " - " + item.description + "\n";
+            config += "hl.monitor({\n";
+            config += "    output    = " + luaString(item.output) + ",\n";
+            if (item.disabled) {
+                config += "    mode      = \"disable\",\n";
+            } else {
+                config += "    mode      = " + luaString(item.mode || "preferred") + ",\n";
+                config += "    position  = " + luaString(item.position || "auto") + ",\n";
+                config += "    scale     = " + (item.scale !== undefined ? item.scale : 1) + ",\n";
+                config += "    transform = " + (item.transform !== undefined ? item.transform : 0) + ",\n";
+            }
+            config += "})\n\n";
+        }
+        config += "-- Fallback for any unspecified monitors\n";
+        config += "hl.monitor({\n";
+        config += "    output   = \"\",\n";
+        config += "    mode     = \"preferred\",\n";
+        config += "    position = \"auto\",\n";
+        config += "    scale    = 1,\n";
+        config += "})\n";
+        return config;
     }
 
     function parseMetadataList(text, key) {
