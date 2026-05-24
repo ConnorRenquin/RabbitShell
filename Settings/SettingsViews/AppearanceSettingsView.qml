@@ -85,13 +85,38 @@ Rectangle {
     Process {
         id: copyProcess
         property string destName: ""
-        onExited: (code) => {
-            if (code === 0) {
+        function onExited(exitCode) {
+            if (exitCode === 0) {
                 Settings.change({name: 'currentTheme', value: copyProcess.destName});
             } else {
-                console.log("Theme copy failed with exit code:", code);
+                console.log("Theme copy failed with exit code:", exitCode);
             }
             Colors.refreshThemes();
+        }
+    }
+
+    Process {
+        id: hyprpickerProcess
+        property var targetTextField: null
+        command: ["hyprpicker", "-n", "-f", "hex"]
+        running: false
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                var pickedColor = text.trim();
+                if (hyprpickerProcess.targetTextField && root.isValidColor(pickedColor)) {
+                    hyprpickerProcess.targetTextField.text = pickedColor;
+                } else if (pickedColor.length > 0) {
+                    console.log("hyprpicker returned an invalid color:", pickedColor);
+                }
+            }
+        }
+
+        function onExited(exitCode) {
+            if (exitCode !== 0) {
+                console.log("hyprpicker failed with exit code:", exitCode);
+            }
+            targetTextField = null;
         }
     }
 
@@ -165,7 +190,14 @@ Rectangle {
                 }
 
                 Repeater {
-                    model: Object.keys(Colors.userColors).filter(key => ['primary', 'secondary', 'tertiary'].includes(key))
+                    model: Object.keys(Colors.userColors).filter(key => ![
+                        'primary', 'secondary', 'tertiary',
+                        'onPrimaryContainer', 'inversePrimary',
+                        'onSecondaryContainer',
+                        'onTertiaryContainer',
+                        'onSurfaceVariant',
+                        'shadow', 'scrim'
+                    ].includes(key))
                     delegate: Rectangle {
                         id: colorEntry
 
@@ -228,6 +260,16 @@ Rectangle {
                                         function onUserColorsChanged() {
                                             colorTextField.text = Colors.userColors[colorEntry.modelData] || "";
                                         }
+                                    }
+                                }
+
+                                ButtonStyled {
+                                    id: hyprpickerButton
+                                    text: "Pick"
+                                    enabled: !hyprpickerProcess.running
+                                    onClicked: {
+                                        hyprpickerProcess.targetTextField = colorTextField;
+                                        hyprpickerProcess.running = true;
                                     }
                                 }
 
