@@ -139,29 +139,8 @@ Rectangle {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 60
-                color: Colors.surface
-                radius: Styles.radiusLg
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: Styles.marginSm
-                    spacing: Styles.marginSm
-
-                    TextStyled {
-                        text: "Network"
-                        font.pointSize: Styles.textLg
-                    }
-
-                    RowSpacer {}
-
-                    TextStyled {
-                        text: NetworkBackendType.toString(Networking.backend)
-                        font.pointSize: Styles.textSm
-                    }
-                }
+            SettingsViewTitle {
+                title: "Network"
             }
 
             Rectangle {

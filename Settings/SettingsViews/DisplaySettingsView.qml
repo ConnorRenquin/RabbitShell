@@ -8,6 +8,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Settings
+import qs.Settings.SettingsViews.Components
 import qs.Components
 import qs.Services
 
@@ -418,51 +419,9 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: Styles.marginSm
         spacing: Styles.marginSm
-
-        Rectangle {
-            id: viewToolbar
-
-            Layout.fillWidth: true
-            Layout.preferredHeight: 80
-            color: Colors.surface
-            radius: Styles.radiusSm
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: Styles.marginSm
-                spacing: Styles.marginSm
-
-                TextStyled {
-                    id: viewTitle
-                    text: "Display Settings"
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                ButtonStyled {
-                    id: saveButton
-                    text: "󰆓"
-                    onClicked: saveDialog.visible = true
-                }
-
-                ButtonStyled {
-                    id: reloadButton
-                    text: "󰑐"
-                    onClicked: {
-                        monitorConfigFile.reload();
-                        HyprctlMonitors.loadMonitors();
-                        Quickshell.execDetached(["bash", "-c", "hyprctl reload"]);
-                    }
-                }
-
-                ButtonStyled {
-                    id: hidePanel
-                    text: "󰮫"
-                    onClicked: rightPanel.visible = !rightPanel.visible
-                }
-            }
+        SettingsViewTitle {
+            id: viewTitle
+            title: "Display Settings"
         }
 
         RowLayout {
@@ -665,6 +624,12 @@ Rectangle {
                     anchors.bottom: parent.bottom
                     anchors.margins: Styles.marginMd
                     spacing: Styles.marginSm
+
+                    ButtonStyled {
+                        id: hidePanel
+                        text: "󰮫"
+                        onClicked: rightPanel.visible = !rightPanel.visible
+                    }
 
                     ButtonStyled {
                         text: "󰊠"
@@ -908,6 +873,30 @@ Rectangle {
                                         root.monitors[root.selectedMonitorIndex].y = 0;
                                         root.monitors[root.selectedMonitorIndex].x = 0;
                                     }
+                                }
+                            }
+                        }
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                        RowLayout {
+                            ButtonStyled {
+                                id: saveButton
+                                text: Icons.save
+                                onClicked: saveDialog.visible = true
+                                Layout.fillWidth: true
+                            }
+
+                            ButtonStyled {
+                                id: reloadButton
+                                Layout.fillWidth: true
+                                text: Icons.reset
+                                onClicked: {
+                                    monitorConfigFile.reload();
+                                    HyprctlMonitors.loadMonitors();
+                                    Quickshell.execDetached(["bash", "-c", "hyprctl reload"]);
                                 }
                             }
                         }

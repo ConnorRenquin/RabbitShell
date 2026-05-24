@@ -10,6 +10,7 @@ import QtQuick.Controls
 import Qt.labs.folderlistmodel
 
 import qs.Settings
+import qs.Settings.SettingsViews.Components
 import qs.Components
 
 Rectangle {
@@ -69,14 +70,12 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Styles.marginMd
+        anchors.margins: Styles.marginSm
         spacing: Styles.marginMd
 
-        TextStyled {
+        SettingsViewTitle {
             id: viewTitle
-            text: "Wallpaper"
-            font.pointSize: Styles.textLg
-            Layout.fillWidth: true
+            title: "Wallpaper"
         }
 
         Rectangle {

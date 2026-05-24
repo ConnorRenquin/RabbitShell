@@ -3,6 +3,7 @@ import QtQuick.Layouts
 
 import qs.Components
 import qs.Settings
+import qs.Settings.SettingsViews.Components
 import qs.Services
 
 Rectangle {
@@ -22,6 +23,10 @@ Rectangle {
     ColumnLayoutPlus {
         anchors.fill: parent
         anchors.margins: Styles.marginSm
+
+        SettingsViewTitle {
+            title: "About"
+        }
 
         ColumnLayout {
             id: infoGrid

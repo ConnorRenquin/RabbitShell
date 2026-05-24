@@ -10,6 +10,7 @@ import QtCore as QtCoreLib
 
 import qs.Components
 import qs.Settings
+import qs.Settings.SettingsViews.Components
 import qs.Services
 
 Rectangle {
@@ -388,29 +389,8 @@ Rectangle {
         anchors.margins: Styles.marginSm
         spacing: Styles.marginSm
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Styles.marginSm
-
-            TextStyled {
-                text: "Hyprland"
-                font.pointSize: Styles.textLg
-                font.bold: true
-            }
-
-            Item {
-                Layout.fillWidth: true
-            }
-
-            ButtonStyled {
-                text: "Reload"
-                onClicked: root.reloadConfig()
-            }
-
-            ButtonStyled {
-                text: "Save"
-                onClicked: root.saveConfig()
-            }
+        SettingsViewTitle {
+            title: "Hyprland"
         }
 
         PanelLocal {
@@ -751,6 +731,25 @@ Rectangle {
                         }
                     }
                 }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Styles.marginSm
+
+            Item {
+                Layout.fillWidth: true
+            }
+
+            ButtonStyled {
+                text: "Reload"
+                onClicked: root.reloadConfig()
+            }
+
+            ButtonStyled {
+                text: "Save"
+                onClicked: root.saveConfig()
             }
         }
     }

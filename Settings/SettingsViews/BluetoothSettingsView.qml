@@ -187,7 +187,6 @@ Rectangle {
 
     ScrollView {
         anchors.fill: parent
-        anchors.margins: Styles.marginSm
         contentWidth: availableWidth
 
         ColumnLayoutPlus {

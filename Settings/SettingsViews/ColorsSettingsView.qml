@@ -124,11 +124,11 @@ Rectangle {
     ColumnLayout {
         id: appearanceSettings
         anchors.fill: parent
+        anchors.margins: Styles.marginSm
         spacing: Styles.marginSm
 
-        TextStyled {
-            text: "Colors"
-            font.pointSize: Styles.textLg
+        SettingsViewTitle {
+            title: "Colors"
         }
 
         ColorPalette {

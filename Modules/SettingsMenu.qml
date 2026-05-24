@@ -13,7 +13,6 @@ import qs.Settings
 import qs.Settings.SettingsViews
 import qs.Settings.SettingsViews.Components
 
-
 FloatingWindowPlus {
     id: root
     color: Colors.surface
@@ -130,19 +129,8 @@ FloatingWindowPlus {
                 color: Colors.background
                 Layout.preferredWidth: 300
                 Layout.fillWidth: true
-                component GeneralView: ScrollView {
-                    required property string name
-                    property alias category: genView.category
-                    anchors.fill: parent
-                    anchors.margins: Styles.marginSm
-                    contentWidth: availableWidth
-                    GeneratedView {
-                        id: genView
-                        width: parent.width
-                    }
-                }
                 AboutSettingsView {
-                    readonly property string name:  Icons.info + ' About'
+                    readonly property string name: Icons.info + ' About'
                     anchors.fill: parent
                 }
                 HyprlandSettingsView {
@@ -157,7 +145,11 @@ FloatingWindowPlus {
                     readonly property string name: Icons.network + ' Network'
                     anchors.fill: parent
                 }
-                AppearanceSettingsView {
+                GeneralView {
+                    name: Icons.appearance + ' Appearance'
+                    category: 'appearance'
+                }
+                ColorsSettingsView {
                     readonly property string name: Icons.colors + ' Colors'
                     anchors.fill: parent
                 }
@@ -173,21 +165,36 @@ FloatingWindowPlus {
                     readonly property string name: Icons.wallpaper + ' Wallpaper'
                     anchors.fill: parent
                 }
-                Cheatsheet {
-                    readonly property string name: Icons.cheatsheet + ' Cheatsheet'
-                    anchors.fill: parent
-                }
-                GeneralView {
-                    name: Icons.appearance + ' Appearance'
-                    category: 'appearance'
-                }
                 GeneralView {
                     name: Icons.misc + ' Misc'
                     category: 'misc'
+                }
+                Cheatsheet {
+                    readonly property string name: Icons.cheatsheet + ' Cheatsheet'
+                    anchors.fill: parent
                 }
             }
         }
 
         Component.onCompleted: Qt.callLater(() => selectTabByIndex(persisted.selectedTabIndex))
+    }
+    component GeneralView: ScrollView {
+        id: view
+        required property string name
+        property alias category: genView.category
+        anchors.fill: parent
+        anchors.margins: Styles.marginSm
+        contentWidth: availableWidth
+        ColumnLayout {
+            anchors.fill: parent
+            SettingsViewTitle {
+                title: view.name
+            }
+            GeneratedView {
+                id: genView
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+            }
+        }
     }
 }

@@ -41,6 +41,8 @@ Singleton {
     readonly property string hourGlass: ""
     readonly property string clock: "󰥔"
     readonly property string alarm: "󰀠"
+    readonly property string reset: "󰑐"
+    readonly property string save: "󰆓"
 
     readonly property string checkBoxChecked: "󰡖"
     readonly property string checkBoxUnChecked: ""

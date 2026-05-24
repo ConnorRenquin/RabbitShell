@@ -7,6 +7,7 @@ import QtQuick.Layouts
 
 import qs.Components
 import qs.Settings
+import qs.Settings.SettingsViews.Components
 import qs.Services
 
 Rectangle {
@@ -19,12 +20,10 @@ Rectangle {
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.margins: Styles.marginSm
             spacing: Styles.marginMd
 
-            TextStyled {
-                text: "Audio Settings"
-                font.pointSize: Styles.textLg
+            SettingsViewTitle {
+                title: "Audio Settings"
             }
 
             ColumnLayout {

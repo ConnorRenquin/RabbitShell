@@ -32,6 +32,7 @@ Rectangle {
             }
             TextStyled {
                 Layout.fillWidth: true
+                visible: root.subTitle
                 text: root.subTitle
                 color: Colors.onSurfaceVariant
                 font.pointSize: Styles.textSm
