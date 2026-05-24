@@ -19,17 +19,22 @@ Rectangle {
     focus: root.capturingBindIndex >= 0
 
     Keys.onPressed: event => {
-        if (root.capturingBindIndex < 0) return;
+        if (root.capturingBindIndex < 0)
+            return;
         event.accepted = true;
         if (event.key === Qt.Key_Escape) {
             root.capturingBindIndex = -1;
             return;
         }
         var parts = [];
-        if (event.modifiers & Qt.MetaModifier) parts.push("SUPER");
-        if (event.modifiers & Qt.ControlModifier) parts.push("CTRL");
-        if (event.modifiers & Qt.AltModifier) parts.push("ALT");
-        if (event.modifiers & Qt.ShiftModifier) parts.push("SHIFT");
+        if (event.modifiers & Qt.MetaModifier)
+            parts.push("SUPER");
+        if (event.modifiers & Qt.ControlModifier)
+            parts.push("CTRL");
+        if (event.modifiers & Qt.AltModifier)
+            parts.push("ALT");
+        if (event.modifiers & Qt.ShiftModifier)
+            parts.push("SHIFT");
         var key = root.keyName(event.key, event.text);
         var captured = key.length > 0 ? parts.concat([key]).join(" + ") : "";
         if (captured.length > 0) {
@@ -37,9 +42,6 @@ Rectangle {
             root.capturingBindIndex = -1;
         }
     }
-
-
-
 
     readonly property string configDir: HyprlandSettings.configDir
     readonly property string configPath: HyprlandSettings.configPath
@@ -58,6 +60,52 @@ Rectangle {
     readonly property var sectionGroups: buildSectionGroups()
     property string pendingAggregateContent: ""
     property string statusText: ""
+
+    component PanelLocal: Rectangle {
+        Layout.fillWidth: true
+        color: Colors.background
+        radius: Styles.radiusSm
+    }
+
+    component CardLocal: Rectangle {
+        Layout.fillWidth: true
+        color: Colors.surface
+        radius: Styles.radiusSm
+    }
+
+    component InputFrameLocal: Rectangle {
+        Layout.fillWidth: true
+        Layout.preferredHeight: 34
+        color: Qt.darker(Colors.background, Colors.darker)
+        radius: Styles.radiusSm
+    }
+
+    component SettingsInputFrameLocal: Rectangle {
+        Layout.preferredWidth: 190
+        Layout.fillHeight: true
+        color: Qt.darker(Colors.surface, Colors.darker)
+        radius: Styles.radiusSm
+    }
+
+    component InputTextFieldLocal: TextFieldStyled {
+        anchors.fill: parent
+        anchors.leftMargin: Styles.marginSm
+        anchors.rightMargin: Styles.marginSm
+    }
+
+    component FormLabelLocal: TextStyled {
+        Layout.preferredWidth: 90
+    }
+
+    component SecondaryFormLabelLocal: TextStyled {
+        Layout.preferredWidth: 70
+    }
+
+    component CardColumnLocal: ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: Styles.marginSm
+        spacing: Styles.marginSm
+    }
 
     function sectionGroup(section) {
         var title = section.title;
@@ -91,7 +139,10 @@ Rectangle {
                 }
             }
             if (!group) {
-                group = { title: groupName, sections: [] };
+                group = {
+                    title: groupName,
+                    sections: []
+                };
                 groups.push(group);
             }
             group.sections.push(section);
@@ -99,32 +150,164 @@ Rectangle {
         return groups;
     }
 
-    function getPath(path) { return HyprlandSettings.getPath(path); }
-    function setPath(path, value) { HyprlandSettings.setPath(path, value); }
-    function parseInput(text, type) { return HyprlandSettings.parseInput(text, type); }
-    function displayValue(path) { return HyprlandSettings.displayValue(path); }
-    function isSettingVisible(setting) { return HyprlandSettings.isSettingVisible(setting); }
-    function keyName(key, text) { return HyprlandSettings.keyName(key, text); }
+    function getPath(path) {
+        return HyprlandSettings.getPath(path);
+    }
+    function setPath(path, value) {
+        HyprlandSettings.setPath(path, value);
+    }
+    function parseInput(text, type) {
+        return HyprlandSettings.parseInput(text, type);
+    }
+    function displayValue(path) {
+        return HyprlandSettings.displayValue(path);
+    }
+    function isSettingVisible(setting) {
+        return HyprlandSettings.isSettingVisible(setting);
+    }
+    function keyName(key, text) {
+        return HyprlandSettings.keyName(key, text);
+    }
 
-    function addBindItem() { HyprlandSettings.addBindItem(); }
-    function removeBindItem(index) { HyprlandSettings.removeBindItem(index); }
-    function updateBindItem(index, key, value) { HyprlandSettings.updateBindItem(index, key, value); }
-    function bindHasFlag(bind, flag) { return HyprlandSettings.bindHasFlag(bind, flag); }
-    function setBindFlag(index, flag, enabled) { HyprlandSettings.setBindFlag(index, flag, enabled); }
+    function addBindItem() {
+        HyprlandSettings.addBindItem();
+    }
+    function removeBindItem(index) {
+        HyprlandSettings.removeBindItem(index);
+    }
+    function updateBindItem(index, key, value) {
+        HyprlandSettings.updateBindItem(index, key, value);
+    }
+    function bindHasFlag(bind, flag) {
+        return HyprlandSettings.bindHasFlag(bind, flag);
+    }
+    function setBindFlag(index, flag, enabled) {
+        HyprlandSettings.setBindFlag(index, flag, enabled);
+    }
     function startCapturingBind(index) {
         capturingBindIndex = index;
         forceActiveFocus();
     }
 
-    function addWindowRuleItem() { HyprlandSettings.addWindowRuleItem(); }
-    function removeWindowRuleItem(index) { HyprlandSettings.removeWindowRuleItem(index); }
-    function updateWindowRuleItem(index, key, value) { HyprlandSettings.updateWindowRuleItem(index, key, value); }
-    function addLayerRuleItem() { HyprlandSettings.addLayerRuleItem(); }
-    function removeLayerRuleItem(index) { HyprlandSettings.removeLayerRuleItem(index); }
-    function updateLayerRuleItem(index, key, value) { HyprlandSettings.updateLayerRuleItem(index, key, value); }
-    function addAnimationItem() { HyprlandSettings.addAnimationItem(); }
-    function removeAnimationItem(index) { HyprlandSettings.removeAnimationItem(index); }
-    function updateAnimationItem(index, key, value) { HyprlandSettings.updateAnimationItem(index, key, value); }
+    function editorItems(cfg) {
+        var resultItems = [];
+        if (!cfg) {
+            return resultItems;
+        }
+        var editorKind = cfg.kind;
+
+        if (editorKind === "bindList") {
+            return HyprlandSettings.getBindItems();
+        }
+        if (editorKind === "windowRuleList") {
+            return HyprlandSettings.getWindowRuleItems();
+        }
+        if (editorKind === "layerRuleList") {
+            return HyprlandSettings.getLayerRuleItems();
+        }
+        if (editorKind === "animationList") {
+            return HyprlandSettings.getAnimationItems();
+        }
+        return resultItems;
+    }
+
+    function addEditorItem(cfg) {
+        if (!cfg)
+            return;
+        if (cfg.kind === "bindList")
+            addBindItem();
+        else if (cfg.kind === "windowRuleList")
+            addWindowRuleItem();
+        else if (cfg.kind === "layerRuleList")
+            addLayerRuleItem();
+        else if (cfg.kind === "animationList")
+            addAnimationItem();
+    }
+
+    function removeEditorItem(cfg, index) {
+        if (!cfg)
+            return;
+        if (cfg.kind === "bindList")
+            removeBindItem(index);
+        else if (cfg.kind === "windowRuleList")
+            removeWindowRuleItem(index);
+        else if (cfg.kind === "layerRuleList")
+            removeLayerRuleItem(index);
+        else if (cfg.kind === "animationList")
+            removeAnimationItem(index);
+    }
+
+    function updateEditorItem(cfg, index, key, value) {
+        if (!cfg)
+            return;
+        if (cfg.kind === "bindList")
+            updateBindItem(index, key, value);
+        else if (cfg.kind === "windowRuleList")
+            updateWindowRuleItem(index, key, value);
+        else if (cfg.kind === "layerRuleList")
+            updateLayerRuleItem(index, key, value);
+        else if (cfg.kind === "animationList")
+            updateAnimationItem(index, key, value);
+    }
+
+    function editorTitle(cfg, item) {
+        if (!cfg || !item)
+            return "";
+        var value = item[cfg.titleKey];
+        return value !== undefined && String(value).length > 0 ? String(value) : cfg.titleFallback;
+    }
+
+    function fieldValue(item, field) {
+        if (!item || !field)
+            return "";
+        var value = item[field.key];
+        if (value === undefined || value === null)
+            value = field.defaultValue !== undefined ? field.defaultValue : "";
+        return field.stringify ? String(value || "") : value;
+    }
+
+    function fieldText(item, field) {
+        var value = fieldValue(item, field);
+        return value === undefined || value === null ? "" : String(value);
+    }
+
+    function boolFieldValue(item, field) {
+        var value = fieldValue(item, field);
+        return field.defaultValue !== undefined ? value !== false : !!value;
+    }
+
+    function comboFieldIndex(item, field) {
+        var value = fieldValue(item, field);
+        return field.options ? field.options.indexOf(value) : -1;
+    }
+
+    function addWindowRuleItem() {
+        HyprlandSettings.addWindowRuleItem();
+    }
+    function removeWindowRuleItem(index) {
+        HyprlandSettings.removeWindowRuleItem(index);
+    }
+    function updateWindowRuleItem(index, key, value) {
+        HyprlandSettings.updateWindowRuleItem(index, key, value);
+    }
+    function addLayerRuleItem() {
+        HyprlandSettings.addLayerRuleItem();
+    }
+    function removeLayerRuleItem(index) {
+        HyprlandSettings.removeLayerRuleItem(index);
+    }
+    function updateLayerRuleItem(index, key, value) {
+        HyprlandSettings.updateLayerRuleItem(index, key, value);
+    }
+    function addAnimationItem() {
+        HyprlandSettings.addAnimationItem();
+    }
+    function removeAnimationItem(index) {
+        HyprlandSettings.removeAnimationItem(index);
+    }
+    function updateAnimationItem(index, key, value) {
+        HyprlandSettings.updateAnimationItem(index, key, value);
+    }
 
     function writeFileCommand(path, content, marker) {
         return "cat > \"" + path + "\" <<'" + marker + "'\n" + content + marker + "\n";
@@ -232,12 +415,9 @@ Rectangle {
             }
         }
 
-        Rectangle {
+        PanelLocal {
             id: sectionTabs
-            Layout.fillWidth: true
             Layout.preferredHeight: 44
-            color: Colors.background
-            radius: Styles.radiusSm
 
             ListView {
                 id: sectionTabsList
@@ -285,14 +465,11 @@ Rectangle {
                 Repeater {
                     model: root.sectionGroups.length > 0 ? root.sectionGroups[root.currentGroupIndex].sections : []
 
-                    delegate: Rectangle {
+                    delegate: PanelLocal {
                         id: sectionDelegate
                         required property var modelData
 
-                        Layout.fillWidth: true
                         implicitHeight: sectionColumn.implicitHeight + Styles.marginMd
-                        color: Colors.background
-                        radius: Styles.radiusSm
 
                         ColumnLayout {
                             id: sectionColumn
@@ -364,7 +541,7 @@ Rectangle {
                                             onActivated: index => root.setPath(row.modelData.path, row.modelData.optionValues ? row.modelData.optionValues[index] : row.modelData.options[index])
                                         }
 
-                                        SliderStyled {
+                                        SliderSmallStyled {
                                             visible: row.modelData.min !== undefined && row.modelData.max !== undefined
                                             Layout.preferredWidth: 220
                                             Layout.fillHeight: true
@@ -383,21 +560,15 @@ Rectangle {
                                             text: visible ? Number(root.getPath(row.modelData.path)).toFixed(row.modelData.type === "int" ? 0 : 2) : ""
                                         }
 
-                                        Rectangle {
+                                        SettingsInputFrameLocal {
                                             visible: row.modelData.type !== "bool" && !row.modelData.options && !(row.modelData.min !== undefined && row.modelData.max !== undefined)
-                                            Layout.preferredWidth: 190
-                                            Layout.fillHeight: true
-                                            color: Qt.darker(Colors.surface, Colors.darker)
-                                            radius: Styles.radiusSm
 
-                                            TextFieldStyled {
-                                                anchors.fill: parent
-                                                anchors.leftMargin: Styles.marginSm
-                                                anchors.rightMargin: Styles.marginSm
+                                            InputTextFieldLocal {
                                                 property string valueText: parent.visible ? root.displayValue(row.modelData.path) : ""
                                                 Component.onCompleted: text = valueText
                                                 onValueTextChanged: {
-                                                    if (!activeFocus && text !== valueText) text = valueText;
+                                                    if (!activeFocus && text !== valueText)
+                                                        text = valueText;
                                                 }
                                                 placeholderText: row.modelData.label
                                                 inputMethodHints: row.modelData.type === "string" || row.modelData.type === "raw" ? Qt.ImhNone : Qt.ImhFormattedNumbersOnly
@@ -409,174 +580,149 @@ Rectangle {
                             }
 
                             ColumnLayout {
-                                visible: sectionDelegate.modelData.kind === "bindList"
+                                id: listEditorColumn
+                                property var editorConfig: sectionDelegate.modelData.editor || null
+
+                                visible: !!editorConfig
                                 Layout.fillWidth: true
                                 spacing: Styles.marginSm
 
                                 ButtonStyled {
-                                    text: "+ Add keybind"
+                                    text: listEditorColumn.editorConfig ? listEditorColumn.editorConfig.addText : ""
                                     Layout.fillWidth: true
-                                    onClicked: root.addBindItem()
+                                    onClicked: root.addEditorItem(listEditorColumn.editorConfig)
                                 }
 
                                 Repeater {
-                                    model: root.bindItems
+                                    model: root.editorItems(listEditorColumn.editorConfig)
 
-                                    delegate: Rectangle {
-                                        id: bindRow
+                                    delegate: CardLocal {
+                                        id: editorItemRow
                                         required property var modelData
                                         required property int index
+                                        readonly property var editorConfig: listEditorColumn.editorConfig
 
-                                        Layout.fillWidth: true
-                                        Layout.preferredHeight: 250
-                                        color: Colors.surface
-                                        radius: Styles.radiusSm
+                                        Layout.preferredHeight: editorConfig ? editorConfig.cardHeight : 0
 
-                                        ColumnLayout {
-                                            anchors.fill: parent
-                                            anchors.margins: Styles.marginSm
-                                            spacing: Styles.marginSm
-
+                                        CardColumnLocal {
                                             RowLayout {
                                                 Layout.fillWidth: true
-                                                TextStyled { Layout.fillWidth: true; text: bindRow.modelData.keys || "New keybind"; font.bold: true }
-                                                ButtonStyled { text: Icons.trash; onClicked: root.removeBindItem(bindRow.index) }
-                                            }
-
-                                            RowLayout {
-                                                Layout.fillWidth: true
-                                                TextStyled { Layout.preferredWidth: 90; text: "Keys" }
-                                                Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm
-                                                    TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: bindRow.modelData.keys || ""; placeholderText: "SUPER + Return"; onTextEdited: root.updateBindItem(bindRow.index, "keys", text) }
-                                                }
-                                                ButtonStyled {
-                                                    text: root.capturingBindIndex === bindRow.index ? "Press keys..." : "Detect"
-                                                    defaultColor: root.capturingBindIndex === bindRow.index ? Colors.primary : Colors.background
-                                                    onClicked: root.startCapturingBind(bindRow.index)
-                                                }
-                                            }
-                                            RowLayout {
-                                                Layout.fillWidth: true
-                                                TextStyled { Layout.preferredWidth: 90; text: "Dispatcher" }
-                                                ComboBoxStyled { Layout.fillWidth: true; model: ["exec", "global"]; currentIndex: model.indexOf(bindRow.modelData.dispatcher || "exec"); onActivated: index => root.updateBindItem(bindRow.index, "dispatcher", model[index]) }
-                                            }
-                                            RowLayout {
-                                                Layout.fillWidth: true
-                                                TextStyled { Layout.preferredWidth: 90; text: "Argument" }
-                                                Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm
-                                                    TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: bindRow.modelData.argument || ""; placeholderText: "kitty or quickshell:powermenu"; onTextEdited: root.updateBindItem(bindRow.index, "argument", text) }
-                                                }
-                                            }
-                                            ColumnLayout {
-                                                Layout.fillWidth: true
-                                                spacing: Styles.marginXS
 
                                                 TextStyled {
                                                     Layout.fillWidth: true
-                                                    text: "Flags"
+                                                    text: root.editorTitle(editorItemRow.editorConfig, editorItemRow.modelData)
                                                     font.bold: true
                                                 }
 
-                                                Flow {
+                                                ButtonStyled {
+                                                    text: Icons.trash
+                                                    onClicked: root.removeEditorItem(editorItemRow.editorConfig, editorItemRow.index)
+                                                }
+                                            }
+
+                                            Repeater {
+                                                model: editorItemRow.editorConfig ? editorItemRow.editorConfig.rows : []
+
+                                                delegate: ColumnLayout {
+                                                    id: editorConfigRow
+                                                    required property var modelData
+                                                    readonly property bool isFlagsRow: modelData.type === "flags"
+
                                                     Layout.fillWidth: true
-                                                    spacing: Styles.marginSm
+                                                    spacing: Styles.marginXS
 
-                                                    Repeater {
-                                                        model: root.bindFlagOptions
+                                                    RowLayout {
+                                                        visible: !editorConfigRow.isFlagsRow
+                                                        Layout.fillWidth: true
+                                                        spacing: Styles.marginSm
 
-                                                        delegate: SwitchStyled {
-                                                            id: flagSwitch
-                                                            required property string modelData
-                                                            text: modelData
-                                                            checked: root.bindHasFlag(bindRow.modelData, modelData)
-                                                            onToggled: root.setBindFlag(bindRow.index, modelData, checked)
+                                                        Repeater {
+                                                            model: editorConfigRow.modelData.fields || []
+
+                                                            delegate: RowLayout {
+                                                                id: editorField
+                                                                required property var modelData
+                                                                readonly property bool isBoolField: modelData.type === "bool"
+                                                                readonly property bool isComboField: modelData.type === "combo"
+                                                                readonly property bool isTextField: modelData.type === "text"
+
+                                                                Layout.fillWidth: !isBoolField
+                                                                spacing: Styles.marginSm
+
+                                                                FormLabelLocal {
+                                                                    visible: !editorField.isBoolField && !editorField.modelData.secondary
+                                                                    text: editorField.modelData.label
+                                                                }
+
+                                                                SecondaryFormLabelLocal {
+                                                                    visible: !editorField.isBoolField && !!editorField.modelData.secondary
+                                                                    text: editorField.modelData.label
+                                                                }
+
+                                                                InputFrameLocal {
+                                                                    visible: editorField.isTextField
+
+                                                                    InputTextFieldLocal {
+                                                                        text: root.fieldText(editorItemRow.modelData, editorField.modelData)
+                                                                        placeholderText: editorField.modelData.placeholder || ""
+                                                                        inputMethodHints: editorField.modelData.numeric ? Qt.ImhFormattedNumbersOnly : Qt.ImhNone
+                                                                        onTextEdited: root.updateEditorItem(editorItemRow.editorConfig, editorItemRow.index, editorField.modelData.key, text)
+                                                                    }
+                                                                }
+
+                                                                ComboBoxStyled {
+                                                                    visible: editorField.isComboField
+                                                                    Layout.fillWidth: true
+                                                                    model: editorField.modelData.options || []
+                                                                    currentIndex: root.comboFieldIndex(editorItemRow.modelData, editorField.modelData)
+                                                                    onActivated: index => root.updateEditorItem(editorItemRow.editorConfig, editorItemRow.index, editorField.modelData.key, model[index])
+                                                                }
+
+                                                                SwitchStyled {
+                                                                    visible: editorField.isBoolField
+                                                                    text: editorField.modelData.label
+                                                                    checked: root.boolFieldValue(editorItemRow.modelData, editorField.modelData)
+                                                                    onToggled: root.updateEditorItem(editorItemRow.editorConfig, editorItemRow.index, editorField.modelData.key, checked)
+                                                                }
+
+                                                                ButtonStyled {
+                                                                    visible: editorField.modelData.action === "captureBind"
+                                                                    text: root.capturingBindIndex === editorItemRow.index ? "Press keys..." : "Detect"
+                                                                    defaultColor: root.capturingBindIndex === editorItemRow.index ? Colors.primary : Colors.background
+                                                                    onClicked: root.startCapturingBind(editorItemRow.index)
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                    ColumnLayout {
+                                                        visible: editorConfigRow.isFlagsRow
+                                                        Layout.fillWidth: true
+                                                        spacing: Styles.marginXS
+
+                                                        TextStyled {
+                                                            Layout.fillWidth: true
+                                                            text: editorConfigRow.modelData.label || "Flags"
+                                                            font.bold: true
+                                                        }
+
+                                                        Flow {
+                                                            Layout.fillWidth: true
+                                                            spacing: Styles.marginSm
+                                                            Repeater {
+                                                                model: root.bindFlagOptions
+                                                                delegate: SwitchStyled {
+                                                                    id: flagSwitch
+                                                                    required property string modelData
+                                                                    text: modelData
+                                                                    checked: root.bindHasFlag(editorItemRow.modelData, modelData)
+                                                                    onToggled: root.setBindFlag(editorItemRow.index, modelData, checked)
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
-                                        }
-                                    }
-                                }
-                            }
-
-                            ColumnLayout {
-                                visible: sectionDelegate.modelData.kind === "windowRuleList"
-                                Layout.fillWidth: true
-                                spacing: Styles.marginSm
-
-                                ButtonStyled { text: "+ Add window rule"; Layout.fillWidth: true; onClicked: root.addWindowRuleItem() }
-
-                                Repeater {
-                                    model: root.windowRuleItems
-                                    delegate: Rectangle {
-                                        id: ruleRow
-                                        required property var modelData
-                                        required property int index
-                                        Layout.fillWidth: true
-                                        Layout.preferredHeight: 230
-                                        color: Colors.surface
-                                        radius: Styles.radiusSm
-                                        ColumnLayout {
-                                            anchors.fill: parent; anchors.margins: Styles.marginSm; spacing: Styles.marginSm
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.fillWidth: true; text: ruleRow.modelData.name || "New window rule"; font.bold: true } ButtonStyled { text: Icons.trash; onClicked: root.removeWindowRuleItem(ruleRow.index) } }
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.preferredWidth: 90; text: "Name" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: ruleRow.modelData.name || ""; placeholderText: "Rule name"; onTextEdited: root.updateWindowRuleItem(ruleRow.index, "name", text) } } }
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.preferredWidth: 90; text: "Class" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: ruleRow.modelData.matchClass || ""; placeholderText: "firefox|kitty"; onTextEdited: root.updateWindowRuleItem(ruleRow.index, "matchClass", text) } } TextStyled { Layout.preferredWidth: 70; text: "Title" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: ruleRow.modelData.matchTitle || ""; placeholderText: "Settings"; onTextEdited: root.updateWindowRuleItem(ruleRow.index, "matchTitle", text) } } }
-                                            RowLayout { Layout.fillWidth: true; SwitchStyled { text: "Float"; checked: !!ruleRow.modelData.float; onToggled: root.updateWindowRuleItem(ruleRow.index, "float", checked) } SwitchStyled { text: "Center"; checked: !!ruleRow.modelData.center; onToggled: root.updateWindowRuleItem(ruleRow.index, "center", checked) } SwitchStyled { text: "Opaque"; checked: !!ruleRow.modelData.opaque; onToggled: root.updateWindowRuleItem(ruleRow.index, "opaque", checked) } SwitchStyled { text: "No blur"; checked: !!ruleRow.modelData.noBlur; onToggled: root.updateWindowRuleItem(ruleRow.index, "noBlur", checked) } SwitchStyled { text: "No shadow"; checked: !!ruleRow.modelData.noShadow; onToggled: root.updateWindowRuleItem(ruleRow.index, "noShadow", checked) } }
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.preferredWidth: 90; text: "Size" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: ruleRow.modelData.size || ""; placeholderText: "500, monitor_h*0.5"; onTextEdited: root.updateWindowRuleItem(ruleRow.index, "size", text) } } TextStyled { Layout.preferredWidth: 70; text: "Move" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: ruleRow.modelData.move || ""; placeholderText: "cursor_x, cursor_y"; onTextEdited: root.updateWindowRuleItem(ruleRow.index, "move", text) } } }
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.preferredWidth: 90; text: "Rounding" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: ruleRow.modelData.rounding || ""; placeholderText: "10"; inputMethodHints: Qt.ImhFormattedNumbersOnly; onTextEdited: root.updateWindowRuleItem(ruleRow.index, "rounding", text) } } }
-                                        }
-                                    }
-                                }
-                            }
-
-                            ColumnLayout {
-                                visible: sectionDelegate.modelData.kind === "layerRuleList"
-                                Layout.fillWidth: true
-                                spacing: Styles.marginSm
-                                ButtonStyled { text: "+ Add layer rule"; Layout.fillWidth: true; onClicked: root.addLayerRuleItem() }
-                                Repeater {
-                                    model: root.layerRuleItems
-                                    delegate: Rectangle {
-                                        id: layerRow
-                                        required property var modelData
-                                        required property int index
-                                        Layout.fillWidth: true
-                                        Layout.preferredHeight: 165
-                                        color: Colors.surface
-                                        radius: Styles.radiusSm
-                                        ColumnLayout {
-                                            anchors.fill: parent; anchors.margins: Styles.marginSm; spacing: Styles.marginSm
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.fillWidth: true; text: layerRow.modelData.name || "New layer rule"; font.bold: true } ButtonStyled { text: Icons.trash; onClicked: root.removeLayerRuleItem(layerRow.index) } }
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.preferredWidth: 90; text: "Name" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: layerRow.modelData.name || ""; placeholderText: "Rule name"; onTextEdited: root.updateLayerRuleItem(layerRow.index, "name", text) } } }
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.preferredWidth: 90; text: "Namespace" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: layerRow.modelData.namespace || ""; placeholderText: "notifications|toplevels"; onTextEdited: root.updateLayerRuleItem(layerRow.index, "namespace", text) } } }
-                                            RowLayout { Layout.fillWidth: true; SwitchStyled { text: "No anim"; checked: !!layerRow.modelData.noAnim; onToggled: root.updateLayerRuleItem(layerRow.index, "noAnim", checked) } SwitchStyled { text: "Blur"; checked: !!layerRow.modelData.blur; onToggled: root.updateLayerRuleItem(layerRow.index, "blur", checked) } SwitchStyled { text: "Xray"; checked: !!layerRow.modelData.xray; onToggled: root.updateLayerRuleItem(layerRow.index, "xray", checked) } }
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.preferredWidth: 90; text: "Ignore alpha" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: layerRow.modelData.ignoreAlpha || ""; placeholderText: "0.2"; inputMethodHints: Qt.ImhFormattedNumbersOnly; onTextEdited: root.updateLayerRuleItem(layerRow.index, "ignoreAlpha", text) } } }
-                                        }
-                                    }
-                                }
-                            }
-
-                            ColumnLayout {
-                                visible: sectionDelegate.modelData.kind === "animationList"
-                                Layout.fillWidth: true
-                                spacing: Styles.marginSm
-                                ButtonStyled { text: "+ Add animation"; Layout.fillWidth: true; onClicked: root.addAnimationItem() }
-                                Repeater {
-                                    model: root.animationItems
-                                    delegate: Rectangle {
-                                        id: animRow
-                                        required property var modelData
-                                        required property int index
-                                        Layout.fillWidth: true
-                                        Layout.preferredHeight: 165
-                                        color: Colors.surface
-                                        radius: Styles.radiusSm
-                                        ColumnLayout {
-                                            anchors.fill: parent; anchors.margins: Styles.marginSm; spacing: Styles.marginSm
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.fillWidth: true; text: animRow.modelData.leaf || "New animation"; font.bold: true } ButtonStyled { text: Icons.trash; onClicked: root.removeAnimationItem(animRow.index) } }
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.preferredWidth: 90; text: "Leaf" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: animRow.modelData.leaf || ""; placeholderText: "windowsIn"; onTextEdited: root.updateAnimationItem(animRow.index, "leaf", text) } } SwitchStyled { text: "Enabled"; checked: animRow.modelData.enabled !== false; onToggled: root.updateAnimationItem(animRow.index, "enabled", checked) } }
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.preferredWidth: 90; text: "Speed" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: String(animRow.modelData.speed || ""); placeholderText: "4"; inputMethodHints: Qt.ImhFormattedNumbersOnly; onTextEdited: root.updateAnimationItem(animRow.index, "speed", text) } } }
-                                            RowLayout { Layout.fillWidth: true; TextStyled { Layout.preferredWidth: 90; text: "Bezier" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: animRow.modelData.bezier || ""; placeholderText: "default"; onTextEdited: root.updateAnimationItem(animRow.index, "bezier", text) } } TextStyled { Layout.preferredWidth: 70; text: "Style" } Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 34; color: Qt.darker(Colors.background, Colors.darker); radius: Styles.radiusSm; TextFieldStyled { anchors.fill: parent; anchors.leftMargin: Styles.marginSm; text: animRow.modelData.style || ""; placeholderText: "popin"; onTextEdited: root.updateAnimationItem(animRow.index, "style", text) } } }
                                         }
                                     }
                                 }
