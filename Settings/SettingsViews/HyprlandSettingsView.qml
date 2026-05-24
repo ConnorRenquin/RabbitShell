@@ -511,10 +511,11 @@ Rectangle {
                                 delegate: Rectangle {
                                     id: row
                                     required property var modelData
+                                    readonly property bool isColorRow: modelData.type === "raw" && modelData.path.indexOf(".color") >= 0
 
                                     visible: root.isSettingVisible(row.modelData)
                                     Layout.fillWidth: true
-                                    Layout.preferredHeight: visible ? (row.modelData.min !== undefined && row.modelData.max !== undefined ? 54 : 38) : 0
+                                    Layout.preferredHeight: visible ? (row.isColorRow || (row.modelData.min !== undefined && row.modelData.max !== undefined) ? 54 : 38) : 0
                                     color: "transparent"
 
                                     RowLayout {
@@ -541,6 +542,28 @@ Rectangle {
                                             onActivated: index => root.setPath(row.modelData.path, row.modelData.optionValues ? row.modelData.optionValues[index] : row.modelData.options[index])
                                         }
 
+                                        ColorComboBoxStyled {
+                                            id: colorCombo
+                                            visible: row.isColorRow
+                                            Layout.preferredWidth: 190
+                                            Layout.fillHeight: true
+                                            selectedHyprColorValue: visible ? root.getPath(row.modelData.path) : ""
+                                            onActivated: index => root.setPath(row.modelData.path, colorCombo.hyprColorValueWithOpacity(colorCombo.colorNames[index], opacitySlider.value))
+                                        }
+
+                                        SliderSmallStyled {
+                                            id: opacitySlider
+                                            visible: row.isColorRow
+                                            Layout.preferredWidth: 190
+                                            Layout.fillHeight: true
+                                            from: 0
+                                            to: 1
+                                            stepSize: 0.05
+                                            value: visible ? colorCombo.opacityFromHyprValue(root.getPath(row.modelData.path)) : 1
+                                            showPercentage: true
+                                            onMoved: root.setPath(row.modelData.path, colorCombo.hyprColorValueWithOpacity(colorCombo.selectedColorName, value))
+                                        }
+
                                         SliderSmallStyled {
                                             visible: row.modelData.min !== undefined && row.modelData.max !== undefined
                                             Layout.preferredWidth: 220
@@ -561,7 +584,7 @@ Rectangle {
                                         }
 
                                         SettingsInputFrameLocal {
-                                            visible: row.modelData.type !== "bool" && !row.modelData.options && !(row.modelData.min !== undefined && row.modelData.max !== undefined)
+                                            visible: row.modelData.type !== "bool" && !row.modelData.options && !row.isColorRow && !(row.modelData.min !== undefined && row.modelData.max !== undefined)
 
                                             InputTextFieldLocal {
                                                 property string valueText: parent.visible ? root.displayValue(row.modelData.path) : ""
