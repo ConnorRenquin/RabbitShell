@@ -182,7 +182,7 @@ Rectangle {
                         }
                     }
 
-                    SliderStyled {
+                    SliderSmallStyled {
                         Layout.fillWidth: true
                         value: root.currentValue
                         stepSize: 0.01
@@ -209,7 +209,7 @@ Rectangle {
                         }
                     }
 
-                    SliderStyled {
+                    SliderSmallStyled {
                         Layout.fillWidth: true
                         value: root.currentColor.r
                         stepSize: 0.003921568 // 1/255
@@ -236,7 +236,7 @@ Rectangle {
                         }
                     }
 
-                    SliderStyled {
+                    SliderSmallStyled {
                         Layout.fillWidth: true
                         value: root.currentColor.g
                         stepSize: 0.003921568 // 1/255
@@ -263,7 +263,7 @@ Rectangle {
                         }
                     }
 
-                    SliderStyled {
+                    SliderSmallStyled {
                         Layout.fillWidth: true
                         value: root.currentColor.b
                         stepSize: 0.003921568 // 1/255
