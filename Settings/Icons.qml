@@ -11,6 +11,7 @@ Singleton {
     readonly property string image: "󰋩"
     readonly property string info: ""
     readonly property string bluetooth: ""
+    readonly property string network: "󰤨"
     readonly property string display: "󰍹"
     readonly property string wallpaper: "󰋩"
     readonly property string audio: "󰓃"
@@ -31,6 +32,7 @@ Singleton {
     readonly property string rightChevron: ""
     readonly property string undo: ""
     readonly property string colors: ""
+    readonly property string eyeDropper: "󰈊"
     readonly property string hyprland: ""
 
     readonly property string nowPlaying: "󰎄"

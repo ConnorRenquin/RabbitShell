@@ -265,7 +265,7 @@ Rectangle {
 
                                 ButtonStyled {
                                     id: hyprpickerButton
-                                    text: "Pick"
+                                    text: Icons.eyeDropper
                                     enabled: !hyprpickerProcess.running
                                     onClicked: {
                                         hyprpickerProcess.targetTextField = colorTextField;
