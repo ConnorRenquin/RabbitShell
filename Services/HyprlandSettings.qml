@@ -239,7 +239,7 @@ Singleton {
                 { path: "general.gaps_in", label: "Inner gaps", type: "int" },
                 { path: "general.gaps_out", label: "Outer gaps", type: "int" },
                 { path: "general.gaps_workspaces", label: "Workspace gaps", type: "int" },
-                { path: "general.layout", label: "Layout", type: "string", options: ["dwindle", "master"] },
+                { path: "general.layout", label: "Layout", type: "string", options: ["dwindle", "master", "scrolling"] },
                 { path: "general.resize_on_border", label: "Resize on border", type: "bool" },
                 { path: "general.extend_border_grab_area", label: "Border grab area", type: "int", visibleWhen: "general.resize_on_border" },
                 { path: "general.hover_icon_on_border", label: "Hover icon on border", type: "bool", visibleWhen: "general.resize_on_border" },

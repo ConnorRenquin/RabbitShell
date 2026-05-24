@@ -1,8 +1,5 @@
 pragma ComponentBehavior: Bound
 
-import Quickshell
-import Quickshell.Hyprland
-
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -12,7 +9,6 @@ import qs.Services
 
 import qs.Settings
 import qs.Settings.SettingsViews
-import "../Settings/SettingsViews" as SettingsViews
 
 FloatingWindowPlus {
     id: root
@@ -115,6 +111,10 @@ FloatingWindowPlus {
                     readonly property string name:  Icons.info + ' About'
                     anchors.fill: parent
                 }
+                HyprlandSettingsView {
+                    readonly property string name: Icons.hyprland + ' Hyprland'
+                    anchors.fill: parent
+                }
                 BluetoothSettingsView {
                     readonly property string name: Icons.bluetooth + ' Bluetooth'
                     anchors.fill: parent
@@ -129,10 +129,6 @@ FloatingWindowPlus {
                 }
                 DisplaySettingsView {
                     readonly property string name: Icons.display + ' Display'
-                    anchors.fill: parent
-                }
-                SettingsViews.HyprlandSettingsView {
-                    readonly property string name: Icons.hyprland + ' Hyprland'
                     anchors.fill: parent
                 }
                 WallpaperSettingsView {

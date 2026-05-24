@@ -61,11 +61,11 @@ Rectangle {
 
     function sectionGroup(section) {
         var title = section.title;
-        if (["General", "Snap", "Misc"].indexOf(title) !== -1)
+        if (["General", "Snap"].indexOf(title) !== -1)
             return "General";
         if (["Decoration", "Blur", "Shadow", "Glow"].indexOf(title) !== -1)
             return "Appearance";
-        if (["Input", "Touchpad", "Gestures"].indexOf(title) !== -1)
+        if (["Input", "Touchpad", "Gestures", "Cursor"].indexOf(title) !== -1)
             return "Input";
         if (["Group", "Groupbar"].indexOf(title) !== -1)
             return "Windows";
@@ -73,7 +73,7 @@ Rectangle {
             return "Keybinds";
         if (["Window Rules", "Layer Rules", "Animation Rules"].indexOf(title) !== -1)
             return "Rules";
-        if (["Animations", "XWayland", "OpenGL / Render", "Cursor"].indexOf(title) !== -1)
+        if (["Animations"].indexOf(title) !== -1)
             return "Rendering";
         return "Advanced";
     }
@@ -211,22 +211,14 @@ Rectangle {
             Layout.fillWidth: true
             spacing: Styles.marginSm
 
-            ColumnLayout {
+            TextStyled {
+                text: "Hyprland"
+                font.pointSize: Styles.textLg
+                font.bold: true
+            }
+
+            Item {
                 Layout.fillWidth: true
-                spacing: 2
-
-                TextStyled {
-                    text: "Hyprland Decorations"
-                    font.pointSize: Styles.textLg
-                    font.bold: true
-                }
-
-                TextStyled {
-                    Layout.fillWidth: true
-                    text: "Writes a Lua config fragment to ~/.config/hypr/quickshell/decorations.lua for manual insertion."
-                    wrapMode: Text.WordWrap
-                    opacity: 0.8
-                }
             }
 
             ButtonStyled {
@@ -236,25 +228,7 @@ Rectangle {
 
             ButtonStyled {
                 text: "Save"
-                defaultColor: Colors.primary
                 onClicked: root.saveConfig()
-            }
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: statusLabel.implicitHeight + Styles.marginSm
-            color: Colors.background
-            radius: Styles.radiusSm
-
-            TextStyled {
-                id: statusLabel
-                anchors.fill: parent
-                anchors.margins: Styles.marginSm
-                text: root.statusText || "Edit values, then Save. Generated file is not inserted into your main Hyprland config automatically."
-                wrapMode: Text.WordWrap
-                opacity: 0.8
-                font.pointSize: Styles.textSm
             }
         }
 
@@ -283,7 +257,6 @@ Rectangle {
                     width: Math.max(tabText.implicitWidth + Styles.marginLg, 130)
                     text: ""
                     isFocused: root.currentGroupIndex === index
-                    defaultColor: root.currentGroupIndex === index ? Colors.primary : Colors.surface
 
                     onClicked: {
                         root.currentGroupIndex = index;
