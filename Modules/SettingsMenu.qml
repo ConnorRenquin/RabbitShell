@@ -119,6 +119,10 @@ FloatingWindowPlus {
                     readonly property string name: Icons.bluetooth + ' Bluetooth'
                     anchors.fill: parent
                 }
+                NetworkSettingsView {
+                    readonly property string name: Icons.network + ' Network'
+                    anchors.fill: parent
+                }
                 AppearanceSettingsView {
                     readonly property string name: Icons.colors + ' Colors'
                     anchors.fill: parent
