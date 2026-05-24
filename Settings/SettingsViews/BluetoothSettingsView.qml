@@ -490,30 +490,6 @@ Rectangle {
         }
     }
 
-    component SectionHeader: ColumnLayout {
-        id: sectionHeader
-
-        required property string title
-        property string subtitle: ""
-
-        Layout.fillWidth: true
-        spacing: 2
-
-        TextStyled {
-            Layout.fillWidth: true
-            text: sectionHeader.title
-            font.pointSize: Styles.textMd
-        }
-
-        TextStyled {
-            Layout.fillWidth: true
-            visible: sectionHeader.subtitle.length > 0
-            text: sectionHeader.subtitle
-            color: Colors.onSurfaceVariant
-            font.pointSize: Styles.textSm
-        }
-    }
-
     component EmptyState: Rectangle {
         property alias text: emptyText.text
 
