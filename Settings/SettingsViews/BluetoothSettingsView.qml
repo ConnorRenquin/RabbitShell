@@ -10,12 +10,13 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Settings
+import qs.Settings.SettingsViews.Components
 import qs.Components
 
 Rectangle {
     id: root
 
-    color: Qt.lighter(Colors.surface, Colors.lighter)
+    color: "transparent"
 
     readonly property int adapterCount: Bluetooth.adapters?.values?.length ?? 0
     readonly property int deviceCount: Bluetooth.devices?.values?.length ?? 0
@@ -199,40 +200,9 @@ Rectangle {
             anchors.margins: Styles.marginSm
             spacing: Styles.marginMd
 
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 72
-                color: Colors.surface
-                radius: Styles.radiusLg
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: Styles.marginSm
-                    spacing: Styles.marginSm
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-
-                        TextStyled {
-                            Layout.fillWidth: true
-                            text: "Bluetooth"
-                            font.pointSize: Styles.textLg
-                        }
-
-                        TextStyled {
-                            Layout.fillWidth: true
-                            text: `${root.adapterCount} adapter${root.adapterCount === 1 ? "" : "s"} • ${root.activeDeviceCount} device${root.activeDeviceCount === 1 ? "" : "s"}${root.blockedDeviceCount > 0 ? ` • ${root.blockedDeviceCount} blocked` : ""} • Agent: ${root.bluetoothAgentReady ? "ready" : root.bluetoothAgentStatus}`
-                            color: Colors.onSurfaceVariant
-                            font.pointSize: Styles.textSm
-                        }
-                    }
-
-                    LoadingIndicator {
-                        visible: root.anyAdapterDiscovering()
-                        running: visible
-                    }
-                }
+            SettingsViewTitle {
+                title: "Bluetooth"
+                subTitle: `${root.adapterCount} adapter${root.adapterCount === 1 ? "" : "s"} • ${root.activeDeviceCount} device${root.activeDeviceCount === 1 ? "" : "s"}${root.blockedDeviceCount > 0 ? ` • ${root.blockedDeviceCount} blocked` : ""} • Agent: ${root.bluetoothAgentReady ? "ready" : root.bluetoothAgentStatus}`
             }
 
             SectionHeader {
@@ -276,32 +246,15 @@ Rectangle {
                                 onToggled: adapterCard.modelData.enabled = checked
                             }
 
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 2
-
-                                TextStyled {
-                                    Layout.fillWidth: true
-                                    text: adapterCard.modelData.name || adapterCard.modelData.adapterId || "Adapter"
-                                }
-
-                                TextStyled {
-                                    Layout.fillWidth: true
-                                    text: `${adapterCard.modelData.adapterId} • ${root.adapterStateText(adapterCard.modelData)}`
-                                    color: Colors.onSurfaceVariant
-                                    font.pointSize: Styles.textSm
-                                }
+                            SectionHeader {
+                                title: adapterCard.modelData.name || adapterCard.modelData.adapterId || "Adapter"
+                                subtitle: `${adapterCard.modelData.adapterId} • ${root.adapterStateText(adapterCard.modelData)}`
                             }
 
                             LoadingIndicator {
                                 visible: adapterCard.modelData.discovering
                                 running: visible
                             }
-                        }
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: Styles.marginMd
 
                             SwitchStyled {
                                 enabled: adapterCard.modelData.enabled
@@ -322,10 +275,6 @@ Rectangle {
                                 text: "Pairable"
                                 checked: adapterCard.modelData.pairable
                                 onToggled: adapterCard.modelData.pairable = checked
-                            }
-
-                            Item {
-                                Layout.fillWidth: true
                             }
                         }
                     }
@@ -376,49 +325,15 @@ Rectangle {
                                 source: Quickshell.iconPath(deviceCard.modelData.icon || "bluetooth", "bluetooth")
                             }
 
-                            ColumnLayout {
+                            SectionHeader {
                                 Layout.fillWidth: true
-                                spacing: 2
-
-                                TextStyled {
-                                    Layout.fillWidth: true
-                                    text: root.deviceDisplayName(deviceCard.modelData)
-                                }
-
-                                TextStyled {
-                                    Layout.fillWidth: true
-                                    text: root.deviceDetailText(deviceCard.modelData)
-                                    color: Colors.onSurfaceVariant
-                                    font.pointSize: Styles.textSm
-                                }
+                                title: root.deviceDisplayName(deviceCard.modelData)
+                                subtitle: root.deviceDetailText(deviceCard.modelData)
                             }
 
                             LoadingIndicator {
                                 visible: deviceCard.modelData.pairing || root.deviceStateText(deviceCard.modelData) === "Connecting" || root.deviceStateText(deviceCard.modelData) === "Disconnecting"
                                 running: visible
-                            }
-                        }
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: Styles.marginSm
-
-                            SwitchStyled {
-                                text: "Trusted"
-                                checked: deviceCard.modelData.trusted
-                                onToggled: deviceCard.modelData.trusted = checked
-                            }
-
-                            SwitchStyled {
-                                text: "Blocked"
-                                checked: deviceCard.modelData.blocked
-                                onToggled: deviceCard.modelData.blocked = checked
-                            }
-
-                            SwitchStyled {
-                                text: "Wake"
-                                checked: deviceCard.modelData.wakeAllowed
-                                onToggled: deviceCard.modelData.wakeAllowed = checked
                             }
 
                             Item {
@@ -435,6 +350,7 @@ Rectangle {
                             }
 
                             ButtonStyled {
+
                                 enabled: !deviceCard.modelData.connected
                                 text: {
                                     if (deviceCard.modelData.pairing)
@@ -455,6 +371,58 @@ Rectangle {
                                     }
                                 }
                             }
+
+                            ButtonStyled {
+                                id: extraSettingsButton
+                                text: Icons.more
+                                pointSize: Styles.textLg
+                                onClicked: extraBluetoothSettings.visible = !extraBluetoothSettings.visible
+                            }
+
+                            PopupWindow {
+                                id: extraBluetoothSettings
+                                implicitHeight: extraSettingsColumn.implicitHeight
+                                implicitWidth: extraSettingsColumn.implicitWidth
+                                color: "transparent"
+                                anchor {
+                                    item: extraSettingsButton
+                                    rect.x: -extraBluetoothSettings.width / 2
+                                    rect.y: -extraBluetoothSettings.width
+                                }
+                                Rectangle {
+                                    id: extraBluetoothSettingsBackground
+                                    anchors.fill: parent
+                                    radius: Styles.radiusSm
+                                    color: Colors.background
+                                }
+                                ColumnLayout {
+                                    id: extraSettingsColumn
+                                    SwitchStyled {
+                                        text: "Trusted"
+                                        checked: deviceCard.modelData.trusted
+                                        onToggled: {
+                                            deviceCard.modelData.trusted = checked;
+                                            extraBluetoothSettings.visible = false;
+                                        }
+                                    }
+                                    SwitchStyled {
+                                        text: "Blocked"
+                                        checked: deviceCard.modelData.blocked
+                                        onToggled: {
+                                            deviceCard.modelData.blocked = checked;
+                                            extraBluetoothSettings.visible = false;
+                                        }
+                                    }
+                                    SwitchStyled {
+                                        text: "Wake"
+                                        checked: deviceCard.modelData.wakeAllowed
+                                        onToggled: {
+                                            deviceCard.modelData.wakeAllowed = checked;
+                                            extraBluetoothSettings.visible = false;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -463,10 +431,8 @@ Rectangle {
             ButtonStyled {
                 visible: root.blockedDeviceCount > 0
                 Layout.fillWidth: true
-                implicitHeight: 42
                 textAlignment: Text.AlignLeft
-                text: `${root.blockedDevicesExpanded ? "▾" : "▸"} Blocked devices (${root.blockedDeviceCount})`
-                defaultColor: Colors.surface
+                text: `${root.blockedDevicesExpanded ? "▾" : "▸"} Blocked devices`
                 onClicked: root.blockedDevicesExpanded = !root.blockedDevicesExpanded
             }
 
@@ -504,38 +470,9 @@ Rectangle {
                                 source: Quickshell.iconPath(blockedDeviceCard.modelData.icon || "bluetooth", "bluetooth")
                             }
 
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 2
-
-                                TextStyled {
-                                    Layout.fillWidth: true
-                                    text: root.deviceDisplayName(blockedDeviceCard.modelData)
-                                }
-
-                                TextStyled {
-                                    Layout.fillWidth: true
-                                    text: root.deviceDetailText(blockedDeviceCard.modelData)
-                                    color: Colors.onSurfaceVariant
-                                    font.pointSize: Styles.textSm
-                                }
-                            }
-                        }
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: Styles.marginSm
-
-                            SwitchStyled {
-                                text: "Trusted"
-                                checked: blockedDeviceCard.modelData.trusted
-                                onToggled: blockedDeviceCard.modelData.trusted = checked
-                            }
-
-                            SwitchStyled {
-                                text: "Wake"
-                                checked: blockedDeviceCard.modelData.wakeAllowed
-                                onToggled: blockedDeviceCard.modelData.wakeAllowed = checked
+                            SectionHeader {
+                                title: root.deviceDisplayName(blockedDeviceCard.modelData)
+                                subtitle: root.deviceDetailText(blockedDeviceCard.modelData)
                             }
 
                             Item {
@@ -545,20 +482,6 @@ Rectangle {
                             ButtonStyled {
                                 text: "Unblock"
                                 onClicked: blockedDeviceCard.modelData.blocked = false
-                            }
-
-                            ButtonStyled {
-                                text: "Unblock + Pair"
-                                enabled: !blockedDeviceCard.modelData.connected
-                                onClicked: root.pairDevice(blockedDeviceCard.modelData)
-                            }
-
-                            ButtonStyled {
-                                visible: blockedDeviceCard.modelData.paired
-                                text: "Forget"
-                                defaultColor: Colors.error
-                                textColor: Colors.onError
-                                onClicked: blockedDeviceCard.modelData.forget()
                             }
                         }
                     }

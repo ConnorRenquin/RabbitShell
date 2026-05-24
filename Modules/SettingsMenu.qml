@@ -11,6 +11,7 @@ import qs.Services
 
 import qs.Settings
 import qs.Settings.SettingsViews
+import qs.Settings.SettingsViews.Components
 
 
 FloatingWindowPlus {
