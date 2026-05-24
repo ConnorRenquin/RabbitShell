@@ -111,7 +111,7 @@ Rectangle {
         var title = section.title;
         if (["General", "Snap"].indexOf(title) !== -1)
             return "General";
-        if (["Decoration", "Blur", "Shadow", "Glow"].indexOf(title) !== -1)
+        if (["Decoration", "Blur", "Shadow", "Glow", "Animations"].indexOf(title) !== -1)
             return "Appearance";
         if (["Input", "Touchpad", "Gestures", "Cursor"].indexOf(title) !== -1)
             return "Input";
@@ -121,8 +121,6 @@ Rectangle {
             return "Keybinds";
         if (["Window Rules", "Layer Rules", "Animation Rules"].indexOf(title) !== -1)
             return "Rules";
-        if (["Animations"].indexOf(title) !== -1)
-            return "Rendering";
         return "Advanced";
     }
 
