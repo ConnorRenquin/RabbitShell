@@ -122,10 +122,7 @@ Rectangle {
             return;
 
         const lowerLine = line.toLowerCase();
-
         root.bluetoothAgentStatus = line;
-        console.log(`[bluetoothctl-agent] ${line}`);
-
         if (lowerLine.includes("agent registered") || lowerLine.includes("default agent request successful") || lowerLine.includes("default agent"))
             root.bluetoothAgentReady = true;
 
