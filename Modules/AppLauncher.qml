@@ -69,44 +69,80 @@ Loader {
         ColumnLayout {
             id: base
             anchors.fill: parent
-            Rectangle {
-                id: searchBar
+            spacing: Styles.marginSm
 
-                implicitHeight: 60
-                Layout.fillWidth: true
+            RowLayout {
+                id: searchRow
 
-                color: Colors.surface
-                radius: Styles.radiusSm
-
-                readonly property int textSize: 25
-
-                TextFieldStyled {
-                    id: textInput
-                    placeholderText: 'Search'
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        left: parent.left
-                        right: parent.right
-                        margins: Styles.marginSm
-                    }
-                    onTextChanged: System.setApplicationSearchText(text)
-                    Keys.onPressed: event => root.gridNavigationController(event)
-                }
+                Layout.maximumHeight: 60
+                spacing: Styles.marginSm
 
                 Rectangle {
-                    id: clockBackground
-                    implicitHeight: parent.height - Styles.marginLg
-                    implicitWidth: clock.implicitWidth + Styles.marginLg
-                    anchors.margins: Styles.marginMd
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: Qt.darker(Colors.surface, Colors.darker)
-                    radius: Styles.radiusLg
-                    TextStyled {
-                        id: clock
-                        anchors.centerIn: parent
+                    id: searchBar
+
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    color: Colors.surface
+                    radius: Styles.radiusSm
+
+                    readonly property int textSize: 25
+
+                    TextFieldStyled {
+                        id: textInput
+                        placeholderText: 'Search'
+                        implicitHeight: parent.height - (Styles.marginSm * 2)
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                            left: parent.left
+                            right: clockBackground.left
+                            margins: Styles.marginSm
+                        }
+                        onTextChanged: System.setApplicationSearchText(text)
+                        Keys.onPressed: event => root.gridNavigationController(event)
+                    }
+
+                    Rectangle {
+                        id: clockBackground
+                        implicitHeight: parent.height - Styles.marginLg
+                        implicitWidth: clock.implicitWidth + Styles.marginLg
+                        anchors.margins: Styles.marginMd
+                        anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        text: Time.timeShort
+                        color: Qt.darker(Colors.surface, Colors.darker)
+                        radius: Styles.radiusLg
+                        TextStyled {
+                            id: clock
+                            anchors.centerIn: parent
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: Time.timeShort
+                        }
+                    }
+                }
+
+                ButtonStyled {
+                    id: settingsButton
+                    Layout.preferredWidth: searchRow.rowHeight
+                    Layout.fillHeight: true
+                    text: Icons.settingsCog
+                    defaultColor: Colors.surface
+                    onClicked: {
+                        textInput.text = "";
+                        loader.active = false;
+                        PatchBay.openSettings();
+                    }
+                }
+
+                ButtonStyled {
+                    id: powerButton
+                    Layout.preferredWidth: searchRow.rowHeight
+                    Layout.fillHeight: true
+                    text: Icons.power
+                    defaultColor: Colors.surface
+                    onClicked: {
+                        textInput.text = "";
+                        loader.active = false;
+                        PatchBay.openPowerMenu();
                     }
                 }
             }
