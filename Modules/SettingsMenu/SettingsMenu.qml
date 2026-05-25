@@ -170,7 +170,7 @@ FloatingWindowPlus {
                     category: 'misc'
                 }
                 Cheatsheet {
-                    name: Icons.cheatsheet + ' Cheatsheet'
+                    name: Icons.knowledge + ' Knowledge'
                     anchors.fill: parent
                 }
             }

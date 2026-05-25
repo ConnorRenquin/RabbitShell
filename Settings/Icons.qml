@@ -18,6 +18,7 @@ Singleton {
     readonly property string cheatsheet: "?"
     readonly property string appearance: ""
     readonly property string apps: ""
+    readonly property string knowledge: ""
     readonly property string misc: ""
     readonly property string os: "󱄅"
     readonly property string notificationBell: ""
