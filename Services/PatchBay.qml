@@ -16,6 +16,7 @@ Singleton {
     signal openTimer
     signal openAppLauncher
     signal openAsciiEmojis
+    signal openNerdFonts
     signal openImageClipboard
     signal openMixer
     signal openPowerMenu

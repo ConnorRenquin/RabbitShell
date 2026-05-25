@@ -26,9 +26,9 @@ FloatingWindowPlus {
 
     function cycleTab(forward: bool) {
         if (forward) {
-            root.currentTab = (root.currentTab + 1) % 3;
+            root.currentTab = (root.currentTab + 1) % 4;
         } else {
-            root.currentTab = (root.currentTab + 2) % 3;
+            root.currentTab = (root.currentTab + 3) % 4;
         }
     }
 
@@ -52,6 +52,11 @@ FloatingWindowPlus {
         onPressed: root.show(2)
     }
 
+    GlobalShortcut {
+        name: 'nerdfonts'
+        onPressed: root.show(3)
+    }
+
     Connections {
         target: PatchBay
         function onOpenImageClipboard() {
@@ -59,6 +64,9 @@ FloatingWindowPlus {
         }
         function onOpenAsciiEmojis() {
             root.show(2);
+        }
+        function onOpenNerdFonts() {
+            root.show(3);
         }
     }
 
@@ -167,6 +175,16 @@ FloatingWindowPlus {
                     isActive: root.currentTab === 2 && root.visible
                     focus: isActive
                     onRequestExit: root.exit()
+                }
+
+                NerdFontsView {
+                    id: nerdFontsView
+                    property string name: Icons.knowledge
+                    anchors.fill: parent
+                    isActive: root.currentTab === 3 && root.visible
+                    focus: isActive
+                    onRequestExit: root.exit()
+                    onRequestTabCycle: forward => root.cycleTab(forward)
                 }
             }
         }
