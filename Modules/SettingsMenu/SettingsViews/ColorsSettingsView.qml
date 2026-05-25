@@ -195,7 +195,6 @@ Rectangle {
 
                 Repeater {
                     model: Object.keys(Colors.userColors).filter(key => ![
-                        'primary', 'secondary', 'tertiary',
                         'onPrimaryContainer', 'inversePrimary',
                         'onSecondaryContainer',
                         'onTertiaryContainer',
