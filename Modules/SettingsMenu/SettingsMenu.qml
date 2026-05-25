@@ -24,6 +24,7 @@ FloatingWindowPlus {
         reloadableId: "settings-menu-state"
 
         property int selectedTabIndex: 0
+        property bool sideButtonsCollapsed: false
     }
 
     Component.onCompleted: PatchBay.openSettings.connect(toggle)
@@ -65,6 +66,11 @@ FloatingWindowPlus {
             settingModules.positionViewAtIndex(index, ListView.Contain);
         }
 
+        function tabIcon(name) {
+            var parts = name.split(' ');
+            return parts.length > 0 ? parts[0] : name;
+        }
+
         Keys.onPressed: event => {
             if (controls.tabPressed(event) || controls.backtabPressed(event)) {
                 event.accepted = true;
@@ -104,22 +110,38 @@ FloatingWindowPlus {
         RowLayout {
             id: mainLayout
             anchors.fill: parent
-            ListView {
-                id: settingModules
+
+            ColumnLayout {
+                id: sideButtons
                 Layout.fillHeight: true
-                Layout.fillWidth: true
                 Layout.margins: Styles.marginSm
-                Layout.preferredWidth: 50
+                Layout.maximumWidth: persisted.sideButtonsCollapsed ? Styles.marginLg * 2 : Styles.marginLg * 8
                 spacing: Styles.marginSm
-                model: settingsModuleUi.children
-                delegate: ButtonStyled {
-                    required property var modelData
-                    textAlignment: Text.AlignLeft
-                    width: parent.width
-                    text: modelData.name
-                    isFocused: modelData.visible
-                    onClicked: {
-                        base.selectTabByIndex(base.childIndexOf(modelData));
+
+                ButtonStyled {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: implicitHeight
+                    textAlignment: persisted.sideButtonsCollapsed ? Text.AlignHCenter : Text.AlignLeft
+                    text: persisted.sideButtonsCollapsed ? Icons.rightArrow : Icons.collapse + ' Settings'
+                    onClicked: persisted.sideButtonsCollapsed = !persisted.sideButtonsCollapsed
+                }
+
+                ListView {
+                    id: settingModules
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    clip: true
+                    spacing: Styles.marginSm
+                    model: settingsModuleUi.children
+                    delegate: ButtonStyled {
+                        required property var modelData
+                        textAlignment: persisted.sideButtonsCollapsed ? Text.AlignHCenter : Text.AlignLeft
+                        width: ListView.view.width
+                        text: persisted.sideButtonsCollapsed ? base.tabIcon(modelData.name) : modelData.name
+                        isFocused: modelData.visible
+                        onClicked: {
+                            base.selectTabByIndex(base.childIndexOf(modelData));
+                        }
                     }
                 }
             }
