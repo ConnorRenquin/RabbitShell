@@ -102,12 +102,25 @@ Singleton {
         utils.notify({summary: 'Slot ' + (index === 9 ? 0 : index + 1) + ' Cleared'});
     }
 
-    function copyToClipboard(text: string) {
-        Quickshell.execDetached(['bash', '-c', "printf '%s' '" + text + "' | wl-copy"]);
-        utils.notify({
-            summary: 'Copied',
-            body: text
-        });
+    property var pasteCallbacks: []
+
+    function copyToClipboard(text, notify) {
+        Quickshell.execDetached(['bash', '-c', 'printf %s "$1" | wl-copy', 'ClipboardService.copyToClipboard', String(text)]);
+        if (notify !== false) {
+            utils.notify({
+                summary: 'Copied',
+                body: text
+            });
+        }
+    }
+
+    function pasteFromClipboard(callback) {
+        if (wlPasteProcess.running) {
+            return;
+        }
+
+        root.pasteCallbacks = [callback];
+        wlPasteProcess.running = true;
     }
 
     function copySlotToClipboard(index) {
@@ -116,8 +129,28 @@ Singleton {
             utils.notify({summary: 'Slot Empty'});
             return;
         }
-        const text = storedText.replace(/'/g, "'\\''");
-        copyToClipboard(text)
+        copyToClipboard(storedText)
+    }
+
+    Process {
+        id: wlPasteProcess
+        command: ['wl-paste', '--no-newline']
+        running: false
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const pastedText = this.text;
+                const callbacks = root.pasteCallbacks.slice();
+                root.pasteCallbacks = [];
+
+                for (let i = 0; i < callbacks.length; i++) {
+                    if (callbacks[i]) {
+                        callbacks[i](pastedText);
+                    }
+                }
+            }
+        }
+
     }
 
     Utils {

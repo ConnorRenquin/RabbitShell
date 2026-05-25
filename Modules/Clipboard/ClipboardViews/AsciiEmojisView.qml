@@ -477,8 +477,7 @@ Rectangle {
 
                     onClicked: {
                         const emoji = emojiButton.modelData.emoji;
-                        const escapedEmoji = emoji.replace(/'/g, "'\\''");
-                        Quickshell.execDetached(['bash', '-c', "printf '%s' '" + escapedEmoji + "' | wl-copy"]);
+                        ClipboardService.copyToClipboard(emoji, false);
                         utils.notify({
                             summary: 'Copied: ' + emojiButton.modelData.name,
                             body: emoji

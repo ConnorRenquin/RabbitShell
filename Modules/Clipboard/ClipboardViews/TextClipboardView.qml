@@ -374,8 +374,7 @@ Rectangle {
                                     } else if (ctrlHeld) {
                                         ClipboardService.storeToNextAvailableSlot(button.itemText);
                                     } else {
-                                        const text = button.itemText.replace(/'/g, "'\\''");
-                                        ClipboardService.copyToClipboard(text);
+                                        ClipboardService.copyToClipboard(button.itemText);
                                         root.requestExit();
                                     }
                                 }

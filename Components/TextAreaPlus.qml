@@ -23,6 +23,7 @@ TextArea {
     property string vimMode: 'NORMAL' // 'NORMAL', 'INSERT', 'VISUAL', or 'VISUAL_LINE'
     property int visualAnchor: -1
     property int visualCursor: -1
+    property bool visualForward: true
     property bool gPressed: false
     property bool dPressed: false
 
@@ -95,36 +96,85 @@ TextArea {
         }
     }
 
-    function getWordForwardPos() {
-        let text = textArea.text;
-        let pos = textArea.vimMode === 'VISUAL' || textArea.vimMode === 'VISUAL_LINE' ? textArea.visualCursor : textArea.cursorPosition;
+    function activeVimPos() {
+        return textArea.vimMode === 'VISUAL' || textArea.vimMode === 'VISUAL_LINE' ? textArea.visualCursor : textArea.cursorPosition;
+    }
+
+    function isWhitespace(ch) {
+        return /\s/.test(ch);
+    }
+
+    function isKeywordChar(ch) {
+        return /[A-Za-z0-9_]/.test(ch);
+    }
+
+    function charClass(ch, bigWord) {
+        if (textArea.isWhitespace(ch)) return 0;
+        if (bigWord) return 1;
+        return textArea.isKeywordChar(ch) ? 1 : 2;
+    }
+
+    function getFirstNonBlank(pos) {
+        const text = textArea.text;
+        let cursor = textArea.getLineStart(pos);
+        const end = textArea.getLineEnd(pos);
+        while (cursor < end && /[ \t]/.test(text[cursor])) {
+            cursor++;
+        }
+        return cursor;
+    }
+
+    function getWordForwardPos(bigWord) {
+        bigWord = bigWord === true;
+        const text = textArea.text;
+        let pos = textArea.activeVimPos();
         if (pos >= text.length) return pos;
 
-        // Skip current word characters
-        while (pos < text.length && /\w/.test(text[pos])) pos++;
-        // Skip non-word characters (whitespace, punctuation)
-        while (pos < text.length && !/\w/.test(text[pos])) pos++;
+        const currentClass = textArea.charClass(text[pos], bigWord);
+        if (currentClass !== 0) {
+            while (pos < text.length && textArea.charClass(text[pos], bigWord) === currentClass) pos++;
+        }
+        while (pos < text.length && textArea.isWhitespace(text[pos])) pos++;
 
         return pos;
     }
 
-    function getWordBackwardPos() {
-        let text = textArea.text;
-        let pos = textArea.vimMode === 'VISUAL' || textArea.vimMode === 'VISUAL_LINE' ? textArea.visualCursor : textArea.cursorPosition;
+    function getWordBackwardPos(bigWord) {
+        bigWord = bigWord === true;
+        const text = textArea.text;
+        let pos = textArea.activeVimPos();
         if (pos <= 0) return pos;
 
         pos--;
-        // Skip trailing whitespace/punctuation
-        while (pos > 0 && !/\w/.test(text[pos])) pos--;
-        // Skip word characters
-        while (pos > 0 && /\w/.test(text[pos - 1])) pos--;
+        while (pos > 0 && textArea.isWhitespace(text[pos])) pos--;
+
+        const targetClass = textArea.charClass(text[pos], bigWord);
+        while (pos > 0 && textArea.charClass(text[pos - 1], bigWord) === targetClass) pos--;
+
+        return pos;
+    }
+
+    function getWordEndPos(bigWord) {
+        bigWord = bigWord === true;
+        const text = textArea.text;
+        let pos = textArea.activeVimPos();
+        if (pos >= text.length - 1) return pos;
+
+        pos++;
+        while (pos < text.length && textArea.isWhitespace(text[pos])) pos++;
+        if (pos >= text.length) return text.length;
+
+        const targetClass = textArea.charClass(text[pos], bigWord);
+        while (pos < text.length - 1 && textArea.charClass(text[pos + 1], bigWord) === targetClass) pos++;
 
         return pos;
     }
 
     function updateVisualSelection(newPos) {
+        newPos = Math.max(0, Math.min(textArea.text.length, newPos));
         textArea.visualCursor = newPos;
         let anchor = textArea.visualAnchor;
+        textArea.visualForward = newPos >= anchor;
         if (newPos >= anchor) {
             textArea.select(anchor, Math.min(textArea.text.length, newPos + 1));
         } else {
@@ -133,8 +183,10 @@ TextArea {
     }
 
     function updateVisualLineSelection(newPos) {
+        newPos = Math.max(0, Math.min(textArea.text.length, newPos));
         textArea.visualCursor = newPos;
         let anchor = textArea.visualAnchor;
+        textArea.visualForward = newPos >= anchor;
         let anchorStart = getLineStart(anchor);
         let anchorEnd = getLineEnd(anchor);
         let currentStart = getLineStart(newPos);
@@ -154,6 +206,9 @@ TextArea {
         border.color: textArea.vimEnabled && (textArea.vimMode === 'VISUAL' || textArea.vimMode === 'VISUAL_LINE') ? Colors.tertiary : "transparent"
         border.width: textArea.vimEnabled && (textArea.vimMode === 'VISUAL' || textArea.vimMode === 'VISUAL_LINE') ? 1 : 0
         opacity: textArea.vimEnabled && textArea.vimMode === 'NORMAL' ? 0.6 : 1.0
+        transform: Translate {
+            x: textArea.vimEnabled && (textArea.vimMode === 'VISUAL' || textArea.vimMode === 'VISUAL_LINE') && textArea.visualForward && textArea.cursorPosition > 0 ? -customCursor.width : 0
+        }
         Timer {
             interval: 500
             running: parent.parent.activeFocus && !parent.parent.readOnly
@@ -209,6 +264,21 @@ TextArea {
 
                 event.accepted = true;
 
+                if (textArea.gPressed) {
+                    if (event.text === 'g') {
+                        textArea.updateVisualSelection(0);
+                    }
+                    textArea.gPressed = false;
+                    return;
+                }
+
+                if (event.key === Qt.Key_Left) { textArea.updateVisualSelection(Math.max(0, textArea.visualCursor - 1)); return; }
+                if (event.key === Qt.Key_Right) { textArea.updateVisualSelection(Math.min(textArea.text.length, textArea.visualCursor + 1)); return; }
+                if (event.key === Qt.Key_Down) { textArea.updateVisualSelection(textArea.getCursorUpDownPos(true)); return; }
+                if (event.key === Qt.Key_Up) { textArea.updateVisualSelection(textArea.getCursorUpDownPos(false)); return; }
+                if (event.key === Qt.Key_Home) { textArea.updateVisualSelection(textArea.getLineStart(textArea.visualCursor)); return; }
+                if (event.key === Qt.Key_End) { textArea.updateVisualSelection(textArea.getLineEnd(textArea.visualCursor)); return; }
+
                 switch (event.text) {
                     // Movement in Visual Mode
                     case 'h':
@@ -226,14 +296,35 @@ TextArea {
                     case 'w':
                         textArea.updateVisualSelection(textArea.getWordForwardPos());
                         break;
+                    case 'W':
+                        textArea.updateVisualSelection(textArea.getWordForwardPos(true));
+                        break;
                     case 'b':
                         textArea.updateVisualSelection(textArea.getWordBackwardPos());
+                        break;
+                    case 'B':
+                        textArea.updateVisualSelection(textArea.getWordBackwardPos(true));
+                        break;
+                    case 'e':
+                        textArea.updateVisualSelection(textArea.getWordEndPos());
+                        break;
+                    case 'E':
+                        textArea.updateVisualSelection(textArea.getWordEndPos(true));
                         break;
                     case '0':
                         textArea.updateVisualSelection(textArea.getLineStart(textArea.visualCursor));
                         break;
+                    case '^':
+                        textArea.updateVisualSelection(textArea.getFirstNonBlank(textArea.visualCursor));
+                        break;
                     case '$':
                         textArea.updateVisualSelection(textArea.getLineEnd(textArea.visualCursor));
+                        break;
+                    case 'G':
+                        textArea.updateVisualSelection(textArea.text.length);
+                        break;
+                    case 'g':
+                        textArea.gPressed = true;
                         break;
 
                     // Actions in Visual Mode
@@ -248,7 +339,7 @@ TextArea {
                         let yStart = textArea.selectionStart;
                         let yEnd = textArea.selectionEnd;
                         let selectedText = textArea.text.substring(yStart, yEnd);
-                        Quickshell.execDetached(["wl-copy", selectedText]);
+                        ClipboardService.copyToClipboard(selectedText, false);
                         textArea.select(textArea.cursorPosition, textArea.cursorPosition);
                         textArea.vimMode = 'NORMAL';
                         break;
@@ -273,6 +364,19 @@ TextArea {
                 }
 
                 event.accepted = true;
+
+                if (textArea.gPressed) {
+                    if (event.text === 'g') {
+                        textArea.updateVisualLineSelection(0);
+                    }
+                    textArea.gPressed = false;
+                    return;
+                }
+
+                if (event.key === Qt.Key_Down) { textArea.updateVisualLineSelection(textArea.getCursorUpDownPos(true)); return; }
+                if (event.key === Qt.Key_Up) { textArea.updateVisualLineSelection(textArea.getCursorUpDownPos(false)); return; }
+                if (event.key === Qt.Key_Home) { textArea.updateVisualLineSelection(textArea.getLineStart(textArea.visualCursor)); return; }
+                if (event.key === Qt.Key_End) { textArea.updateVisualLineSelection(textArea.getLineEnd(textArea.visualCursor)); return; }
 
                 switch (event.text) {
                     // Movement in Visual Line Mode
@@ -301,7 +405,7 @@ TextArea {
                         let yStart = textArea.selectionStart;
                         let yEnd = textArea.selectionEnd;
                         let selectedText = textArea.text.substring(yStart, yEnd);
-                        Quickshell.execDetached(["wl-copy", selectedText]);
+                        ClipboardService.copyToClipboard(selectedText, false);
                         textArea.select(textArea.cursorPosition, textArea.cursorPosition);
                         textArea.vimMode = 'NORMAL';
                         break;
@@ -315,13 +419,6 @@ TextArea {
                         break;
                 }
 
-                // Handle 'g' prefix in Visual Line Mode
-                if (textArea.gPressed && event.text !== 'g') {
-                    if (event.text === 'g') {
-                        textArea.updateVisualLineSelection(0);
-                    }
-                    textArea.gPressed = false;
-                }
                 return;
             }
 
@@ -337,6 +434,13 @@ TextArea {
                     textArea.gPressed = false;
                     return;
                 }
+
+                if (event.key === Qt.Key_Left) { textArea.cursorPosition = Math.max(0, textArea.cursorPosition - 1); return; }
+                if (event.key === Qt.Key_Right) { textArea.cursorPosition = Math.min(textArea.text.length, textArea.cursorPosition + 1); return; }
+                if (event.key === Qt.Key_Down) { textArea.cursorPosition = textArea.getCursorUpDownPos(true); return; }
+                if (event.key === Qt.Key_Up) { textArea.cursorPosition = textArea.getCursorUpDownPos(false); return; }
+                if (event.key === Qt.Key_Home) { textArea.cursorPosition = textArea.getLineStart(textArea.cursorPosition); return; }
+                if (event.key === Qt.Key_End) { textArea.cursorPosition = textArea.getLineEnd(textArea.cursorPosition); return; }
 
                 switch (event.text) {
                     // Movement
@@ -355,11 +459,26 @@ TextArea {
                     case 'w':
                         textArea.cursorPosition = textArea.getWordForwardPos();
                         break;
+                    case 'W':
+                        textArea.cursorPosition = textArea.getWordForwardPos(true);
+                        break;
                     case 'b':
                         textArea.cursorPosition = textArea.getWordBackwardPos();
                         break;
+                    case 'B':
+                        textArea.cursorPosition = textArea.getWordBackwardPos(true);
+                        break;
+                    case 'e':
+                        textArea.cursorPosition = textArea.getWordEndPos();
+                        break;
+                    case 'E':
+                        textArea.cursorPosition = textArea.getWordEndPos(true);
+                        break;
                     case '0':
                         textArea.cursorPosition = textArea.getLineStart(textArea.cursorPosition);
+                        break;
+                    case '^':
+                        textArea.cursorPosition = textArea.getFirstNonBlank(textArea.cursorPosition);
                         break;
                     case '$':
                         textArea.cursorPosition = textArea.getLineEnd(textArea.cursorPosition);
@@ -384,7 +503,7 @@ TextArea {
                         textArea.vimMode = 'INSERT';
                         break;
                     case 'I':
-                        textArea.cursorPosition = textArea.getLineStart(textArea.cursorPosition);
+                        textArea.cursorPosition = textArea.getFirstNonBlank(textArea.cursorPosition);
                         textArea.vimMode = 'INSERT';
                         break;
                     case 'o':
@@ -440,16 +559,21 @@ TextArea {
 
                     // Paste
                     case 'p':
-                        let pText = ClipboardService.clipboardData.clipboardText[0] || "";
                         let pPos = textArea.cursorPosition;
-                        textArea.insert(pPos + 1, pText);
-                        textArea.cursorPosition = pPos + pText.length;
+                        ClipboardService.pasteFromClipboard(function(pText) {
+                            if (pText.length === 0) return;
+                            const insertPos = Math.min(textArea.text.length, pPos + 1);
+                            textArea.insert(insertPos, pText);
+                            textArea.cursorPosition = insertPos + pText.length - 1;
+                        });
                         break;
                     case 'P':
-                        let PText = ClipboardService.clipboardData.clipboardText[0] || "";
                         let PPos = textArea.cursorPosition;
-                        textArea.insert(PPos, PText);
-                        textArea.cursorPosition = PPos + PText.length - 1;
+                        ClipboardService.pasteFromClipboard(function(PText) {
+                            if (PText.length === 0) return;
+                            textArea.insert(PPos, PText);
+                            textArea.cursorPosition = PPos + PText.length - 1;
+                        });
                         break;
 
                     default:
