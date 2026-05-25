@@ -16,6 +16,8 @@ import qs.Components
 Rectangle {
     id: root
 
+    required property string name
+
     color: "transparent"
 
     readonly property int adapterCount: Bluetooth.adapters?.values?.length ?? 0
@@ -197,7 +199,7 @@ Rectangle {
             spacing: Styles.marginMd
 
             SettingsViewTitle {
-                title: "Bluetooth"
+                title: root.name
                 subTitle: `${root.adapterCount} adapter${root.adapterCount === 1 ? "" : "s"} • ${root.activeDeviceCount} device${root.activeDeviceCount === 1 ? "" : "s"}${root.blockedDeviceCount > 0 ? ` • ${root.blockedDeviceCount} blocked` : ""} • Agent: ${root.bluetoothAgentReady ? "ready" : root.bluetoothAgentStatus}`
             }
 

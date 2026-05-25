@@ -16,6 +16,8 @@ import qs.Services.Models
 Rectangle {
     id: root
 
+    required property string name
+
     anchors.fill: parent
     color: Qt.lighter(Colors.surface, Colors.lighter)
 
@@ -422,7 +424,7 @@ Rectangle {
         spacing: Styles.marginSm
         SettingsViewTitle {
             id: viewTitle
-            title: "Display Settings"
+            title: root.name
         }
 
         RowLayout {

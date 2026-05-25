@@ -11,6 +11,10 @@ import qs.Modules.SettingsMenu.SettingsViews.Components
 import qs.Services
 
 Rectangle {
+    id: root
+
+    required property string name
+
     color: Qt.lighter(Colors.surface, Colors.lighter)
     ScrollView {
         anchors.fill: parent
@@ -23,7 +27,7 @@ Rectangle {
             spacing: Styles.marginMd
 
             SettingsViewTitle {
-                title: "Audio Settings"
+                title: root.name
             }
 
             ColumnLayout {

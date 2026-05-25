@@ -14,6 +14,8 @@ import qs.Components
 Rectangle {
     id: root
 
+    required property string name
+
     color: "transparent"
 
     property string manualStatus: ""
@@ -140,7 +142,7 @@ Rectangle {
             anchors.right: parent.right
 
             SettingsViewTitle {
-                title: "Network"
+                title: root.name
             }
 
             Rectangle {

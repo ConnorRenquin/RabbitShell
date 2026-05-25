@@ -9,6 +9,9 @@ import qs.Services
 
 Rectangle {
     id: root
+
+    required property string name
+
     color: theme.background
 
     Themer { id: theme; variant: 'secondary' }
@@ -26,7 +29,7 @@ Rectangle {
         anchors.margins: Styles.marginSm
 
         SettingsViewTitle {
-            title: "About"
+            title: root.name
         }
 
         ColumnLayout {

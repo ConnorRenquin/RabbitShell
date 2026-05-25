@@ -130,19 +130,19 @@ FloatingWindowPlus {
                 Layout.preferredWidth: 300
                 Layout.fillWidth: true
                 AboutSettingsView {
-                    readonly property string name: Icons.info + ' About'
+                    name: Icons.info + ' About'
                     anchors.fill: parent
                 }
                 HyprlandSettingsView {
-                    readonly property string name: Icons.hyprland + ' Hyprland'
+                    name: Icons.hyprland + ' Hyprland'
                     anchors.fill: parent
                 }
                 BluetoothSettingsView {
-                    readonly property string name: Icons.bluetooth + ' Bluetooth'
+                    name: Icons.bluetooth + ' Bluetooth'
                     anchors.fill: parent
                 }
                 NetworkSettingsView {
-                    readonly property string name: Icons.network + ' Network'
+                    name: Icons.network + ' Network'
                     anchors.fill: parent
                 }
                 GeneralView {
@@ -150,19 +150,19 @@ FloatingWindowPlus {
                     category: 'appearance'
                 }
                 ColorsSettingsView {
-                    readonly property string name: Icons.colors + ' Colors'
+                    name: Icons.colors + ' Colors'
                     anchors.fill: parent
                 }
                 PipewireSettingsView {
-                    readonly property string name: Icons.audio + ' Audio'
+                    name: Icons.audio + ' Audio'
                     anchors.fill: parent
                 }
                 DisplaySettingsView {
-                    readonly property string name: Icons.display + ' Display'
+                    name: Icons.display + ' Display'
                     anchors.fill: parent
                 }
                 WallpaperSettingsView {
-                    readonly property string name: Icons.wallpaper + ' Wallpaper'
+                    name: Icons.wallpaper + ' Wallpaper'
                     anchors.fill: parent
                 }
                 GeneralView {
@@ -170,7 +170,7 @@ FloatingWindowPlus {
                     category: 'misc'
                 }
                 Cheatsheet {
-                    readonly property string name: Icons.cheatsheet + ' Cheatsheet'
+                    name: Icons.cheatsheet + ' Cheatsheet'
                     anchors.fill: parent
                 }
             }

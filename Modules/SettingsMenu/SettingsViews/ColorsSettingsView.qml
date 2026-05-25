@@ -13,6 +13,9 @@ import qs.Modules.SettingsMenu.SettingsViews.Components
 
 Rectangle {
     id: root
+
+    required property string name
+
     anchors.fill: parent
     color: Colors.surface
 
@@ -128,7 +131,7 @@ Rectangle {
         spacing: Styles.marginSm
 
         SettingsViewTitle {
-            title: "Colors"
+            title: root.name
         }
 
         ColorPalette {

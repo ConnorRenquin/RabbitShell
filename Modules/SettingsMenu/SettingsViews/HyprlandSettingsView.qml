@@ -17,6 +17,8 @@ import qs.Services
 Rectangle {
     id: root
 
+    required property string name
+
     color: Colors.surface
     focus: root.capturingBindIndex >= 0
 
@@ -391,7 +393,7 @@ Rectangle {
         spacing: Styles.marginSm
 
         SettingsViewTitle {
-            title: "Hyprland"
+            title: root.name
         }
 
         PanelLocal {

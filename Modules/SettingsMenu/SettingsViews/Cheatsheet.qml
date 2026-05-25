@@ -13,6 +13,8 @@ import qs.Components
 Rectangle {
     id: root
 
+    required property string name
+
     anchors.fill: parent
     color: Qt.lighter(Colors.surface, Colors.lighter)
 
