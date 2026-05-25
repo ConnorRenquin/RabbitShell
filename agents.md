@@ -10,16 +10,20 @@ This desktop shell is designed to be **extremely minimal, modular, and hackable*
 
 ### Directory Structure
 
-- **`/` (Root)**: Core entry point (`shell.qml`) and configuration files.
-- **`/Services`**: Singletons (`pragma Singleton`) managing system-level states, data fetching, and IPC.
-  - `PatchBay.qml`: The central event bus used to pass signals between decoupled components (e.g., notifying the notification widget).
-  - `Utils.qml` & `Time.qml`: Core helper utilities with high dependency counts.
-- **`/Settings`**: Styling, colors, icons, and persistent user settings.
-  - `Settings.qml`: Manages persistent user settings (saved to `.data/settings.json`).
-  - `Colors.qml` & `Styles.qml`: Tailwind-like utility styling definitions.
-- **`/Components`**: Reusable UI primitives (buttons, inputs, cards) used across modules.
-- **`/Modules`**: High-level functional UI widgets/panels (e.g., `AppLauncher.qml`, `LockScreen.qml`, `Mixer.qml`).
-- **`/BarWidgets`**: Specific widgets that populate the main desktop bar.
+- `./` - Core entry point (`shell.qml`) and configuration files.
+- `./Services` - Singletons (`pragma Singleton`) managing system-level states, data fetching, and IPC.
+- `./Settings` - Styling, colors, icons, and persistent user settings.
+- `/Components` - Reusable UI primitives (buttons, inputs, cards) used across modules.
+- `/Modules` - High-level functional UI widgets/panels (e.g., `AppLauncher.qml`, `LockScreen.qml`, `Mixer.qml`).
+- `/BarWidgets` - Specific widgets that populate the main desktop bar.
+
+### Core Files
+
+- `PatchBay.qml` - The central event bus used to pass signals between decoupled
+components (e.g., notifying the notification widget).
+- `Utils.qml` & `Time.qml` - Core helper utilities with high dependency counts.
+- `Settings.qml` - Manages persistent user settings (saved to `.data/settings.json`).
+- `Colors.qml` & `Styles.qml` - Tailwind-like utility styling definitions.
 
 ---
 
@@ -27,7 +31,8 @@ This desktop shell is designed to be **extremely minimal, modular, and hackable*
 
 Before you write a single line of code, you **must** ask and answer the following questions. If the answer is unclear, use search tools (`grep`, `find_path`) or ask the user for clarification.
 
-### 🔍 Architectural Alignment
+### Architectural Alignment
+
 1. **Is this a Service (state/logic) or a Module/Component (UI)?**
    - *Rule*: Keep UI components thin. Heavy logic, external process execution, or persistent state should live in a Service singleton.
 2. **Does this feature need to communicate with other components?**
@@ -35,16 +40,18 @@ Before you write a single line of code, you **must** ask and answer the followin
 3. **Does this feature require persistent user configuration?**
    - *Rule*: Register new settings in `Settings.qml` using `register()`. Do not write custom file-saving logic unless absolutely necessary.
 
-### 🎨 Styling & Design
-4. **Are we using the design system?**
+### Styling & Design
+
+1. **Are we using the design system?**
    - *Rule*: Never hardcode hex colors or pixel dimensions if they can be derived from `qs.Settings.Colors` or `qs.Settings.Styles`.
-5. **Is the layout responsive and Wayland-compatible?**
+2. **Is the layout responsive and Wayland-compatible?**
    - *Rule*: Ensure anchors, layouts, and window positioning respect different monitor sizes and scales using `qs.Services.MonitorInfo` or `qs.Services.HyprctlMonitors`.
 
-### ⚡ Performance & Safety
-6. **Will this block the main QML thread?**
+### Performance & Safety
+
+1. **Will this block the main QML thread?**
    - *Rule*: Never run blocking shell commands synchronously. Use asynchronous process execution (`Quickshell.execDetached` or async `Process` objects) and asynchronous file views (`FileView`).
-7. **Is this command safe to run?**
+2. **Is this command safe to run?**
    - *Rule*: Sanitize any user input before passing it to shell commands or IPC calls to prevent command injection.
 
 ---
@@ -52,7 +59,9 @@ Before you write a single line of code, you **must** ask and answer the followin
 ## 3. Core Design Patterns & Examples
 
 ### A. Registering & Using Settings
+
 To add a persistent setting, register it in `quickshell/Settings/Settings.qml#init()`:
+
 ```qml
 register({
     name: 'myNewSetting',
@@ -60,7 +69,9 @@ register({
     category: 'misc'
 })
 ```
+
 Then access or change it anywhere via the `Settings` singleton:
+
 ```qml
 import qs.Settings
 
@@ -72,7 +83,9 @@ Settings.change({ name: 'myNewSetting', value: false });
 ```
 
 ### B. Decoupled Communication via PatchBay
+
 Avoid direct references between modules. Use `PatchBay.qml` to bridge them:
+
 ```qml
 // In Services/PatchBay.qml (add your signal)
 signal customEvent(var data)
@@ -91,14 +104,11 @@ Connections {
 
 ---
 
-## 4. Development & Testing Workflow
+## Development & Testing Workflow
 
-1. **Verify Syntax & Formatting**:
+1. **Verify Syntax & Formatting**
    - Follow the rules in `.qmlformat.ini`.
-2. **Run in Preview Mode**:
-   - You can test changes by running `quickshell` in the terminal.
-   - To prevent replacing your active desktop shell, run with appropriate preview
-     flags or test scripts in `/TestScripts`.
-3. **Check Logs**:
+2. **If taking a long time solving an issue prompt place console.logs around the problem area and prompt the user to show them**
+3. **Check Logs**
    - Monitor stdout/stderr for QML binding loops, type mismatches, or missing
      import warnings.
