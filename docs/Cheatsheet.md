@@ -2,6 +2,7 @@
 
 ## 󰘳 App Launcher
 
+`Super + Space` - Open App Launcher
 `Escape` - Clear input and close launcher
 `Return / Enter` - Launch selected application
 `↑ / Ctrl+K` - Move up
@@ -11,6 +12,7 @@
 
 ## Clipboard Manager
 
+`Super + V` - Open Clipboard
 `/` - Activate search field
 `Escape / Q` - Close clipboard manager/Unfocus search field
 `↓ / J` - Move down in history
@@ -28,6 +30,7 @@
 
 ## 󰕾 Mixer
 
+`Super + C` - Open Mixer
 `Escape / Q` - Close mixer
 `↓ / J` - Next audio device
 `↑ / K` - Previous audio device
@@ -37,11 +40,13 @@
 
 ## 󰂚 Notification Manager
 
+`Super + N` - Open Notification Manager.
 `Escape / Q` - Close notification manager
 `C` - Clear all notifications
 
 ## 󰐥 Power Menu
 
+`Super + Backspace` - Open Power Menu
 `Escape / Q` - Close power menu
 `← / H` - Option Left
 `→ / L` - Option Right
@@ -49,16 +54,12 @@
 
 ## 󰖯 Toplevel View
 
+`Alt + Tab` - Open Toplevel View
 `Escape / Q` - Close toplevel view
 `Letter Keys` - Jump to window starting with that letter
 `Ctrl` - Toggle Local/All
 `Alt` - Next Toplevel
 `Tab` - Previous Toplevel
-
-## Workspace Switcher
-
-`Escape / Q` - Close workspace switcher
-`Letter Keys` - Switch to workspace mapped to that letter
 
 ## 󰌾 Polkit
 
