@@ -33,11 +33,14 @@ Rectangle {
             horizontalAlignment: Text.AlignHCenter
         }
 
+        Item {
+            Layout.fillHeight: true
+            Layout.preferredWidth: contentRow.aWidth / 3
             ButtonStyled {
                 id: button
+                anchors.fill: parent
                 text: Icons.apps
                 defaultColor: theme.background
-                pointSize: Styles.textLg
                 onClicked: mouse => {
                     if (mouse.button === Qt.LeftButton) {
                         PatchBay.openAppLauncher();
@@ -48,6 +51,7 @@ Rectangle {
                     }
                 }
             }
+    }
 
         TextStyled {
             id: date
