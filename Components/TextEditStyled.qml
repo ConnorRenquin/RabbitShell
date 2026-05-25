@@ -1,7 +1,8 @@
 import QtQuick
 
-import qs.Settings
 import qs.Services
+import qs.Settings
+import qs.Helpers
 
 TextEdit {
     Themer { id: theme }

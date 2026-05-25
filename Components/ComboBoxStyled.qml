@@ -3,6 +3,7 @@ import QtQuick.Controls
 
 import qs.Services
 import qs.Settings
+import qs.Helpers
 
 ComboBox {
     id: root

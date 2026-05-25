@@ -8,6 +8,7 @@ import QtQuick.Layouts
 import Qt.labs.folderlistmodel
 
 import qs.Settings
+import qs.Helpers
 import qs.Components
 import qs.Services
 

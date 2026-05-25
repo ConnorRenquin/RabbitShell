@@ -10,7 +10,8 @@ import QtCore as QtCoreLib
 
 import qs.Components
 import qs.Settings
-import qs.Settings.SettingsViews.Components
+import qs.Modules.SettingsMenu.SettingsViews.Components
+
 import qs.Services
 
 Rectangle {

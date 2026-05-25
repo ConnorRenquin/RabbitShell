@@ -6,6 +6,7 @@ import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
 
+import qs.Helpers
 import qs.Settings
 import qs.Components
 import qs.Services

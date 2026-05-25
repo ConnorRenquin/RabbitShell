@@ -4,7 +4,11 @@ import QtQuick
 
 import qs.Services
 import qs.Settings
+
 import qs.Modules
+import qs.Modules.Clipboard
+import qs.Modules.SettingsMenu
+import qs.Modules.Bar
 
 ShellRoot {
     Bar {}

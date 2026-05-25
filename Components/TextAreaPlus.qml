@@ -4,6 +4,7 @@ import QtQuick.Controls
 
 import qs.Settings
 import qs.Services
+import qs.Helpers
 
 TextArea {
     id: textArea

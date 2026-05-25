@@ -8,6 +8,7 @@ import QtQuick.Layouts
 
 import qs.Components
 import qs.Settings
+import qs.Helpers
 import qs.Services
 
 Loader {

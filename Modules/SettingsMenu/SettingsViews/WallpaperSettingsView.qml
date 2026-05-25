@@ -10,7 +10,7 @@ import QtQuick.Controls
 import Qt.labs.folderlistmodel
 
 import qs.Settings
-import qs.Settings.SettingsViews.Components
+import qs.Modules.SettingsMenu.SettingsViews.Components
 import qs.Components
 
 Rectangle {

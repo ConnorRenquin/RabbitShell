@@ -9,7 +9,7 @@ import Quickshell.Io
 
 import qs.Components
 import qs.Settings
-import qs.Settings.SettingsViews.Components
+import qs.Modules.SettingsMenu.SettingsViews.Components
 
 Rectangle {
     id: root

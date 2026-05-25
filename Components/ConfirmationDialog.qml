@@ -3,6 +3,8 @@ import QtQuick.Layouts
 
 import qs.Settings
 import qs.Services
+import qs.Helpers
+
 
 Rectangle {
     id: root

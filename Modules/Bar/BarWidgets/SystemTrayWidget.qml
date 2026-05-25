@@ -9,6 +9,7 @@ import Quickshell.Widgets
 
 import qs.Components
 import qs.Services
+import qs.Helpers
 import qs.Settings
 
 Rectangle {

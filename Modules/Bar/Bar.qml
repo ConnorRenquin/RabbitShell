@@ -3,10 +3,10 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 
-import qs.BarWidgets
 import qs.Components
 import qs.Services
 import qs.Settings
+import qs.Modules.Bar.BarWidgets
 
 Variants {
     model: Quickshell.screens

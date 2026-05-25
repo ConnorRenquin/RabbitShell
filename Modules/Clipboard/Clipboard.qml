@@ -8,9 +8,9 @@ import QtQuick.Layouts
 
 import qs.Settings
 import qs.Components
+import qs.Helpers
 import qs.Services
-
-import qs.Modules.ClipboardViews
+import qs.Modules.Clipboard.ClipboardViews
 
 FloatingWindowPlus {
     id: root

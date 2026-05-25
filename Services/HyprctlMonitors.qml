@@ -6,6 +6,8 @@ import Quickshell.Io
 import QtQuick
 import QtCore as QtCoreLib
 
+import qs.Services.Models
+
 Singleton {
     id: root
 

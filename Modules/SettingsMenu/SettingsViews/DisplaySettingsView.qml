@@ -8,9 +8,10 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Settings
-import qs.Settings.SettingsViews.Components
+import qs.Modules.SettingsMenu.SettingsViews.Components
 import qs.Components
 import qs.Services
+import qs.Services.Models
 
 Rectangle {
     id: root

@@ -8,10 +8,10 @@ import Quickshell
 
 import qs.Components
 import qs.Services
-
+import qs.Helpers
 import qs.Settings
-import qs.Settings.SettingsViews
-import qs.Settings.SettingsViews.Components
+import qs.Modules.SettingsMenu.SettingsViews
+import qs.Modules.SettingsMenu.SettingsViews.Components
 
 FloatingWindowPlus {
     id: root

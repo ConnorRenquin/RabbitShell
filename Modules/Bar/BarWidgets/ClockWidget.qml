@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import qs.Components
 import qs.Settings
 import qs.Services
+import qs.Helpers
 
 Rectangle {
     id: root

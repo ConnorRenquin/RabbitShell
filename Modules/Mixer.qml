@@ -13,6 +13,7 @@ import QtQuick.Layouts
 import qs.Components
 import qs.Settings
 import qs.Services
+import qs.Helpers
 
 Loader {
     id: loader
@@ -24,6 +25,7 @@ Loader {
     }
 
     Component.onCompleted: PatchBay.openMixer.connect(toggle)
+
 
     GlobalShortcut {
         name: "mixer"

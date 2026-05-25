@@ -7,6 +7,7 @@ import QtQuick.Layouts
 
 import qs.Services
 import qs.Settings
+import qs.Helpers
 import qs.Components
 
 FloatingWindowPlus {
