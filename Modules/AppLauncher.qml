@@ -32,94 +32,11 @@ Loader {
 
         Component.onCompleted: {
             textInput.focus = true;
-            updateFilteredApplications();
-            if (DesktopEntries.applications.values.length === 0) {
-                DesktopEntries.applications.valuesChanged.connect(onEntriesLoaded);
-            }
-        }
-
-        function onEntriesLoaded() {
-            if (DesktopEntries.applications.values.length > 0) {
-                DesktopEntries.applications.valuesChanged.disconnect(onEntriesLoaded);
-                updateFilteredApplications();
-            }
-        }
-
-        property list<DesktopEntry> filteredApplications: []
-        property int currentFocusIndex: -1
-
-        Utils {
-            id: utils
+            System.setApplicationSearchText(textInput.text);
         }
 
         Controls {
             id: controls
-        }
-
-        function calculateRelevance(app, searchText) {
-            if (searchText === "")
-                return 1;
-
-            var nameResult = utils.fuzzySearch(searchText, app.name);
-            var score = nameResult.matches ? nameResult.score * 3 : 0;
-
-            if (app.genericName) {
-                var genericResult = utils.fuzzySearch(searchText, app.genericName);
-                if (genericResult.matches)
-                    score += genericResult.score * 2;
-            }
-
-            if (app.description) {
-                var descResult = utils.fuzzySearch(searchText, app.description);
-                if (descResult.matches)
-                    score += descResult.score * 1;
-            }
-
-            if (app.keywords) {
-                var keywordsText = app.keywords.join(" ");
-                var keywordsResult = utils.fuzzySearch(searchText, keywordsText);
-                if (keywordsResult.matches)
-                    score += keywordsResult.score * 1.5;
-            }
-
-            return score;
-        }
-
-        function updateFilteredApplications() {
-            var searchText = textInput.text;
-
-            var allApps = DesktopEntries.applications.values;
-
-            filteredApplications = [];
-
-            if (searchText === "") {
-                filteredApplications = allApps;
-                currentFocusIndex = -1;
-                return;
-            }
-
-            var scored = [];
-            for (var i = 0; i < allApps.length; i++) {
-                var score = calculateRelevance(allApps[i], searchText);
-                if (score > 0) {
-                    scored.push({
-                        app: allApps[i],
-                        score: score
-                    });
-                }
-            }
-
-            scored.sort(function (a, b) {
-                return b.score - a.score;
-            });
-
-            var results = [];
-            for (var j = 0; j < scored.length; j++) {
-                results.push(scored[j].app);
-            }
-
-            filteredApplications = results;
-            currentFocusIndex = -1;
         }
 
         function gridNavigationController(event) {
@@ -127,8 +44,11 @@ Loader {
                 textInput.text = "";
                 loader.active = false;
             } else if (controls.enterPressed(event)) {
-                appGridView.currentItem.clicked(null);
-                loader.active = false;
+                if (appGridView.currentIndex >= 0 && appGridView.currentIndex < System.filteredApplications.length) {
+                    System.launchApplication(System.filteredApplications[appGridView.currentIndex]);
+                    textInput.text = "";
+                    loader.active = false;
+                }
             } else if (controls.downPressed(event, true)) {
                 appGridView.moveCurrentIndexDown();
             } else if (controls.upPressed(event, true)) {
@@ -169,7 +89,7 @@ Loader {
                         right: parent.right
                         margins: Styles.marginSm
                     }
-                    onTextChanged: root.updateFilteredApplications()
+                    onTextChanged: System.setApplicationSearchText(text)
                     Keys.onPressed: event => root.gridNavigationController(event)
                 }
 
@@ -203,7 +123,7 @@ Loader {
                 TextStyled {
                     id: noResultsText
                     anchors.centerIn: parent
-                    visible: root.filteredApplications.length === 0
+                    visible: System.filteredApplications.length === 0
                     text: "No results found."
                 }
 
@@ -218,7 +138,7 @@ Loader {
                     cellHeight: 60
                     snapMode: GridView.SnapToRow
 
-                    model: root.filteredApplications
+                    model: System.filteredApplications
                     delegate: ButtonStyled {
                         id: appLaunchButton
 
@@ -231,7 +151,7 @@ Loader {
                         isFocused: index === appGridView.currentIndex
 
                         onClicked: {
-                            modelData.execute();
+                            System.launchApplication(modelData);
                             textInput.text = "";
                             loader.active = false;
                         }

@@ -5,6 +5,7 @@ import Quickshell.Io
 
 import QtQuick
 
+import qs.Helpers
 import qs.Services.Models
 
 Singleton {
@@ -14,8 +15,16 @@ Singleton {
     property var systemInfo: null
     property bool isLoadingSystemInfo: false
 
+    // Application launcher state
+    property list<DesktopEntry> filteredApplications: []
+    property string applicationSearchText: ""
+
     property Component systemInfoComponent: Component {
         SystemInfo {}
+    }
+
+    Utils {
+        id: utils
     }
 
     function exec(command) {
@@ -40,6 +49,90 @@ Singleton {
 
     function firmware() {
         exec("systemctl reboot --firmware-setup || loginctl reboot --firmware-setup")
+    }
+
+    // --- Application launcher integration ---
+
+    Connections {
+        target: DesktopEntries.applications
+
+        function onValuesChanged() {
+            root.updateFilteredApplications(root.applicationSearchText);
+        }
+    }
+
+    function setApplicationSearchText(searchText) {
+        root.applicationSearchText = searchText || "";
+        root.updateFilteredApplications(root.applicationSearchText);
+    }
+
+    function calculateApplicationRelevance(app, searchText) {
+        if (searchText === "")
+            return 1;
+
+        var nameResult = utils.fuzzySearch(searchText, app.name);
+        var score = nameResult.matches ? nameResult.score * 3 : 0;
+
+        if (app.genericName) {
+            var genericResult = utils.fuzzySearch(searchText, app.genericName);
+            if (genericResult.matches)
+                score += genericResult.score * 2;
+        }
+
+        if (app.description) {
+            var descResult = utils.fuzzySearch(searchText, app.description);
+            if (descResult.matches)
+                score += descResult.score * 1;
+        }
+
+        if (app.keywords) {
+            var keywordsText = app.keywords.join(" ");
+            var keywordsResult = utils.fuzzySearch(searchText, keywordsText);
+            if (keywordsResult.matches)
+                score += keywordsResult.score * 1.5;
+        }
+
+        return score;
+    }
+
+    function updateFilteredApplications(searchText) {
+        searchText = searchText || "";
+
+        var allApps = DesktopEntries.applications.values;
+
+        if (searchText === "") {
+            root.filteredApplications = allApps;
+            return;
+        }
+
+        var scored = [];
+        for (var i = 0; i < allApps.length; i++) {
+            var score = root.calculateApplicationRelevance(allApps[i], searchText);
+            if (score > 0) {
+                scored.push({
+                    app: allApps[i],
+                    score: score
+                });
+            }
+        }
+
+        scored.sort(function (a, b) {
+            return b.score - a.score;
+        });
+
+        var results = [];
+        for (var j = 0; j < scored.length; j++) {
+            results.push(scored[j].app);
+        }
+
+        root.filteredApplications = results;
+    }
+
+    function launchApplication(app) {
+        if (!app)
+            return;
+
+        app.execute();
     }
 
     // --- Fastfetch integration ---
