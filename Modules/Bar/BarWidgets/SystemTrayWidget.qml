@@ -28,29 +28,34 @@ Rectangle {
     implicitHeight: parent.height
     implicitWidth: widget.implicitWidth + Styles.marginSm * 2
 
-    HoverHandler {
-        id: systemTrayWidgetHover
-    }
-
     RowLayoutPlus {
         id: widget
         anchors.centerIn: parent
         spacing: Styles.marginSm
         model: SystemTray.items
-        delegate: ButtonStyled {
+        delegate: ActionMenu {
             id: iconButton
 
             required property SystemTrayItem modelData
             required property int index
 
-            Layout.preferredWidth: icon.implicitWidth + Styles.marginSm
-            Layout.preferredHeight: icon.implicitHeight + Styles.marginSm
+            property var currentMenu: null
+
+            Layout.preferredWidth: 20 + Styles.marginSm
+            Layout.preferredHeight: 20 + Styles.marginSm
 
             defaultColor: theme.foreground
+            iconSource: iconButton.modelData.icon
+            iconSize: 20
+            popupHeight: menuContent.implicitHeight + Styles.marginXS * 2
+            popupWidth: 200 + Styles.marginSm * 2
+            popupX: -iconButton.popupWidth / 2
+            popupColor: theme.foreground
+            popupPadding: Styles.marginXS
 
             onClicked: mouse => {
                 if (mouse.button === Qt.LeftButton && iconButton.modelData.hasMenu) {
-                    systemTrayMenu.visible = !systemTrayMenu.visible;
+                    iconButton.togglePopup();
                 } else if (mouse.button === Qt.RightButton) {
                     iconButton.modelData.activate();
                 } else if (mouse.button === Qt.MiddleButton) {
@@ -58,37 +63,7 @@ Rectangle {
                 }
             }
 
-            IconImage {
-                id: icon
-                anchors.centerIn: parent
-                implicitWidth: 20
-                implicitHeight: 20
-                source: iconButton.modelData.icon
-            }
-
-            PopupWindow {
-                id: systemTrayMenu
-
-                implicitHeight: menuContent.implicitHeight + Styles.marginXS * 2
-                implicitWidth: 200 + Styles.marginSm * 2
-
-                color: "transparent"
-
-                property var currentMenu: null
-
-                onVisibleChanged: {
-                    if (!visible)
-                        currentMenu = null;
-                }
-
-                property bool topBarSetting: Settings.get('barPosition').value
-                property var yValue: topBarSetting ? Styles.marginSm * 5 : -systemTrayMenu.height - Styles.marginMd
-
-                anchor {
-                    item: iconButton
-                    rect.x:  -systemTrayMenu.width / 2
-                    rect.y: yValue
-                }
+            onPopupClosed: iconButton.currentMenu = null
 
                 QsMenuOpener {
                     id: rootMenuOpener
@@ -97,24 +72,14 @@ Rectangle {
 
                 QsMenuOpener {
                     id: subMenuOpener
-                    menu: systemTrayMenu.currentMenu
+                    menu: iconButton.currentMenu
                 }
 
-                HoverHandler {
-                    id: hoverHandler
-                }
-
-                Timer {
-                    id: autoHideTimer
-                    interval: 500
-                    running: !hoverHandler.hovered && !systemTrayWidgetHover.hovered
-                    onTriggered: systemTrayMenu.visible = false
-                }
 
                 Rectangle {
                     id: menuBackground
                     anchors.fill: parent
-                    visible: systemTrayMenu.visible
+                    visible: iconButton.popupVisible
                     radius: Styles.radiusSm
                     color: theme.foreground
 
@@ -128,19 +93,19 @@ Rectangle {
 
                         ButtonStyled {
                             id: backButton
-                            visible: systemTrayMenu.currentMenu !== null
+                            visible: iconButton.currentMenu !== null
                             Layout.fillWidth: true
                             textAlignment: Text.AlignLeft
                             implicitHeight: menuContent.buttonHeight
                             text: Icons.back + ' Back'
                             textColor: theme.text
                             pointSize: Styles.textSm
-                            onClicked: systemTrayMenu.currentMenu = null
+                            onClicked: iconButton.currentMenu = null
                             defaultColor: theme.foreground
                         }
 
                         Rectangle {
-                            visible: systemTrayMenu.currentMenu !== null
+                            visible: iconButton.currentMenu !== null
                             Layout.fillWidth: true
                             implicitHeight: 2
                             color: theme.text
@@ -149,7 +114,7 @@ Rectangle {
                         ColumnLayoutPlus {
                             Layout.fillWidth: true
                             spacing: 4
-                            model: systemTrayMenu.currentMenu !== null ? subMenuOpener.children : rootMenuOpener.children
+                            model: iconButton.currentMenu !== null ? subMenuOpener.children : rootMenuOpener.children
                             delegate: Loader {
                                 id: menuLoader
 
@@ -181,10 +146,10 @@ Rectangle {
                                             if (!menuLoader.modelData.enabled)
                                                 return;
                                             if (menuLoader.modelData.hasChildren) {
-                                                systemTrayMenu.currentMenu = menuLoader.modelData;
+                                                iconButton.currentMenu = menuLoader.modelData;
                                             } else {
                                                 menuLoader.modelData.triggered();
-                                                systemTrayMenu.visible = false;
+                                                iconButton.closePopup();
                                             }
                                         }
 
@@ -239,4 +204,3 @@ Rectangle {
             }
         }
     }
-}
