@@ -18,7 +18,7 @@ Rectangle {
     anchors.fill: parent
     color: Qt.lighter(Colors.surface, Colors.lighter)
 
-    readonly property url docsDirectory: Qt.resolvedUrl("../../docs")
+    readonly property url docsDirectory: Qt.resolvedUrl("../../../docs")
     property int currentTabIndex: 0
     property url currentDocUrl: ""
     property string renderedTitle: ""
