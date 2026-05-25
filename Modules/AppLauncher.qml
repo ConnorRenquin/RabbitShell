@@ -122,7 +122,7 @@ Loader {
 
                 ButtonStyled {
                     id: settingsButton
-                    Layout.preferredWidth: searchRow.rowHeight
+                    Layout.preferredWidth: searchRow.height
                     Layout.fillHeight: true
                     text: Icons.settingsCog
                     defaultColor: Colors.surface
@@ -135,7 +135,7 @@ Loader {
 
                 ButtonStyled {
                     id: powerButton
-                    Layout.preferredWidth: searchRow.rowHeight
+                    Layout.preferredWidth: searchRow.height
                     Layout.fillHeight: true
                     text: Icons.power
                     defaultColor: Colors.surface

@@ -317,7 +317,7 @@ Rectangle {
                             horizontalAlignment: Text.AlignHCenter
                             text: glyphButton.modelData.category + ' • U+' + glyphButton.modelData.code.toUpperCase()
                             color: theme.text
-                            font.pointSize: Styles.textXs
+                            font.pointSize: Styles.textXS
                             opacity: 0.8
                             elide: Text.ElideRight
                         }

@@ -161,7 +161,7 @@ Rectangle {
                             Layout.preferredHeight: 24
                             text: modelData
                             color: theme.text
-                            font.pointSize: Styles.textXs
+                            font.pointSize: Styles.textXS
                             horizontalAlignment: Text.AlignHCenter
                         }
                     }

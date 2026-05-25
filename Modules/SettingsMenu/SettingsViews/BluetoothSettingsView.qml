@@ -171,19 +171,23 @@ Rectangle {
             root.ensureBluetoothAgent();
         }
 
-        onExited: {
+        onExited: function(exitCode) {
             root.bluetoothAgentReady = false;
             root.bluetoothAgentStatus = `Bluetooth pairing agent stopped (${exitCode})`;
         }
 
         stdout: SplitParser {
             splitMarker: ""
-            onRead: root.handleBluetoothAgentOutput(data)
+            onRead: function(data) {
+                root.handleBluetoothAgentOutput(data);
+            }
         }
 
         stderr: SplitParser {
             splitMarker: ""
-            onRead: root.handleBluetoothAgentOutput(data)
+            onRead: function(data) {
+                root.handleBluetoothAgentOutput(data);
+            }
         }
     }
 
@@ -370,37 +374,31 @@ Rectangle {
                                 }
                             }
 
-                            ButtonStyled {
-                                id: extraSettingsButton
+                            ActionMenu {
+                                id: extraSettingsMenu
                                 text: Icons.more
                                 pointSize: Styles.textLg
-                                onClicked: extraBluetoothSettings.visible = !extraBluetoothSettings.visible
-                            }
+                                defaultColor: Colors.background
+                                textColor: Colors.onSurface
+                                popupWidth: extraSettingsColumn.implicitWidth + Styles.marginSm * 2
+                                popupHeight: extraSettingsColumn.implicitHeight + Styles.marginSm * 2
+                                popupX: -extraSettingsMenu.popupWidth / 2 + extraSettingsMenu.width / 2
+                                popupY: -extraSettingsMenu.popupHeight - Styles.marginSm
+                                popupColor: Colors.background
+                                popupPadding: Styles.marginSm
+                                onClicked: extraSettingsMenu.togglePopup()
 
-                            PopupWindow {
-                                id: extraBluetoothSettings
-                                implicitHeight: extraSettingsColumn.implicitHeight
-                                implicitWidth: extraSettingsColumn.implicitWidth
-                                color: "transparent"
-                                anchor {
-                                    item: extraSettingsButton
-                                    rect.x: -extraBluetoothSettings.width / 2
-                                    rect.y: -extraBluetoothSettings.width
-                                }
-                                Rectangle {
-                                    id: extraBluetoothSettingsBackground
-                                    anchors.fill: parent
-                                    radius: Styles.radiusSm
-                                    color: Colors.background
-                                }
                                 ColumnLayout {
                                     id: extraSettingsColumn
+                                    anchors.fill: parent
+                                    spacing: Styles.marginSm
+
                                     SwitchStyled {
                                         text: "Trusted"
                                         checked: deviceCard.modelData.trusted
                                         onToggled: {
                                             deviceCard.modelData.trusted = checked;
-                                            extraBluetoothSettings.visible = false;
+                                            extraSettingsMenu.closePopup();
                                         }
                                     }
                                     SwitchStyled {
@@ -408,7 +406,7 @@ Rectangle {
                                         checked: deviceCard.modelData.blocked
                                         onToggled: {
                                             deviceCard.modelData.blocked = checked;
-                                            extraBluetoothSettings.visible = false;
+                                            extraSettingsMenu.closePopup();
                                         }
                                     }
                                     SwitchStyled {
@@ -416,7 +414,7 @@ Rectangle {
                                         checked: deviceCard.modelData.wakeAllowed
                                         onToggled: {
                                             deviceCard.modelData.wakeAllowed = checked;
-                                            extraBluetoothSettings.visible = false;
+                                            extraSettingsMenu.closePopup();
                                         }
                                     }
                                 }
