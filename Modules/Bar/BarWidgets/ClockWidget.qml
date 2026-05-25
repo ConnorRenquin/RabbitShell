@@ -29,6 +29,7 @@ Rectangle {
         TextStyled {
             id: clock
             text: Time.getSymbol() + " " + Time.getTime()
+            color: theme.text
             Layout.preferredWidth: contentRow.aWidth
             horizontalAlignment: Text.AlignHCenter
         }
@@ -40,6 +41,7 @@ Rectangle {
                 id: button
                 anchors.fill: parent
                 text: Icons.apps
+                textColor: theme.text
                 defaultColor: theme.background
                 onClicked: mouse => {
                     if (mouse.button === Qt.LeftButton) {
@@ -51,10 +53,11 @@ Rectangle {
                     }
                 }
             }
-    }
+        }
 
         TextStyled {
             id: date
+            color: theme.text
             text: Time.date + " 󰃭"
             Layout.preferredWidth: contentRow.aWidth
             horizontalAlignment: Text.AlignHCenter
