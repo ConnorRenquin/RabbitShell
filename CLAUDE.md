@@ -1,0 +1,1 @@
+/home/connor/.config/quickshell/agents.md
