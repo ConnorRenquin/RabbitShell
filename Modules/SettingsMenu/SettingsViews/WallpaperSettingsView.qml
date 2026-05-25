@@ -321,58 +321,34 @@ Rectangle {
                         color: Qt.lighter(Colors.surface, Colors.lighter)
                         radius: Styles.radiusSm
 
-                        ColumnLayout {
+                        Image {
                             anchors.fill: parent
-                            anchors.margins: Styles.marginSm
-                            spacing: Styles.marginSm
-
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                color: Qt.lighter(Colors.surface, Colors.lighter)
-                                radius: Styles.radiusSm
-                                clip: true
-
-                                Image {
-                                    anchors.fill: parent
-                                    source: wallpaperItem.fileUrl
-                                    fillMode: Image.PreserveAspectCrop
-                                    asynchronous: true
-                                    cache: true
-                                    TextStyled {
-                                        anchors.centerIn: parent
-                                        text: "Loading..."
-                                        visible: parent.status === Image.Loading
-                                    }
-                                }
-
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        var path = wallpaperItem.fileUrl.toString().replace("file://", "");
-                                        root.setWallpaper(path);
-                                    }
+                            source: wallpaperItem.fileUrl
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+                            cache: true
+                            LoadingIndicator {
+                                anchors.centerIn: parent
+                                visible: parent.status === Image.Loading
+                            }
+                            ButtonStyled {
+                                anchors.bottom: parent.bottom
+                                anchors.right: parent.right
+                                anchors.margins: Styles.marginSm
+                                radius: height / 2
+                                text: Icons.colors
+                                z: 2
+                                onClicked: {
+                                    matugenProcess.path = wallpaperItem.fileUrl.toString().replace("file://", "");
+                                    matugenProcess.running = true;
                                 }
                             }
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: Styles.marginSm
-                                TextStyled {
-                                    Layout.maximumWidth: 200
-                                    text: wallpaperItem.fileName
-                                    font.pointSize: Styles.textSm
-                                    Layout.fillWidth: true
-                                    horizontalAlignment: Text.AlignHCenter
-                                }
-                                ButtonStyled {
-                                    text: "󰉦 Generate Theme"
-                                    Layout.fillWidth: true
-                                    onClicked: {
-                                        matugenProcess.path = wallpaperItem.fileUrl.toString().replace("file://", "");
-                                        matugenProcess.running = true;
-                                    }
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    var path = wallpaperItem.fileUrl.toString().replace("file://", "");
+                                    root.setWallpaper(path);
                                 }
                             }
                         }
