@@ -22,6 +22,16 @@ FloatingWindowPlus {
     property var laps: []
     property var alarms: []
 
+    Component.onCompleted: {
+        PatchBay.openTimeManager.connect(toggle);
+        PatchBay.openTimer.connect(openTimers);
+    }
+
+    function openTimers() {
+        root.currentTab = 0;
+        root.open();
+    }
+
     Component {
         id: timerPlusComponent
         TimerPlus {}

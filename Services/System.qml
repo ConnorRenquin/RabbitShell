@@ -16,8 +16,40 @@ Singleton {
     property bool isLoadingSystemInfo: false
 
     // Application launcher state
-    property list<DesktopEntry> filteredApplications: []
+    property var filteredApplications: []
     property string applicationSearchText: ""
+    readonly property var shellApplications: [
+        {
+            name: "Settings",
+            genericName: "Settings Module",
+            description: "Open the Quickshell settings module",
+            keywords: ["settings", "preferences", "configuration", "config", "quickshell"],
+            icon: "preferences-system",
+            execute: function () {
+                PatchBay.openSettings();
+            }
+        },
+        {
+            name: "Text Editor",
+            genericName: "Scratchpad Editor",
+            description: "Open the Quickshell scratchpad text editor",
+            keywords: ["text", "editor", "scratchpad", "notes", "write"],
+            icon: "accessories-text-editor",
+            execute: function () {
+                PatchBay.openTextEditor();
+            }
+        },
+        {
+            name: "Timer",
+            genericName: "Time Manager",
+            description: "Open timers, stopwatch, and alarms",
+            keywords: ["timer", "time", "stopwatch", "alarm", "clock"],
+            icon: "alarm-symbolic",
+            execute: function () {
+                PatchBay.openTimer();
+            }
+        }
+    ]
 
     property Component systemInfoComponent: Component {
         SystemInfo {}
@@ -98,7 +130,7 @@ Singleton {
     function updateFilteredApplications(searchText) {
         searchText = searchText || "";
 
-        var allApps = DesktopEntries.applications.values;
+        var allApps = root.shellApplications.concat(DesktopEntries.applications.values);
 
         if (searchText === "") {
             root.filteredApplications = allApps;

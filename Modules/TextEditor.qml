@@ -24,6 +24,8 @@ FloatingWindowPlus {
     property string vimMode: textAreaItem ? textAreaItem.vimMode : 'NORMAL'
     readonly property var textAreaItem: root.baseLoader.item ? root.baseLoader.item.textAreaItem : null
 
+    Component.onCompleted: PatchBay.openTextEditor.connect(open)
+
     function exit() {
         root.visible = false;
         saveTabs();

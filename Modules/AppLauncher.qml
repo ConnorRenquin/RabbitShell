@@ -142,7 +142,7 @@ Loader {
                     delegate: ButtonStyled {
                         id: appLaunchButton
 
-                        required property DesktopEntry modelData
+                        required property var modelData
                         required property int index
 
                         implicitWidth: appGridView.cellWidth - Styles.marginSm
