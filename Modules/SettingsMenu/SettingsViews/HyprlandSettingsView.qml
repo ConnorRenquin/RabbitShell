@@ -56,6 +56,8 @@ Rectangle {
     property int currentGroupIndex: 0
     property int capturingBindIndex: -1
     property int selectedBindIndex: -1
+    property int selectedListEditorIndex: -1
+    property var selectedListEditorConfig: null
     readonly property var bindItems: HyprlandSettings.bindItems
     readonly property var windowRuleItems: HyprlandSettings.windowRuleItems
     readonly property var layerRuleItems: HyprlandSettings.layerRuleItems
@@ -289,6 +291,77 @@ Rectangle {
     function openBindEditor(index) {
         selectedBindIndex = index;
         bindEditorPopup.open();
+    }
+
+    function openListEditor(cfg, index) {
+        selectedListEditorConfig = cfg;
+        selectedListEditorIndex = index;
+        listEditorPopup.open();
+    }
+
+    function selectedListItem() {
+        var items = editorItems(selectedListEditorConfig);
+        return selectedListEditorIndex >= 0 && selectedListEditorIndex < items.length ? items[selectedListEditorIndex] : null;
+    }
+
+    function listTableTitle(cfg, item) {
+        return editorTitle(cfg, item);
+    }
+
+    function listTableColumnOne(cfg, item) {
+        if (!cfg || !item)
+            return "";
+        if (cfg.kind === "windowRuleList")
+            return (item.matchClass || "*") + (item.matchTitle ? " / " + item.matchTitle : "");
+        if (cfg.kind === "layerRuleList")
+            return item.namespace || "*";
+        if (cfg.kind === "animationList")
+            return item.enabled === false ? "Disabled" : "Enabled";
+        return "";
+    }
+
+    function listTableColumnTwo(cfg, item) {
+        if (!cfg || !item)
+            return "";
+        if (cfg.kind === "windowRuleList") {
+            var flags = [];
+            if (item.float)
+                flags.push("float");
+            if (item.center)
+                flags.push("center");
+            if (item.opaque)
+                flags.push("opaque");
+            if (item.noBlur)
+                flags.push("no blur");
+            if (item.noShadow)
+                flags.push("no shadow");
+            return flags.join(", ");
+        }
+        if (cfg.kind === "layerRuleList") {
+            var layerFlags = [];
+            if (item.noAnim)
+                layerFlags.push("no anim");
+            if (item.blur)
+                layerFlags.push("blur");
+            if (item.xray)
+                layerFlags.push("xray");
+            if (item.ignoreAlpha)
+                layerFlags.push("alpha " + item.ignoreAlpha);
+            return layerFlags.join(", ");
+        }
+        if (cfg.kind === "animationList")
+            return "speed " + (item.speed || "0") + (item.bezier ? " · " + item.bezier : "");
+        return "";
+    }
+
+    function listTableColumnThree(cfg, item) {
+        if (!cfg || !item)
+            return "";
+        if (cfg.kind === "windowRuleList")
+            return [item.size ? "size " + item.size : "", item.move ? "move " + item.move : "", item.rounding ? "round " + item.rounding : ""].filter(x => x.length > 0).join(" · ");
+        if (cfg.kind === "animationList")
+            return item.style || "";
+        return "";
     }
 
     function fieldValue(item, field) {
@@ -547,6 +620,112 @@ Rectangle {
             }
 
             Item { Layout.fillHeight: true }
+        }
+    }
+
+    Popup {
+        id: listEditorPopup
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        width: Math.min(root.width - Styles.marginLg * 2, 860)
+        height: Math.min(root.height - Styles.marginLg * 2, 560)
+        x: (root.width - width) / 2
+        y: (root.height - height) / 2
+        padding: 0
+        background: Rectangle {
+            color: Colors.surface
+            radius: Styles.radiusMd
+            border.color: Colors.outline
+            border.width: 1
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: Styles.marginMd
+            spacing: Styles.marginSm
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                TextStyled {
+                    Layout.fillWidth: true
+                    text: root.selectedListEditorConfig ? "Edit " + root.editorTitle(root.selectedListEditorConfig, root.selectedListItem()) : "Edit rule"
+                    font.bold: true
+                    font.pointSize: Styles.textLg
+                }
+
+                ButtonStyled {
+                    text: "Close"
+                    onClicked: listEditorPopup.close()
+                }
+            }
+
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+
+                ColumnLayout {
+                    width: parent.width
+                    spacing: Styles.marginSm
+
+                    Repeater {
+                        model: root.selectedListEditorConfig ? root.selectedListEditorConfig.rows : []
+
+                        delegate: ColumnLayout {
+                            id: popupEditorRow
+                            required property var modelData
+
+                            width: parent.width
+                            spacing: Styles.marginXS
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: Styles.marginSm
+
+                                Repeater {
+                                    model: popupEditorRow.modelData.fields || []
+
+                                    delegate: RowLayout {
+                                        id: popupEditorField
+                                        required property var modelData
+                                        readonly property bool isBoolField: modelData.type === "bool"
+                                        readonly property bool isTextField: modelData.type === "text"
+
+                                        Layout.fillWidth: !isBoolField
+                                        spacing: Styles.marginSm
+
+                                        FormLabelLocal {
+                                            visible: !popupEditorField.isBoolField
+                                            text: popupEditorField.modelData.label
+                                        }
+
+                                        InputFrameLocal {
+                                            visible: popupEditorField.isTextField
+                                            Layout.preferredHeight: 36
+
+                                            InputTextFieldLocal {
+                                                text: root.fieldText(root.selectedListItem(), popupEditorField.modelData)
+                                                placeholderText: popupEditorField.modelData.placeholder || ""
+                                                inputMethodHints: popupEditorField.modelData.numeric ? Qt.ImhFormattedNumbersOnly : Qt.ImhNone
+                                                onTextEdited: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, popupEditorField.modelData.key, text)
+                                            }
+                                        }
+
+                                        SwitchStyled {
+                                            visible: popupEditorField.isBoolField
+                                            text: popupEditorField.modelData.label
+                                            checked: root.boolFieldValue(root.selectedListItem(), popupEditorField.modelData)
+                                            onToggled: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, popupEditorField.modelData.key, checked)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -892,103 +1071,86 @@ Rectangle {
                                 ColumnLayout {
                                     visible: !!listEditorColumn.editorConfig && !listEditorColumn.isBindList
                                     Layout.fillWidth: true
-                                    spacing: Styles.marginSm
+                                    spacing: 0
+
+                                    Rectangle {
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: 34
+                                        color: Qt.darker(Colors.background, Colors.darker)
+                                        radius: Styles.radiusSm
+
+                                        RowLayout {
+                                            anchors.fill: parent
+                                            anchors.leftMargin: Styles.marginSm
+                                            anchors.rightMargin: Styles.marginSm
+                                            spacing: Styles.marginSm
+
+                                            TextStyled { Layout.preferredWidth: 240; text: "Name"; font.bold: true }
+                                            TextStyled { Layout.preferredWidth: 220; text: listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "State" : "Match"; font.bold: true }
+                                            TextStyled { Layout.preferredWidth: 220; text: listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "Timing" : "Options"; font.bold: true }
+                                            TextStyled { Layout.fillWidth: true; text: "Extra"; font.bold: true }
+                                            TextStyled { Layout.preferredWidth: 80; text: "" }
+                                        }
+                                    }
 
                                     Repeater {
                                         model: root.editorItems(listEditorColumn.editorConfig)
 
-                                        delegate: CardLocal {
-                                            id: editorItemRow
+                                        delegate: Rectangle {
+                                            id: listTableRow
                                             required property var modelData
                                             required property int index
                                             readonly property var editorConfig: listEditorColumn.editorConfig
 
-                                            Layout.preferredHeight: editorConfig ? editorConfig.cardHeight : 0
+                                            Layout.fillWidth: true
+                                            Layout.preferredHeight: 42
+                                            color: index % 2 === 0 ? Colors.surface : Qt.darker(Colors.surface, 1.08)
+                                            radius: Styles.radiusSm
 
-                                            CardColumnLocal {
-                                                RowLayout {
-                                                    Layout.fillWidth: true
+                                            RowLayout {
+                                                anchors.fill: parent
+                                                anchors.leftMargin: Styles.marginSm
+                                                anchors.rightMargin: Styles.marginSm
+                                                spacing: Styles.marginSm
 
-                                                    TextStyled {
-                                                        Layout.fillWidth: true
-                                                        text: root.editorTitle(editorItemRow.editorConfig, editorItemRow.modelData)
-                                                        font.bold: true
-                                                    }
-
-                                                    ButtonStyled {
-                                                        text: Icons.trash
-                                                        onClicked: root.removeEditorItem(editorItemRow.editorConfig, editorItemRow.index)
-                                                    }
+                                                TextStyled {
+                                                    Layout.preferredWidth: 240
+                                                    text: root.clippedText(root.listTableTitle(listTableRow.editorConfig, listTableRow.modelData), "New rule")
+                                                    elide: Text.ElideRight
+                                                    font.bold: true
                                                 }
 
-                                                Repeater {
-                                                    model: editorItemRow.editorConfig ? editorItemRow.editorConfig.rows : []
+                                                TextStyled {
+                                                    Layout.preferredWidth: 220
+                                                    text: root.clippedText(root.listTableColumnOne(listTableRow.editorConfig, listTableRow.modelData), "")
+                                                    elide: Text.ElideRight
+                                                    color: Colors.primary
+                                                }
 
-                                                    delegate: ColumnLayout {
-                                                        id: editorConfigRow
-                                                        required property var modelData
-                                                        readonly property bool isFlagsRow: modelData.type === "flags"
+                                                TextStyled {
+                                                    Layout.preferredWidth: 220
+                                                    text: root.clippedText(root.listTableColumnTwo(listTableRow.editorConfig, listTableRow.modelData), "")
+                                                    elide: Text.ElideRight
+                                                    opacity: 0.85
+                                                }
 
-                                                        Layout.fillWidth: true
-                                                        spacing: Styles.marginXS
+                                                TextStyled {
+                                                    Layout.fillWidth: true
+                                                    text: root.clippedText(root.listTableColumnThree(listTableRow.editorConfig, listTableRow.modelData), "")
+                                                    elide: Text.ElideRight
+                                                    opacity: 0.75
+                                                }
 
-                                                        RowLayout {
-                                                            visible: !editorConfigRow.isFlagsRow
-                                                            Layout.fillWidth: true
-                                                            spacing: Styles.marginSm
+                                                ButtonStyled {
+                                                    Layout.preferredWidth: 36
+                                                    text: "..."
+                                                    onClicked: root.openListEditor(listTableRow.editorConfig, listTableRow.index)
+                                                }
 
-                                                            Repeater {
-                                                                model: editorConfigRow.modelData.fields || []
-
-                                                                delegate: RowLayout {
-                                                                    id: editorField
-                                                                    required property var modelData
-                                                                    readonly property bool isBoolField: modelData.type === "bool"
-                                                                    readonly property bool isComboField: modelData.type === "combo"
-                                                                    readonly property bool isTextField: modelData.type === "text"
-
-                                                                    Layout.fillWidth: !isBoolField
-                                                                    spacing: Styles.marginSm
-
-                                                                    FormLabelLocal {
-                                                                        visible: !editorField.isBoolField && !editorField.modelData.secondary
-                                                                        text: editorField.modelData.label
-                                                                    }
-
-                                                                    SecondaryFormLabelLocal {
-                                                                        visible: !editorField.isBoolField && !!editorField.modelData.secondary
-                                                                        text: editorField.modelData.label
-                                                                    }
-
-                                                                    InputFrameLocal {
-                                                                        visible: editorField.isTextField
-
-                                                                        InputTextFieldLocal {
-                                                                            text: root.fieldText(editorItemRow.modelData, editorField.modelData)
-                                                                            placeholderText: editorField.modelData.placeholder || ""
-                                                                            inputMethodHints: editorField.modelData.numeric ? Qt.ImhFormattedNumbersOnly : Qt.ImhNone
-                                                                            onTextEdited: root.updateEditorItem(editorItemRow.editorConfig, editorItemRow.index, editorField.modelData.key, text)
-                                                                        }
-                                                                    }
-
-                                                                    ComboBoxStyled {
-                                                                        visible: editorField.isComboField
-                                                                        Layout.fillWidth: true
-                                                                        model: editorField.modelData.options || []
-                                                                        currentIndex: root.comboFieldIndex(editorItemRow.modelData, editorField.modelData)
-                                                                        onActivated: index => root.updateEditorItem(editorItemRow.editorConfig, editorItemRow.index, editorField.modelData.key, model[index])
-                                                                    }
-
-                                                                    SwitchStyled {
-                                                                        visible: editorField.isBoolField
-                                                                        text: editorField.modelData.label
-                                                                        checked: root.boolFieldValue(editorItemRow.modelData, editorField.modelData)
-                                                                        onToggled: root.updateEditorItem(editorItemRow.editorConfig, editorItemRow.index, editorField.modelData.key, checked)
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
+                                                ButtonStyled {
+                                                    Layout.preferredWidth: 36
+                                                    text: Icons.trash
+                                                    onClicked: root.removeEditorItem(listTableRow.editorConfig, listTableRow.index)
                                                 }
                                             }
                                         }
