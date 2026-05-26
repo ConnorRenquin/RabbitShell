@@ -58,6 +58,7 @@ Rectangle {
     property int selectedBindIndex: -1
     property int selectedListEditorIndex: -1
     property var selectedListEditorConfig: null
+    property int pendingWindowRulePickIndex: -1
     readonly property var bindItems: HyprlandSettings.bindItems
     readonly property var windowRuleItems: HyprlandSettings.windowRuleItems
     readonly property var layerRuleItems: HyprlandSettings.layerRuleItems
@@ -355,6 +356,28 @@ Rectangle {
         return !!item && !!item.advanced;
     }
 
+    function pickWindowForRule(index) {
+        pendingWindowRulePickIndex = index;
+        listEditorPopup.close();
+        statusText = "Click/focus the target window now. Capturing active window in 2 seconds...";
+        pickWindowProcess.running = true;
+    }
+
+    function applyPickedWindow(client) {
+        if (pendingWindowRulePickIndex < 0 || !client)
+            return;
+        var windowClass = String(client.class || client.initialClass || "");
+        var title = String(client.title || client.initialTitle || "");
+        if (windowClass.length > 0)
+            updateWindowRuleItem(pendingWindowRulePickIndex, "matchClass", windowClass);
+        if (title.length > 0)
+            updateWindowRuleItem(pendingWindowRulePickIndex, "matchTitle", title);
+        if (windowClass.length > 0)
+            updateWindowRuleItem(pendingWindowRulePickIndex, "name", "Rule for " + windowClass);
+        statusText = windowClass.length > 0 ? "Captured window class " + windowClass : "Captured active window";
+        pendingWindowRulePickIndex = -1;
+    }
+
     function listTableTitle(cfg, item) {
         return editorTitle(cfg, item);
     }
@@ -527,6 +550,31 @@ Rectangle {
                 root.statusText = "Saved per-tab Hyprland files to " + root.configDir;
             } else {
                 root.statusText = "Failed to save Hyprland files in " + root.configDir + " (exit code " + exitCode + ")";
+            }
+        }
+    }
+
+    Process {
+        id: pickWindowProcess
+        command: ["bash", "-c", "sleep 2; hyprctl activewindow -j"]
+        running: false
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    var client = JSON.parse(text);
+                    root.applyPickedWindow(client);
+                } catch (e) {
+                    root.statusText = "Failed to parse active window details";
+                    root.pendingWindowRulePickIndex = -1;
+                }
+            }
+        }
+
+        function onExited(exitCode) {
+            if (exitCode !== 0) {
+                root.statusText = "Failed to capture active window (exit code " + exitCode + ")";
+                root.pendingWindowRulePickIndex = -1;
             }
         }
     }
@@ -792,6 +840,14 @@ Rectangle {
                     text: "Show raw rule"
                     checked: root.selectedListAdvanced()
                     onToggled: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, "advanced", checked)
+                }
+
+                Item { Layout.fillWidth: true }
+
+                ButtonStyled {
+                    visible: root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "windowRuleList" && !root.selectedListAdvanced()
+                    text: "Pick active window"
+                    onClicked: root.pickWindowForRule(root.selectedListEditorIndex)
                 }
             }
 
