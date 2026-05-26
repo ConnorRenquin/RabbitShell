@@ -342,6 +342,19 @@ Rectangle {
         return selectedListEditorIndex >= 0 && selectedListEditorIndex < items.length ? items[selectedListEditorIndex] : null;
     }
 
+    function selectedListValue(key) {
+        var item = selectedListItem();
+        if (!item)
+            return "";
+        var value = item[key];
+        return value === undefined || value === null ? "" : String(value);
+    }
+
+    function selectedListAdvanced() {
+        var item = selectedListItem();
+        return !!item && !!item.advanced;
+    }
+
     function listTableTitle(cfg, item) {
         return editorTitle(cfg, item);
     }
@@ -349,6 +362,8 @@ Rectangle {
     function listTableColumnOne(cfg, item) {
         if (!cfg || !item)
             return "";
+        if (item.advanced)
+            return "Advanced";
         if (cfg.kind === "windowRuleList")
             return (item.matchClass || "*") + (item.matchTitle ? " / " + item.matchTitle : "");
         if (cfg.kind === "layerRuleList")
@@ -361,6 +376,8 @@ Rectangle {
     function listTableColumnTwo(cfg, item) {
         if (!cfg || !item)
             return "";
+        if (item.advanced)
+            return root.clippedText(item.rawLine || "", "");
         if (cfg.kind === "windowRuleList") {
             var flags = [];
             if (item.float)
@@ -394,6 +411,8 @@ Rectangle {
 
     function listTableColumnThree(cfg, item) {
         if (!cfg || !item)
+            return "";
+        if (item.advanced)
             return "";
         if (cfg.kind === "windowRuleList")
             return [item.size ? "size " + item.size : "", item.move ? "move " + item.move : "", item.rounding ? "round " + item.rounding : ""].filter(x => x.length > 0).join(" · ");
@@ -764,7 +783,20 @@ Rectangle {
                 }
             }
 
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Styles.marginSm
+
+                FormLabelLocal { text: "Advanced" }
+                SwitchStyled {
+                    text: "Show raw rule"
+                    checked: root.selectedListAdvanced()
+                    onToggled: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, "advanced", checked)
+                }
+            }
+
             ScrollView {
+                visible: !root.selectedListAdvanced()
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
@@ -826,6 +858,32 @@ Rectangle {
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            Rectangle {
+                visible: root.selectedListAdvanced()
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: Qt.darker(Colors.background, Colors.darker)
+                radius: Styles.radiusSm
+
+                TextArea {
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginSm
+                    text: root.selectedListValue("rawLine")
+                    placeholderText: root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "windowRuleList" ? "hl.window_rule({ ... })" : root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "layerRuleList" ? "hl.layer_rule({ ... })" : "hl.animation({ ... })"
+                    color: Colors.onBackground
+                    selectedTextColor: Colors.background
+                    selectionColor: Colors.primary
+                    font.family: Styles.defaultFontFamily
+                    font.pointSize: Styles.textSm
+                    wrapMode: TextEdit.WrapAtWordBoundaryOrAnywhere
+                    selectByMouse: true
+                    onTextChanged: {
+                        if (root.selectedListEditorIndex >= 0 && text !== root.selectedListValue("rawLine"))
+                            root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, "rawLine", text);
                     }
                 }
             }

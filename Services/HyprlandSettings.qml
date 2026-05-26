@@ -2360,17 +2360,19 @@ Singleton {
     function addWindowRuleItem() {
         var next = cloneList(windowRuleItems);
         next.push({
-            name: "New rule",
+            name: "New window rule",
             matchClass: "",
             matchTitle: "",
-            float: false,
+            float: true,
             center: false,
             opaque: false,
             noBlur: false,
             noShadow: false,
             size: "",
             move: "",
-            rounding: ""
+            rounding: "",
+            advanced: false,
+            rawLine: ""
         });
         windowRuleItems = next;
     }
@@ -2458,7 +2460,9 @@ Singleton {
             noAnim: false,
             blur: false,
             ignoreAlpha: "",
-            xray: false
+            xray: false,
+            advanced: false,
+            rawLine: ""
         });
         layerRuleItems = next;
     }
@@ -2488,7 +2492,9 @@ Singleton {
             enabled: true,
             speed: 4,
             bezier: "default",
-            style: ""
+            style: "",
+            advanced: false,
+            rawLine: ""
         });
         animationItems = next;
     }
@@ -2696,6 +2702,10 @@ Singleton {
         var config = "";
         for (var i = 0; i < windowRuleItems.length; i++) {
             var rule = windowRuleItems[i];
+            if (rule.advanced && rule.rawLine) {
+                config += String(rule.rawLine).trim() + "\n\n";
+                continue;
+            }
             if (!rule.name && !rule.matchClass && !rule.matchTitle)
                 continue;
             config += "hl.window_rule({\n";
@@ -2736,6 +2746,10 @@ Singleton {
         var config = "";
         for (var i = 0; i < layerRuleItems.length; i++) {
             var rule = layerRuleItems[i];
+            if (rule.advanced && rule.rawLine) {
+                config += String(rule.rawLine).trim() + "\n\n";
+                continue;
+            }
             if (!rule.name && !rule.namespace)
                 continue;
             config += "hl.layer_rule({\n";
@@ -2759,6 +2773,10 @@ Singleton {
         var config = "";
         for (var i = 0; i < animationItems.length; i++) {
             var anim = animationItems[i];
+            if (anim.advanced && anim.rawLine) {
+                config += String(anim.rawLine).trim() + "\n";
+                continue;
+            }
             if (!anim.leaf)
                 continue;
             config += "hl.animation({ leaf = " + luaString(anim.leaf);
