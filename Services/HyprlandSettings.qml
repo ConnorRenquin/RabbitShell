@@ -20,6 +20,25 @@ Singleton {
     property var layerRuleItems: []
     property var animationItems: []
     readonly property var bindFlagOptions: ["locked", "release", "click", "drag", "long_press", "repeating", "non_consuming", "mouse", "transparent", "ignore_mods", "separate", "bypass", "submap_universal"]
+    readonly property var commonBindActions: [
+        { id: "exec", label: "Application / shell command", param: "command", placeholder: "kitty" },
+        { id: "global", label: "Quickshell global action", param: "target", placeholder: "quickshell:powermenu" },
+        { id: "focusDirection", label: "Focus window direction", param: "direction", options: ["l", "r", "u", "d"] },
+        { id: "moveWindowDirection", label: "Move window direction", param: "direction", options: ["l", "r", "u", "d"] },
+        { id: "focusWorkspace", label: "Workspace focus", param: "workspace", placeholder: "1, r+1, empty" },
+        { id: "moveWindowWorkspace", label: "Move window to workspace", param: "workspace", placeholder: "1, r+1, special" },
+        { id: "moveWorkspaceMonitor", label: "Move workspace to monitor", param: "workspace", secondaryParam: "monitor", placeholder: "special", secondaryPlaceholder: "current" },
+        { id: "grabWorkspace", label: "Grab workspace to current monitor", param: "workspace", placeholder: "1" },
+        { id: "fullscreen", label: "Window fullscreen" },
+        { id: "fullscreenState", label: "Window fullscreen state", param: "internal", secondaryParam: "client", placeholder: "0", secondaryPlaceholder: "3" },
+        { id: "closeWindow", label: "Window close" },
+        { id: "toggleFloating", label: "Window toggle floating" },
+        { id: "dragWindow", label: "Window drag / mouse move" },
+        { id: "resizeWindow", label: "Window resize / mouse resize" },
+        { id: "toggleSplit", label: "Layout toggle split" },
+        { id: "setLayout", label: "Layout set", param: "layout", options: ["dwindle", "master"] },
+        { id: "toggleSpecialWorkspace", label: "Workspace toggle scratchpad" }
+    ]
 
     readonly property var defaultValues: ({
             general: {
@@ -2092,14 +2111,166 @@ Singleton {
         return bindItems;
     }
 
+    function commonBindActionById(id) {
+        for (var i = 0; i < commonBindActions.length; i++) {
+            if (commonBindActions[i].id === id)
+                return commonBindActions[i];
+        }
+        return commonBindActions[0];
+    }
+
+    function commonBindActionIndex(id) {
+        for (var i = 0; i < commonBindActions.length; i++) {
+            if (commonBindActions[i].id === id)
+                return i;
+        }
+        return 0;
+    }
+
+    function bindParams(bind) {
+        return bind && bind.params && typeof bind.params === "object" ? bind.params : inferBindParams(bind);
+    }
+
+    function bindParam(bind, key) {
+        var params = bindParams(bind);
+        var value = params[key];
+        return value === undefined || value === null ? "" : String(value);
+    }
+
+    function inferBindAction(bind) {
+        if (!bind)
+            return "exec";
+        if (bind.action)
+            return bind.action;
+        var dispatcher = String(bind.dispatcher || "");
+        var argument = String(bind.argument || "");
+        if (dispatcher === "exec" || dispatcher === "exec_cmd")
+            return "exec";
+        if (dispatcher === "global")
+            return "global";
+        if (argument.indexOf("hl.dsp.focus({ direction") === 0)
+            return "focusDirection";
+        if (argument.indexOf("hl.dsp.window.move({ direction") === 0)
+            return "moveWindowDirection";
+        if (argument.indexOf("hl.dsp.focus({ workspace") === 0)
+            return "focusWorkspace";
+        if (argument.indexOf("hl.dsp.window.move({ workspace") === 0)
+            return "moveWindowWorkspace";
+        if (argument.indexOf("hl.dsp.workspace.move") === 0)
+            return "moveWorkspaceMonitor";
+        if (argument.indexOf("hl.dispatch(hl.dsp.workspace.move") >= 0)
+            return "grabWorkspace";
+        if (argument === "hl.dsp.window.fullscreen()")
+            return "fullscreen";
+        if (argument.indexOf("hl.dsp.window.fullscreen_state") === 0)
+            return "fullscreenState";
+        if (argument === "hl.dsp.window.close()")
+            return "closeWindow";
+        if (argument.indexOf("hl.dsp.window.float") === 0)
+            return "toggleFloating";
+        if (argument === "hl.dsp.window.drag()")
+            return "dragWindow";
+        if (argument === "hl.dsp.window.resize()")
+            return "resizeWindow";
+        if (argument.indexOf("hl.dsp.layout") === 0)
+            return "toggleSplit";
+        if (argument.indexOf("general = { layout") >= 0)
+            return "setLayout";
+        if (argument === "hl.dsp.workspace.toggle_special()")
+            return "toggleSpecialWorkspace";
+        return "exec";
+    }
+
+    function firstMatch(text, regex, fallback) {
+        var match = String(text || "").match(regex);
+        if (!match)
+            return fallback;
+        for (var i = 1; i < match.length; i++) {
+            if (match[i] !== undefined)
+                return match[i];
+        }
+        return fallback;
+    }
+
+    function inferBindParams(bind) {
+        var dispatcher = String(bind ? bind.dispatcher || "" : "");
+        var argument = String(bind ? bind.argument || "" : "");
+        var action = inferBindAction(bind);
+        if (action === "exec")
+            return { command: argument };
+        if (action === "global")
+            return { target: argument };
+        if (action === "focusDirection" || action === "moveWindowDirection")
+            return { direction: firstMatch(argument, /direction\s*=\s*\"([^\"]+)\"/, "l") };
+        if (action === "focusWorkspace" || action === "moveWindowWorkspace")
+            return { workspace: firstMatch(argument, /workspace\s*=\s*(?:\"([^\"]+)\"|(\d+))/, firstMatch(argument, /workspace\s*=\s*\d+/, "1")) };
+        if (action === "moveWorkspaceMonitor")
+            return { workspace: firstMatch(argument, /workspace\s*=\s*(?:\"([^\"]+)\"|(\d+))/, "special"), monitor: firstMatch(argument, /monitor\s*=\s*\"([^\"]+)\"/, "current") };
+        if (action === "grabWorkspace")
+            return { workspace: firstMatch(argument, /workspace\s*=\s*(\d+)/, "1") };
+        if (action === "fullscreenState")
+            return { internal: firstMatch(argument, /internal\s*=\s*(\d+)/, "0"), client: firstMatch(argument, /client\s*=\s*(\d+)/, "3") };
+        if (action === "setLayout")
+            return { layout: firstMatch(argument, /layout\s*=\s*\"([^\"]+)\"/, "dwindle") };
+        return {};
+    }
+
+    function defaultParamsForAction(action) {
+        if (action === "exec")
+            return { command: "kitty" };
+        if (action === "global")
+            return { target: "quickshell:powermenu" };
+        if (action === "focusDirection" || action === "moveWindowDirection")
+            return { direction: "l" };
+        if (action === "focusWorkspace" || action === "moveWindowWorkspace" || action === "grabWorkspace")
+            return { workspace: "1" };
+        if (action === "moveWorkspaceMonitor")
+            return { workspace: "special", monitor: "current" };
+        if (action === "fullscreenState")
+            return { internal: "0", client: "3" };
+        if (action === "setLayout")
+            return { layout: "dwindle" };
+        return {};
+    }
+
+    function setBindAction(index, action) {
+        var next = cloneList(bindItems);
+        if (!next[index])
+            return;
+        next[index].action = action;
+        next[index].params = defaultParamsForAction(action);
+        bindItems = next;
+    }
+
+    function setBindAdvanced(index, advanced) {
+        var next = cloneList(bindItems);
+        if (!next[index])
+            return;
+        next[index].advanced = advanced;
+        bindItems = next;
+    }
+
+    function setBindParam(index, key, value) {
+        var next = cloneList(bindItems);
+        if (!next[index])
+            return;
+        var params = bindParams(next[index]);
+        params[key] = value;
+        next[index].params = params;
+        bindItems = next;
+    }
+
     function addBindItem() {
         var next = cloneList(bindItems);
         next.push({
             description: "Launch terminal",
             keys: "SUPER + Return",
+            action: "exec",
+            params: { command: "kitty" },
             dispatcher: "exec_cmd",
             argument: "kitty",
-            flags: ""
+            flags: "",
+            advanced: false
         });
         bindItems = next;
     }
@@ -2444,6 +2615,63 @@ Singleton {
         return config;
     }
 
+    function workspaceLuaValue(value) {
+        var text = String(value || "").trim();
+        return /^-?\d+$/.test(text) ? text : luaString(text);
+    }
+
+    function commonBindExpression(bind) {
+        var action = inferBindAction(bind);
+        var params = bindParams(bind);
+        if (action === "exec")
+            return "hl.dsp.exec_cmd(" + luaString(params.command || "") + ")";
+        if (action === "global")
+            return "hl.dsp.global(" + luaString(params.target || "") + ")";
+        if (action === "focusDirection")
+            return "hl.dsp.focus({ direction = " + luaString(params.direction || "l") + " })";
+        if (action === "moveWindowDirection")
+            return "hl.dsp.window.move({ direction = " + luaString(params.direction || "l") + " })";
+        if (action === "focusWorkspace")
+            return "hl.dsp.focus({ workspace = " + workspaceLuaValue(params.workspace || "1") + " })";
+        if (action === "moveWindowWorkspace")
+            return "hl.dsp.window.move({ workspace = " + workspaceLuaValue(params.workspace || "1") + " })";
+        if (action === "moveWorkspaceMonitor")
+            return "hl.dsp.workspace.move({ workspace = " + workspaceLuaValue(params.workspace || "special") + ", monitor = " + luaString(params.monitor || "current") + " })";
+        if (action === "grabWorkspace") {
+            var workspace = workspaceLuaValue(params.workspace || "1");
+            return "function()\n    hl.dispatch(hl.dsp.workspace.move({ workspace = " + workspace + ", monitor = \"current\" }))\n    hl.dispatch(hl.dsp.focus({ workspace = " + workspace + " }))\nend";
+        }
+        if (action === "fullscreen")
+            return "hl.dsp.window.fullscreen()";
+        if (action === "fullscreenState")
+            return "hl.dsp.window.fullscreen_state({ internal = " + (parseInt(params.internal) || 0) + ", client = " + (parseInt(params.client) || 0) + " })";
+        if (action === "closeWindow")
+            return "hl.dsp.window.close()";
+        if (action === "toggleFloating")
+            return "hl.dsp.window.float({ action = \"toggle\" })";
+        if (action === "dragWindow")
+            return "hl.dsp.window.drag()";
+        if (action === "resizeWindow")
+            return "hl.dsp.window.resize()";
+        if (action === "toggleSplit")
+            return "hl.dsp.layout(\"togglesplit\")";
+        if (action === "setLayout")
+            return "function()\n    hl.config({ general = { layout = " + luaString(params.layout || "dwindle") + " } })\nend";
+        if (action === "toggleSpecialWorkspace")
+            return "hl.dsp.workspace.toggle_special()";
+        return "";
+    }
+
+    function advancedBindExpression(bind) {
+        var dispatcher = String(bind.dispatcher || "exec_cmd");
+        var argument = String(bind.argument || "");
+        if (dispatcher === "raw" || dispatcher === "callback")
+            return argument;
+        if (dispatcher === "exec")
+            dispatcher = "exec_cmd";
+        return "hl.dsp." + dispatcher + "(" + luaString(argument) + ")";
+    }
+
     function generateBindConfig() {
         var config = "";
         for (var i = 0; i < bindItems.length; i++) {
@@ -2452,21 +2680,11 @@ Singleton {
                 config += String(bind.rawLine).trim() + "\n";
                 continue;
             }
-            if (!bind.keys || !bind.dispatcher)
+            if (!bind.keys)
                 continue;
-
-            var dispatcher = String(bind.dispatcher || "exec_cmd");
-            var argument = String(bind.argument || "");
-            var dsp = "";
-            if (dispatcher === "raw") {
-                dsp = argument;
-            } else if (dispatcher === "callback") {
-                dsp = argument;
-            } else {
-                if (dispatcher === "exec")
-                    dispatcher = "exec_cmd";
-                dsp = "hl.dsp." + dispatcher + "(" + luaString(argument) + ")";
-            }
+            var dsp = bind.advanced ? advancedBindExpression(bind) : commonBindExpression(bind);
+            if (!dsp)
+                dsp = advancedBindExpression(bind);
             if (!dsp)
                 continue;
             config += "hl.bind(" + luaString(bind.keys) + ", " + dsp + luaBindOptions(bind) + ")\n";

@@ -63,6 +63,7 @@ Rectangle {
     readonly property var layerRuleItems: HyprlandSettings.layerRuleItems
     readonly property var animationItems: HyprlandSettings.animationItems
     readonly property var bindFlagOptions: HyprlandSettings.bindFlagOptions
+    readonly property var commonBindActions: HyprlandSettings.commonBindActions
     readonly property var sections: HyprlandSettings.sections
     readonly property var sectionGroups: buildSectionGroups()
     property string pendingAggregateContent: ""
@@ -194,6 +195,43 @@ Rectangle {
     }
     function setBindFlag(index, flag, enabled) {
         HyprlandSettings.setBindFlag(index, flag, enabled);
+    }
+    function bindActionId(bind) {
+        return HyprlandSettings.inferBindAction(bind);
+    }
+    function bindActionIndex(bind) {
+        return HyprlandSettings.commonBindActionIndex(bindActionId(bind));
+    }
+    function bindAction(bind) {
+        return HyprlandSettings.commonBindActionById(bindActionId(bind));
+    }
+    function bindParam(bind, key) {
+        return HyprlandSettings.bindParam(bind, key);
+    }
+    function bindActionLabel(bind) {
+        return bind && bind.advanced ? "Advanced" : bindAction(bind).label;
+    }
+    function bindActionSummary(bind) {
+        if (!bind)
+            return "";
+        if (bind.advanced)
+            return clippedText(bind.argument || "", "");
+        var action = bindAction(bind);
+        var parts = [];
+        if (action.param)
+            parts.push(bindParam(bind, action.param));
+        if (action.secondaryParam)
+            parts.push(bindParam(bind, action.secondaryParam));
+        return parts.filter(x => String(x).length > 0).join(" · ");
+    }
+    function setBindAction(index, action) {
+        HyprlandSettings.setBindAction(index, action);
+    }
+    function setBindAdvanced(index, advanced) {
+        HyprlandSettings.setBindAdvanced(index, advanced);
+    }
+    function setBindParam(index, key, value) {
+        HyprlandSettings.setBindParam(index, key, value);
     }
     function startCapturingBind(index) {
         capturingBindIndex = index;
@@ -564,16 +602,81 @@ Rectangle {
                     }
                 }
 
-                FormLabelLocal { text: "Dispatcher" }
+                FormLabelLocal { text: "Advanced" }
+                SwitchStyled {
+                    checked: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
+                    text: "Show raw dispatcher"
+                    onToggled: root.setBindAdvanced(root.selectedBindIndex, checked)
+                }
+
+                FormLabelLocal {
+                    visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced)
+                    text: "Command"
+                }
                 ComboBoxStyled {
+                    visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced)
+                    Layout.fillWidth: true
+                    model: root.commonBindActions.map(action => action.label)
+                    currentIndex: root.bindActionIndex(root.bindItems[root.selectedBindIndex])
+                    onActivated: index => root.setBindAction(root.selectedBindIndex, root.commonBindActions[index].id)
+                }
+
+                FormLabelLocal {
+                    visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced) && !!root.bindAction(root.bindItems[root.selectedBindIndex]).param
+                    text: root.bindAction(root.bindItems[root.selectedBindIndex]).param || "Value"
+                }
+                RowLayout {
+                    visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced) && !!root.bindAction(root.bindItems[root.selectedBindIndex]).param
+                    Layout.fillWidth: true
+                    spacing: Styles.marginSm
+
+                    InputFrameLocal {
+                        visible: !(root.bindAction(root.bindItems[root.selectedBindIndex]).options)
+                        Layout.preferredHeight: 36
+                        InputTextFieldLocal {
+                            text: root.bindParam(root.bindItems[root.selectedBindIndex], root.bindAction(root.bindItems[root.selectedBindIndex]).param || "")
+                            placeholderText: root.bindAction(root.bindItems[root.selectedBindIndex]).placeholder || ""
+                            onTextEdited: root.setBindParam(root.selectedBindIndex, root.bindAction(root.bindItems[root.selectedBindIndex]).param, text)
+                        }
+                    }
+
+                    ComboBoxStyled {
+                        visible: !!root.bindAction(root.bindItems[root.selectedBindIndex]).options
+                        Layout.fillWidth: true
+                        model: root.bindAction(root.bindItems[root.selectedBindIndex]).options || []
+                        currentIndex: model.indexOf(root.bindParam(root.bindItems[root.selectedBindIndex], root.bindAction(root.bindItems[root.selectedBindIndex]).param || ""))
+                        onActivated: index => root.setBindParam(root.selectedBindIndex, root.bindAction(root.bindItems[root.selectedBindIndex]).param, model[index])
+                    }
+
+                    InputFrameLocal {
+                        visible: !!root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryParam
+                        Layout.preferredHeight: 36
+                        InputTextFieldLocal {
+                            text: root.bindParam(root.bindItems[root.selectedBindIndex], root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryParam || "")
+                            placeholderText: root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryPlaceholder || ""
+                            onTextEdited: root.setBindParam(root.selectedBindIndex, root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryParam, text)
+                        }
+                    }
+                }
+
+                FormLabelLocal {
+                    visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
+                    text: "Dispatcher"
+                }
+                ComboBoxStyled {
+                    visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
                     Layout.fillWidth: true
                     model: ["exec_cmd", "global", "raw", "callback"]
                     currentIndex: model.indexOf(root.bindValue(root.selectedBindIndex, "dispatcher"))
                     onActivated: index => root.updateBindItem(root.selectedBindIndex, "dispatcher", model[index])
                 }
 
-                FormLabelLocal { text: "Argument" }
+                FormLabelLocal {
+                    visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
+                    text: "Argument"
+                }
                 Rectangle {
+                    visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
                     Layout.fillWidth: true
                     Layout.preferredHeight: 150
                     color: Qt.darker(Colors.background, Colors.darker)
@@ -1039,14 +1142,14 @@ Rectangle {
 
                                                 TextStyled {
                                                     Layout.preferredWidth: 120
-                                                    text: bindTableRow.modelData.dispatcher || ""
+                                                    text: root.bindActionLabel(bindTableRow.modelData)
                                                     elide: Text.ElideRight
                                                     opacity: 0.85
                                                 }
 
                                                 TextStyled {
                                                     Layout.fillWidth: true
-                                                    text: root.clippedText(bindTableRow.modelData.argument, "")
+                                                    text: root.clippedText(root.bindActionSummary(bindTableRow.modelData), "")
                                                     elide: Text.ElideRight
                                                     opacity: 0.75
                                                 }
