@@ -78,7 +78,7 @@ Singleton {
                     sharp: false,
                     color: "0xee1a1a1a",
                     color_inactive: "",
-                    offset: "{ 0, 0 }",
+                    offset: [0, 0],
                     scale: 1.0
                 },
                 glow: {
@@ -600,7 +600,7 @@ Singleton {
                 {
                     path: "decoration.shadow.offset",
                     label: "Offset",
-                    type: "raw",
+                    type: "vector2",
                     visibleWhen: "decoration.shadow.enabled"
                 },
                 {
@@ -1689,6 +1689,13 @@ Singleton {
 
     function normalizeValue(path, value) {
         var setting = settingDefinition(path);
+        if (setting && setting.type === "vector2") {
+            if (Array.isArray(value))
+                return [parseFloat(value[0]) || 0, parseFloat(value[1]) || 0];
+            var text = String(value || "");
+            var matches = text.match(/-?\d+(?:\.\d+)?/g) || [];
+            return [parseFloat(matches[0]) || 0, parseFloat(matches[1]) || 0];
+        }
         if (setting && typeof value === "number") {
             if (setting.min !== undefined && value < setting.min)
                 return setting.min;
@@ -1721,12 +1728,29 @@ Singleton {
             var parsedFloat = parseFloat(text);
             return isNaN(parsedFloat) ? 0 : parsedFloat;
         }
+        if (type === "vector2") {
+            var matches = String(text || "").match(/-?\d+(?:\.\d+)?/g) || [];
+            return [parseFloat(matches[0]) || 0, parseFloat(matches[1]) || 0];
+        }
         return String(text);
     }
 
     function displayValue(path) {
         var value = getPath(path);
+        if (Array.isArray(value))
+            return value.join(", ");
         return value === undefined || value === null ? "" : String(value);
+    }
+
+    function vector2Component(path, index) {
+        var value = normalizeValue(path, getPath(path));
+        return value[index] !== undefined ? value[index] : 0;
+    }
+
+    function setVector2Component(path, index, componentValue) {
+        var value = normalizeValue(path, getPath(path));
+        value[index] = parseFloat(componentValue) || 0;
+        setPath(path, value);
     }
 
     function isSettingVisible(setting) {
@@ -2044,6 +2068,12 @@ Singleton {
             return value ? "true" : "false";
         if (type === "int" || type === "float")
             return String(value);
+        if (type === "vector2") {
+            var vector = normalizeValue("", value);
+            if (!Array.isArray(value))
+                vector = normalizeValue("decoration.shadow.offset", value);
+            return "{ " + (parseFloat(vector[0]) || 0) + ", " + (parseFloat(vector[1]) || 0) + " }";
+        }
         if (type === "raw")
             return String(value).trim();
         var escaped = String(value).replace(/\\/g, "\\\\").replace(/"/g, "\\\"");

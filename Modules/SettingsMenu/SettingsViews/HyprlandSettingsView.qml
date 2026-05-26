@@ -165,6 +165,12 @@ Rectangle {
     function displayValue(path) {
         return HyprlandSettings.displayValue(path);
     }
+    function vector2Component(path, index) {
+        return HyprlandSettings.vector2Component(path, index);
+    }
+    function setVector2Component(path, index, value) {
+        HyprlandSettings.setVector2Component(path, index, value);
+    }
     function isSettingVisible(setting) {
         return HyprlandSettings.isSettingVisible(setting);
     }
@@ -721,8 +727,35 @@ Rectangle {
                                             text: visible ? Number(root.getPath(row.modelData.path)).toFixed(row.modelData.type === "int" ? 0 : 2) : ""
                                         }
 
+                                        RowLayout {
+                                            visible: row.modelData.type === "vector2"
+                                            Layout.preferredWidth: 190
+                                            Layout.fillHeight: true
+                                            spacing: Styles.marginSm
+
+                                            SettingsInputFrameLocal {
+                                                Layout.preferredWidth: 85
+                                                InputTextFieldLocal {
+                                                    text: visible ? String(root.vector2Component(row.modelData.path, 0)) : ""
+                                                    placeholderText: "X"
+                                                    inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                                    onTextEdited: root.setVector2Component(row.modelData.path, 0, text)
+                                                }
+                                            }
+
+                                            SettingsInputFrameLocal {
+                                                Layout.preferredWidth: 85
+                                                InputTextFieldLocal {
+                                                    text: visible ? String(root.vector2Component(row.modelData.path, 1)) : ""
+                                                    placeholderText: "Y"
+                                                    inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                                    onTextEdited: root.setVector2Component(row.modelData.path, 1, text)
+                                                }
+                                            }
+                                        }
+
                                         SettingsInputFrameLocal {
-                                            visible: row.modelData.type !== "bool" && !row.modelData.options && !row.isColorRow && !(row.modelData.min !== undefined && row.modelData.max !== undefined)
+                                            visible: row.modelData.type !== "bool" && row.modelData.type !== "vector2" && !row.modelData.options && !row.isColorRow && !(row.modelData.min !== undefined && row.modelData.max !== undefined)
 
                                             InputTextFieldLocal {
                                                 property string valueText: parent.visible ? root.displayValue(row.modelData.path) : ""
