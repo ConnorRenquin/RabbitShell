@@ -9,7 +9,7 @@ Singleton {
 
     readonly property string homePath: String(QtCoreLib.StandardPaths.writableLocation(QtCoreLib.StandardPaths.HomeLocation)).replace("file://", "")
     readonly property string configDir: homePath + "/.config/hypr/quickshell"
-    readonly property string configPath: configDir + "/settings.lua"
+    readonly property string configPath: configDir + "/init.lua"
     readonly property string configUrl: "file://" + configPath
     readonly property string monitorConfigPath: homePath + "/.config/hypr/monitors.lua"
     readonly property string monitorConfigUrl: "file://" + monitorConfigPath
@@ -1310,6 +1310,12 @@ Singleton {
                         fields: [
                             {
                                 type: "text",
+                                key: "description",
+                                label: "Name",
+                                placeholder: "Launch terminal"
+                            },
+                            {
+                                type: "text",
                                 key: "keys",
                                 label: "Keys",
                                 placeholder: "SUPER + Return",
@@ -1323,8 +1329,8 @@ Singleton {
                                 type: "combo",
                                 key: "dispatcher",
                                 label: "Dispatcher",
-                                options: ["exec", "global"],
-                                defaultValue: "exec"
+                                options: ["exec_cmd", "global", "raw", "callback"],
+                                defaultValue: "exec_cmd"
                             }
                         ]
                     },
@@ -2059,8 +2065,9 @@ Singleton {
     function addBindItem() {
         var next = cloneList(bindItems);
         next.push({
+            description: "Launch terminal",
             keys: "SUPER + Return",
-            dispatcher: "exec",
+            dispatcher: "exec_cmd",
             argument: "kitty",
             flags: ""
         });
@@ -2216,6 +2223,18 @@ Singleton {
         for (var i = 0; i < flags.length; i++) {
             out.push(flags[i] + " = true");
         }
+        return out.length > 0 ? ", { " + out.join(", ") + " }" : "";
+    }
+
+    function luaBindOptions(bind) {
+        var flags = bindFlagsArray(bind ? bind.flags : "");
+        var out = [];
+        for (var i = 0; i < flags.length; i++) {
+            out.push(flags[i] + " = true");
+        }
+        var description = bind ? String(bind.description || bind.name || bind.comment || "").trim() : "";
+        if (description.length > 0)
+            out.push("description = " + luaString(description));
         return out.length > 0 ? ", { " + out.join(", ") + " }" : "";
     }
 
@@ -2399,10 +2418,28 @@ Singleton {
         var config = "";
         for (var i = 0; i < bindItems.length; i++) {
             var bind = bindItems[i];
+            if (bind.rawLine) {
+                config += String(bind.rawLine).trim() + "\n";
+                continue;
+            }
             if (!bind.keys || !bind.dispatcher)
                 continue;
-            var dsp = "hl.dsp." + bind.dispatcher + "(" + luaString(bind.argument) + ")";
-            config += "hl.bind(" + luaString(bind.keys) + ", " + dsp + luaFlags(bind.flags) + ")\n";
+
+            var dispatcher = String(bind.dispatcher || "exec_cmd");
+            var argument = String(bind.argument || "");
+            var dsp = "";
+            if (dispatcher === "raw") {
+                dsp = argument;
+            } else if (dispatcher === "callback") {
+                dsp = argument;
+            } else {
+                if (dispatcher === "exec")
+                    dispatcher = "exec_cmd";
+                dsp = "hl.dsp." + dispatcher + "(" + luaString(argument) + ")";
+            }
+            if (!dsp)
+                continue;
+            config += "hl.bind(" + luaString(bind.keys) + ", " + dsp + luaBindOptions(bind) + ")\n";
         }
         return config;
     }
@@ -2489,7 +2526,8 @@ Singleton {
     }
 
     function metadataHeader() {
-        var config = "-- quickshell-bind-items: " + JSON.stringify(bindItems) + "\n";
+        var config = "-- quickshell-values: " + JSON.stringify(values) + "\n";
+        config += "-- quickshell-bind-items: " + JSON.stringify(bindItems) + "\n";
         config += "-- quickshell-window-rule-items: " + JSON.stringify(windowRuleItems) + "\n";
         config += "-- quickshell-layer-rule-items: " + JSON.stringify(layerRuleItems) + "\n";
         config += "-- quickshell-animation-items: " + JSON.stringify(animationItems) + "\n";
@@ -2528,30 +2566,42 @@ Singleton {
         return config + "hl.config(" + luaTableForObject(tree, "", "") + ")\n";
     }
 
+    function moduleNameForSection(sectionData) {
+        var fileName = sectionFileName(sectionData);
+        return "quickshell." + fileName.slice(0, fileName.length - 4);
+    }
+
     function generateConfig() {
-        var config = "-- Hyprland aggregate settings generated by Quickshell::HyprlandSettingsView\n";
-        config += "-- Save path: ~/.config/hypr/quickshell/settings.lua\n";
-        config += "-- This aggregate file is kept for reload/backwards compatibility.\n";
-        config += "-- Individual per-tab files are also written in this directory.\n";
+        var config = "-- Hyprland Quickshell settings init generated by Quickshell::HyprlandSettingsView\n";
+        config += "-- Save path: ~/.config/hypr/quickshell/init.lua\n";
+        config += "-- This file intentionally only stores SettingsMenu metadata and imports per-tab files.\n";
+        config += "-- The actual Hyprland Lua is written to the sibling files in this directory.\n";
         config += metadataHeader() + "\n";
-        config += "hl.config(" + luaTableForObject(buildConfigTree(), "", "") + ")\n\n";
-        var bindConfig = generateBindConfig();
-        if (bindConfig.length > 0)
-            config += "-- Generated keybinds\n" + bindConfig + "\n";
-        var animationConfig = generateAnimationConfig();
-        if (animationConfig.length > 0)
-            config += "-- Generated animations\n" + animationConfig + "\n";
-        var layerRuleConfig = generateLayerRuleConfig();
-        if (layerRuleConfig.length > 0)
-            config += "-- Generated layer rules\n" + layerRuleConfig;
-        var ruleConfig = generateWindowRuleConfig();
-        if (ruleConfig.length > 0)
-            config += "-- Generated window rules\n" + ruleConfig;
+        for (var i = 0; i < sections.length; i++) {
+            var section = sections[i];
+            config += "require(" + luaString(moduleNameForSection(section)) + ")\n";
+        }
         return config;
     }
 
+    function parseMetadataObject(text, key) {
+        var prefix = "-- quickshell-" + key + ": ";
+        var lines = String(text).split(/\n/);
+        for (var i = 0; i < lines.length; i++) {
+            if (lines[i].indexOf(prefix) === 0) {
+                try {
+                    return JSON.parse(lines[i].slice(prefix.length));
+                } catch (e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
     function loadFromText(text) {
-        values = parseConfig(text);
+        var storedValues = parseMetadataObject(text, "values");
+        values = storedValues ? mergeDefaults(storedValues) : parseConfig(text);
         bindItems = parseMetadataList(text, "bind-items");
         windowRuleItems = parseMetadataList(text, "window-rule-items");
         layerRuleItems = parseMetadataList(text, "layer-rule-items");
