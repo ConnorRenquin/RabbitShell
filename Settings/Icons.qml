@@ -31,12 +31,14 @@ Singleton {
     readonly property string warning: ""
     readonly property string back: "󰭜"
     readonly property string rightChevron: ""
+    readonly property string leftChevron: ""
     readonly property string undo: ""
     readonly property string colors: ""
     readonly property string eyeDropper: "󰈊"
     readonly property string hyprland: ""
     readonly property string more: "󰩮"
     readonly property string collapse: "󰮫"
+    readonly property string calendar: "󰃭"
 
     readonly property string nowPlaying: "󰎄"
 

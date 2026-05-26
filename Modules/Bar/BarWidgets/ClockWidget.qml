@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 
 import QtQuick.Layouts
-import Quickshell
 
 import qs.Components
 import qs.Settings
@@ -14,13 +13,15 @@ Rectangle {
     id: root
     radius: Styles.radiusSm
     color: theme.background
+    implicitWidth: contentRow.implicitWidth + Styles.marginSm * 3
+
+    readonly property var monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    readonly property var dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     property var calendarMonth: {
         const now = new Date();
         return new Date(now.getFullYear(), now.getMonth(), 1);
     }
-    readonly property var monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    readonly property var dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     function monthTitle() {
         return root.monthNames[root.calendarMonth.getMonth()] + " " + root.calendarMonth.getFullYear();
@@ -55,14 +56,12 @@ Rectangle {
         settingName: 'clockColor'
     }
 
-    implicitWidth: contentRow.implicitWidth + Styles.marginSm * 3
-
     RowLayout {
         id: contentRow
         spacing: Styles.marginSm
         anchors.centerIn: parent
 
-        property int aWidth: 150
+        property int aWidth: 170
 
         TextStyled {
             id: clock
@@ -78,6 +77,7 @@ Rectangle {
             ButtonStyled {
                 id: button
                 anchors.fill: parent
+                anchors.margins: 8
                 text: Icons.apps
                 textColor: theme.text
                 defaultColor: theme.background
@@ -97,12 +97,12 @@ Rectangle {
             id: calendarButton
             Layout.fillHeight: true
             Layout.preferredWidth: contentRow.aWidth
-            text: Time.date + " 󰃭"
+            text: Time.date + ' ' + Icons.calendar
             textColor: theme.text
             defaultColor: theme.background
             popupWidth: 340
             popupHeight: calendarContent.implicitHeight + Styles.marginSm * 2
-            popupColor: theme.foreground
+            popupColor: theme.background
             popupPadding: Styles.marginSm
             onClicked: mouse => {
                 if (mouse.button === Qt.LeftButton) {
@@ -118,11 +118,11 @@ Rectangle {
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: Styles.marginSm
+                    Layout.preferredHeight: 30
 
                     ButtonStyled {
-                        Layout.preferredWidth: 34
-                        Layout.preferredHeight: 30
-                        text: Icons.back
+                        Layout.fillHeight: true
+                        text: Icons.leftChevron
                         textColor: theme.text
                         defaultColor: theme.background
                         onClicked: root.shiftMonth(-1)
@@ -130,7 +130,7 @@ Rectangle {
 
                     ButtonStyled {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 30
+                        Layout.fillHeight: true
                         text: root.monthTitle()
                         textColor: theme.text
                         defaultColor: theme.background
@@ -138,8 +138,7 @@ Rectangle {
                     }
 
                     ButtonStyled {
-                        Layout.preferredWidth: 34
-                        Layout.preferredHeight: 30
+                        Layout.fillHeight: true
                         text: Icons.rightChevron
                         textColor: theme.text
                         defaultColor: theme.background
@@ -172,7 +171,6 @@ Rectangle {
                             id: dayCell
 
                             required property int index
-
                             readonly property var dateValue: root.cellDate(index)
                             readonly property bool inMonth: root.isCurrentMonth(dateValue)
                             readonly property bool isToday: root.sameDay(dateValue, new Date())
@@ -181,10 +179,7 @@ Rectangle {
                             Layout.preferredHeight: 34
                             radius: Styles.radiusSm
                             color: isToday ? theme.text : (inMonth ? theme.background : "transparent")
-                            border.color: inMonth && !isToday ? theme.text : "transparent"
-                            border.width: inMonth && !isToday ? 1 : 0
                             opacity: inMonth ? 1.0 : 0.45
-
                             TextStyled {
                                 anchors.centerIn: parent
                                 text: dayCell.dateValue.getDate()
