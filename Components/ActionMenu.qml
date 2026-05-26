@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 
 import Quickshell
 import Quickshell.Widgets
@@ -24,7 +23,7 @@ Item {
 
     property var iconSource: ""
     property int iconSize: 20
-    property color popupColor: Colors.surface
+    property color popupColor: "transparent"
     property real popupRadius: Styles.radiusSm
     property real popupPadding: Styles.marginXS
     property real popupWidth: popupContent.implicitWidth + root.popupPadding * 2
