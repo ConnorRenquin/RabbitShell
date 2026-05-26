@@ -14,7 +14,7 @@ Rectangle {
 
     color: theme.background
 
-    Themer { id: theme; variant: 'secondary' }
+    Themer { id: theme }
 
     Utils {
         id: utils
