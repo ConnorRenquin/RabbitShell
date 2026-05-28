@@ -1,5 +1,18 @@
 {
   "nodes": {
+    "matugen-config": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779937247,
+        "narHash": "sha256-d3JY4HpyCPWlqkVor/pnr9Hk5rofdJFBXTocyRbjohw=",
+        "path": "/home/connor/.config/matugen",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/connor/.config/matugen",
+        "type": "path"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1779560665,
@@ -17,6 +30,7 @@
     },
     "root": {
       "inputs": {
+        "matugen-config": "matugen-config",
         "nixpkgs": "nixpkgs"
       }
     }

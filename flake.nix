@@ -4,7 +4,10 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
 
-
+    matugen-config = {
+      url = "https://github.com/ConnorRenquin/RabbitShell-Matugen.git";
+      flake = false;
+    };
   };
 
   outputs = inputs @ { self, nixpkgs, ... }:
@@ -79,15 +82,42 @@
           installPhase = ''
 runHook preInstall
 
-mkdir -p "$out/share/rabbit-shell" "$out/bin"
+mkdir -p "$out/share/rabbit-shell" "$out/share/rabbit-shell-matugen" "$out/bin"
 cp -r . "$out/share/rabbit-shell"
+cp -r ${inputs.matugen-config}/. "$out/share/rabbit-shell-matugen"
+
+cat > "$out/bin/matugen" <<'EOF'
+#!@runtimeShell@
+set -e
+
+export RABBIT_SHELL_MATUGEN="@out@/share/rabbit-shell-matugen"
+config_home="''${XDG_CONFIG_HOME:-$HOME/.config}"
+matugen_config_dir="$config_home/matugen"
+mkdir -p "$matugen_config_dir"
+
+if [ ! -e "$matugen_config_dir/config.toml" ]; then
+  ln -s "$RABBIT_SHELL_MATUGEN/config.toml" "$matugen_config_dir/config.toml"
+fi
+
+if [ ! -e "$matugen_config_dir/templates" ]; then
+  ln -s "$RABBIT_SHELL_MATUGEN/templates" "$matugen_config_dir/templates"
+fi
+
+exec "@realMatugen@/bin/matugen" "$@"
+EOF
+substituteInPlace "$out/bin/matugen" \
+  --subst-var-by runtimeShell "${pkgs.runtimeShell}" \
+  --subst-var-by out "$out" \
+  --subst-var-by realMatugen "${matugen}"
+chmod +x "$out/bin/matugen"
 
 cat > "$out/bin/rabbit-shell" <<'EOF'
 #!@runtimeShell@
 set -e
 
-export PATH="@runtimePath@:$PATH"
+export PATH="@out@/bin:@runtimePath@:$PATH"
 export RABBIT_SHELL_SHARE="@out@/share/rabbit-shell"
+export RABBIT_SHELL_MATUGEN="@out@/share/rabbit-shell-matugen"
 
 config_dir="''${RABBIT_SHELL_CONFIG:-''${XDG_CONFIG_HOME:-$HOME/.config}/quickshell}"
 if [ ! -f "$config_dir/shell.qml" ]; then
