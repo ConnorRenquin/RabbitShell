@@ -1,1 +1,1 @@
-/home/connor/.config/quickshell/agents.md
+/home/connor/.config/quickshell/AGENTS.md
