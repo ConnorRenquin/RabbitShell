@@ -3,6 +3,7 @@ pragma Singleton
 import Quickshell
 import Quickshell.Io
 
+import QtCore as QtCoreLib
 import QtQuick
 
 import qs.Settings
@@ -14,6 +15,30 @@ Singleton {
 
     function init() {
         console.log('ClipboardService -----------------------------------------');
+        root.logClipboardWatcher('image directory: ' + root.clipboardImageDirectory);
+    }
+
+    property bool clipboardWatchersEnabled: true
+    readonly property string clipboardImageDirectory: String(QtCoreLib.StandardPaths.writableLocation(QtCoreLib.StandardPaths.HomeLocation)).replace(/^file:\/\//, "") + "/Pictures/clipboard"
+    readonly property string clipboardImageWatcherScript: [
+        'dir="$1"',
+        'echo "[ClipboardService image] fired state=${CLIPBOARD_STATE:-unset} dir=$dir" >&2',
+        'mkdir -p "$dir" || { echo "[ClipboardService image] mkdir failed: $dir" >&2; exit 1; }',
+        'target="$dir/$(date +%F-%H-%M-%S).png"',
+        'echo "[ClipboardService image] saving to $target" >&2',
+        'wl-paste --type image > "$target"',
+        'status=$?',
+        'size=$(wc -c < "$target" 2>/dev/null || printf 0)',
+        'echo "[ClipboardService image] wl-paste exit=$status size=$size" >&2',
+        'if [ "$status" -ne 0 ] || [ "$size" -eq 0 ]; then',
+        '    echo "[ClipboardService image] removing failed or empty file: $target" >&2',
+        '    rm -f "$target"',
+        '    exit "$status"',
+        'fi'
+    ].join("\n")
+
+    function logClipboardWatcher(message) {
+        console.log('[ClipboardService watcher]', message);
     }
 
     property var clipboardData: {
@@ -153,6 +178,62 @@ Singleton {
 
     }
 
+    Process {
+        id: clipboardTextWatcher
+        running: root.clipboardWatchersEnabled
+        command: ['wl-paste', '--type', 'text', '--watch', 'sh', '-c', 'qs ipc call clip save "$(wl-paste --type text)"']
+
+        onStarted: root.logClipboardWatcher('text watcher started pid=' + processId)
+
+        function onExited(exitCode) {
+            root.logClipboardWatcher('text watcher exited code=' + exitCode);
+        }
+
+        onRunningChanged: {
+            root.logClipboardWatcher('text watcher running=' + running);
+            if (!running && root.clipboardWatchersEnabled) {
+                running = true;
+            }
+        }
+
+        stderr: SplitParser {
+            splitMarker: "\n"
+            onRead: function(data) {
+                if (data.trim() !== "") {
+                    root.logClipboardWatcher('text stderr: ' + data.trim());
+                }
+            }
+        }
+    }
+
+    Process {
+        id: clipboardImageWatcher
+        running: root.clipboardWatchersEnabled
+        command: ['wl-paste', '--type', 'image', '--watch', 'sh', '-c', root.clipboardImageWatcherScript, 'ClipboardService.imageWatcher', root.clipboardImageDirectory]
+
+        onStarted: root.logClipboardWatcher('image watcher started pid=' + processId)
+
+        function onExited(exitCode) {
+            root.logClipboardWatcher('image watcher exited code=' + exitCode);
+        }
+
+        onRunningChanged: {
+            root.logClipboardWatcher('image watcher running=' + running);
+            if (!running && root.clipboardWatchersEnabled) {
+                running = true;
+            }
+        }
+
+        stderr: SplitParser {
+            splitMarker: "\n"
+            onRead: function(data) {
+                if (data.trim() !== "") {
+                    root.logClipboardWatcher('image stderr: ' + data.trim());
+                }
+            }
+        }
+    }
+
     Utils {
         id: utils
     }
@@ -202,9 +283,8 @@ Singleton {
 
             // Limit the number of entries, removing oldest ones
             var clipboardLimit = Settings.get('clipboardLimit').value
-            if (clipboardLimit && newClipboardText.length > root.clipboardLimit) {
-                console.log('hi')
-                newClipboardText = newClipboardText.slice(0, root.clipboardLimit + 1);
+            if (clipboardLimit && newClipboardText.length > clipboardLimit) {
+                newClipboardText = newClipboardText.slice(0, clipboardLimit + 1);
             }
 
             root.clipboardData = {
