@@ -100,7 +100,6 @@ FloatingWindowPlus {
         id: base
         anchors.fill: parent
         color: Colors.background
-        radius: Styles.radiusSm
         focus: true
 
         readonly property alias textAreaItem: textArea
@@ -159,10 +158,10 @@ FloatingWindowPlus {
                     anchors.fill: parent
                     ScrollBar.vertical.policy: ScrollBar.AsNeeded
                     ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-                    
+
                     TextAreaPlus {
                         id: textArea
-                        
+
                         onTextChanged: {
                             if (root.isReady) {
                                 root.tabContents[root.currentTab] = text;

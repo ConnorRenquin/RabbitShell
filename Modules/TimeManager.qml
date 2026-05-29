@@ -232,7 +232,6 @@ FloatingWindowPlus {
         id: base
         anchors.fill: parent
         color: Colors.background
-        radius: Styles.radiusSm
         focus: true
 
         ColumnLayout {

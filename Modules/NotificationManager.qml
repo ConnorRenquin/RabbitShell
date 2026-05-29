@@ -31,7 +31,6 @@ FloatingWindowPlus {
         id: base
         anchors.fill: parent
         color: theme.background
-        radius: Styles.radiusMd
         focus: true
 
         Controls {
