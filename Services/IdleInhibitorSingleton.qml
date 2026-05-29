@@ -51,7 +51,7 @@ Singleton {
         respectInhibitors: true
         timeout: root.lockTimeout
         onIsIdleChanged: {
-            if (isIdle) {
+            if (isIdle && !root.inhibitIdle) {
                 PatchBay.lockScreen()
                 suspendTimer.running = true;
                 suspendTimer.restart()
