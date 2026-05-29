@@ -5,7 +5,7 @@
     nixpkgs.url = "nixpkgs/nixos-unstable";
 
     matugen-config = {
-      url = "https://github.com/ConnorRenquin/RabbitShell-Matugen.git";
+      url = "github:ConnorRenquin/RabbitShell-Matugen";
       flake = false;
     };
   };
