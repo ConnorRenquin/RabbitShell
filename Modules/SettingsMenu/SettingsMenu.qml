@@ -111,22 +111,18 @@ FloatingWindowPlus {
             id: mainLayout
             anchors.fill: parent
 
+
             ColumnLayout {
                 id: sideButtons
                 Layout.fillHeight: true
                 Layout.margins: Styles.marginSm
-                Layout.maximumWidth: persisted.sideButtonsCollapsed ? Styles.marginLg * 2 : Styles.marginLg * 8
+                Layout.maximumWidth: persisted.sideButtonsCollapsed ? minWidth : Styles.marginLg * 8
                 spacing: Styles.marginSm
 
-                ButtonStyled {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: implicitHeight
-                    textAlignment: persisted.sideButtonsCollapsed ? Text.AlignHCenter : Text.AlignLeft
-                    text: persisted.sideButtonsCollapsed ? Icons.rightArrow : Icons.collapse + ' Settings'
-                    onClicked: persisted.sideButtonsCollapsed = !persisted.sideButtonsCollapsed
-                }
+                property int minWidth: 40
 
                 ListView {
+
                     id: settingModules
                     Layout.fillHeight: true
                     Layout.fillWidth: true
@@ -144,6 +140,22 @@ FloatingWindowPlus {
                         }
                     }
                 }
+
+                Rectangle {
+                    height: 2
+                    radius: Styles.radiusSm
+                    Layout.fillWidth: true
+                    color: Colors.background
+                }
+
+                ButtonStyled {
+                    id: collapseButton
+                    Layout.preferredHeight: implicitHeight
+                    Layout.preferredWidth: sideButtons.minWidth
+                    text: persisted.sideButtonsCollapsed ? Icons.sidebarClosed : Icons.sidebarOpen
+                    onClicked: persisted.sideButtonsCollapsed = !persisted.sideButtonsCollapsed
+                }
+
             }
             Rectangle {
                 id: settingsModuleUi
