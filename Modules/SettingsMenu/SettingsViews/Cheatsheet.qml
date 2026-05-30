@@ -10,13 +10,12 @@ import Qt.labs.folderlistmodel
 import qs.Settings
 import qs.Components
 
-Rectangle {
+Item {
     id: root
 
     required property string name
 
     anchors.fill: parent
-    color: Qt.lighter(Colors.surface, Colors.lighter)
 
     readonly property url docsDirectory: Qt.resolvedUrl("../../../docs")
     property int currentTabIndex: 0
@@ -255,46 +254,28 @@ Rectangle {
         anchors.margins: Styles.marginSm
         spacing: Styles.marginSm
 
-        ScrollView {
-            id: tabScrollView
+        ListView {
+            id: tabList
             Layout.fillWidth: true
             Layout.preferredHeight: 40
-            contentHeight: availableHeight
-            visible: docsModel.count > 1
-            clip: true
+            orientation: ListView.Horizontal
+            spacing: Styles.marginSm
+            boundsBehavior: Flickable.StopAtBounds
 
-            ListView {
-                id: tabList
-                width: tabScrollView.availableWidth
-                height: tabScrollView.availableHeight
-                orientation: ListView.Horizontal
-                spacing: Styles.marginSm
-                model: docsModel
-                boundsBehavior: Flickable.StopAtBounds
+            model: docsModel
+            delegate: ButtonStyled {
+                id: tabButton
 
-                delegate: ButtonStyled {
-                    id: tabButton
+                required property string fileName
+                required property url fileUrl
+                required property int index
 
-                    required property string fileName
-                    required property url fileUrl
-                    required property int index
-
-                    height: tabList.height
-                    width: Math.max(tabText.implicitWidth + Styles.marginLg, 120)
-                    text: ""
-                    isFocused: root.currentTabIndex === index
-
-                    onClicked: {
-                        root.currentTabIndex = index;
-                        root.currentDocUrl = fileUrl;
-                    }
-
-                    TextStyled {
-                        id: tabText
-                        anchors.centerIn: parent
-                        text: tabButton.fileName
-                        font.bold: root.currentTabIndex === tabButton.index
-                    }
+                height: tabList.height
+                text: tabButton.fileName
+                isFocused: root.currentTabIndex === index
+                onClicked: {
+                    root.currentTabIndex = index;
+                    root.currentDocUrl = fileUrl;
                 }
             }
         }
@@ -320,8 +301,6 @@ Rectangle {
                     wrapMode: Text.WordWrap
                     elide: Text.ElideNone
                     font.pointSize: Styles.textLg * 1.25
-                    font.bold: true
-                    color: Colors.onSurface
                 }
 
                 RowLayout {
@@ -356,10 +335,7 @@ Rectangle {
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: sectionColumn.implicitHeight + Styles.marginMd
                                     color: Qt.lighter(Colors.surface, 1.15)
-                                    radius: Styles.radiusMd
-                                    border.width: 1
-                                    border.color: Colors.outlineVariant
-
+                                    radius: Styles.radiusSm
                                     ColumnLayout {
                                         id: sectionColumn
                                         anchors.fill: parent
@@ -367,18 +343,18 @@ Rectangle {
                                         spacing: Styles.marginSm
 
                                         TextStyled {
+                                            id: title
                                             Layout.fillWidth: true
                                             visible: root.sectionTitle(sectionCard.modelData) !== ""
                                             text: root.sectionTitle(sectionCard.modelData)
                                             textFormat: Text.RichText
                                             wrapMode: Text.WordWrap
-                                            elide: Text.ElideNone
                                             color: Colors.primary
                                             font.pointSize: Styles.textLg
-                                            font.bold: true
                                         }
 
                                         TextStyled {
+                                            id: body
                                             Layout.fillWidth: true
                                             text: root.sectionContent(sectionCard.modelData)
                                             textFormat: Text.RichText

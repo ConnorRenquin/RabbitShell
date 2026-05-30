@@ -160,7 +160,7 @@ FloatingWindowPlus {
             Rectangle {
                 id: settingsModuleUi
                 Layout.fillHeight: true
-                color: Colors.background
+                color: Colors.surface
                 Layout.preferredWidth: 300
                 Layout.fillWidth: true
                 AboutSettingsView {
