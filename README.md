@@ -47,3 +47,28 @@ awww
 hypridle
 ttf-roboto-mono-nerd
 ```
+
+# Nix
+
+## flake
+
+```nix
+{
+  inputs = {
+    rabbit-shell = {
+      url = "github:ConnorRenquin/RabbitShell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+}
+```
+
+## pkg
+
+```nix
+{
+  environment.systemPackages = with pkgs; [
+    inputs.rabbit-shell.packages.${pkgs.stdenv.hostPlatform.system}.default
+  };
+}
+```

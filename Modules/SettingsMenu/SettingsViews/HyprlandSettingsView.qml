@@ -947,6 +947,7 @@ Rectangle {
     }
 
     ColumnLayout {
+        id: content
         anchors.fill: parent
         anchors.margins: Styles.marginSm
         spacing: Styles.marginSm
@@ -974,8 +975,7 @@ Rectangle {
                     required property int index
 
                     height: sectionTabsList.height
-                    width: Math.max(tabText.implicitWidth + Styles.marginLg, 130)
-                    text: ""
+                    text: groupTabButton.modelData.title
                     isFocused: root.currentGroupIndex === index
 
                     onClicked: {
@@ -983,12 +983,6 @@ Rectangle {
                         sectionTabsList.positionViewAtIndex(index, ListView.Contain);
                     }
 
-                    TextStyled {
-                        id: tabText
-                        anchors.centerIn: parent
-                        text: groupTabButton.modelData.title
-                        font.bold: root.currentGroupIndex === groupTabButton.index
-                    }
                 }
             }
         }
@@ -1380,23 +1374,35 @@ Rectangle {
             }
         }
 
+    }
+
+    Rectangle {
+        id: saveButtons
+        height: 50
+        width: 300
+        radius: Styles.radiusSm
+        anchors.bottom: content.bottom
+        anchors.right: content.right
+        z: 2
+        color: Colors.surface
         RowLayout {
-            Layout.fillWidth: true
-            spacing: Styles.marginSm
-
-            Item {
-                Layout.fillWidth: true
-            }
-
+            id: saveLoadRow
+            spacing: Styles.marginXS
+            anchors.fill: parent
+            anchors.margins: Styles.marginXS
             ButtonStyled {
                 text: "Reload"
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 onClicked: root.reloadConfig()
             }
-
             ButtonStyled {
                 text: "Save"
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 onClicked: root.saveConfig()
             }
         }
     }
+
 }
