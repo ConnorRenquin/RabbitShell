@@ -329,7 +329,7 @@ Rectangle {
 
     function openBindEditor(index) {
         selectedBindIndex = index;
-        bindEditorPopup.open();
+        bindEditor.visible = true;
     }
 
     function openListEditor(cfg, index) {
@@ -597,13 +597,18 @@ Rectangle {
         }
     }
 
+    component RowEntry: TextStyled {
+        Layout.preferredWidth: keybindTableHeader.standardWidth
+        horizontalAlignment: Qt.AlignLeft
+    }
+
     Popup {
-        id: bindEditorPopup
+        id: listEditorPopup
         modal: true
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-        width: Math.min(root.width - Styles.marginLg * 2, 900)
-        height: Math.min(root.height - Styles.marginLg * 2, 620)
+        width: Math.min(root.width - Styles.marginLg * 2, 860)
+        height: Math.min(root.height - Styles.marginLg * 2, 560)
         x: (root.width - width) / 2
         y: (root.height - height) / 2
         padding: 0
@@ -624,14 +629,600 @@ Rectangle {
 
                 TextStyled {
                     Layout.fillWidth: true
-                    text: root.selectedBindIndex >= 0 ? "Edit keybind: " + root.bindName(root.bindItems[root.selectedBindIndex]) : "Edit keybind"
+                    text: root.selectedListEditorConfig ? "Edit " + root.editorTitle(root.selectedListEditorConfig, root.selectedListItem()) : "Edit rule"
                     font.bold: true
                     font.pointSize: Styles.textLg
                 }
 
                 ButtonStyled {
                     text: "Close"
-                    onClicked: bindEditorPopup.close()
+                    onClicked: listEditorPopup.close()
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Styles.marginSm
+
+                FormLabelLocal {
+                    text: "Advanced"
+                }
+                SwitchStyled {
+                    text: "Show raw rule"
+                    checked: root.selectedListAdvanced()
+                    onToggled: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, "advanced", checked)
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                ButtonStyled {
+                    visible: root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "windowRuleList" && !root.selectedListAdvanced()
+                    text: "Pick active window"
+                    onClicked: root.pickWindowForRule(root.selectedListEditorIndex)
+                }
+            }
+
+            ScrollView {
+                visible: !root.selectedListAdvanced()
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+
+                ColumnLayout {
+                    width: parent.width
+                    spacing: Styles.marginSm
+
+                    Repeater {
+                        model: root.selectedListEditorConfig ? root.selectedListEditorConfig.rows : []
+
+                        delegate: ColumnLayout {
+                            id: popupEditorRow
+                            required property var modelData
+
+                            width: parent.width
+                            spacing: Styles.marginXS
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: Styles.marginSm
+
+                                Repeater {
+                                    model: popupEditorRow.modelData.fields || []
+
+                                    delegate: RowLayout {
+                                        id: popupEditorField
+                                        required property var modelData
+                                        readonly property bool isBoolField: modelData.type === "bool"
+                                        readonly property bool isTextField: modelData.type === "text"
+
+                                        Layout.fillWidth: !isBoolField
+                                        spacing: Styles.marginSm
+
+                                        FormLabelLocal {
+                                            visible: !popupEditorField.isBoolField
+                                            text: popupEditorField.modelData.label
+                                        }
+
+                                        InputFrameLocal {
+                                            visible: popupEditorField.isTextField
+                                            Layout.preferredHeight: 36
+
+                                            InputTextFieldLocal {
+                                                text: root.fieldText(root.selectedListItem(), popupEditorField.modelData)
+                                                placeholderText: popupEditorField.modelData.placeholder || ""
+                                                inputMethodHints: popupEditorField.modelData.numeric ? Qt.ImhFormattedNumbersOnly : Qt.ImhNone
+                                                onTextEdited: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, popupEditorField.modelData.key, text)
+                                            }
+                                        }
+
+                                        SwitchStyled {
+                                            visible: popupEditorField.isBoolField
+                                            text: popupEditorField.modelData.label
+                                            checked: root.boolFieldValue(root.selectedListItem(), popupEditorField.modelData)
+                                            onToggled: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, popupEditorField.modelData.key, checked)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                visible: root.selectedListAdvanced()
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: Qt.darker(Colors.background, Colors.darker)
+                radius: Styles.radiusSm
+
+                TextArea {
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginSm
+                    text: root.selectedListValue("rawLine")
+                    placeholderText: root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "windowRuleList" ? "hl.window_rule({ ... })" : root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "layerRuleList" ? "hl.layer_rule({ ... })" : "hl.animation({ ... })"
+                    color: Colors.onBackground
+                    selectedTextColor: Colors.background
+                    selectionColor: Colors.primary
+                    font.family: Styles.defaultFontFamily
+                    font.pointSize: Styles.textSm
+                    wrapMode: TextEdit.WrapAtWordBoundaryOrAnywhere
+                    selectByMouse: true
+                    onTextChanged: {
+                        if (root.selectedListEditorIndex >= 0 && text !== root.selectedListValue("rawLine"))
+                            root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, "rawLine", text);
+                    }
+                }
+            }
+        }
+    }
+
+    RowLayout {
+        anchors.fill: parent
+        anchors.margins: Styles.marginSm
+        spacing: Styles.marginSm
+        ColumnLayout {
+
+            id: content
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            SettingsViewTitle {
+                title: root.name
+            }
+
+            Rectangle {
+                id: saveButtons
+                Layout.preferredHeight: 50
+                radius: Styles.radiusSm
+                Layout.fillWidth: true
+                z: 2
+                color: Colors.surface
+                RowLayout {
+                    id: saveLoadRow
+                    spacing: Styles.marginXS
+                    anchors.fill: parent
+                    ButtonStyled {
+                        text: "Reload"
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        onClicked: root.reloadConfig()
+                    }
+                    ButtonStyled {
+                        text: "Save"
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        onClicked: root.saveConfig()
+                    }
+                }
+            }
+
+
+            PanelLocal {
+                id: sectionTabs
+                Layout.preferredHeight: 44
+
+                ListView {
+                    id: sectionTabsList
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginXS
+                    orientation: ListView.Horizontal
+                    spacing: Styles.marginSm
+                    clip: true
+                    model: root.sectionGroups
+
+                    delegate: ButtonStyled {
+                        id: groupTabButton
+                        required property var modelData
+                        required property int index
+
+                        height: sectionTabsList.height
+                        text: groupTabButton.modelData.title
+                        isFocused: root.currentGroupIndex === index
+
+                        onClicked: {
+                            root.currentGroupIndex = index;
+                            sectionTabsList.positionViewAtIndex(index, ListView.Contain);
+                        }
+                    }
+                }
+            }
+
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                contentWidth: availableWidth
+
+                ColumnLayout {
+                    width: parent.width
+                    spacing: Styles.marginMd
+
+                    Repeater {
+                        model: root.sectionGroups.length > 0 ? root.sectionGroups[root.currentGroupIndex].sections : []
+
+                        delegate: PanelLocal {
+                            id: sectionDelegate
+                            required property var modelData
+
+                            implicitHeight: sectionColumn.implicitHeight + Styles.marginMd
+
+                            ColumnLayout {
+                                id: sectionColumn
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.top: parent.top
+                                anchors.margins: Styles.marginSm
+                                spacing: Styles.marginSm
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    spacing: Styles.marginSm
+
+                                    TextStyled {
+                                        Layout.fillWidth: true
+                                        text: sectionDelegate.modelData.title
+                                        font.pointSize: Styles.textLg
+                                        font.bold: true
+                                    }
+
+                                    ButtonStyled {
+                                        text: Icons.info + " Wiki"
+                                        visible: !!sectionDelegate.modelData.wiki
+                                        onClicked: Quickshell.execDetached(["xdg-open", sectionDelegate.modelData.wiki])
+                                    }
+                                }
+
+                                TextStyled {
+                                    Layout.fillWidth: true
+                                    text: sectionDelegate.modelData.subtitle
+                                    wrapMode: Text.WordWrap
+                                    opacity: 0.75
+                                    font.pointSize: Styles.textSm
+                                }
+
+                                Repeater {
+                                    model: sectionDelegate.modelData.settings
+
+                                    delegate: Rectangle {
+                                        id: row
+                                        required property var modelData
+                                        readonly property bool isColorRow: modelData.type === "raw" && modelData.path.indexOf(".color") >= 0
+
+                                        visible: root.isSettingVisible(row.modelData)
+                                        Layout.fillWidth: true
+                                        Layout.preferredHeight: visible ? (row.isColorRow || (row.modelData.min !== undefined && row.modelData.max !== undefined) ? 54 : 38) : 0
+                                        color: "transparent"
+
+                                        RowLayout {
+                                            anchors.fill: parent
+                                            spacing: Styles.marginMd
+
+                                            TextStyled {
+                                                Layout.fillWidth: true
+                                                text: row.modelData.label
+                                            }
+
+                                            SwitchStyled {
+                                                visible: row.modelData.type === "bool"
+                                                checked: visible ? !!root.getPath(row.modelData.path) : false
+                                                onToggled: root.setPath(row.modelData.path, checked)
+                                            }
+
+                                            ComboBoxStyled {
+                                                visible: !!row.modelData.options
+                                                Layout.preferredWidth: 190
+                                                Layout.fillHeight: true
+                                                model: visible ? row.modelData.options : []
+                                                currentIndex: visible ? (row.modelData.optionValues ? row.modelData.optionValues.indexOf(root.getPath(row.modelData.path)) : row.modelData.options.indexOf(root.getPath(row.modelData.path))) : -1
+                                                onActivated: index => root.setPath(row.modelData.path, row.modelData.optionValues ? row.modelData.optionValues[index] : row.modelData.options[index])
+                                            }
+
+                                            ColorComboBoxStyled {
+                                                id: colorCombo
+                                                visible: row.isColorRow
+                                                Layout.preferredWidth: 190
+                                                Layout.fillHeight: true
+                                                selectedHyprColorValue: visible ? root.getPath(row.modelData.path) : ""
+                                                onActivated: index => root.setPath(row.modelData.path, colorCombo.hyprColorValueWithOpacity(colorCombo.colorNames[index], opacitySlider.value))
+                                            }
+
+                                            SliderSmallStyled {
+                                                id: opacitySlider
+                                                visible: row.isColorRow
+                                                Layout.preferredWidth: 190
+                                                Layout.fillHeight: true
+                                                from: 0
+                                                to: 1
+                                                stepSize: 0.05
+                                                value: visible ? colorCombo.opacityFromHyprValue(root.getPath(row.modelData.path)) : 1
+                                                showPercentage: true
+                                                onMoved: root.setPath(row.modelData.path, colorCombo.hyprColorValueWithOpacity(colorCombo.selectedColorName, value))
+                                            }
+
+                                            SliderSmallStyled {
+                                                visible: row.modelData.min !== undefined && row.modelData.max !== undefined
+                                                Layout.preferredWidth: 220
+                                                Layout.fillHeight: true
+                                                from: visible ? row.modelData.min : 0
+                                                to: visible ? row.modelData.max : 1
+                                                stepSize: visible ? (row.modelData.step || (row.modelData.type === "int" ? 1 : 0.05)) : 0.05
+                                                value: visible ? root.getPath(row.modelData.path) : from
+                                                showPercentage: false
+                                                onMoved: root.setPath(row.modelData.path, row.modelData.type === "int" ? Math.round(value) : value)
+                                            }
+
+                                            TextStyled {
+                                                visible: row.modelData.min !== undefined && row.modelData.max !== undefined
+                                                Layout.preferredWidth: 52
+                                                horizontalAlignment: Text.AlignRight
+                                                text: visible ? Number(root.getPath(row.modelData.path)).toFixed(row.modelData.type === "int" ? 0 : 2) : ""
+                                            }
+
+                                            RowLayout {
+                                                visible: row.modelData.type === "vector2"
+                                                Layout.preferredWidth: 190
+                                                Layout.fillHeight: true
+                                                spacing: Styles.marginSm
+
+                                                SettingsInputFrameLocal {
+                                                    Layout.preferredWidth: 85
+                                                    InputTextFieldLocal {
+                                                        text: visible ? String(root.vector2Component(row.modelData.path, 0)) : ""
+                                                        placeholderText: "X"
+                                                        inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                                        onTextEdited: root.setVector2Component(row.modelData.path, 0, text)
+                                                    }
+                                                }
+
+                                                SettingsInputFrameLocal {
+                                                    Layout.preferredWidth: 85
+                                                    InputTextFieldLocal {
+                                                        text: visible ? String(root.vector2Component(row.modelData.path, 1)) : ""
+                                                        placeholderText: "Y"
+                                                        inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                                        onTextEdited: root.setVector2Component(row.modelData.path, 1, text)
+                                                    }
+                                                }
+                                            }
+
+                                            SettingsInputFrameLocal {
+                                                visible: row.modelData.type !== "bool" && row.modelData.type !== "vector2" && !row.modelData.options && !row.isColorRow && !(row.modelData.min !== undefined && row.modelData.max !== undefined)
+
+                                                InputTextFieldLocal {
+                                                    property string valueText: parent.visible ? root.displayValue(row.modelData.path) : ""
+                                                    Component.onCompleted: text = valueText
+                                                    onValueTextChanged: {
+                                                        if (!activeFocus && text !== valueText)
+                                                            text = valueText;
+                                                    }
+                                                    placeholderText: row.modelData.label
+                                                    inputMethodHints: row.modelData.type === "string" || row.modelData.type === "raw" ? Qt.ImhNone : Qt.ImhFormattedNumbersOnly
+                                                    onTextEdited: root.setPath(row.modelData.path, root.parseInput(text, row.modelData.type))
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                ColumnLayout {
+                                    id: listEditorColumn
+                                    property var editorConfig: sectionDelegate.modelData.editor || null
+                                    readonly property bool isBindList: !!editorConfig && editorConfig.kind === "bindList"
+
+                                    visible: !!editorConfig
+                                    Layout.fillWidth: true
+                                    spacing: Styles.marginSm
+
+                                    RowLayout {
+                                        Layout.fillWidth: true
+                                        spacing: Styles.marginSm
+
+                                        ButtonStyled {
+                                            text: listEditorColumn.editorConfig ? listEditorColumn.editorConfig.addText : ""
+                                            Layout.preferredWidth: 160
+                                            onClicked: root.addEditorItem(listEditorColumn.editorConfig)
+                                        }
+
+                                        TextStyled {
+                                            visible: listEditorColumn.isBindList
+                                            Layout.fillWidth: true
+                                            text: root.bindItems.length + " keybinds"
+                                            opacity: 0.7
+                                        }
+                                    }
+
+                                    ColumnLayout {
+                                        visible: listEditorColumn.isBindList
+                                        Layout.fillWidth: true
+                                        spacing: 0
+
+                                        Rectangle {
+                                            id: keybindTableHeader
+
+                                            property int standardWidth: parent.width / 3
+
+                                            Layout.fillWidth: true
+                                            Layout.preferredHeight: 34
+                                            color: Qt.darker(Colors.background, Colors.darker)
+
+                                            RowLayout {
+                                                anchors.fill: parent
+                                                anchors.leftMargin: Styles.marginSm
+                                                anchors.rightMargin: Styles.marginSm
+                                                spacing: Styles.marginSm
+                                                RowEntry {
+                                                    text: "Name"
+                                                }
+                                                RowEntry {
+                                                    text: "Keybind"
+                                                }
+                                                RowEntry {
+                                                    text: ""
+                                                }
+                                            }
+                                        }
+
+                                        Repeater {
+                                            model: root.bindItems
+                                            delegate: Rectangle {
+                                                id: bindTableRow
+                                                required property var modelData
+                                                required property int index
+
+                                                Layout.fillWidth: true
+                                                Layout.preferredHeight: 50
+                                                color: Qt.darker(Colors.surface, 1.08)
+
+                                                RowLayout {
+                                                    anchors.fill: parent
+                                                    anchors.leftMargin: Styles.marginSm
+                                                    anchors.rightMargin: Styles.marginSm
+                                                    RowEntry {
+                                                        text: root.clippedText(root.bindName(bindTableRow.modelData), "Unnamed bind")
+                                                    }
+                                                    RowEntry {
+                                                        text: bindTableRow.modelData.keys || ""
+                                                    }
+                                                    ButtonStyled {
+                                                        text: Icons.settingsCog
+                                                        onClicked: root.openBindEditor(bindTableRow.index)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    ColumnLayout {
+                                        visible: !!listEditorColumn.editorConfig && !listEditorColumn.isBindList
+                                        Layout.fillWidth: true
+
+                                        Rectangle {
+                                            Layout.fillWidth: true
+                                            color: Qt.darker(Colors.background, Colors.darker)
+                                            radius: Styles.radiusSm
+
+                                            RowLayout {
+                                                anchors.fill: parent
+                                                anchors.leftMargin: Styles.marginSm
+                                                anchors.rightMargin: Styles.marginSm
+                                                spacing: Styles.marginSm
+
+                                                TextStyled {
+                                                    Layout.preferredWidth: 240
+                                                    text: "Name"
+                                                    font.bold: true
+                                                }
+                                                TextStyled {
+                                                    Layout.preferredWidth: 220
+                                                    text: listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "State" : "Match"
+                                                    font.bold: true
+                                                }
+                                                TextStyled {
+                                                    Layout.preferredWidth: 220
+                                                    text: listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "Timing" : "Options"
+                                                    font.bold: true
+                                                }
+                                                TextStyled {
+                                                    Layout.fillWidth: true
+                                                    text: "Extra"
+                                                    font.bold: true
+                                                }
+                                                TextStyled {
+                                                    Layout.preferredWidth: 80
+                                                    text: ""
+                                                }
+                                            }
+                                        }
+
+                                        Repeater {
+                                            model: root.editorItems(listEditorColumn.editorConfig)
+                                            delegate: Rectangle {
+                                                id: listTableRow
+                                                required property var modelData
+                                                required property int index
+                                                readonly property var editorConfig: listEditorColumn.editorConfig
+
+                                                Layout.fillWidth: true
+                                                Layout.preferredHeight: 42
+                                                color: index % 2 === 0 ? Colors.surface : Qt.darker(Colors.surface, 1.08)
+                                                radius: Styles.radiusSm
+
+                                                RowLayout {
+                                                    anchors.fill: parent
+                                                    anchors.leftMargin: Styles.marginSm
+                                                    anchors.rightMargin: Styles.marginSm
+                                                    spacing: Styles.marginSm
+
+                                                    TextStyled {
+                                                        text: root.clippedText(root.listTableTitle(listTableRow.editorConfig, listTableRow.modelData), "New rule")
+                                                    }
+
+                                                    TextStyled {
+                                                        text: root.clippedText(root.listTableColumnOne(listTableRow.editorConfig, listTableRow.modelData), "")
+                                                    }
+
+                                                    TextStyled {
+                                                        text: root.clippedText(root.listTableColumnTwo(listTableRow.editorConfig, listTableRow.modelData), "")
+                                                    }
+
+                                                    TextStyled {
+                                                        Layout.fillWidth: true
+                                                        text: root.clippedText(root.listTableColumnThree(listTableRow.editorConfig, listTableRow.modelData), "")
+                                                    }
+
+                                                    ButtonStyled {
+                                                        text: Icons.settingsCog
+                                                        onClicked: root.openListEditor(listTableRow.editorConfig, listTableRow.index)
+                                                    }
+
+                                                    ButtonStyled {
+                                                        text: Icons.trash
+                                                        onClicked: root.removeEditorItem(listTableRow.editorConfig, listTableRow.index)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    Rectangle {
+        id: bindEditor
+        visible: false
+        Layout.fillHeight: true
+        Layout.preferredWidth: 550
+        color: Qt.lighter(Colors.surface, 1.1)
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: Styles.marginMd
+            spacing: Styles.marginSm
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                TextStyled {
+                    Layout.fillWidth: true
+                    text: root.selectedBindIndex >= 0 ? "Edit keybind: " + root.bindName(root.bindItems[root.selectedBindIndex]) : "Edit keybind"
+                    font.bold: true
+                    font.pointSize: Styles.textLg
+                }
+
+                ButtonStyled {
+                    text: Icons.close
+                    onClicked: bindEditor.visible = false
+                }
+
+                ButtonStyled {
+                    text: Icons.trash
+                    onClicked: root.removeBindItem(root.selectedBindIndex)
                 }
             }
 
@@ -641,7 +1232,9 @@ Rectangle {
                 columnSpacing: Styles.marginMd
                 rowSpacing: Styles.marginSm
 
-                FormLabelLocal { text: "Name" }
+                FormLabelLocal {
+                    text: "Name"
+                }
                 InputFrameLocal {
                     Layout.preferredHeight: 36
                     InputTextFieldLocal {
@@ -651,7 +1244,9 @@ Rectangle {
                     }
                 }
 
-                FormLabelLocal { text: "Keybind" }
+                FormLabelLocal {
+                    text: "Keybind"
+                }
                 RowLayout {
                     Layout.fillWidth: true
                     InputFrameLocal {
@@ -669,7 +1264,9 @@ Rectangle {
                     }
                 }
 
-                FormLabelLocal { text: "Advanced" }
+                FormLabelLocal {
+                    text: "Advanced"
+                }
                 SwitchStyled {
                     checked: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
                     text: "Show raw dispatcher"
@@ -789,620 +1386,12 @@ Rectangle {
                 }
             }
 
-            Item { Layout.fillHeight: true }
-        }
-    }
-
-    Popup {
-        id: listEditorPopup
-        modal: true
-        focus: true
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-        width: Math.min(root.width - Styles.marginLg * 2, 860)
-        height: Math.min(root.height - Styles.marginLg * 2, 560)
-        x: (root.width - width) / 2
-        y: (root.height - height) / 2
-        padding: 0
-        background: Rectangle {
-            color: Colors.surface
-            radius: Styles.radiusMd
-            border.color: Colors.outline
-            border.width: 1
-        }
-
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: Styles.marginMd
-            spacing: Styles.marginSm
-
-            RowLayout {
-                Layout.fillWidth: true
-
-                TextStyled {
-                    Layout.fillWidth: true
-                    text: root.selectedListEditorConfig ? "Edit " + root.editorTitle(root.selectedListEditorConfig, root.selectedListItem()) : "Edit rule"
-                    font.bold: true
-                    font.pointSize: Styles.textLg
-                }
-
-                ButtonStyled {
-                    text: "Close"
-                    onClicked: listEditorPopup.close()
-                }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Styles.marginSm
-
-                FormLabelLocal { text: "Advanced" }
-                SwitchStyled {
-                    text: "Show raw rule"
-                    checked: root.selectedListAdvanced()
-                    onToggled: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, "advanced", checked)
-                }
-
-                Item { Layout.fillWidth: true }
-
-                ButtonStyled {
-                    visible: root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "windowRuleList" && !root.selectedListAdvanced()
-                    text: "Pick active window"
-                    onClicked: root.pickWindowForRule(root.selectedListEditorIndex)
-                }
-            }
-
-            ScrollView {
-                visible: !root.selectedListAdvanced()
-                Layout.fillWidth: true
+            Item {
                 Layout.fillHeight: true
-                clip: true
-
-                ColumnLayout {
-                    width: parent.width
-                    spacing: Styles.marginSm
-
-                    Repeater {
-                        model: root.selectedListEditorConfig ? root.selectedListEditorConfig.rows : []
-
-                        delegate: ColumnLayout {
-                            id: popupEditorRow
-                            required property var modelData
-
-                            width: parent.width
-                            spacing: Styles.marginXS
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: Styles.marginSm
-
-                                Repeater {
-                                    model: popupEditorRow.modelData.fields || []
-
-                                    delegate: RowLayout {
-                                        id: popupEditorField
-                                        required property var modelData
-                                        readonly property bool isBoolField: modelData.type === "bool"
-                                        readonly property bool isTextField: modelData.type === "text"
-
-                                        Layout.fillWidth: !isBoolField
-                                        spacing: Styles.marginSm
-
-                                        FormLabelLocal {
-                                            visible: !popupEditorField.isBoolField
-                                            text: popupEditorField.modelData.label
-                                        }
-
-                                        InputFrameLocal {
-                                            visible: popupEditorField.isTextField
-                                            Layout.preferredHeight: 36
-
-                                            InputTextFieldLocal {
-                                                text: root.fieldText(root.selectedListItem(), popupEditorField.modelData)
-                                                placeholderText: popupEditorField.modelData.placeholder || ""
-                                                inputMethodHints: popupEditorField.modelData.numeric ? Qt.ImhFormattedNumbersOnly : Qt.ImhNone
-                                                onTextEdited: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, popupEditorField.modelData.key, text)
-                                            }
-                                        }
-
-                                        SwitchStyled {
-                                            visible: popupEditorField.isBoolField
-                                            text: popupEditorField.modelData.label
-                                            checked: root.boolFieldValue(root.selectedListItem(), popupEditorField.modelData)
-                                            onToggled: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, popupEditorField.modelData.key, checked)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Rectangle {
-                visible: root.selectedListAdvanced()
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                color: Qt.darker(Colors.background, Colors.darker)
-                radius: Styles.radiusSm
-
-                TextArea {
-                    anchors.fill: parent
-                    anchors.margins: Styles.marginSm
-                    text: root.selectedListValue("rawLine")
-                    placeholderText: root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "windowRuleList" ? "hl.window_rule({ ... })" : root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "layerRuleList" ? "hl.layer_rule({ ... })" : "hl.animation({ ... })"
-                    color: Colors.onBackground
-                    selectedTextColor: Colors.background
-                    selectionColor: Colors.primary
-                    font.family: Styles.defaultFontFamily
-                    font.pointSize: Styles.textSm
-                    wrapMode: TextEdit.WrapAtWordBoundaryOrAnywhere
-                    selectByMouse: true
-                    onTextChanged: {
-                        if (root.selectedListEditorIndex >= 0 && text !== root.selectedListValue("rawLine"))
-                            root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, "rawLine", text);
-                    }
-                }
             }
         }
     }
 
-    ColumnLayout {
-        id: content
-        anchors.fill: parent
-        anchors.margins: Styles.marginSm
-        spacing: Styles.marginSm
-
-        SettingsViewTitle {
-            title: root.name
-        }
-
-        PanelLocal {
-            id: sectionTabs
-            Layout.preferredHeight: 44
-
-            ListView {
-                id: sectionTabsList
-                anchors.fill: parent
-                anchors.margins: Styles.marginXS
-                orientation: ListView.Horizontal
-                spacing: Styles.marginSm
-                clip: true
-                model: root.sectionGroups
-
-                delegate: ButtonStyled {
-                    id: groupTabButton
-                    required property var modelData
-                    required property int index
-
-                    height: sectionTabsList.height
-                    text: groupTabButton.modelData.title
-                    isFocused: root.currentGroupIndex === index
-
-                    onClicked: {
-                        root.currentGroupIndex = index;
-                        sectionTabsList.positionViewAtIndex(index, ListView.Contain);
-                    }
-
-                }
-            }
-        }
-
-        ScrollView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            contentWidth: availableWidth
-
-            ColumnLayout {
-                width: parent.width
-                spacing: Styles.marginMd
-
-                Repeater {
-                    model: root.sectionGroups.length > 0 ? root.sectionGroups[root.currentGroupIndex].sections : []
-
-                    delegate: PanelLocal {
-                        id: sectionDelegate
-                        required property var modelData
-
-                        implicitHeight: sectionColumn.implicitHeight + Styles.marginMd
-
-                        ColumnLayout {
-                            id: sectionColumn
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.margins: Styles.marginSm
-                            spacing: Styles.marginSm
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: Styles.marginSm
-
-                                TextStyled {
-                                    Layout.fillWidth: true
-                                    text: sectionDelegate.modelData.title
-                                    font.pointSize: Styles.textLg
-                                    font.bold: true
-                                }
-
-                                ButtonStyled {
-                                    text: Icons.info + " Wiki"
-                                    visible: !!sectionDelegate.modelData.wiki
-                                    onClicked: Quickshell.execDetached(["xdg-open", sectionDelegate.modelData.wiki])
-                                }
-                            }
-
-                            TextStyled {
-                                Layout.fillWidth: true
-                                text: sectionDelegate.modelData.subtitle
-                                wrapMode: Text.WordWrap
-                                opacity: 0.75
-                                font.pointSize: Styles.textSm
-                            }
-
-                            Repeater {
-                                model: sectionDelegate.modelData.settings
-
-                                delegate: Rectangle {
-                                    id: row
-                                    required property var modelData
-                                    readonly property bool isColorRow: modelData.type === "raw" && modelData.path.indexOf(".color") >= 0
-
-                                    visible: root.isSettingVisible(row.modelData)
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: visible ? (row.isColorRow || (row.modelData.min !== undefined && row.modelData.max !== undefined) ? 54 : 38) : 0
-                                    color: "transparent"
-
-                                    RowLayout {
-                                        anchors.fill: parent
-                                        spacing: Styles.marginMd
-
-                                        TextStyled {
-                                            Layout.fillWidth: true
-                                            text: row.modelData.label
-                                        }
-
-                                        SwitchStyled {
-                                            visible: row.modelData.type === "bool"
-                                            checked: visible ? !!root.getPath(row.modelData.path) : false
-                                            onToggled: root.setPath(row.modelData.path, checked)
-                                        }
-
-                                        ComboBoxStyled {
-                                            visible: !!row.modelData.options
-                                            Layout.preferredWidth: 190
-                                            Layout.fillHeight: true
-                                            model: visible ? row.modelData.options : []
-                                            currentIndex: visible ? (row.modelData.optionValues ? row.modelData.optionValues.indexOf(root.getPath(row.modelData.path)) : row.modelData.options.indexOf(root.getPath(row.modelData.path))) : -1
-                                            onActivated: index => root.setPath(row.modelData.path, row.modelData.optionValues ? row.modelData.optionValues[index] : row.modelData.options[index])
-                                        }
-
-                                        ColorComboBoxStyled {
-                                            id: colorCombo
-                                            visible: row.isColorRow
-                                            Layout.preferredWidth: 190
-                                            Layout.fillHeight: true
-                                            selectedHyprColorValue: visible ? root.getPath(row.modelData.path) : ""
-                                            onActivated: index => root.setPath(row.modelData.path, colorCombo.hyprColorValueWithOpacity(colorCombo.colorNames[index], opacitySlider.value))
-                                        }
-
-                                        SliderSmallStyled {
-                                            id: opacitySlider
-                                            visible: row.isColorRow
-                                            Layout.preferredWidth: 190
-                                            Layout.fillHeight: true
-                                            from: 0
-                                            to: 1
-                                            stepSize: 0.05
-                                            value: visible ? colorCombo.opacityFromHyprValue(root.getPath(row.modelData.path)) : 1
-                                            showPercentage: true
-                                            onMoved: root.setPath(row.modelData.path, colorCombo.hyprColorValueWithOpacity(colorCombo.selectedColorName, value))
-                                        }
-
-                                        SliderSmallStyled {
-                                            visible: row.modelData.min !== undefined && row.modelData.max !== undefined
-                                            Layout.preferredWidth: 220
-                                            Layout.fillHeight: true
-                                            from: visible ? row.modelData.min : 0
-                                            to: visible ? row.modelData.max : 1
-                                            stepSize: visible ? (row.modelData.step || (row.modelData.type === "int" ? 1 : 0.05)) : 0.05
-                                            value: visible ? root.getPath(row.modelData.path) : from
-                                            showPercentage: false
-                                            onMoved: root.setPath(row.modelData.path, row.modelData.type === "int" ? Math.round(value) : value)
-                                        }
-
-                                        TextStyled {
-                                            visible: row.modelData.min !== undefined && row.modelData.max !== undefined
-                                            Layout.preferredWidth: 52
-                                            horizontalAlignment: Text.AlignRight
-                                            text: visible ? Number(root.getPath(row.modelData.path)).toFixed(row.modelData.type === "int" ? 0 : 2) : ""
-                                        }
-
-                                        RowLayout {
-                                            visible: row.modelData.type === "vector2"
-                                            Layout.preferredWidth: 190
-                                            Layout.fillHeight: true
-                                            spacing: Styles.marginSm
-
-                                            SettingsInputFrameLocal {
-                                                Layout.preferredWidth: 85
-                                                InputTextFieldLocal {
-                                                    text: visible ? String(root.vector2Component(row.modelData.path, 0)) : ""
-                                                    placeholderText: "X"
-                                                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                                                    onTextEdited: root.setVector2Component(row.modelData.path, 0, text)
-                                                }
-                                            }
-
-                                            SettingsInputFrameLocal {
-                                                Layout.preferredWidth: 85
-                                                InputTextFieldLocal {
-                                                    text: visible ? String(root.vector2Component(row.modelData.path, 1)) : ""
-                                                    placeholderText: "Y"
-                                                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                                                    onTextEdited: root.setVector2Component(row.modelData.path, 1, text)
-                                                }
-                                            }
-                                        }
-
-                                        SettingsInputFrameLocal {
-                                            visible: row.modelData.type !== "bool" && row.modelData.type !== "vector2" && !row.modelData.options && !row.isColorRow && !(row.modelData.min !== undefined && row.modelData.max !== undefined)
-
-                                            InputTextFieldLocal {
-                                                property string valueText: parent.visible ? root.displayValue(row.modelData.path) : ""
-                                                Component.onCompleted: text = valueText
-                                                onValueTextChanged: {
-                                                    if (!activeFocus && text !== valueText)
-                                                        text = valueText;
-                                                }
-                                                placeholderText: row.modelData.label
-                                                inputMethodHints: row.modelData.type === "string" || row.modelData.type === "raw" ? Qt.ImhNone : Qt.ImhFormattedNumbersOnly
-                                                onTextEdited: root.setPath(row.modelData.path, root.parseInput(text, row.modelData.type))
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            ColumnLayout {
-                                id: listEditorColumn
-                                property var editorConfig: sectionDelegate.modelData.editor || null
-                                readonly property bool isBindList: !!editorConfig && editorConfig.kind === "bindList"
-
-                                visible: !!editorConfig
-                                Layout.fillWidth: true
-                                spacing: Styles.marginSm
-
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    spacing: Styles.marginSm
-
-                                    ButtonStyled {
-                                        text: listEditorColumn.editorConfig ? listEditorColumn.editorConfig.addText : ""
-                                        Layout.preferredWidth: 160
-                                        onClicked: root.addEditorItem(listEditorColumn.editorConfig)
-                                    }
-
-                                    TextStyled {
-                                        visible: listEditorColumn.isBindList
-                                        Layout.fillWidth: true
-                                        text: root.bindItems.length + " keybinds"
-                                        opacity: 0.7
-                                    }
-                                }
-
-                                ColumnLayout {
-                                    visible: listEditorColumn.isBindList
-                                    Layout.fillWidth: true
-                                    spacing: 0
-
-                                    Rectangle {
-                                        Layout.fillWidth: true
-                                        Layout.preferredHeight: 34
-                                        color: Qt.darker(Colors.background, Colors.darker)
-                                        radius: Styles.radiusSm
-
-                                        RowLayout {
-                                            anchors.fill: parent
-                                            anchors.leftMargin: Styles.marginSm
-                                            anchors.rightMargin: Styles.marginSm
-                                            spacing: Styles.marginSm
-
-                                            TextStyled { Layout.preferredWidth: 240; text: "Name"; font.bold: true }
-                                            TextStyled { Layout.preferredWidth: 180; text: "Keybind"; font.bold: true }
-                                            TextStyled { Layout.preferredWidth: 120; text: "Dispatch"; font.bold: true }
-                                            TextStyled { Layout.fillWidth: true; text: "Arg"; font.bold: true }
-                                            TextStyled { Layout.preferredWidth: 44; text: "" }
-                                        }
-                                    }
-
-                                    Repeater {
-                                        model: root.bindItems
-
-                                        delegate: Rectangle {
-                                            id: bindTableRow
-                                            required property var modelData
-                                            required property int index
-
-                                            Layout.fillWidth: true
-                                            Layout.preferredHeight: 42
-                                            color: index % 2 === 0 ? Colors.surface : Qt.darker(Colors.surface, 1.08)
-                                            radius: Styles.radiusSm
-
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.leftMargin: Styles.marginSm
-                                                anchors.rightMargin: Styles.marginSm
-                                                spacing: Styles.marginSm
-
-                                                TextStyled {
-                                                    Layout.preferredWidth: 240
-                                                    text: root.clippedText(root.bindName(bindTableRow.modelData), "Unnamed bind")
-                                                    elide: Text.ElideRight
-                                                    font.bold: true
-                                                }
-
-                                                TextStyled {
-                                                    Layout.preferredWidth: 180
-                                                    text: bindTableRow.modelData.keys || ""
-                                                    elide: Text.ElideRight
-                                                    color: Colors.primary
-                                                }
-
-                                                TextStyled {
-                                                    Layout.preferredWidth: 120
-                                                    text: root.bindActionLabel(bindTableRow.modelData)
-                                                    elide: Text.ElideRight
-                                                    opacity: 0.85
-                                                }
-
-                                                TextStyled {
-                                                    Layout.fillWidth: true
-                                                    text: root.clippedText(root.bindActionSummary(bindTableRow.modelData), "")
-                                                    elide: Text.ElideRight
-                                                    opacity: 0.75
-                                                }
-
-                                                ButtonStyled {
-                                                    Layout.preferredWidth: 36
-                                                    text: "..."
-                                                    onClicked: root.openBindEditor(bindTableRow.index)
-                                                }
-
-                                                ButtonStyled {
-                                                    Layout.preferredWidth: 36
-                                                    text: Icons.trash
-                                                    onClicked: root.removeBindItem(bindTableRow.index)
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                }
-
-                                ColumnLayout {
-                                    visible: !!listEditorColumn.editorConfig && !listEditorColumn.isBindList
-                                    Layout.fillWidth: true
-                                    spacing: 0
-
-                                    Rectangle {
-                                        Layout.fillWidth: true
-                                        Layout.preferredHeight: 34
-                                        color: Qt.darker(Colors.background, Colors.darker)
-                                        radius: Styles.radiusSm
-
-                                        RowLayout {
-                                            anchors.fill: parent
-                                            anchors.leftMargin: Styles.marginSm
-                                            anchors.rightMargin: Styles.marginSm
-                                            spacing: Styles.marginSm
-
-                                            TextStyled { Layout.preferredWidth: 240; text: "Name"; font.bold: true }
-                                            TextStyled { Layout.preferredWidth: 220; text: listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "State" : "Match"; font.bold: true }
-                                            TextStyled { Layout.preferredWidth: 220; text: listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "Timing" : "Options"; font.bold: true }
-                                            TextStyled { Layout.fillWidth: true; text: "Extra"; font.bold: true }
-                                            TextStyled { Layout.preferredWidth: 80; text: "" }
-                                        }
-                                    }
-
-                                    Repeater {
-                                        model: root.editorItems(listEditorColumn.editorConfig)
-
-                                        delegate: Rectangle {
-                                            id: listTableRow
-                                            required property var modelData
-                                            required property int index
-                                            readonly property var editorConfig: listEditorColumn.editorConfig
-
-                                            Layout.fillWidth: true
-                                            Layout.preferredHeight: 42
-                                            color: index % 2 === 0 ? Colors.surface : Qt.darker(Colors.surface, 1.08)
-                                            radius: Styles.radiusSm
-
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.leftMargin: Styles.marginSm
-                                                anchors.rightMargin: Styles.marginSm
-                                                spacing: Styles.marginSm
-
-                                                TextStyled {
-                                                    Layout.preferredWidth: 240
-                                                    text: root.clippedText(root.listTableTitle(listTableRow.editorConfig, listTableRow.modelData), "New rule")
-                                                    elide: Text.ElideRight
-                                                    font.bold: true
-                                                }
-
-                                                TextStyled {
-                                                    Layout.preferredWidth: 220
-                                                    text: root.clippedText(root.listTableColumnOne(listTableRow.editorConfig, listTableRow.modelData), "")
-                                                    elide: Text.ElideRight
-                                                    color: Colors.primary
-                                                }
-
-                                                TextStyled {
-                                                    Layout.preferredWidth: 220
-                                                    text: root.clippedText(root.listTableColumnTwo(listTableRow.editorConfig, listTableRow.modelData), "")
-                                                    elide: Text.ElideRight
-                                                    opacity: 0.85
-                                                }
-
-                                                TextStyled {
-                                                    Layout.fillWidth: true
-                                                    text: root.clippedText(root.listTableColumnThree(listTableRow.editorConfig, listTableRow.modelData), "")
-                                                    elide: Text.ElideRight
-                                                    opacity: 0.75
-                                                }
-
-                                                ButtonStyled {
-                                                    Layout.preferredWidth: 36
-                                                    text: "..."
-                                                    onClicked: root.openListEditor(listTableRow.editorConfig, listTableRow.index)
-                                                }
-
-                                                ButtonStyled {
-                                                    Layout.preferredWidth: 36
-                                                    text: Icons.trash
-                                                    onClicked: root.removeEditorItem(listTableRow.editorConfig, listTableRow.index)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
     }
-
-    Rectangle {
-        id: saveButtons
-        height: 50
-        width: 300
-        radius: Styles.radiusSm
-        anchors.bottom: content.bottom
-        anchors.right: content.right
-        z: 2
-        color: Colors.surface
-        RowLayout {
-            id: saveLoadRow
-            spacing: Styles.marginXS
-            anchors.fill: parent
-            anchors.margins: Styles.marginXS
-            ButtonStyled {
-                text: "Reload"
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                onClicked: root.reloadConfig()
-            }
-            ButtonStyled {
-                text: "Save"
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                onClicked: root.saveConfig()
-            }
-        }
-    }
-
 }
