@@ -330,13 +330,15 @@ Rectangle {
 
     function openBindEditor(index) {
         selectedBindIndex = index;
+        listEditor.visible = false;
         bindEditor.visible = true;
     }
 
     function openListEditor(cfg, index) {
         selectedListEditorConfig = cfg;
         selectedListEditorIndex = index;
-        listEditorPopup.open();
+        bindEditor.visible = false;
+        listEditor.visible = true;
     }
 
     function selectedListItem() {
@@ -359,7 +361,7 @@ Rectangle {
 
     function pickWindowForRule(index) {
         pendingWindowRulePickIndex = index;
-        listEditorPopup.close();
+        listEditor.visible = false;
         statusText = "Click/focus the target window now. Capturing active window in 2 seconds...";
         pickWindowProcess.running = true;
     }
@@ -603,162 +605,6 @@ Rectangle {
         horizontalAlignment: Qt.AlignLeft
     }
 
-    Popup {
-        id: listEditorPopup
-        modal: true
-        focus: true
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-        width: Math.min(root.width - Styles.marginLg * 2, 860)
-        height: Math.min(root.height - Styles.marginLg * 2, 560)
-        x: (root.width - width) / 2
-        y: (root.height - height) / 2
-        padding: 0
-        background: Rectangle {
-            color: Colors.surface
-            radius: Styles.radiusMd
-            border.color: Colors.outline
-            border.width: 1
-        }
-
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: Styles.marginMd
-            spacing: Styles.marginSm
-
-            RowLayout {
-                Layout.fillWidth: true
-
-                TextStyled {
-                    Layout.fillWidth: true
-                    text: root.selectedListEditorConfig ? "Edit " + root.editorTitle(root.selectedListEditorConfig, root.selectedListItem()) : "Edit rule"
-                    font.bold: true
-                    font.pointSize: Styles.textLg
-                }
-
-                ButtonStyled {
-                    text: "Close"
-                    onClicked: listEditorPopup.close()
-                }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Styles.marginSm
-
-                FormLabelLocal {
-                    text: "Advanced"
-                }
-                SwitchStyled {
-                    text: "Show raw rule"
-                    checked: root.selectedListAdvanced()
-                    onToggled: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, "advanced", checked)
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                ButtonStyled {
-                    visible: root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "windowRuleList" && !root.selectedListAdvanced()
-                    text: "Pick active window"
-                    onClicked: root.pickWindowForRule(root.selectedListEditorIndex)
-                }
-            }
-
-            ScrollView {
-                visible: !root.selectedListAdvanced()
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                clip: true
-
-                ColumnLayout {
-                    width: parent.width
-                    spacing: Styles.marginSm
-
-                    Repeater {
-                        model: root.selectedListEditorConfig ? root.selectedListEditorConfig.rows : []
-
-                        delegate: ColumnLayout {
-                            id: popupEditorRow
-                            required property var modelData
-
-                            width: parent.width
-                            spacing: Styles.marginXS
-
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: Styles.marginSm
-
-                                Repeater {
-                                    model: popupEditorRow.modelData.fields || []
-
-                                    delegate: RowLayout {
-                                        id: popupEditorField
-                                        required property var modelData
-                                        readonly property bool isBoolField: modelData.type === "bool"
-                                        readonly property bool isTextField: modelData.type === "text"
-
-                                        Layout.fillWidth: !isBoolField
-                                        spacing: Styles.marginSm
-
-                                        FormLabelLocal {
-                                            visible: !popupEditorField.isBoolField
-                                            text: popupEditorField.modelData.label
-                                        }
-
-                                        InputFrameLocal {
-                                            visible: popupEditorField.isTextField
-                                            Layout.preferredHeight: 36
-
-                                            InputTextFieldLocal {
-                                                text: root.fieldText(root.selectedListItem(), popupEditorField.modelData)
-                                                placeholderText: popupEditorField.modelData.placeholder || ""
-                                                inputMethodHints: popupEditorField.modelData.numeric ? Qt.ImhFormattedNumbersOnly : Qt.ImhNone
-                                                onTextEdited: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, popupEditorField.modelData.key, text)
-                                            }
-                                        }
-
-                                        SwitchStyled {
-                                            visible: popupEditorField.isBoolField
-                                            text: popupEditorField.modelData.label
-                                            checked: root.boolFieldValue(root.selectedListItem(), popupEditorField.modelData)
-                                            onToggled: root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, popupEditorField.modelData.key, checked)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Rectangle {
-                visible: root.selectedListAdvanced()
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                color: Qt.darker(Colors.background, Colors.darker)
-                radius: Styles.radiusSm
-
-                TextArea {
-                    anchors.fill: parent
-                    anchors.margins: Styles.marginSm
-                    text: root.selectedListValue("rawLine")
-                    placeholderText: root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "windowRuleList" ? "hl.window_rule({ ... })" : root.selectedListEditorConfig && root.selectedListEditorConfig.kind === "layerRuleList" ? "hl.layer_rule({ ... })" : "hl.animation({ ... })"
-                    color: Colors.onBackground
-                    selectedTextColor: Colors.background
-                    selectionColor: Colors.primary
-                    font.family: Styles.defaultFontFamily
-                    font.pointSize: Styles.textSm
-                    wrapMode: TextEdit.WrapAtWordBoundaryOrAnywhere
-                    selectByMouse: true
-                    onTextChanged: {
-                        if (root.selectedListEditorIndex >= 0 && text !== root.selectedListValue("rawLine"))
-                            root.updateEditorItem(root.selectedListEditorConfig, root.selectedListEditorIndex, "rawLine", text);
-                    }
-                }
-            }
-        }
-    }
 
     RowLayout {
         anchors.fill: parent
@@ -1190,6 +1036,11 @@ Rectangle {
                     }
                 }
             }
+        }
+
+        HyprlandViewComponents.HyprlandListEditor {
+            id: listEditor
+            view: root
         }
 
         HyprlandViewComponents.HyprlandBindEditor {

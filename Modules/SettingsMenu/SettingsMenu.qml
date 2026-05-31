@@ -12,6 +12,7 @@ import qs.Helpers
 import qs.Settings
 import qs.Modules.SettingsMenu.SettingsViews
 import qs.Modules.SettingsMenu.SettingsViews.Components
+import qs.Modules.SettingsMenu.SettingsViews.HyprlandSettingsView
 
 FloatingWindowPlus {
     id: root
