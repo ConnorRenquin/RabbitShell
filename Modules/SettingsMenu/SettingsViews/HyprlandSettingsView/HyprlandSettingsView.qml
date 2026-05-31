@@ -934,17 +934,9 @@ Rectangle {
                                                 text: root.clippedText(root.listTableColumnThree(ruleTableRow.editorConfig, ruleTableRow.modelData), "")
                                                 elide: Text.ElideRight
                                             }
-                                            RowLayout {
-
-                                                ButtonStyled {
-                                                    text: Icons.settingsCog
-                                                    onClicked: root.openListEditor(ruleTableRow.editorConfig, ruleTableRow.index)
-                                                }
-
-                                                ButtonStyled {
-                                                    text: Icons.trash
-                                                    onClicked: root.removeEditorItem(ruleTableRow.editorConfig, ruleTableRow.index)
-                                                }
+                                            ButtonStyled {
+                                                text: Icons.settingsCog
+                                                onClicked: root.openListEditor(ruleTableRow.editorConfig, ruleTableRow.index)
                                             }
                                         }
                                     }

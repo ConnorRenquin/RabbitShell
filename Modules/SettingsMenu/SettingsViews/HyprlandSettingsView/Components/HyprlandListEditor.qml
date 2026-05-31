@@ -51,26 +51,18 @@ Rectangle {
             }
         }
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Styles.marginSm
-
-            SwitchStyled {
-                text: "Show raw rule"
-                checked: root.view.selectedListAdvanced()
-                onToggled: root.view.updateEditorItem(root.view.selectedListEditorConfig, root.view.selectedListEditorIndex, "advanced", checked)
-            }
-
-            Item {
-                Layout.fillWidth: true
-            }
-
-            ButtonStyled {
-                visible: root.view.selectedListEditorConfig && root.view.selectedListEditorConfig.kind === "windowRuleList" && !root.view.selectedListAdvanced()
-                text: "Pick active window"
-                onClicked: root.view.pickWindowForRule(root.view.selectedListEditorIndex)
-            }
+        SwitchStyled {
+            text: "Show raw rule"
+            checked: root.view.selectedListAdvanced()
+            onToggled: root.view.updateEditorItem(root.view.selectedListEditorConfig, root.view.selectedListEditorIndex, "advanced", checked)
         }
+
+        ButtonStyled {
+            visible: root.view.selectedListEditorConfig && root.view.selectedListEditorConfig.kind === "windowRuleList" && !root.view.selectedListAdvanced()
+            text: "Pick active window"
+            onClicked: root.view.pickWindowForRule(root.view.selectedListEditorIndex)
+        }
+
 
         ScrollView {
             visible: !root.view.selectedListAdvanced()
@@ -78,55 +70,52 @@ Rectangle {
             Layout.fillHeight: true
             clip: true
 
-            ColumnLayout {
+            ColumnLayoutPlus {
                 width: parent.width
                 spacing: Styles.marginSm
 
-                Repeater {
-                    model: root.view.selectedListEditorConfig ? root.view.selectedListEditorConfig.rows : []
+                model: root.view.selectedListEditorConfig ? root.view.selectedListEditorConfig.rows : []
+                delegate: ColumnLayout {
+                    id: editorRow
+                    required property var modelData
 
-                    delegate: ColumnLayout {
-                        id: editorRow
-                        required property var modelData
+                    width: parent.width
+                    spacing: Styles.marginXS
 
-                        width: parent.width
-                        spacing: Styles.marginXS
+                    Repeater {
+                        model: editorRow.modelData.fields || []
 
-                        Repeater {
-                            model: editorRow.modelData.fields || []
+                        delegate: ColumnLayout {
+                            id: editorField
+                            required property var modelData
+                            readonly property bool isBoolField: modelData.type === "bool"
+                            readonly property bool isTextField: modelData.type === "text"
 
-                            delegate: ColumnLayout {
-                                id: editorField
-                                required property var modelData
-                                readonly property bool isBoolField: modelData.type === "bool"
-                                readonly property bool isTextField: modelData.type === "text"
+                            Layout.fillWidth: true
+                            spacing: Styles.marginXS
 
-                                Layout.fillWidth: true
-                                spacing: Styles.marginXS
+                            TextStyled {
+                                visible: !editorField.isBoolField
+                                text: editorField.modelData.label
+                            }
 
-                                TextStyled {
-                                    visible: !editorField.isBoolField
-                                    text: editorField.modelData.label
+                            InputFrameLocal {
+                                visible: editorField.isTextField
+                                Layout.preferredHeight: 36
+
+                                InputTextFieldLocal {
+                                    text: root.view.fieldText(root.view.selectedListItem(), editorField.modelData)
+                                    placeholderText: editorField.modelData.placeholder || ""
+                                    inputMethodHints: editorField.modelData.numeric ? Qt.ImhFormattedNumbersOnly : Qt.ImhNone
+                                    onTextEdited: root.view.updateEditorItem(root.view.selectedListEditorConfig, root.view.selectedListEditorIndex, editorField.modelData.key, text)
                                 }
+                            }
 
-                                InputFrameLocal {
-                                    visible: editorField.isTextField
-                                    Layout.preferredHeight: 36
-
-                                    InputTextFieldLocal {
-                                        text: root.view.fieldText(root.view.selectedListItem(), editorField.modelData)
-                                        placeholderText: editorField.modelData.placeholder || ""
-                                        inputMethodHints: editorField.modelData.numeric ? Qt.ImhFormattedNumbersOnly : Qt.ImhNone
-                                        onTextEdited: root.view.updateEditorItem(root.view.selectedListEditorConfig, root.view.selectedListEditorIndex, editorField.modelData.key, text)
-                                    }
-                                }
-
-                                SwitchStyled {
-                                    visible: editorField.isBoolField
-                                    text: editorField.modelData.label
-                                    checked: root.view.boolFieldValue(root.view.selectedListItem(), editorField.modelData)
-                                    onToggled: root.view.updateEditorItem(root.view.selectedListEditorConfig, root.view.selectedListEditorIndex, editorField.modelData.key, checked)
-                                }
+                            SwitchStyled {
+                                visible: editorField.isBoolField
+                                text: editorField.modelData.label
+                                checked: root.view.boolFieldValue(root.view.selectedListItem(), editorField.modelData)
+                                onToggled: root.view.updateEditorItem(root.view.selectedListEditorConfig, root.view.selectedListEditorIndex, editorField.modelData.key, checked)
                             }
                         }
                     }
