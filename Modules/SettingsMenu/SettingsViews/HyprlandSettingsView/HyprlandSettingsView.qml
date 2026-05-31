@@ -600,10 +600,6 @@ Rectangle {
         }
     }
 
-    component RowEntry: TextStyled {
-        Layout.preferredWidth: keybindTableHeader.standardWidth
-        horizontalAlignment: Qt.AlignLeft
-    }
 
 
     RowLayout {
@@ -878,154 +874,76 @@ Rectangle {
                                         }
                                     }
 
-                                    ColumnLayout {
+                                    Table {
                                         visible: listEditorColumn.isBindList
-                                        Layout.fillWidth: true
-                                        spacing: 0
+                                        headers: ["Name", "Keybind", ""]
+                                        model: root.bindItems
+                                        rowHeight: 50
+                                        alternateRows: false
+                                        rowColor: Qt.darker(Colors.surface, 1.08)
+                                        row: RowLayout {
+                                            id: bindTableRow
+                                            property var modelData
+                                            property int index
 
-                                        Rectangle {
-                                            id: keybindTableHeader
+                                            anchors.fill: parent
 
-                                            property int standardWidth: parent.width / 3
-
-                                            Layout.fillWidth: true
-                                            Layout.preferredHeight: 34
-                                            color: Qt.darker(Colors.background, Colors.darker)
-
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.leftMargin: Styles.marginSm
-                                                anchors.rightMargin: Styles.marginSm
-                                                spacing: Styles.marginSm
-                                                RowEntry {
-                                                    text: "Name"
-                                                }
-                                                RowEntry {
-                                                    text: "Keybind"
-                                                }
-                                                RowEntry {
-                                                    text: ""
-                                                }
-                                            }
-                                        }
-
-                                        Repeater {
-                                            model: root.bindItems
-                                            delegate: Rectangle {
-                                                id: bindTableRow
-                                                required property var modelData
-                                                required property int index
-
+                                            TextStyled {
                                                 Layout.fillWidth: true
-                                                Layout.preferredHeight: 50
-                                                color: Qt.darker(Colors.surface, 1.08)
-
-                                                RowLayout {
-                                                    anchors.fill: parent
-                                                    anchors.leftMargin: Styles.marginSm
-                                                    anchors.rightMargin: Styles.marginSm
-                                                    RowEntry {
-                                                        text: root.clippedText(root.bindName(bindTableRow.modelData), "Unnamed bind")
-                                                    }
-                                                    RowEntry {
-                                                        text: bindTableRow.modelData.keys || ""
-                                                    }
-                                                    ButtonStyled {
-                                                        text: Icons.settingsCog
-                                                        onClicked: root.openBindEditor(bindTableRow.index)
-                                                    }
-                                                }
+                                                text: root.clippedText(root.bindName(bindTableRow.modelData), "Unnamed bind")
+                                                elide: Text.ElideRight
+                                            }
+                                            TextStyled {
+                                                Layout.fillWidth: true
+                                                text: bindTableRow.modelData.keys || ""
+                                                elide: Text.ElideRight
+                                            }
+                                            ButtonStyled {
+                                                text: Icons.settingsCog
+                                                onClicked: root.openBindEditor(bindTableRow.index)
                                             }
                                         }
                                     }
 
-                                    ColumnLayout {
+                                    Table {
                                         visible: !!listEditorColumn.editorConfig && !listEditorColumn.isBindList
-                                        Layout.fillWidth: true
+                                        headers: ["Name", listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "State" : "Match", listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "Timing" : "Options", "Extra", ""]
+                                        model: root.editorItems(listEditorColumn.editorConfig)
+                                        row: RowLayout {
+                                            id: ruleTableRow
+                                            property var modelData
+                                            property int index
 
-                                        Rectangle {
-                                            Layout.fillWidth: true
-                                            color: Qt.darker(Colors.background, Colors.darker)
-                                            radius: Styles.radiusSm
+                                            readonly property var editorConfig: listEditorColumn.editorConfig
 
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.leftMargin: Styles.marginSm
-                                                anchors.rightMargin: Styles.marginSm
-                                                spacing: Styles.marginSm
+                                            anchors.fill: parent
 
-                                                TextStyled {
-                                                    Layout.preferredWidth: 240
-                                                    text: "Name"
-                                                    font.bold: true
-                                                }
-                                                TextStyled {
-                                                    Layout.preferredWidth: 220
-                                                    text: listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "State" : "Match"
-                                                    font.bold: true
-                                                }
-                                                TextStyled {
-                                                    Layout.preferredWidth: 220
-                                                    text: listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "Timing" : "Options"
-                                                    font.bold: true
-                                                }
-                                                TextStyled {
-                                                    Layout.fillWidth: true
-                                                    text: "Extra"
-                                                    font.bold: true
-                                                }
-                                                TextStyled {
-                                                    Layout.preferredWidth: 80
-                                                    text: ""
-                                                }
+                                            TextStyled {
+                                                text: root.clippedText(root.listTableTitle(ruleTableRow.editorConfig, ruleTableRow.modelData), "New rule")
+                                                elide: Text.ElideRight
                                             }
-                                        }
+                                            TextStyled {
+                                                text: root.clippedText(root.listTableColumnOne(ruleTableRow.editorConfig, ruleTableRow.modelData), "")
+                                                elide: Text.ElideRight
+                                            }
+                                            TextStyled {
+                                                text: root.clippedText(root.listTableColumnTwo(ruleTableRow.editorConfig, ruleTableRow.modelData), "")
+                                                elide: Text.ElideRight
+                                            }
+                                            TextStyled {
+                                                text: root.clippedText(root.listTableColumnThree(ruleTableRow.editorConfig, ruleTableRow.modelData), "")
+                                                elide: Text.ElideRight
+                                            }
+                                            RowLayout {
 
-                                        Repeater {
-                                            model: root.editorItems(listEditorColumn.editorConfig)
-                                            delegate: Rectangle {
-                                                id: listTableRow
-                                                required property var modelData
-                                                required property int index
-                                                readonly property var editorConfig: listEditorColumn.editorConfig
+                                                ButtonStyled {
+                                                    text: Icons.settingsCog
+                                                    onClicked: root.openListEditor(ruleTableRow.editorConfig, ruleTableRow.index)
+                                                }
 
-                                                Layout.fillWidth: true
-                                                Layout.preferredHeight: 42
-                                                color: index % 2 === 0 ? Colors.surface : Qt.darker(Colors.surface, 1.08)
-                                                radius: Styles.radiusSm
-
-                                                RowLayout {
-                                                    anchors.fill: parent
-                                                    anchors.leftMargin: Styles.marginSm
-                                                    anchors.rightMargin: Styles.marginSm
-                                                    spacing: Styles.marginSm
-
-                                                    TextStyled {
-                                                        text: root.clippedText(root.listTableTitle(listTableRow.editorConfig, listTableRow.modelData), "New rule")
-                                                    }
-
-                                                    TextStyled {
-                                                        text: root.clippedText(root.listTableColumnOne(listTableRow.editorConfig, listTableRow.modelData), "")
-                                                    }
-
-                                                    TextStyled {
-                                                        text: root.clippedText(root.listTableColumnTwo(listTableRow.editorConfig, listTableRow.modelData), "")
-                                                    }
-
-                                                    TextStyled {
-                                                        Layout.fillWidth: true
-                                                        text: root.clippedText(root.listTableColumnThree(listTableRow.editorConfig, listTableRow.modelData), "")
-                                                    }
-
-                                                    ButtonStyled {
-                                                        text: Icons.settingsCog
-                                                        onClicked: root.openListEditor(listTableRow.editorConfig, listTableRow.index)
-                                                    }
-
-                                                    ButtonStyled {
-                                                        text: Icons.trash
-                                                        onClicked: root.removeEditorItem(listTableRow.editorConfig, listTableRow.index)
-                                                    }
+                                                ButtonStyled {
+                                                    text: Icons.trash
+                                                    onClicked: root.removeEditorItem(ruleTableRow.editorConfig, ruleTableRow.index)
                                                 }
                                             }
                                         }
