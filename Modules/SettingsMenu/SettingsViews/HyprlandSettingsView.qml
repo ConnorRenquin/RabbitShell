@@ -764,7 +764,6 @@ Rectangle {
         anchors.margins: Styles.marginSm
         spacing: Styles.marginSm
         ColumnLayout {
-
             id: content
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -798,7 +797,6 @@ Rectangle {
                     }
                 }
             }
-
 
             PanelLocal {
                 id: sectionTabs
@@ -1193,189 +1191,163 @@ Rectangle {
             }
         }
 
-    Rectangle {
-        id: bindEditor
-        visible: false
-        Layout.fillHeight: true
-        Layout.preferredWidth: 550
-        color: Qt.lighter(Colors.surface, 1.1)
+        Rectangle {
+            id: bindEditor
+            visible: false
+            Layout.fillHeight: true
+            Layout.preferredWidth: 550
+            color: Qt.lighter(Colors.surface, 1.2)
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: Styles.marginMd
-            spacing: Styles.marginSm
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: Styles.marginMd
+                spacing: Styles.marginSm
 
-            RowLayout {
-                Layout.fillWidth: true
-
-                TextStyled {
+                RowLayout {
                     Layout.fillWidth: true
-                    text: root.selectedBindIndex >= 0 ? "Edit keybind: " + root.bindName(root.bindItems[root.selectedBindIndex]) : "Edit keybind"
-                    font.bold: true
-                    font.pointSize: Styles.textLg
-                }
 
-                ButtonStyled {
-                    text: Icons.close
-                    onClicked: bindEditor.visible = false
-                }
+                    TextStyled {
+                        Layout.fillWidth: true
+                        text: "Edit keybind"
+                        font.pointSize: Styles.textLg
+                    }
 
-                ButtonStyled {
-                    text: Icons.trash
-                    onClicked: root.removeBindItem(root.selectedBindIndex)
-                }
-            }
-
-            GridLayout {
-                Layout.fillWidth: true
-                columns: 2
-                columnSpacing: Styles.marginMd
-                rowSpacing: Styles.marginSm
-
-                FormLabelLocal {
-                    text: "Name"
-                }
-                InputFrameLocal {
-                    Layout.preferredHeight: 36
-                    InputTextFieldLocal {
-                        text: root.bindValue(root.selectedBindIndex, "description")
-                        placeholderText: "Launch terminal"
-                        onTextEdited: root.updateBindItem(root.selectedBindIndex, "description", text)
+                    ButtonStyled {
+                        text: Icons.close
+                        onClicked: bindEditor.visible = false
                     }
                 }
 
-                FormLabelLocal {
-                    text: "Keybind"
-                }
-                RowLayout {
+                ColumnLayout {
                     Layout.fillWidth: true
+
+                    TextStyled {
+                        text: "Shortcut Name"
+                    }
                     InputFrameLocal {
                         Layout.preferredHeight: 36
                         InputTextFieldLocal {
-                            text: root.bindValue(root.selectedBindIndex, "keys")
-                            placeholderText: "SUPER + Return"
-                            onTextEdited: root.updateBindItem(root.selectedBindIndex, "keys", text)
+                            text: root.bindValue(root.selectedBindIndex, "description")
+                            placeholderText: "Launch terminal"
+                            onTextEdited: root.updateBindItem(root.selectedBindIndex, "description", text)
                         }
                     }
-                    ButtonStyled {
-                        text: root.capturingBindIndex === root.selectedBindIndex ? "Press keys..." : "Detect"
-                        defaultColor: root.capturingBindIndex === root.selectedBindIndex ? Colors.primary : Colors.background
-                        onClicked: root.startCapturingBind(root.selectedBindIndex)
+
+                    TextStyled {
+                        text: "Keybind"
                     }
-                }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        InputFrameLocal {
+                            Layout.preferredHeight: 36
+                            InputTextFieldLocal {
+                                text: root.bindValue(root.selectedBindIndex, "keys")
+                                placeholderText: "Super + Return"
+                                onTextEdited: root.updateBindItem(root.selectedBindIndex, "keys", text)
+                            }
+                        }
+                        ButtonStyled {
+                            text: root.capturingBindIndex === root.selectedBindIndex ? "Press keys..." : "Detect"
+                            defaultColor: root.capturingBindIndex === root.selectedBindIndex ? Colors.primary : Colors.background
+                            onClicked: root.startCapturingBind(root.selectedBindIndex)
+                        }
+                    }
 
-                FormLabelLocal {
-                    text: "Advanced"
-                }
-                SwitchStyled {
-                    checked: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
-                    text: "Show raw dispatcher"
-                    onToggled: root.setBindAdvanced(root.selectedBindIndex, checked)
-                }
+                    TextStyled {
+                        text: "Dispatcher"
+                    }
+                    ComboBoxStyled {
+                        visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced)
+                        Layout.fillWidth: true
+                        model: root.commonBindActions.map(action => action.label)
+                        currentIndex: root.bindActionIndex(root.bindItems[root.selectedBindIndex])
+                        onActivated: index => root.setBindAction(root.selectedBindIndex, root.commonBindActions[index].id)
+                    }
 
-                FormLabelLocal {
-                    visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced)
-                    text: "Command"
-                }
-                ComboBoxStyled {
-                    visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced)
-                    Layout.fillWidth: true
-                    model: root.commonBindActions.map(action => action.label)
-                    currentIndex: root.bindActionIndex(root.bindItems[root.selectedBindIndex])
-                    onActivated: index => root.setBindAction(root.selectedBindIndex, root.commonBindActions[index].id)
-                }
+                    TextStyled {
+                        visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced) && !!root.bindAction(root.bindItems[root.selectedBindIndex]).param
+                        text: root.bindAction(root.bindItems[root.selectedBindIndex]).param || "Value"
+                    }
+                    RowLayout {
 
-                FormLabelLocal {
-                    visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced) && !!root.bindAction(root.bindItems[root.selectedBindIndex]).param
-                    text: root.bindAction(root.bindItems[root.selectedBindIndex]).param || "Value"
-                }
-                RowLayout {
-                    visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced) && !!root.bindAction(root.bindItems[root.selectedBindIndex]).param
-                    Layout.fillWidth: true
-                    spacing: Styles.marginSm
+                        visible: !(root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced) && !!root.bindAction(root.bindItems[root.selectedBindIndex]).param
+                        Layout.fillWidth: true
+                        spacing: Styles.marginSm
 
-                    InputFrameLocal {
-                        visible: !(root.bindAction(root.bindItems[root.selectedBindIndex]).options)
-                        Layout.preferredHeight: 36
-                        InputTextFieldLocal {
-                            text: root.bindParam(root.bindItems[root.selectedBindIndex], root.bindAction(root.bindItems[root.selectedBindIndex]).param || "")
-                            placeholderText: root.bindAction(root.bindItems[root.selectedBindIndex]).placeholder || ""
-                            onTextEdited: root.setBindParam(root.selectedBindIndex, root.bindAction(root.bindItems[root.selectedBindIndex]).param, text)
+                        InputFrameLocal {
+                            visible: !(root.bindAction(root.bindItems[root.selectedBindIndex]).options)
+                            Layout.preferredHeight: 36
+                            InputTextFieldLocal {
+                                text: root.bindParam(root.bindItems[root.selectedBindIndex], root.bindAction(root.bindItems[root.selectedBindIndex]).param || "")
+                                placeholderText: root.bindAction(root.bindItems[root.selectedBindIndex]).placeholder || ""
+                                onTextEdited: root.setBindParam(root.selectedBindIndex, root.bindAction(root.bindItems[root.selectedBindIndex]).param, text)
+                            }
+                        }
+
+                        ComboBoxStyled {
+                            visible: !!root.bindAction(root.bindItems[root.selectedBindIndex]).options
+                            Layout.fillWidth: true
+                            model: root.bindAction(root.bindItems[root.selectedBindIndex]).options || []
+                            currentIndex: model.indexOf(root.bindParam(root.bindItems[root.selectedBindIndex], root.bindAction(root.bindItems[root.selectedBindIndex]).param || ""))
+                            onActivated: index => root.setBindParam(root.selectedBindIndex, root.bindAction(root.bindItems[root.selectedBindIndex]).param, model[index])
+                        }
+
+                        InputFrameLocal {
+                            visible: !!root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryParam
+                            Layout.preferredHeight: 36
+                            InputTextFieldLocal {
+                                text: root.bindParam(root.bindItems[root.selectedBindIndex], root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryParam || "")
+                                placeholderText: root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryPlaceholder || ""
+                                onTextEdited: root.setBindParam(root.selectedBindIndex, root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryParam, text)
+                            }
                         }
                     }
 
                     ComboBoxStyled {
-                        visible: !!root.bindAction(root.bindItems[root.selectedBindIndex]).options
+                        visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
                         Layout.fillWidth: true
-                        model: root.bindAction(root.bindItems[root.selectedBindIndex]).options || []
-                        currentIndex: model.indexOf(root.bindParam(root.bindItems[root.selectedBindIndex], root.bindAction(root.bindItems[root.selectedBindIndex]).param || ""))
-                        onActivated: index => root.setBindParam(root.selectedBindIndex, root.bindAction(root.bindItems[root.selectedBindIndex]).param, model[index])
+                        model: ["exec_cmd", "global", "raw", "callback"]
+                        currentIndex: model.indexOf(root.bindValue(root.selectedBindIndex, "dispatcher"))
+                        onActivated: index => root.updateBindItem(root.selectedBindIndex, "dispatcher", model[index])
                     }
 
-                    InputFrameLocal {
-                        visible: !!root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryParam
-                        Layout.preferredHeight: 36
-                        InputTextFieldLocal {
-                            text: root.bindParam(root.bindItems[root.selectedBindIndex], root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryParam || "")
-                            placeholderText: root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryPlaceholder || ""
-                            onTextEdited: root.setBindParam(root.selectedBindIndex, root.bindAction(root.bindItems[root.selectedBindIndex]).secondaryParam, text)
+                    TextStyled {
+                        visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
+                        text: "Argument"
+                    }
+                    Rectangle {
+                        visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 150
+                        color: Qt.darker(Colors.background, Colors.darker)
+                        radius: Styles.radiusSm
+
+                        TextArea {
+                            anchors.fill: parent
+                            anchors.margins: Styles.marginSm
+                            text: root.bindValue(root.selectedBindIndex, "argument")
+                            placeholderText: "kitty, quickshell:powermenu, hl.dsp.focus(...), or function() ... end"
+                            color: Colors.onBackground
+                            selectedTextColor: Colors.background
+                            selectionColor: Colors.primary
+                            font.family: Styles.defaultFontFamily
+                            font.pointSize: Styles.textSm
+                            wrapMode: TextEdit.WrapAtWordBoundaryOrAnywhere
+                            selectByMouse: true
+                            onTextChanged: {
+                                if (root.selectedBindIndex >= 0 && text !== root.bindValue(root.selectedBindIndex, "argument"))
+                                    root.updateBindItem(root.selectedBindIndex, "argument", text);
+                            }
                         }
                     }
                 }
 
-                FormLabelLocal {
-                    visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
-                    text: "Dispatcher"
+                TextStyled {
+                    text: "Flags"
                 }
-                ComboBoxStyled {
-                    visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
+                GridLayoutPlus {
                     Layout.fillWidth: true
-                    model: ["exec_cmd", "global", "raw", "callback"]
-                    currentIndex: model.indexOf(root.bindValue(root.selectedBindIndex, "dispatcher"))
-                    onActivated: index => root.updateBindItem(root.selectedBindIndex, "dispatcher", model[index])
-                }
-
-                FormLabelLocal {
-                    visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
-                    text: "Argument"
-                }
-                Rectangle {
-                    visible: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 150
-                    color: Qt.darker(Colors.background, Colors.darker)
-                    radius: Styles.radiusSm
-
-                    TextArea {
-                        anchors.fill: parent
-                        anchors.margins: Styles.marginSm
-                        text: root.bindValue(root.selectedBindIndex, "argument")
-                        placeholderText: "kitty, quickshell:powermenu, hl.dsp.focus(...), or function() ... end"
-                        color: Colors.onBackground
-                        selectedTextColor: Colors.background
-                        selectionColor: Colors.primary
-                        font.family: Styles.defaultFontFamily
-                        font.pointSize: Styles.textSm
-                        wrapMode: TextEdit.WrapAtWordBoundaryOrAnywhere
-                        selectByMouse: true
-                        onTextChanged: {
-                            if (root.selectedBindIndex >= 0 && text !== root.bindValue(root.selectedBindIndex, "argument"))
-                                root.updateBindItem(root.selectedBindIndex, "argument", text);
-                        }
-                    }
-                }
-            }
-
-            TextStyled {
-                Layout.fillWidth: true
-                text: "Flags"
-                font.bold: true
-            }
-
-            Flow {
-                Layout.fillWidth: true
-                spacing: Styles.marginSm
-                Repeater {
+                    columns: 2
                     model: root.bindFlagOptions
                     delegate: SwitchStyled {
                         required property string modelData
@@ -1384,14 +1356,22 @@ Rectangle {
                         onToggled: root.setBindFlag(root.selectedBindIndex, modelData, checked)
                     }
                 }
-            }
+                Item {
+                    Layout.fillHeight: true
+                }
 
-            Item {
-                Layout.fillHeight: true
+                SwitchStyled {
+                    checked: root.selectedBindIndex >= 0 && !!root.bindItems[root.selectedBindIndex] && !!root.bindItems[root.selectedBindIndex].advanced
+                    text: "Enable Advanced"
+                    onToggled: root.setBindAdvanced(root.selectedBindIndex, checked)
+                }
+
+                ButtonStyled {
+                    text: Icons.trash
+                    Layout.fillWidth: true
+                    onClicked: root.removeBindItem(root.selectedBindIndex)
+                }
             }
         }
-    }
-
-
     }
 }

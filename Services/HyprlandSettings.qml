@@ -24,7 +24,7 @@ Singleton {
         {
             id: "exec",
             label: "Application / shell command",
-            param: "command",
+            param: "Command",
             placeholder: "kitty"
         },
         {
@@ -2373,16 +2373,7 @@ Singleton {
     function addBindItem() {
         var next = cloneList(bindItems);
         next.push({
-            description: "Launch terminal",
-            keys: "SUPER + Return",
-            action: "exec",
-            params: {
-                command: "kitty"
-            },
-            dispatcher: "exec_cmd",
-            argument: "kitty",
-            flags: "",
-            advanced: false
+            description: "New Keybind",
         });
         bindItems = next;
     }
