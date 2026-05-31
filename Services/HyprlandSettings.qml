@@ -21,23 +21,99 @@ Singleton {
     property var animationItems: []
     readonly property var bindFlagOptions: ["locked", "release", "click", "drag", "long_press", "repeating", "non_consuming", "mouse", "transparent", "ignore_mods", "separate", "bypass", "submap_universal"]
     readonly property var commonBindActions: [
-        { id: "exec", label: "Application / shell command", param: "command", placeholder: "kitty" },
-        { id: "global", label: "Quickshell global action", param: "target", placeholder: "quickshell:powermenu" },
-        { id: "focusDirection", label: "Focus window direction", param: "direction", options: ["l", "r", "u", "d"] },
-        { id: "moveWindowDirection", label: "Move window direction", param: "direction", options: ["l", "r", "u", "d"] },
-        { id: "focusWorkspace", label: "Workspace focus", param: "workspace", placeholder: "1, r+1, empty" },
-        { id: "moveWindowWorkspace", label: "Move window to workspace", param: "workspace", placeholder: "1, r+1, special" },
-        { id: "moveWorkspaceMonitor", label: "Move workspace to monitor", param: "workspace", secondaryParam: "monitor", placeholder: "special", secondaryPlaceholder: "current" },
-        { id: "grabWorkspace", label: "Grab workspace to current monitor", param: "workspace", placeholder: "1" },
-        { id: "fullscreen", label: "Window fullscreen" },
-        { id: "fullscreenState", label: "Window fullscreen state", param: "internal", secondaryParam: "client", placeholder: "0", secondaryPlaceholder: "3" },
-        { id: "closeWindow", label: "Window close" },
-        { id: "toggleFloating", label: "Window toggle floating" },
-        { id: "dragWindow", label: "Window drag / mouse move" },
-        { id: "resizeWindow", label: "Window resize / mouse resize" },
-        { id: "toggleSplit", label: "Layout toggle split" },
-        { id: "setLayout", label: "Layout set", param: "layout", options: ["dwindle", "master"] },
-        { id: "toggleSpecialWorkspace", label: "Workspace toggle scratchpad" }
+        {
+            id: "exec",
+            label: "Application / shell command",
+            param: "command",
+            placeholder: "kitty"
+        },
+        {
+            id: "global",
+            label: "Rabbit Shell",
+            param: "target",
+            placeholder: "quickshell:powermenu",
+            options: ['quickshell:powermenu', 'quickshell:lockscreen', 'quickshell:applauncher', 'quickshell:mixer', 'quickshell:clipboard', 'quickshell:notification-manager', 'quickshell:screendraw', 'quickshell:toplevelview']
+        },
+        {
+            id: "focusDirection",
+            label: "Focus Window Direction",
+            param: "direction",
+            options: ["l", "r", "u", "d"]
+        },
+        {
+            id: "moveWindowDirection",
+            label: "Move Window Direction",
+            param: "direction",
+            options: ["l", "r", "u", "d"]
+        },
+        {
+            id: "focusWorkspace",
+            label: "Workspace Focus",
+            param: "workspace",
+            placeholder: "1, r+1, empty"
+        },
+        {
+            id: "moveWindowWorkspace",
+            label: "Move Window to Workspace",
+            param: "workspace",
+            placeholder: "1, r+1, special"
+        },
+        {
+            id: "moveWorkspaceMonitor",
+            label: "Move Workspace to Monitor",
+            param: "workspace",
+            secondaryParam: "monitor",
+            placeholder: "special",
+            secondaryPlaceholder: "current"
+        },
+        {
+            id: "grabWorkspace",
+            label: "Grab Workspace to Current Monitor",
+            param: "workspace",
+            placeholder: "1"
+        },
+        {
+            id: "fullscreen",
+            label: "Window fullscreen"
+        },
+        {
+            id: "fullscreenState",
+            label: "Window fullscreen state",
+            param: "internal",
+            secondaryParam: "client",
+            placeholder: "0",
+            secondaryPlaceholder: "3"
+        },
+        {
+            id: "closeWindow",
+            label: "Window close"
+        },
+        {
+            id: "toggleFloating",
+            label: "Window toggle floating"
+        },
+        {
+            id: "dragWindow",
+            label: "Window drag / mouse move"
+        },
+        {
+            id: "resizeWindow",
+            label: "Window resize / mouse resize"
+        },
+        {
+            id: "toggleSplit",
+            label: "Layout toggle split"
+        },
+        {
+            id: "setLayout",
+            label: "Layout set",
+            param: "layout",
+            options: ["dwindle", "master", "scrolling"]
+        },
+        {
+            id: "toggleSpecialWorkspace",
+            label: "Workspace toggle scratchpad"
+        }
     ]
 
     readonly property var defaultValues: ({
@@ -363,14 +439,14 @@ Singleton {
                     label: "Rounding",
                     type: "int",
                     min: 0,
-                    max: 100,
+                    max: 100
                 },
                 {
                     path: "decoration.rounding_power",
                     label: "Rounding power",
                     type: "float",
                     min: 0,
-                    max: 10,
+                    max: 10
                 },
                 {
                     path: "decoration.active_opacity",
@@ -2197,39 +2273,73 @@ Singleton {
         var argument = String(bind ? bind.argument || "" : "");
         var action = inferBindAction(bind);
         if (action === "exec")
-            return { command: argument };
+            return {
+                command: argument
+            };
         if (action === "global")
-            return { target: argument };
+            return {
+                target: argument
+            };
         if (action === "focusDirection" || action === "moveWindowDirection")
-            return { direction: firstMatch(argument, /direction\s*=\s*\"([^\"]+)\"/, "l") };
+            return {
+                direction: firstMatch(argument, /direction\s*=\s*\"([^\"]+)\"/, "l")
+            };
         if (action === "focusWorkspace" || action === "moveWindowWorkspace")
-            return { workspace: firstMatch(argument, /workspace\s*=\s*(?:\"([^\"]+)\"|(\d+))/, firstMatch(argument, /workspace\s*=\s*\d+/, "1")) };
+            return {
+                workspace: firstMatch(argument, /workspace\s*=\s*(?:\"([^\"]+)\"|(\d+))/, firstMatch(argument, /workspace\s*=\s*\d+/, "1"))
+            };
         if (action === "moveWorkspaceMonitor")
-            return { workspace: firstMatch(argument, /workspace\s*=\s*(?:\"([^\"]+)\"|(\d+))/, "special"), monitor: firstMatch(argument, /monitor\s*=\s*\"([^\"]+)\"/, "current") };
+            return {
+                workspace: firstMatch(argument, /workspace\s*=\s*(?:\"([^\"]+)\"|(\d+))/, "special"),
+                monitor: firstMatch(argument, /monitor\s*=\s*\"([^\"]+)\"/, "current")
+            };
         if (action === "grabWorkspace")
-            return { workspace: firstMatch(argument, /workspace\s*=\s*(\d+)/, "1") };
+            return {
+                workspace: firstMatch(argument, /workspace\s*=\s*(\d+)/, "1")
+            };
         if (action === "fullscreenState")
-            return { internal: firstMatch(argument, /internal\s*=\s*(\d+)/, "0"), client: firstMatch(argument, /client\s*=\s*(\d+)/, "3") };
+            return {
+                internal: firstMatch(argument, /internal\s*=\s*(\d+)/, "0"),
+                client: firstMatch(argument, /client\s*=\s*(\d+)/, "3")
+            };
         if (action === "setLayout")
-            return { layout: firstMatch(argument, /layout\s*=\s*\"([^\"]+)\"/, "dwindle") };
+            return {
+                layout: firstMatch(argument, /layout\s*=\s*\"([^\"]+)\"/, "dwindle")
+            };
         return {};
     }
 
     function defaultParamsForAction(action) {
         if (action === "exec")
-            return { command: "kitty" };
+            return {
+                command: "kitty"
+            };
         if (action === "global")
-            return { target: "quickshell:powermenu" };
+            return {
+                target: "quickshell:powermenu"
+            };
         if (action === "focusDirection" || action === "moveWindowDirection")
-            return { direction: "l" };
+            return {
+                direction: "l"
+            };
         if (action === "focusWorkspace" || action === "moveWindowWorkspace" || action === "grabWorkspace")
-            return { workspace: "1" };
+            return {
+                workspace: "1"
+            };
         if (action === "moveWorkspaceMonitor")
-            return { workspace: "special", monitor: "current" };
+            return {
+                workspace: "special",
+                monitor: "current"
+            };
         if (action === "fullscreenState")
-            return { internal: "0", client: "3" };
+            return {
+                internal: "0",
+                client: "3"
+            };
         if (action === "setLayout")
-            return { layout: "dwindle" };
+            return {
+                layout: "dwindle"
+            };
         return {};
     }
 
@@ -2266,7 +2376,9 @@ Singleton {
             description: "Launch terminal",
             keys: "SUPER + Return",
             action: "exec",
-            params: { command: "kitty" },
+            params: {
+                command: "kitty"
+            },
             dispatcher: "exec_cmd",
             argument: "kitty",
             flags: "",
