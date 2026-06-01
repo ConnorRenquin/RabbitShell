@@ -14,13 +14,13 @@ Singleton {
     readonly property string monitorConfigPath: homePath + "/.config/hypr/monitors.lua"
     readonly property string monitorConfigUrl: "file://" + monitorConfigPath
     property var values: clone(defaultValues)
-    property var monitorItems: []
-    property var bindItems: []
-    property var windowRuleItems: []
-    property var layerRuleItems: []
-    property var animationItems: []
-    readonly property var bindFlagOptions: ["locked", "release", "click", "drag", "long_press", "repeating", "non_consuming", "mouse", "transparent", "ignore_mods", "separate", "bypass", "submap_universal"]
-    readonly property var commonBindActions: [
+    property list<var> monitorItems: []
+    property list<var> bindItems: []
+    property list<var> windowRuleItems: []
+    property list<var> layerRuleItems: []
+    property list<var> animationItems: []
+    readonly property list<string> bindFlagOptions: ["locked", "release", "click", "drag", "long_press", "repeating", "non_consuming", "mouse", "transparent", "ignore_mods", "separate", "bypass", "submap_universal"]
+    readonly property list<var> commonBindActions: [
         {
             id: "exec",
             label: "Application / shell command",
@@ -327,7 +327,7 @@ Singleton {
             }
         })
 
-    readonly property var sections: [
+    readonly property list<var> sections: [
         {
             title: "General",
             wiki: "https://wiki.hypr.land/Configuring/Basics/Variables/",
@@ -1732,7 +1732,7 @@ Singleton {
     }
 
     function mergeDefaults(parsed) {
-        var merged = clone(defaultValues);
+        let merged = clone(defaultValues);
         if (parsed) {
             mergeObject(merged, parsed);
         }
@@ -1740,7 +1740,7 @@ Singleton {
     }
 
     function mergeObject(target, source) {
-        for (var key in source) {
+        for (let key in source) {
             if (source[key] !== undefined && source[key] !== null && typeof source[key] === "object" && !Array.isArray(source[key]) && typeof target[key] === "object") {
                 mergeObject(target[key], source[key]);
             } else if (target[key] !== undefined) {
@@ -1761,9 +1761,9 @@ Singleton {
         if (typeof path !== "string") {
             return undefined;
         }
-        var parts = path.split(".");
-        var cursor = source;
-        for (var i = 0; i < parts.length; i++) {
+        let parts = path.split(".");
+        let cursor = source;
+        for (let i = 0; i < parts.length; i++) {
             if (cursor === undefined || cursor === null)
                 return undefined;
             cursor = cursor[parts[i]];
@@ -1772,9 +1772,9 @@ Singleton {
     }
 
     function settingDefinition(path) {
-        for (var s = 0; s < sections.length; s++) {
-            var settings = sections[s].settings;
-            for (var i = 0; i < settings.length; i++) {
+        for (let s = 0; s < sections.length; s++) {
+            let settings = sections[s].settings;
+            for (let i = 0; i < settings.length; i++) {
                 if (settings[i].path === path)
                     return settings[i];
             }
@@ -1783,12 +1783,12 @@ Singleton {
     }
 
     function normalizeValue(path, value) {
-        var setting = settingDefinition(path);
+        let setting = settingDefinition(path);
         if (setting && setting.type === "vector2") {
             if (Array.isArray(value))
                 return [parseFloat(value[0]) || 0, parseFloat(value[1]) || 0];
-            var text = String(value || "");
-            var matches = text.match(/-?\d+(?:\.\d+)?/g) || [];
+            let text = String(value || "");
+            let matches = text.match(/-?\d+(?:\.\d+)?/g) || [];
             return [parseFloat(matches[0]) || 0, parseFloat(matches[1]) || 0];
         }
         if (setting && typeof value === "number") {
@@ -1802,10 +1802,10 @@ Singleton {
 
     function setPath(path, value) {
         value = normalizeValue(path, value);
-        var next = clone(values);
-        var parts = path.split(".");
-        var cursor = next;
-        for (var i = 0; i < parts.length - 1; i++) {
+        let next = clone(values);
+        let parts = path.split(".");
+        let cursor = next;
+        for (let i = 0; i < parts.length - 1; i++) {
             cursor = cursor[parts[i]];
         }
         cursor[parts[parts.length - 1]] = value;
@@ -1816,34 +1816,34 @@ Singleton {
         if (type === "bool")
             return text === true || text === "true";
         if (type === "int") {
-            var parsedInt = parseInt(text);
+            let parsedInt = parseInt(text);
             return isNaN(parsedInt) ? 0 : parsedInt;
         }
         if (type === "float") {
-            var parsedFloat = parseFloat(text);
+            let parsedFloat = parseFloat(text);
             return isNaN(parsedFloat) ? 0 : parsedFloat;
         }
         if (type === "vector2") {
-            var matches = String(text || "").match(/-?\d+(?:\.\d+)?/g) || [];
+            let matches = String(text || "").match(/-?\d+(?:\.\d+)?/g) || [];
             return [parseFloat(matches[0]) || 0, parseFloat(matches[1]) || 0];
         }
         return String(text);
     }
 
     function displayValue(path) {
-        var value = getPath(path);
+        let value = getPath(path);
         if (Array.isArray(value))
             return value.join(", ");
         return value === undefined || value === null ? "" : String(value);
     }
 
     function vector2Component(path, index) {
-        var value = normalizeValue(path, getPath(path));
+        let value = normalizeValue(path, getPath(path));
         return value[index] !== undefined ? value[index] : 0;
     }
 
     function setVector2Component(path, index, componentValue) {
-        var value = normalizeValue(path, getPath(path));
+        let value = normalizeValue(path, getPath(path));
         value[index] = parseFloat(componentValue) || 0;
         setPath(path, value);
     }
@@ -1854,7 +1854,7 @@ Singleton {
         if (typeof setting.visibleWhen === "string")
             return !!getPath(setting.visibleWhen);
         if (setting.visibleWhen.length !== undefined) {
-            for (var i = 0; i < setting.visibleWhen.length; i++) {
+            for (let i = 0; i < setting.visibleWhen.length; i++) {
                 if (!getPath(setting.visibleWhen[i]))
                     return false;
             }
@@ -1868,12 +1868,12 @@ Singleton {
     }
 
     function findMatchingBrace(text, openIndex) {
-        var depth = 0;
-        var inString = false;
-        var quote = "";
-        for (var i = openIndex; i < text.length; i++) {
-            var ch = text[i];
-            var prev = i > 0 ? text[i - 1] : "";
+        let depth = 0;
+        let inString = false;
+        let quote = "";
+        for (let i = openIndex; i < text.length; i++) {
+            let ch = text[i];
+            let prev = i > 0 ? text[i - 1] : "";
             if (inString) {
                 if (ch === quote && prev !== "\\")
                     inString = false;
@@ -1896,10 +1896,10 @@ Singleton {
     function parseLuaValue(text, state) {
         skipWhitespace(text, state);
         if (text[state.index] === "{") {
-            var tableStart = state.index;
-            var tableEnd = findMatchingBrace(text, tableStart);
+            let tableStart = state.index;
+            let tableEnd = findMatchingBrace(text, tableStart);
             if (tableEnd >= 0) {
-                var tableRaw = text.slice(tableStart, tableEnd + 1);
+                let tableRaw = text.slice(tableStart, tableEnd + 1);
                 if (tableRaw.indexOf("=") < 0) {
                     state.index = tableEnd + 1;
                     return tableRaw;
@@ -1909,20 +1909,20 @@ Singleton {
             return parseLuaTable(text, state);
         }
         if (text[state.index] === '"' || text[state.index] === "'") {
-            var quote = text[state.index++];
-            var out = "";
+            let quote = text[state.index++];
+            let out = "";
             while (state.index < text.length) {
-                var ch = text[state.index++];
+                let ch = text[state.index++];
                 if (ch === quote)
                     break;
                 out += ch;
             }
             return out;
         }
-        var start = state.index;
+        let start = state.index;
         while (state.index < text.length && text[state.index] !== "," && text[state.index] !== "}")
             state.index++;
-        var raw = text.slice(start, state.index).trim();
+        let raw = text.slice(start, state.index).trim();
         if (raw === "true")
             return true;
         if (raw === "false")
@@ -1935,17 +1935,17 @@ Singleton {
     }
 
     function parseLuaTable(text, state) {
-        var result = {};
+        let result = {};
         while (state.index < text.length) {
             skipWhitespaceAndCommas(text, state);
             if (text[state.index] === "}") {
                 state.index++;
                 break;
             }
-            var keyStart = state.index;
+            let keyStart = state.index;
             while (state.index < text.length && /[A-Za-z0-9_]/.test(text[state.index]))
                 state.index++;
-            var key = text.slice(keyStart, state.index).trim();
+            let key = text.slice(keyStart, state.index).trim();
             skipWhitespace(text, state);
             if (!key || text[state.index] !== "=") {
                 while (state.index < text.length && text[state.index] !== "," && text[state.index] !== "}")
@@ -1970,17 +1970,17 @@ Singleton {
     }
 
     function parseConfig(text) {
-        var clean = stripLuaComments(text);
-        var callIndex = clean.indexOf("hl.config");
+        let clean = stripLuaComments(text);
+        let callIndex = clean.indexOf("hl.config");
         if (callIndex < 0)
             return clone(defaultValues);
-        var openIndex = clean.indexOf("{", callIndex);
+        let openIndex = clean.indexOf("{", callIndex);
         if (openIndex < 0)
             return clone(defaultValues);
-        var closeIndex = findMatchingBrace(clean, openIndex);
+        let closeIndex = findMatchingBrace(clean, openIndex);
         if (closeIndex < 0)
             return clone(defaultValues);
-        var state = {
+        let state = {
             index: openIndex + 1
         };
         return mergeDefaults(parseLuaTable(clean, state));
@@ -1989,7 +1989,7 @@ Singleton {
     function parseMonitorObject(tableValue) {
         if (!tableValue || !tableValue.output)
             return null;
-        var item = {
+        let item = {
             output: String(tableValue.output),
             mode: tableValue.mode !== undefined ? String(tableValue.mode) : "preferred",
             position: tableValue.position !== undefined ? String(tableValue.position) : "auto",
@@ -1997,13 +1997,13 @@ Singleton {
             transform: tableValue.transform !== undefined ? parseInt(tableValue.transform) : 0
         };
         item.disabled = item.mode === "disable";
-        var modeMatch = item.mode.match(/^(\d+)x(\d+)(?:@([\d.]+))?/);
+        let modeMatch = item.mode.match(/^(\d+)x(\d+)(?:@([\d.]+))?/);
         if (modeMatch) {
             item.width = parseInt(modeMatch[1]);
             item.height = parseInt(modeMatch[2]);
             item.refreshRate = modeMatch[3] !== undefined ? parseFloat(modeMatch[3]) : 60;
         }
-        var posMatch = item.position.match(/^(-?\d+)x(-?\d+)$/);
+        let posMatch = item.position.match(/^(-?\d+)x(-?\d+)$/);
         if (posMatch) {
             item.x = parseInt(posMatch[1]);
             item.y = parseInt(posMatch[2]);
@@ -2012,23 +2012,23 @@ Singleton {
     }
 
     function parseMonitorConfigs(text) {
-        var clean = stripLuaComments(text);
-        var items = [];
-        var searchIndex = 0;
+        let clean = stripLuaComments(text);
+        let items = [];
+        let searchIndex = 0;
         while (searchIndex < clean.length) {
-            var callIndex = clean.indexOf("hl.monitor", searchIndex);
+            let callIndex = clean.indexOf("hl.monitor", searchIndex);
             if (callIndex < 0)
                 break;
-            var openIndex = clean.indexOf("{", callIndex);
+            let openIndex = clean.indexOf("{", callIndex);
             if (openIndex < 0)
                 break;
-            var closeIndex = findMatchingBrace(clean, openIndex);
+            let closeIndex = findMatchingBrace(clean, openIndex);
             if (closeIndex < 0)
                 break;
-            var state = {
+            let state = {
                 index: openIndex + 1
             };
-            var item = parseMonitorObject(parseLuaTable(clean, state));
+            let item = parseMonitorObject(parseLuaTable(clean, state));
             if (item)
                 items.push(item);
             searchIndex = closeIndex + 1;
@@ -2041,7 +2041,7 @@ Singleton {
     }
 
     function monitorItemForOutput(output) {
-        for (var i = 0; i < monitorItems.length; i++) {
+        for (let i = 0; i < monitorItems.length; i++) {
             if (monitorItems[i].output === output)
                 return monitorItems[i];
         }
@@ -2069,14 +2069,14 @@ Singleton {
     }
 
     function applyMonitorSettingsToList(monitorsList) {
-        for (var i = 0; i < monitorsList.length; i++) {
-            var monitor = monitorsList[i];
+        for (let i = 0; i < monitorsList.length; i++) {
+            let monitor = monitorsList[i];
             applyMonitorConfigToMonitor(monitor, monitorItemForOutput(monitor.name));
         }
     }
 
     function monitorItemFromMonitor(monitor) {
-        var disabled = !!monitor.disabled;
+        let disabled = !!monitor.disabled;
         return {
             output: monitor.name,
             description: monitor.description || "",
@@ -2094,11 +2094,11 @@ Singleton {
     }
 
     function mergedMonitorItems(monitorsList) {
-        var next = cloneList(monitorItems);
-        for (var i = 0; i < monitorsList.length; i++) {
-            var item = monitorItemFromMonitor(monitorsList[i]);
-            var found = false;
-            for (var j = 0; j < next.length; j++) {
+        let next = cloneList(monitorItems);
+        for (let i = 0; i < monitorsList.length; i++) {
+            let item = monitorItemFromMonitor(monitorsList[i]);
+            let found = false;
+            for (let j = 0; j < next.length; j++) {
                 if (next[j].output === item.output) {
                     next[j] = item;
                     found = true;
@@ -2112,13 +2112,13 @@ Singleton {
     }
 
     function generateMonitorConfigContent(monitorsList) {
-        var items = mergedMonitorItems(monitorsList);
+        let items = mergedMonitorItems(monitorsList);
         monitorItems = items;
-        var config = "-- Monitor configuration generated by Quickshell::DisplaySettingsView\n";
+        let config = "-- Monitor configuration generated by Quickshell::DisplaySettingsView\n";
         config += "-- Save path: ~/.config/hypr/monitors.lua\n";
         config += "-- Existing outputs are preserved and matching outputs are updated.\n\n";
-        for (var i = 0; i < items.length; i++) {
-            var item = items[i];
+        for (let i = 0; i < items.length; i++) {
+            let item = items[i];
             if (item.description)
                 config += "-- " + item.output + " - " + item.description + "\n";
             config += "hl.monitor({\n";
@@ -2144,9 +2144,9 @@ Singleton {
     }
 
     function parseMetadataList(text, key) {
-        var prefix = "-- quickshell-" + key + ": ";
-        var lines = String(text).split(/\n/);
-        for (var i = 0; i < lines.length; i++) {
+        let prefix = "-- quickshell-" + key + ": ";
+        let lines = String(text).split(/\n/);
+        for (let i = 0; i < lines.length; i++) {
             if (lines[i].indexOf(prefix) === 0) {
                 try {
                     return JSON.parse(lines[i].slice(prefix.length));
@@ -2164,14 +2164,14 @@ Singleton {
         if (type === "int" || type === "float")
             return String(value);
         if (type === "vector2") {
-            var vector = normalizeValue("", value);
+            let vector = normalizeValue("", value);
             if (!Array.isArray(value))
                 vector = normalizeValue("decoration.shadow.offset", value);
             return "{ " + (parseFloat(vector[0]) || 0) + ", " + (parseFloat(vector[1]) || 0) + " }";
         }
         if (type === "raw")
             return String(value).trim();
-        var escaped = String(value).replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
+        let escaped = String(value).replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
         return '"' + escaped + '"';
     }
 
@@ -2188,7 +2188,7 @@ Singleton {
     }
 
     function commonBindActionById(id) {
-        for (var i = 0; i < commonBindActions.length; i++) {
+        for (let i = 0; i < commonBindActions.length; i++) {
             if (commonBindActions[i].id === id)
                 return commonBindActions[i];
         }
@@ -2196,7 +2196,7 @@ Singleton {
     }
 
     function commonBindActionIndex(id) {
-        for (var i = 0; i < commonBindActions.length; i++) {
+        for (let i = 0; i < commonBindActions.length; i++) {
             if (commonBindActions[i].id === id)
                 return i;
         }
@@ -2208,8 +2208,8 @@ Singleton {
     }
 
     function bindParam(bind, key) {
-        var params = bindParams(bind);
-        var value = params[key];
+        let params = bindParams(bind);
+        let value = params[key];
         return value === undefined || value === null ? "" : String(value);
     }
 
@@ -2218,8 +2218,8 @@ Singleton {
             return "exec";
         if (bind.action)
             return bind.action;
-        var dispatcher = String(bind.dispatcher || "");
-        var argument = String(bind.argument || "");
+        let dispatcher = String(bind.dispatcher || "");
+        let argument = String(bind.argument || "");
         if (dispatcher === "exec" || dispatcher === "exec_cmd")
             return "exec";
         if (dispatcher === "global")
@@ -2258,10 +2258,10 @@ Singleton {
     }
 
     function firstMatch(text, regex, fallback) {
-        var match = String(text || "").match(regex);
+        let match = String(text || "").match(regex);
         if (!match)
             return fallback;
-        for (var i = 1; i < match.length; i++) {
+        for (let i = 1; i < match.length; i++) {
             if (match[i] !== undefined)
                 return match[i];
         }
@@ -2269,9 +2269,9 @@ Singleton {
     }
 
     function inferBindParams(bind) {
-        var dispatcher = String(bind ? bind.dispatcher || "" : "");
-        var argument = String(bind ? bind.argument || "" : "");
-        var action = inferBindAction(bind);
+        let dispatcher = String(bind ? bind.dispatcher || "" : "");
+        let argument = String(bind ? bind.argument || "" : "");
+        let action = inferBindAction(bind);
         if (action === "exec")
             return {
                 command: argument
@@ -2344,7 +2344,7 @@ Singleton {
     }
 
     function setBindAction(index, action) {
-        var next = cloneList(bindItems);
+        let next = cloneList(bindItems);
         if (!next[index])
             return;
         next[index].action = action;
@@ -2353,7 +2353,7 @@ Singleton {
     }
 
     function setBindAdvanced(index, advanced) {
-        var next = cloneList(bindItems);
+        let next = cloneList(bindItems);
         if (!next[index])
             return;
         next[index].advanced = advanced;
@@ -2361,17 +2361,17 @@ Singleton {
     }
 
     function setBindParam(index, key, value) {
-        var next = cloneList(bindItems);
+        let next = cloneList(bindItems);
         if (!next[index])
             return;
-        var params = bindParams(next[index]);
+        let params = bindParams(next[index]);
         params[key] = value;
         next[index].params = params;
         bindItems = next;
     }
 
     function addBindItem() {
-        var next = cloneList(bindItems);
+        let next = cloneList(bindItems);
         next.push({
             description: "New Keybind",
         });
@@ -2379,13 +2379,13 @@ Singleton {
     }
 
     function removeBindItem(index) {
-        var next = cloneList(bindItems);
+        let next = cloneList(bindItems);
         next.splice(index, 1);
         bindItems = next;
     }
 
     function updateBindItem(index, key, value) {
-        var next = cloneList(bindItems);
+        let next = cloneList(bindItems);
         if (!next[index])
             return;
         next[index][key] = value;
@@ -2461,7 +2461,7 @@ Singleton {
     }
 
     function addWindowRuleItem() {
-        var next = cloneList(windowRuleItems);
+        let next = cloneList(windowRuleItems);
         next.push({
             name: "New window rule",
             matchClass: "",
@@ -2481,13 +2481,13 @@ Singleton {
     }
 
     function removeWindowRuleItem(index) {
-        var next = cloneList(windowRuleItems);
+        let next = cloneList(windowRuleItems);
         next.splice(index, 1);
         windowRuleItems = next;
     }
 
     function updateWindowRuleItem(index, key, value) {
-        var next = cloneList(windowRuleItems);
+        let next = cloneList(windowRuleItems);
         if (!next[index])
             return;
         next[index][key] = value;
@@ -2495,10 +2495,10 @@ Singleton {
     }
 
     function bindFlagsArray(flagsText) {
-        var flags = String(flagsText || "").split(",");
-        var out = [];
-        for (var i = 0; i < flags.length; i++) {
-            var flag = flags[i].trim();
+        let flags = String(flagsText || "").split(",");
+        let out = [];
+        for (let i = 0; i < flags.length; i++) {
+            let flag = flags[i].trim();
             if (flag.length > 0 && out.indexOf(flag) === -1)
                 out.push(flag);
         }
@@ -2510,11 +2510,11 @@ Singleton {
     }
 
     function setBindFlag(index, flag, enabled) {
-        var next = cloneList(bindItems);
+        let next = cloneList(bindItems);
         if (!next[index])
             return;
-        var flags = bindFlagsArray(next[index].flags);
-        var flagIndex = flags.indexOf(flag);
+        let flags = bindFlagsArray(next[index].flags);
+        let flagIndex = flags.indexOf(flag);
         if (enabled && flagIndex === -1)
             flags.push(flag);
         if (!enabled && flagIndex !== -1)
@@ -2524,28 +2524,28 @@ Singleton {
     }
 
     function luaFlags(flagsText) {
-        var flags = bindFlagsArray(flagsText);
-        var out = [];
-        for (var i = 0; i < flags.length; i++) {
+        let flags = bindFlagsArray(flagsText);
+        let out = [];
+        for (let i = 0; i < flags.length; i++) {
             out.push(flags[i] + " = true");
         }
         return out.length > 0 ? ", { " + out.join(", ") + " }" : "";
     }
 
     function luaBindOptions(bind) {
-        var flags = bindFlagsArray(bind ? bind.flags : "");
-        var out = [];
-        for (var i = 0; i < flags.length; i++) {
+        let flags = bindFlagsArray(bind ? bind.flags : "");
+        let out = [];
+        for (let i = 0; i < flags.length; i++) {
             out.push(flags[i] + " = true");
         }
-        var description = bind ? String(bind.description || bind.name || bind.comment || "").trim() : "";
+        let description = bind ? String(bind.description || bind.name || bind.comment || "").trim() : "";
         if (description.length > 0)
             out.push("description = " + luaString(description));
         return out.length > 0 ? ", { " + out.join(", ") + " }" : "";
     }
 
     function luaPairArray(value) {
-        var parts = String(value || "").split(",");
+        let parts = String(value || "").split(",");
         if (parts.length < 2)
             return "";
         return "{" + luaString(parts[0].trim()) + ", " + luaString(parts.slice(1).join(",").trim()) + "}";
@@ -2556,7 +2556,7 @@ Singleton {
     }
 
     function addLayerRuleItem() {
-        var next = cloneList(layerRuleItems);
+        let next = cloneList(layerRuleItems);
         next.push({
             name: "New layer rule",
             namespace: "",
@@ -2571,13 +2571,13 @@ Singleton {
     }
 
     function removeLayerRuleItem(index) {
-        var next = cloneList(layerRuleItems);
+        let next = cloneList(layerRuleItems);
         next.splice(index, 1);
         layerRuleItems = next;
     }
 
     function updateLayerRuleItem(index, key, value) {
-        var next = cloneList(layerRuleItems);
+        let next = cloneList(layerRuleItems);
         if (!next[index])
             return;
         next[index][key] = value;
@@ -2589,7 +2589,7 @@ Singleton {
     }
 
     function addAnimationItem() {
-        var next = cloneList(animationItems);
+        let next = cloneList(animationItems);
         next.push({
             leaf: "windows",
             enabled: true,
@@ -2603,13 +2603,13 @@ Singleton {
     }
 
     function removeAnimationItem(index) {
-        var next = cloneList(animationItems);
+        let next = cloneList(animationItems);
         next.splice(index, 1);
         animationItems = next;
     }
 
     function updateAnimationItem(index, key, value) {
-        var next = cloneList(animationItems);
+        let next = cloneList(animationItems);
         if (!next[index])
             return;
         next[index][key] = value;
@@ -2617,9 +2617,9 @@ Singleton {
     }
 
     function settingType(path) {
-        for (var s = 0; s < sections.length; s++) {
-            var settings = sections[s].settings;
-            for (var i = 0; i < settings.length; i++) {
+        for (let s = 0; s < sections.length; s++) {
+            let settings = sections[s].settings;
+            for (let i = 0; i < settings.length; i++) {
                 if (settings[i].path === path)
                     return settings[i].type;
             }
@@ -2628,9 +2628,9 @@ Singleton {
     }
 
     function setTreePath(tree, path, value) {
-        var parts = path.split(".");
-        var cursor = tree;
-        for (var i = 0; i < parts.length - 1; i++) {
+        let parts = path.split(".");
+        let cursor = tree;
+        for (let i = 0; i < parts.length - 1; i++) {
             if (!cursor[parts[i]])
                 cursor[parts[i]] = {};
             cursor = cursor[parts[i]];
@@ -2639,30 +2639,30 @@ Singleton {
     }
 
     function buildConfigTree() {
-        var tree = {};
-        for (var s = 0; s < sections.length; s++) {
-            var settings = sections[s].settings;
+        let tree = {};
+        for (let s = 0; s < sections.length; s++) {
+            let settings = sections[s].settings;
             mergeSettingsIntoTree(tree, settings);
         }
         return tree;
     }
 
     function buildConfigTreeForSection(sectionData) {
-        var tree = {};
+        let tree = {};
         mergeSettingsIntoTree(tree, sectionData.settings || []);
         return tree;
     }
 
     function mergeSettingsIntoTree(tree, settings) {
-        for (var i = 0; i < settings.length; i++) {
-            var setting = settings[i];
-            var value = normalizeValue(setting.path, getPath(setting.path));
-            var valueText = String(value === undefined || value === null ? "" : value).trim();
+        for (let i = 0; i < settings.length; i++) {
+            let setting = settings[i];
+            let value = normalizeValue(setting.path, getPath(setting.path));
+            let valueText = String(value === undefined || value === null ? "" : value).trim();
             if (setting.omitWhenEmpty && valueText === "")
                 continue;
             if (setting.type === "raw" && valueText === "") {
-                var defaultValue = getDefaultPath(setting.path);
-                var defaultText = String(defaultValue === undefined || defaultValue === null ? "" : defaultValue).trim();
+                let defaultValue = getDefaultPath(setting.path);
+                let defaultText = String(defaultValue === undefined || defaultValue === null ? "" : defaultValue).trim();
                 if (defaultText === "")
                     continue;
                 value = defaultValue;
@@ -2676,12 +2676,12 @@ Singleton {
     }
 
     function sectionFileName(sectionData) {
-        var title = String(sectionData.title).toLowerCase();
-        var out = "";
-        var lastWasDash = false;
-        for (var i = 0; i < title.length; i++) {
-            var ch = title[i];
-            var valid = (ch >= "a" && ch <= "z") || (ch >= "0" && ch <= "9");
+        let title = String(sectionData.title).toLowerCase();
+        let out = "";
+        let lastWasDash = false;
+        for (let i = 0; i < title.length; i++) {
+            let ch = title[i];
+            let valid = (ch >= "a" && ch <= "z") || (ch >= "0" && ch <= "9");
             if (valid) {
                 out += ch;
                 lastWasDash = false;
@@ -2706,14 +2706,14 @@ Singleton {
     }
 
     function luaTableForObject(mapValue, indent, pathPrefix) {
-        var config = "{";
+        let config = "{";
         config += String.fromCharCode(10);
-        var keys = Object.keys(mapValue);
-        for (var i = 0; i < keys.length; i++) {
-            var key = keys[i];
-            var value = mapValue[key];
-            var childPath = pathPrefix ? pathPrefix + "." + key : key;
-            var renderedKey = luaKey(key);
+        let keys = Object.keys(mapValue);
+        for (let i = 0; i < keys.length; i++) {
+            let key = keys[i];
+            let value = mapValue[key];
+            let childPath = pathPrefix ? pathPrefix + "." + key : key;
+            let renderedKey = luaKey(key);
             if (value !== null && typeof value === "object" && !Array.isArray(value)) {
                 config += indent + "    " + renderedKey + " = " + luaTableForObject(value, indent + "    ", childPath) + ",\n";
             } else {
@@ -2725,13 +2725,13 @@ Singleton {
     }
 
     function workspaceLuaValue(value) {
-        var text = String(value || "").trim();
+        let text = String(value || "").trim();
         return /^-?\d+$/.test(text) ? text : luaString(text);
     }
 
     function commonBindExpression(bind) {
-        var action = inferBindAction(bind);
-        var params = bindParams(bind);
+        let action = inferBindAction(bind);
+        let params = bindParams(bind);
         if (action === "exec")
             return "hl.dsp.exec_cmd(" + luaString(params.command || "") + ")";
         if (action === "global")
@@ -2747,7 +2747,7 @@ Singleton {
         if (action === "moveWorkspaceMonitor")
             return "hl.dsp.workspace.move({ workspace = " + workspaceLuaValue(params.workspace || "special") + ", monitor = " + luaString(params.monitor || "current") + " })";
         if (action === "grabWorkspace") {
-            var workspace = workspaceLuaValue(params.workspace || "1");
+            let workspace = workspaceLuaValue(params.workspace || "1");
             return "function()\n    hl.dispatch(hl.dsp.workspace.move({ workspace = " + workspace + ", monitor = \"current\" }))\n    hl.dispatch(hl.dsp.focus({ workspace = " + workspace + " }))\nend";
         }
         if (action === "fullscreen")
@@ -2772,8 +2772,8 @@ Singleton {
     }
 
     function advancedBindExpression(bind) {
-        var dispatcher = String(bind.dispatcher || "exec_cmd");
-        var argument = String(bind.argument || "");
+        let dispatcher = String(bind.dispatcher || "exec_cmd");
+        let argument = String(bind.argument || "");
         if (dispatcher === "raw" || dispatcher === "callback")
             return argument;
         if (dispatcher === "exec")
@@ -2782,16 +2782,16 @@ Singleton {
     }
 
     function generateBindConfig() {
-        var config = "";
-        for (var i = 0; i < bindItems.length; i++) {
-            var bind = bindItems[i];
+        let config = "";
+        for (let i = 0; i < bindItems.length; i++) {
+            let bind = bindItems[i];
             if (bind.rawLine) {
                 config += String(bind.rawLine).trim() + "\n";
                 continue;
             }
             if (!bind.keys)
                 continue;
-            var dsp = bind.advanced ? advancedBindExpression(bind) : commonBindExpression(bind);
+            let dsp = bind.advanced ? advancedBindExpression(bind) : commonBindExpression(bind);
             if (!dsp)
                 dsp = advancedBindExpression(bind);
             if (!dsp)
@@ -2802,9 +2802,9 @@ Singleton {
     }
 
     function generateWindowRuleConfig() {
-        var config = "";
-        for (var i = 0; i < windowRuleItems.length; i++) {
-            var rule = windowRuleItems[i];
+        let config = "";
+        for (let i = 0; i < windowRuleItems.length; i++) {
+            let rule = windowRuleItems[i];
             if (rule.advanced && rule.rawLine) {
                 config += String(rule.rawLine).trim() + "\n\n";
                 continue;
@@ -2815,7 +2815,7 @@ Singleton {
             if (rule.name)
                 config += "    name = " + luaString(rule.name) + ",\n";
             config += "    match = {";
-            var matchParts = [];
+            let matchParts = [];
             if (rule.matchClass)
                 matchParts.push("class = " + luaString(rule.matchClass));
             if (rule.matchTitle)
@@ -2832,10 +2832,10 @@ Singleton {
                 config += "    no_blur = true,\n";
             if (rule.noShadow)
                 config += "    no_shadow = true,\n";
-            var size = luaPairArray(rule.size);
+            let size = luaPairArray(rule.size);
             if (size)
                 config += "    size = " + size + ",\n";
-            var move = luaPairArray(rule.move);
+            let move = luaPairArray(rule.move);
             if (move)
                 config += "    move = " + move + ",\n";
             if (String(rule.rounding || "").trim() !== "")
@@ -2846,9 +2846,9 @@ Singleton {
     }
 
     function generateLayerRuleConfig() {
-        var config = "";
-        for (var i = 0; i < layerRuleItems.length; i++) {
-            var rule = layerRuleItems[i];
+        let config = "";
+        for (let i = 0; i < layerRuleItems.length; i++) {
+            let rule = layerRuleItems[i];
             if (rule.advanced && rule.rawLine) {
                 config += String(rule.rawLine).trim() + "\n\n";
                 continue;
@@ -2873,9 +2873,9 @@ Singleton {
     }
 
     function generateAnimationConfig() {
-        var config = "";
-        for (var i = 0; i < animationItems.length; i++) {
-            var anim = animationItems[i];
+        let config = "";
+        for (let i = 0; i < animationItems.length; i++) {
+            let anim = animationItems[i];
             if (anim.advanced && anim.rawLine) {
                 config += String(anim.rawLine).trim() + "\n";
                 continue;
@@ -2895,7 +2895,7 @@ Singleton {
     }
 
     function metadataHeader() {
-        var config = "-- quickshell-values: " + JSON.stringify(values) + "\n";
+        let config = "-- quickshell-values: " + JSON.stringify(values) + "\n";
         config += "-- quickshell-bind-items: " + JSON.stringify(bindItems) + "\n";
         config += "-- quickshell-window-rule-items: " + JSON.stringify(windowRuleItems) + "\n";
         config += "-- quickshell-layer-rule-items: " + JSON.stringify(layerRuleItems) + "\n";
@@ -2904,59 +2904,59 @@ Singleton {
     }
 
     function generateSectionConfig(sectionData) {
-        var config = "-- Hyprland " + sectionData.title + " generated by Quickshell::HyprlandSettingsView\n";
+        let config = "-- Hyprland " + sectionData.title + " generated by Quickshell::HyprlandSettingsView\n";
         config += "-- Source variables: https://wiki.hypr.land/Configuring/Basics/Variables/\n";
         config += "-- Save path: ~/.config/hypr/quickshell/" + sectionFileName(sectionData) + "\n\n";
 
         if (sectionData.kind === "bindList") {
             config += "-- quickshell-bind-items: " + JSON.stringify(bindItems) + "\n\n";
-            var bindConfig = generateBindConfig();
+            let bindConfig = generateBindConfig();
             return config + (bindConfig.length > 0 ? bindConfig : "-- No generated keybinds yet.\n");
         }
         if (sectionData.kind === "windowRuleList") {
             config += "-- quickshell-window-rule-items: " + JSON.stringify(windowRuleItems) + "\n\n";
-            var ruleConfig = generateWindowRuleConfig();
+            let ruleConfig = generateWindowRuleConfig();
             return config + (ruleConfig.length > 0 ? ruleConfig : "-- No generated window rules yet.\n");
         }
         if (sectionData.kind === "layerRuleList") {
             config += "-- quickshell-layer-rule-items: " + JSON.stringify(layerRuleItems) + "\n\n";
-            var layerRuleConfig = generateLayerRuleConfig();
+            let layerRuleConfig = generateLayerRuleConfig();
             return config + (layerRuleConfig.length > 0 ? layerRuleConfig : "-- No generated layer rules yet.\n");
         }
         if (sectionData.kind === "animationList") {
             config += "-- quickshell-animation-items: " + JSON.stringify(animationItems) + "\n\n";
-            var animationConfig = generateAnimationConfig();
+            let animationConfig = generateAnimationConfig();
             return config + (animationConfig.length > 0 ? animationConfig : "-- No generated animations yet.\n");
         }
 
-        var tree = buildConfigTreeForSection(sectionData);
+        let tree = buildConfigTreeForSection(sectionData);
         if (objectIsEmpty(tree))
             return config + "-- No hl.config settings for this tab.\n";
         return config + "hl.config(" + luaTableForObject(tree, "", "") + ")\n";
     }
 
     function moduleNameForSection(sectionData) {
-        var fileName = sectionFileName(sectionData);
+        let fileName = sectionFileName(sectionData);
         return "quickshell." + fileName.slice(0, fileName.length - 4);
     }
 
     function generateConfig() {
-        var config = "-- Hyprland Quickshell settings init generated by Quickshell::HyprlandSettingsView\n";
+        let config = "-- Hyprland Quickshell settings init generated by Quickshell::HyprlandSettingsView\n";
         config += "-- Save path: ~/.config/hypr/quickshell/init.lua\n";
         config += "-- This file intentionally only stores SettingsMenu metadata and imports per-tab files.\n";
         config += "-- The actual Hyprland Lua is written to the sibling files in this directory.\n";
         config += metadataHeader() + "\n";
-        for (var i = 0; i < sections.length; i++) {
-            var section = sections[i];
+        for (let i = 0; i < sections.length; i++) {
+            let section = sections[i];
             config += "require(" + luaString(moduleNameForSection(section)) + ")\n";
         }
         return config;
     }
 
     function parseMetadataObject(text, key) {
-        var prefix = "-- quickshell-" + key + ": ";
-        var lines = String(text).split(/\n/);
-        for (var i = 0; i < lines.length; i++) {
+        let prefix = "-- quickshell-" + key + ": ";
+        let lines = String(text).split(/\n/);
+        for (let i = 0; i < lines.length; i++) {
             if (lines[i].indexOf(prefix) === 0) {
                 try {
                     return JSON.parse(lines[i].slice(prefix.length));
@@ -2969,7 +2969,7 @@ Singleton {
     }
 
     function loadFromText(text) {
-        var storedValues = parseMetadataObject(text, "values");
+        let storedValues = parseMetadataObject(text, "values");
         values = storedValues ? mergeDefaults(storedValues) : parseConfig(text);
         bindItems = parseMetadataList(text, "bind-items");
         windowRuleItems = parseMetadataList(text, "window-rule-items");

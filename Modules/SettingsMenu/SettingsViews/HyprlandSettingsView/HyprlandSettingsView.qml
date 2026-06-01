@@ -31,7 +31,7 @@ Rectangle {
             root.capturingBindIndex = -1;
             return;
         }
-        var parts = [];
+        let parts = [];
         if (event.modifiers & Qt.MetaModifier)
             parts.push("SUPER");
         if (event.modifiers & Qt.ControlModifier)
@@ -40,8 +40,8 @@ Rectangle {
             parts.push("ALT");
         if (event.modifiers & Qt.ShiftModifier)
             parts.push("SHIFT");
-        var key = root.keyName(event.key, event.text);
-        var captured = key.length > 0 ? parts.concat([key]).join(" + ") : "";
+        let key = root.keyName(event.key, event.text);
+        let captured = key.length > 0 ? parts.concat([key]).join(" + ") : "";
         if (captured.length > 0) {
             root.updateBindItem(root.capturingBindIndex, "keys", captured);
             root.capturingBindIndex = -1;
@@ -51,7 +51,6 @@ Rectangle {
     readonly property string configDir: HyprlandSettings.configDir
     readonly property string configPath: HyprlandSettings.configPath
     readonly property string configUrl: HyprlandSettings.configUrl
-    readonly property var values: HyprlandSettings.values
     property bool loading: true
     property bool needsInitialSave: false
     property int currentGroupIndex: 0
@@ -60,14 +59,14 @@ Rectangle {
     property int selectedListEditorIndex: -1
     property var selectedListEditorConfig: null
     property int pendingWindowRulePickIndex: -1
-    readonly property var bindItems: HyprlandSettings.bindItems
-    readonly property var windowRuleItems: HyprlandSettings.windowRuleItems
-    readonly property var layerRuleItems: HyprlandSettings.layerRuleItems
-    readonly property var animationItems: HyprlandSettings.animationItems
-    readonly property var bindFlagOptions: HyprlandSettings.bindFlagOptions
-    readonly property var commonBindActions: HyprlandSettings.commonBindActions
-    readonly property var sections: HyprlandSettings.sections
-    readonly property var sectionGroups: buildSectionGroups()
+    readonly property list<var> bindItems: HyprlandSettings.bindItems
+    readonly property list<var> windowRuleItems: HyprlandSettings.windowRuleItems
+    readonly property list<var> layerRuleItems: HyprlandSettings.layerRuleItems
+    readonly property list<var> animationItems: HyprlandSettings.animationItems
+    readonly property list<string> bindFlagOptions: HyprlandSettings.bindFlagOptions
+    readonly property list<var> commonBindActions: HyprlandSettings.commonBindActions
+    readonly property list<var> sections: HyprlandSettings.sections
+    readonly property list<var> sectionGroups: buildSectionGroups()
     property string pendingAggregateContent: ""
     property string statusText: ""
 
@@ -118,7 +117,7 @@ Rectangle {
     }
 
     function sectionGroup(section) {
-        var title = section.title;
+        let title = section.title;
         if (["General", "Snap"].indexOf(title) !== -1)
             return "General";
         if (["Decoration", "Blur", "Shadow", "Glow", "Animations"].indexOf(title) !== -1)
@@ -135,12 +134,12 @@ Rectangle {
     }
 
     function buildSectionGroups() {
-        var groups = [];
-        for (var i = 0; i < HyprlandSettings.sections.length; i++) {
-            var section = HyprlandSettings.sections[i];
-            var groupName = sectionGroup(section);
-            var group = null;
-            for (var g = 0; g < groups.length; g++) {
+        let groups = [];
+        for (let i = 0; i < HyprlandSettings.sections.length; i++) {
+            let section = HyprlandSettings.sections[i];
+            let groupName = sectionGroup(section);
+            let group = null;
+            for (let g = 0; g < groups.length; g++) {
                 if (groups[g].title === groupName) {
                     group = groups[g];
                     break;
@@ -218,8 +217,8 @@ Rectangle {
             return "";
         if (bind.advanced)
             return clippedText(bind.argument || "", "");
-        var action = bindAction(bind);
-        var parts = [];
+        let action = bindAction(bind);
+        let parts = [];
         if (action.param)
             parts.push(bindParam(bind, action.param));
         if (action.secondaryParam)
@@ -241,11 +240,11 @@ Rectangle {
     }
 
     function editorItems(cfg) {
-        var resultItems = [];
+        let resultItems = [];
         if (!cfg) {
             return resultItems;
         }
-        var editorKind = cfg.kind;
+        let editorKind = cfg.kind;
 
         if (editorKind === "bindList") {
             return HyprlandSettings.getBindItems();
@@ -304,27 +303,27 @@ Rectangle {
     function editorTitle(cfg, item) {
         if (!cfg || !item)
             return "";
-        var value = item[cfg.titleKey];
+        let value = item[cfg.titleKey];
         return value !== undefined && String(value).length > 0 ? String(value) : cfg.titleFallback;
     }
 
     function bindName(item) {
         if (!item)
             return "";
-        var value = item.description || item.name || item.comment || "";
+        let value = item.description || item.name || item.comment || "";
         return String(value).trim().length > 0 ? String(value) : String(item.keys || "Unnamed bind");
     }
 
     function bindValue(index, key) {
-        var item = bindItems[index];
+        let item = bindItems[index];
         if (!item)
             return "";
-        var value = item[key];
+        let value = item[key];
         return value === undefined || value === null ? "" : String(value);
     }
 
     function clippedText(value, fallback) {
-        var text = String(value || fallback || "");
+        let text = String(value || fallback || "");
         return text.length > 80 ? text.slice(0, 77) + "..." : text;
     }
 
@@ -342,20 +341,20 @@ Rectangle {
     }
 
     function selectedListItem() {
-        var items = editorItems(selectedListEditorConfig);
+        let items = editorItems(selectedListEditorConfig);
         return selectedListEditorIndex >= 0 && selectedListEditorIndex < items.length ? items[selectedListEditorIndex] : null;
     }
 
     function selectedListValue(key) {
-        var item = selectedListItem();
+        let item = selectedListItem();
         if (!item)
             return "";
-        var value = item[key];
+        let value = item[key];
         return value === undefined || value === null ? "" : String(value);
     }
 
     function selectedListAdvanced() {
-        var item = selectedListItem();
+        let item = selectedListItem();
         return !!item && !!item.advanced;
     }
 
@@ -369,8 +368,8 @@ Rectangle {
     function applyPickedWindow(client) {
         if (pendingWindowRulePickIndex < 0 || !client)
             return;
-        var windowClass = String(client.class || client.initialClass || "");
-        var title = String(client.title || client.initialTitle || "");
+        let windowClass = String(client.class || client.initialClass || "");
+        let title = String(client.title || client.initialTitle || "");
         if (windowClass.length > 0)
             updateWindowRuleItem(pendingWindowRulePickIndex, "matchClass", windowClass);
         if (title.length > 0)
@@ -405,7 +404,7 @@ Rectangle {
         if (item.advanced)
             return root.clippedText(item.rawLine || "", "");
         if (cfg.kind === "windowRuleList") {
-            var flags = [];
+            let flags = [];
             if (item.float)
                 flags.push("float");
             if (item.center)
@@ -419,7 +418,7 @@ Rectangle {
             return flags.join(", ");
         }
         if (cfg.kind === "layerRuleList") {
-            var layerFlags = [];
+            let layerFlags = [];
             if (item.noAnim)
                 layerFlags.push("no anim");
             if (item.blur)
@@ -450,24 +449,24 @@ Rectangle {
     function fieldValue(item, field) {
         if (!item || !field)
             return "";
-        var value = item[field.key];
+        let value = item[field.key];
         if (value === undefined || value === null)
             value = field.defaultValue !== undefined ? field.defaultValue : "";
         return field.stringify ? String(value || "") : value;
     }
 
     function fieldText(item, field) {
-        var value = fieldValue(item, field);
+        let value = fieldValue(item, field);
         return value === undefined || value === null ? "" : String(value);
     }
 
     function boolFieldValue(item, field) {
-        var value = fieldValue(item, field);
+        let value = fieldValue(item, field);
         return field.defaultValue !== undefined ? value !== false : !!value;
     }
 
     function comboFieldIndex(item, field) {
-        var value = fieldValue(item, field);
+        let value = fieldValue(item, field);
         return field.options ? field.options.indexOf(value) : -1;
     }
 
@@ -504,12 +503,12 @@ Rectangle {
     }
 
     function saveConfig() {
-        var aggregateContent = HyprlandSettings.generateConfig();
+        let aggregateContent = HyprlandSettings.generateConfig();
         pendingAggregateContent = aggregateContent;
-        var cmd = "mkdir -p \"" + configDir + "\"\n";
+        let cmd = "mkdir -p \"" + configDir + "\"\n";
         cmd += writeFileCommand(configPath, aggregateContent, "QSAGGEOF");
-        for (var i = 0; i < sections.length; i++) {
-            var section = sections[i];
+        for (let i = 0; i < sections.length; i++) {
+            let section = sections[i];
             cmd += writeFileCommand(HyprlandSettings.sectionFilePath(section), HyprlandSettings.generateSectionConfig(section), "QSSECTION" + i + "EOF");
         }
         writeConfig.command = ["bash", "-c", cmd];
@@ -518,7 +517,7 @@ Rectangle {
     }
 
     function reloadConfig() {
-        var text = pendingAggregateContent.length > 0 ? pendingAggregateContent : configFile.text();
+        let text = pendingAggregateContent.length > 0 ? pendingAggregateContent : configFile.text();
         HyprlandSettings.loadFromText(text);
         statusText = "Loaded " + configPath;
     }
@@ -565,7 +564,7 @@ Rectangle {
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    var client = JSON.parse(text);
+                    let client = JSON.parse(text);
                     root.applyPickedWindow(client);
                 } catch (e) {
                     root.statusText = "Failed to parse active window details";

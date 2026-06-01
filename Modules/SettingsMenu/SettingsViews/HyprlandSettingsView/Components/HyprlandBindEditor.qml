@@ -6,11 +6,12 @@ import QtQuick.Controls
 
 import qs.Components
 import qs.Settings
+import ".." as HyprlandSettingsViews
 
 Rectangle {
     id: root
 
-    required property var view
+    required property HyprlandSettingsViews.HyprlandSettingsView view
 
     visible: false
     Layout.fillHeight: true
@@ -193,7 +194,7 @@ Rectangle {
 
         SwitchStyled {
             checked: root.view.selectedBindIndex >= 0 && !!root.view.bindItems[root.view.selectedBindIndex] && !!root.view.bindItems[root.view.selectedBindIndex].advanced
-            text: "Enable Advanced"
+            text: "Show Advanced"
             onToggled: root.view.setBindAdvanced(root.view.selectedBindIndex, checked)
         }
 

@@ -9,8 +9,8 @@ import qs.Settings
 ColumnLayout {
     id: root
 
-    property var headers: []
-    property var model: []
+    property list<var> headers: []
+    property list<var> model: []
     property int headerHeight: 34
     property int rowHeight: 42
     property int rowHorizontalMargin: Styles.marginSm
@@ -23,7 +23,6 @@ ColumnLayout {
     property Component row
 
     Layout.fillWidth: true
-    spacing: 0
 
     function headerText(header) {
         if (typeof header === "string")
@@ -64,16 +63,11 @@ ColumnLayout {
 
             Repeater {
                 model: root.headers
-
                 delegate: TextStyled {
                     required property var modelData
-
                     Layout.fillWidth: !root.isActionHeader(modelData)
                     Layout.preferredWidth: root.isActionHeader(modelData) ? root.actionColumnWidth : 0
-                    horizontalAlignment: Qt.AlignLeft
                     text: root.headerText(modelData)
-                    font.bold: true
-                    elide: Text.ElideRight
                 }
             }
         }
