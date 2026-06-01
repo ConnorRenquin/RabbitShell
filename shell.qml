@@ -26,6 +26,7 @@ ShellRoot {
     TextEditor {}
     ScreenDraw {}
     TimeManager {}
+    OnScreenKeyboard {}
     Component.onCompleted: {
         Qt.callLater(function () {
             Settings.init();

@@ -19,6 +19,8 @@ FloatingWindow {
 
     property string shortcutName: ""
     property string persistId: title
+    property bool focusGrabEnabled: true
+    property bool contentFocusEnabled: true
 
     PersistentProperties {
         id: persisted
@@ -64,7 +66,7 @@ FloatingWindow {
 
     HyprlandFocusGrab {
         id: grab
-        active: root.visible
+        active: root.focusGrabEnabled && root.visible
         windows: [root]
         onCleared: root.exit()
     }
@@ -73,7 +75,7 @@ FloatingWindow {
         id: baseLoader
         anchors.fill: parent
         active: root.visible
-        focus: true
+        focus: root.contentFocusEnabled
         sourceComponent: root.delegate
     }
 }

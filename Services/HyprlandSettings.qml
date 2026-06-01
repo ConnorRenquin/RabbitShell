@@ -32,7 +32,7 @@ Singleton {
             label: "Rabbit Shell",
             param: "target",
             placeholder: "quickshell:powermenu",
-            options: ['quickshell:powermenu', 'quickshell:lockscreen', 'quickshell:applauncher', 'quickshell:mixer', 'quickshell:clipboard', 'quickshell:notification-manager', 'quickshell:screendraw', 'quickshell:toplevelview']
+            options: ['quickshell:powermenu', 'quickshell:keyboard', 'quickshell:lockscreen', 'quickshell:applauncher', 'quickshell:mixer', 'quickshell:clipboard', 'quickshell:notification-manager', 'quickshell:screendraw', 'quickshell:toplevelview']
         },
         {
             id: "focusDirection",
@@ -2373,7 +2373,7 @@ Singleton {
     function addBindItem() {
         let next = cloneList(bindItems);
         next.push({
-            description: "New Keybind",
+            description: "New Keybind"
         });
         bindItems = next;
     }
