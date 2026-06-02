@@ -63,6 +63,8 @@ Rectangle {
     readonly property list<var> windowRuleItems: HyprlandSettings.windowRuleItems
     readonly property list<var> layerRuleItems: HyprlandSettings.layerRuleItems
     readonly property list<var> animationItems: HyprlandSettings.animationItems
+    readonly property list<var> deviceItems: HyprlandSettings.deviceItems
+    property int selectedDeviceIndex: -1
     readonly property list<string> bindFlagOptions: HyprlandSettings.bindFlagOptions
     readonly property list<var> commonBindActions: HyprlandSettings.commonBindActions
     readonly property list<var> sections: HyprlandSettings.sections
@@ -130,6 +132,8 @@ Rectangle {
             return "Keybinds";
         if (["Window Rules", "Layer Rules", "Animation Rules"].indexOf(title) !== -1)
             return "Rules";
+        if (["Device Config"].indexOf(title) !== -1)
+            return "Devices";
         return "Advanced";
     }
 
@@ -258,6 +262,9 @@ Rectangle {
         if (editorKind === "animationList") {
             return HyprlandSettings.getAnimationItems();
         }
+        if (editorKind === "deviceList") {
+            return HyprlandSettings.getDeviceItems();
+        }
         return resultItems;
     }
 
@@ -272,6 +279,8 @@ Rectangle {
             addLayerRuleItem();
         else if (cfg.kind === "animationList")
             addAnimationItem();
+        else if (cfg.kind === "deviceList")
+            addDeviceItem();
     }
 
     function removeEditorItem(cfg, index) {
@@ -285,6 +294,8 @@ Rectangle {
             removeLayerRuleItem(index);
         else if (cfg.kind === "animationList")
             removeAnimationItem(index);
+        else if (cfg.kind === "deviceList")
+            removeDeviceItem(index);
     }
 
     function updateEditorItem(cfg, index, key, value) {
@@ -298,6 +309,8 @@ Rectangle {
             updateLayerRuleItem(index, key, value);
         else if (cfg.kind === "animationList")
             updateAnimationItem(index, key, value);
+        else if (cfg.kind === "deviceList")
+            updateDeviceItem(index, key, value);
     }
 
     function editorTitle(cfg, item) {
@@ -381,6 +394,8 @@ Rectangle {
     }
 
     function listTableTitle(cfg, item) {
+        if (cfg && cfg.kind === "deviceList" && item)
+            return item.name || "New device";
         return editorTitle(cfg, item);
     }
 
@@ -395,6 +410,14 @@ Rectangle {
             return item.namespace || "*";
         if (cfg.kind === "animationList")
             return item.enabled === false ? "Disabled" : "Enabled";
+        if (cfg.kind === "deviceList") {
+            let parts = [];
+            if (String(item.sensitivity || "").trim())
+                parts.push("sens " + item.sensitivity);
+            if (item.accel_profile)
+                parts.push(item.accel_profile);
+            return parts.join(" \u00b7 ") || "\u2014";
+        }
         return "";
     }
 
@@ -430,7 +453,17 @@ Rectangle {
             return layerFlags.join(", ");
         }
         if (cfg.kind === "animationList")
-            return "speed " + (item.speed || "0") + (item.bezier ? " · " + item.bezier : "");
+            return "speed " + (item.speed || "0") + (item.bezier ? " \u00b7 " + item.bezier : "");
+        if (cfg.kind === "deviceList") {
+            let parts = [];
+            if (item.kb_layout)
+                parts.push("layout: " + item.kb_layout);
+            if (item.natural_scroll === true)
+                parts.push("natural scroll");
+            if (item.disable_while_typing === false)
+                parts.push("dwt off");
+            return parts.join(" \u00b7 ") || "\u2014";
+        }
         return "";
     }
 
@@ -496,6 +529,28 @@ Rectangle {
     }
     function updateAnimationItem(index, key, value) {
         HyprlandSettings.updateAnimationItem(index, key, value);
+    }
+    function addDeviceItem() {
+        HyprlandSettings.addDeviceItem();
+    }
+    function removeDeviceItem(index) {
+        HyprlandSettings.removeDeviceItem(index);
+        if (root.selectedDeviceIndex === index)
+            root.selectedDeviceIndex = -1;
+    }
+    function updateDeviceItem(index, key, value) {
+        HyprlandSettings.updateDeviceItem(index, key, value);
+    }
+    function selectedDeviceItem() {
+        return root.selectedDeviceIndex >= 0 && root.selectedDeviceIndex < root.deviceItems.length
+            ? root.deviceItems[root.selectedDeviceIndex]
+            : null;
+    }
+    function openDeviceEditor(index) {
+        root.selectedDeviceIndex = index;
+        listEditor.visible = false;
+        bindEditor.visible = false;
+        deviceEditor.visible = true;
     }
 
     function writeFileCommand(path, content, marker) {
@@ -906,7 +961,12 @@ Rectangle {
 
                                     Table {
                                         visible: !!listEditorColumn.editorConfig && !listEditorColumn.isBindList
-                                        headers: ["Name", listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "State" : "Match", listEditorColumn.editorConfig && listEditorColumn.editorConfig.kind === "animationList" ? "Timing" : "Options", "Extra", ""]
+                                        headers: {
+                                            let cfg = listEditorColumn.editorConfig;
+                                            if (cfg && cfg.kind === "deviceList")
+                                                return ["Device", "Pointer", "Keyboard", ""];
+                                            return ["Name", cfg && cfg.kind === "animationList" ? "State" : "Match", cfg && cfg.kind === "animationList" ? "Timing" : "Options", "Extra", ""];
+                                        }
                                         model: root.editorItems(listEditorColumn.editorConfig)
                                         row: RowLayout {
                                             id: ruleTableRow
@@ -914,11 +974,12 @@ Rectangle {
                                             property int index
 
                                             readonly property var editorConfig: listEditorColumn.editorConfig
+                                            readonly property bool isDeviceList: !!editorConfig && editorConfig.kind === "deviceList"
 
                                             anchors.fill: parent
 
                                             TextStyled {
-                                                text: root.clippedText(root.listTableTitle(ruleTableRow.editorConfig, ruleTableRow.modelData), "New rule")
+                                                text: root.clippedText(root.listTableTitle(ruleTableRow.editorConfig, ruleTableRow.modelData), ruleTableRow.isDeviceList ? "New device" : "New rule")
                                                 elide: Text.ElideRight
                                             }
                                             TextStyled {
@@ -930,12 +991,18 @@ Rectangle {
                                                 elide: Text.ElideRight
                                             }
                                             TextStyled {
+                                                visible: !ruleTableRow.isDeviceList
                                                 text: root.clippedText(root.listTableColumnThree(ruleTableRow.editorConfig, ruleTableRow.modelData), "")
                                                 elide: Text.ElideRight
                                             }
                                             ButtonStyled {
                                                 text: Icons.settingsCog
-                                                onClicked: root.openListEditor(ruleTableRow.editorConfig, ruleTableRow.index)
+                                                onClicked: {
+                                                    if (ruleTableRow.isDeviceList)
+                                                        root.openDeviceEditor(ruleTableRow.index);
+                                                    else
+                                                        root.openListEditor(ruleTableRow.editorConfig, ruleTableRow.index);
+                                                }
                                             }
                                         }
                                     }
@@ -954,6 +1021,11 @@ Rectangle {
 
         HyprlandViewComponents.HyprlandBindEditor {
             id: bindEditor
+            view: root
+        }
+
+        HyprlandViewComponents.HyprlandDeviceEditor {
+            id: deviceEditor
             view: root
         }
     }

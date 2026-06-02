@@ -19,6 +19,7 @@ Singleton {
     property list<var> windowRuleItems: []
     property list<var> layerRuleItems: []
     property list<var> animationItems: []
+    property list<var> deviceItems: []
     readonly property list<string> bindFlagOptions: ["locked", "release", "click", "drag", "long_press", "repeating", "non_consuming", "mouse", "transparent", "ignore_mods", "separate", "bypass", "submap_universal"]
     readonly property list<var> commonBindActions: [
         {
@@ -1674,6 +1675,19 @@ Singleton {
             }
         },
         {
+            title: "Device Config",
+            wiki: "https://wiki.hypr.land/Configuring/Advanced-and-Cool/Devices/",
+            subtitle: "Per-device input settings. Use hyprctl devices to list available device names.",
+            kind: "deviceList",
+            settings: [],
+            editor: {
+                kind: "deviceList",
+                addText: "+ Add device config",
+                titleKey: "name",
+                titleFallback: "New device"
+            }
+        },
+        {
             title: "Ecosystem / Debug",
             wiki: "https://wiki.hypr.land/Configuring/Basics/Variables/#debug",
             subtitle: "Ecosystem notices and debugging options.",
@@ -2616,6 +2630,54 @@ Singleton {
         animationItems = next;
     }
 
+    function getDeviceItems() {
+        return deviceItems;
+    }
+
+    function addDeviceItem() {
+        let next = cloneList(deviceItems);
+        next.push({
+            name: "",
+            sensitivity: "",
+            accel_profile: "",
+            force_no_accel: null,
+            left_handed: null,
+            scroll_factor: "",
+            scroll_method: "",
+            natural_scroll: null,
+            kb_model: "",
+            kb_layout: "",
+            kb_variant: "",
+            kb_options: "",
+            kb_rules: "",
+            kb_file: "",
+            numlock_by_default: null,
+            resolve_binds_by_sym: null,
+            repeat_rate: "",
+            repeat_delay: "",
+            disable_while_typing: null,
+            middle_button_emulation: null,
+            drag_lock: null,
+            tap_button_map: "",
+            transform: ""
+        });
+        deviceItems = next;
+    }
+
+    function removeDeviceItem(index) {
+        let next = cloneList(deviceItems);
+        next.splice(index, 1);
+        deviceItems = next;
+    }
+
+    function updateDeviceItem(index, key, value) {
+        let next = cloneList(deviceItems);
+        if (!next[index])
+            return;
+        next[index][key] = value;
+        deviceItems = next;
+    }
+
     function settingType(path) {
         for (let s = 0; s < sections.length; s++) {
             let settings = sections[s].settings;
@@ -2894,12 +2956,49 @@ Singleton {
         return config;
     }
 
+    function generateDeviceConfig() {
+        let config = "";
+        let numericKeys = ["sensitivity", "scroll_factor", "repeat_rate", "repeat_delay"];
+        let stringKeys = ["accel_profile", "scroll_method", "kb_model", "kb_layout",
+            "kb_variant", "kb_options", "kb_rules", "kb_file", "tap_button_map", "transform"];
+        let boolKeys = ["force_no_accel", "left_handed", "natural_scroll",
+            "numlock_by_default", "resolve_binds_by_sym",
+            "disable_while_typing", "middle_button_emulation", "drag_lock"];
+        for (let i = 0; i < deviceItems.length; i++) {
+            let device = deviceItems[i];
+            if (!String(device.name || "").trim())
+                continue;
+            config += "hl.device({\n";
+            config += "    name = " + luaString(String(device.name)) + ",\n";
+            for (let k = 0; k < numericKeys.length; k++) {
+                let key = numericKeys[k];
+                let val = String(device[key] || "").trim();
+                if (val.length > 0 && !isNaN(parseFloat(val)))
+                    config += "    " + key + " = " + parseFloat(val) + ",\n";
+            }
+            for (let k = 0; k < stringKeys.length; k++) {
+                let key = stringKeys[k];
+                let val = String(device[key] || "").trim();
+                if (val.length > 0)
+                    config += "    " + key + " = " + luaString(val) + ",\n";
+            }
+            for (let k = 0; k < boolKeys.length; k++) {
+                let key = boolKeys[k];
+                if (device[key] !== null && device[key] !== undefined)
+                    config += "    " + key + " = " + (!!device[key] ? "true" : "false") + ",\n";
+            }
+            config += "})\n\n";
+        }
+        return config;
+    }
+
     function metadataHeader() {
         let config = "-- quickshell-values: " + JSON.stringify(values) + "\n";
         config += "-- quickshell-bind-items: " + JSON.stringify(bindItems) + "\n";
         config += "-- quickshell-window-rule-items: " + JSON.stringify(windowRuleItems) + "\n";
         config += "-- quickshell-layer-rule-items: " + JSON.stringify(layerRuleItems) + "\n";
         config += "-- quickshell-animation-items: " + JSON.stringify(animationItems) + "\n";
+        config += "-- quickshell-device-items: " + JSON.stringify(deviceItems) + "\n";
         return config;
     }
 
@@ -2927,6 +3026,11 @@ Singleton {
             config += "-- quickshell-animation-items: " + JSON.stringify(animationItems) + "\n\n";
             let animationConfig = generateAnimationConfig();
             return config + (animationConfig.length > 0 ? animationConfig : "-- No generated animations yet.\n");
+        }
+        if (sectionData.kind === "deviceList") {
+            config += "-- quickshell-device-items: " + JSON.stringify(deviceItems) + "\n\n";
+            let deviceConfig = generateDeviceConfig();
+            return config + (deviceConfig.length > 0 ? deviceConfig : "-- No generated device configs yet.\n");
         }
 
         let tree = buildConfigTreeForSection(sectionData);
@@ -2975,5 +3079,6 @@ Singleton {
         windowRuleItems = parseMetadataList(text, "window-rule-items");
         layerRuleItems = parseMetadataList(text, "layer-rule-items");
         animationItems = parseMetadataList(text, "animation-items");
+        deviceItems = parseMetadataList(text, "device-items");
     }
 }
