@@ -13,9 +13,143 @@ Rectangle {
 
     required property HyprlandSettingsViews.HyprlandSettingsView view
 
+    property bool showKeyboardCapture: false
+
+    function bindModifierLabel(modifier) {
+        if (modifier === "super")
+            return "SUPER";
+        if (modifier === "ctrl")
+            return "CTRL";
+        if (modifier === "alt")
+            return "ALT";
+        return "";
+    }
+
+    function textBindKey(text) {
+        const shifted = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:\"<>?";
+        const needsShift = text.length === 1 && shifted.indexOf(text) >= 0;
+        const key = text.length === 1 ? text.toLowerCase() : text;
+
+        if (key === " ")
+            return { name: "Space", shift: false };
+        if (key === "-")
+            return { name: "Minus", shift: false };
+        if (key === "_")
+            return { name: "Minus", shift: true };
+        if (key === "=")
+            return { name: "Equal", shift: false };
+        if (key === "+")
+            return { name: "Equal", shift: true };
+        if (key === "[")
+            return { name: "BracketLeft", shift: false };
+        if (key === "{")
+            return { name: "BracketLeft", shift: true };
+        if (key === "]")
+            return { name: "BracketRight", shift: false };
+        if (key === "}")
+            return { name: "BracketRight", shift: true };
+        if (key === "\\")
+            return { name: "Backslash", shift: false };
+        if (key === "|")
+            return { name: "Backslash", shift: true };
+        if (key === ";")
+            return { name: "Semicolon", shift: false };
+        if (key === ":")
+            return { name: "Semicolon", shift: true };
+        if (key === "'")
+            return { name: "Apostrophe", shift: false };
+        if (key === "\"")
+            return { name: "Apostrophe", shift: true };
+        if (key === ",")
+            return { name: "Comma", shift: false };
+        if (key === "<")
+            return { name: "Comma", shift: true };
+        if (key === ".")
+            return { name: "Period", shift: false };
+        if (key === ">")
+            return { name: "Period", shift: true };
+        if (key === "/")
+            return { name: "Slash", shift: false };
+        if (key === "?")
+            return { name: "Slash", shift: true };
+        if (key === "!")
+            return { name: "1", shift: true };
+        if (key === "@")
+            return { name: "2", shift: true };
+        if (key === "#")
+            return { name: "3", shift: true };
+        if (key === "$")
+            return { name: "4", shift: true };
+        if (key === "%")
+            return { name: "5", shift: true };
+        if (key === "^")
+            return { name: "6", shift: true };
+        if (key === "&")
+            return { name: "7", shift: true };
+        if (key === "*")
+            return { name: "8", shift: true };
+        if (key === "(")
+            return { name: "9", shift: true };
+        if (key === ")")
+            return { name: "0", shift: true };
+        if (key.length === 1 && key >= "a" && key <= "z")
+            return { name: key.toUpperCase(), shift: needsShift };
+        if (key.length === 1 && key >= "0" && key <= "9")
+            return { name: key, shift: false };
+
+        return { name: "", shift: false };
+    }
+
+    function specialBindKey(key) {
+        if (key === "escape")
+            return "Escape";
+        if (key === "backspace")
+            return "Backspace";
+        if (key === "tab")
+            return "Tab";
+        if (key === "enter")
+            return "Return";
+        if (key === "left")
+            return "Left";
+        if (key === "right")
+            return "Right";
+        if (key === "up")
+            return "Up";
+        if (key === "down")
+            return "Down";
+        if (key === "menu")
+            return "Menu";
+        return "";
+    }
+
+    function setKeyboardBind(keyName, modifier, shift) {
+        if (root.view.selectedBindIndex < 0 || keyName.length === 0)
+            return;
+
+        let parts = [];
+        const modifierLabel = root.bindModifierLabel(modifier);
+        if (modifierLabel.length > 0)
+            parts.push(modifierLabel);
+        if (shift)
+            parts.push("SHIFT");
+        parts.push(keyName);
+
+        root.view.updateBindItem(root.view.selectedBindIndex, "keys", parts.join(" + "));
+        root.showKeyboardCapture = false;
+    }
+
+    function setKeyboardTextBind(text, modifier) {
+        const key = root.textBindKey(text);
+        root.setKeyboardBind(key.name, modifier, key.shift);
+    }
+
+    function setKeyboardSpecialBind(key, modifier) {
+        root.setKeyboardBind(root.specialBindKey(key), modifier, false);
+    }
+
     visible: false
     Layout.fillHeight: true
-    Layout.preferredWidth: 550
+    Layout.preferredWidth: 950
     color: Qt.lighter(Colors.surface, 1.2)
 
     component InputFrameLocal: Rectangle {
@@ -83,6 +217,28 @@ Rectangle {
                     text: root.view.capturingBindIndex === root.view.selectedBindIndex ? "Press keys..." : "Detect"
                     defaultColor: root.view.capturingBindIndex === root.view.selectedBindIndex ? Colors.primary : Colors.background
                     onClicked: root.view.startCapturingBind(root.view.selectedBindIndex)
+                }
+                ButtonStyled {
+                    text: root.showKeyboardCapture ? "Hide Keyboard" : "Keyboard"
+                    defaultColor: root.showKeyboardCapture ? Colors.primary : Colors.background
+                    textColor: root.showKeyboardCapture ? Colors.onPrimary : Colors.onSurface
+                    onClicked: root.showKeyboardCapture = !root.showKeyboardCapture
+                }
+            }
+
+            Rectangle {
+                visible: root.showKeyboardCapture
+                Layout.fillWidth: true
+                Layout.preferredHeight: 230
+                color: Colors.surface
+                radius: Styles.radiusLg
+                clip: true
+
+                Keyboard {
+                    anchors.fill: parent
+                    anchors.margins: Styles.marginSm
+                    onInputText: (text, modifier) => root.setKeyboardTextBind(text, modifier)
+                    onSpecialKey: (key, modifier) => root.setKeyboardSpecialBind(key, modifier)
                 }
             }
 
