@@ -12,8 +12,16 @@ Rectangle {
     id: root
 
     required property HyprlandSettingsViews.HyprlandSettingsView view
+    property var editorWindow: null
 
     property bool showKeyboardCapture: false
+
+    function closeEditor() {
+        if (root.editorWindow)
+            root.editorWindow.exit();
+        else
+            root.visible = false;
+    }
 
     function bindModifierLabel(modifier) {
         if (modifier === "super")
@@ -181,7 +189,7 @@ Rectangle {
 
             ButtonStyled {
                 text: Icons.close
-                onClicked: root.visible = false
+                onClicked: root.closeEditor()
             }
         }
 

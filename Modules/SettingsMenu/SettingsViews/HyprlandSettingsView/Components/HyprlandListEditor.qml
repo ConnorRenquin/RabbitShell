@@ -12,6 +12,15 @@ Rectangle {
     id: root
 
     required property HyprlandSettingsViews.HyprlandSettingsView view
+    property var editorWindow: null
+
+    function closeEditor() {
+        if (root.editorWindow)
+            root.editorWindow.exit();
+        else
+            root.visible = false;
+    }
+
     readonly property list<var> editorFields: {
         let fields = [];
         let rows = view.selectedListEditorConfig ? view.selectedListEditorConfig.rows : [];
@@ -42,7 +51,7 @@ Rectangle {
 
             ButtonStyled {
                 text: Icons.close
-                onClicked: root.visible = false
+                onClicked: root.closeEditor()
             }
         }
 

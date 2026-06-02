@@ -16,6 +16,14 @@ Rectangle {
     id: root
 
     required property HyprlandSettingsViews.HyprlandSettingsView view
+    property var editorWindow: null
+
+    function closeEditor() {
+        if (root.editorWindow)
+            root.editorWindow.exit();
+        else
+            root.visible = false;
+    }
 
     visible: false
     Layout.fillHeight: true
@@ -105,7 +113,7 @@ Rectangle {
 
             ButtonStyled {
                 text: Icons.close
-                onClicked: root.visible = false
+                onClicked: root.closeEditor()
             }
         }
 

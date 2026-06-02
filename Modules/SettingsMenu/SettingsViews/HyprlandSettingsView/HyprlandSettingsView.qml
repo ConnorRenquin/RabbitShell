@@ -342,15 +342,17 @@ Rectangle {
 
     function openBindEditor(index) {
         selectedBindIndex = index;
-        listEditor.visible = false;
-        bindEditor.visible = true;
+        listEditorWindow.exit();
+        deviceEditorWindow.exit();
+        bindEditorWindow.open();
     }
 
     function openListEditor(cfg, index) {
         selectedListEditorConfig = cfg;
         selectedListEditorIndex = index;
-        bindEditor.visible = false;
-        listEditor.visible = true;
+        bindEditorWindow.exit();
+        deviceEditorWindow.exit();
+        listEditorWindow.open();
     }
 
     function selectedListItem() {
@@ -373,7 +375,6 @@ Rectangle {
 
     function pickWindowForRule(index) {
         pendingWindowRulePickIndex = index;
-        listEditor.visible = false;
         statusText = "Click/focus the target window now. Capturing active window in 2 seconds...";
         pickWindowProcess.running = true;
     }
@@ -548,9 +549,9 @@ Rectangle {
     }
     function openDeviceEditor(index) {
         root.selectedDeviceIndex = index;
-        listEditor.visible = false;
-        bindEditor.visible = false;
-        deviceEditor.visible = true;
+        listEditorWindow.exit();
+        bindEditorWindow.exit();
+        deviceEditorWindow.open();
     }
 
     function writeFileCommand(path, content, marker) {
@@ -575,6 +576,19 @@ Rectangle {
         let text = pendingAggregateContent.length > 0 ? pendingAggregateContent : configFile.text();
         HyprlandSettings.loadFromText(text);
         statusText = "Loaded " + configPath;
+    }
+
+    function ensureSectionFiles() {
+        let cmd = "mkdir -p \"" + configDir + "\"\n";
+        for (let i = 0; i < sections.length; i++) {
+            let section = sections[i];
+            let path = HyprlandSettings.sectionFilePath(section);
+            cmd += "if [ ! -f \"" + path + "\" ]; then\n";
+            cmd += writeFileCommand(path, HyprlandSettings.generateSectionConfig(section), "QSMISSINGSECTION" + i + "EOF");
+            cmd += "fi\n";
+        }
+        ensureSectionFilesProcess.command = ["bash", "-c", cmd];
+        ensureSectionFilesProcess.running = true;
     }
     Component.onCompleted: {
         ensureDirectory.running = true;
@@ -612,6 +626,15 @@ Rectangle {
     }
 
     Process {
+        id: ensureSectionFilesProcess
+        running: false
+        function onExited(exitCode) {
+            if (exitCode !== 0)
+                root.statusText = "Failed to create missing Hyprland section files (exit code " + exitCode + ")";
+        }
+    }
+
+    Process {
         id: pickWindowProcess
         command: ["bash", "-c", "sleep 2; hyprctl activewindow -j"]
         running: false
@@ -644,6 +667,7 @@ Rectangle {
         onLoaded: {
             root.loading = false;
             root.reloadConfig();
+            root.ensureSectionFiles();
         }
 
         onLoadFailed: {
@@ -1013,20 +1037,53 @@ Rectangle {
                 }
             }
         }
+    }
 
+    component FloatingWindowLocal:  FloatingWindow {
+        title: "Settings Menu Popup"
+        visible: false
+        color: Qt.lighter(Colors.surface, 1.2)
+        minimumSize: Qt.size(550, 520)
+
+        function open() {
+            visible = true;
+        }
+
+        function exit() {
+            visible = false;
+        }
+
+        onClosed: exit()
+    }
+
+
+    FloatingWindowLocal {
+        id: listEditorWindow
         HyprlandViewComponents.HyprlandListEditor {
-            id: listEditor
             view: root
+            editorWindow: listEditorWindow
+            visible: true
+            anchors.fill: parent
         }
+    }
 
+    FloatingWindowLocal {
+        id: bindEditorWindow
         HyprlandViewComponents.HyprlandBindEditor {
-            id: bindEditor
             view: root
+            editorWindow: bindEditorWindow
+            visible: true
+            anchors.fill: parent
         }
+    }
 
+    FloatingWindowLocal {
+        id: deviceEditorWindow
         HyprlandViewComponents.HyprlandDeviceEditor {
-            id: deviceEditor
             view: root
+            editorWindow: deviceEditorWindow
+            visible: true
+            anchors.fill: parent
         }
     }
 }
