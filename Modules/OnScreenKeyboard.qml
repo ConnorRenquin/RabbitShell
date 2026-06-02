@@ -9,12 +9,12 @@ import QtQuick.Layouts
 import qs.Settings
 import qs.Components
 
-Item {
+Loader {
     id: root
 
-    property bool oskVisible: false
-    property string shortcutName: "keyboard"
     property var ydotoolQueue: []
+
+    active: false
 
     function runYdotool(command) {
         const nextQueue = root.ydotoolQueue.slice();
@@ -144,19 +144,10 @@ Item {
 
     function sendYdotoolKey(keycode, source) {
         if (keycode === 0) {
-            console.log("OnScreenKeyboard: missing ydotool keycode", JSON.stringify({
-                keycode,
-                source
-            }));
             return false;
         }
 
         const command = ["ydotool", "key", "--key-delay", "0", keycode + ":1", keycode + ":0"];
-        console.log("OnScreenKeyboard: sendYdotoolKey", JSON.stringify({
-            keycode,
-            command,
-            source
-        }));
         root.runYdotool(command);
         return true;
     }
@@ -169,13 +160,6 @@ Item {
         const modifierKeycode = root.modifierToKeycode(modifier);
         const shiftKeycode = 42;
         if (keycode === 0 || modifierKeycode === 0) {
-            console.log("OnScreenKeyboard: missing ydotool combo keycode", JSON.stringify({
-                keycode,
-                modifier,
-                modifierKeycode,
-                source,
-                includeShift
-            }));
             return false;
         }
 
@@ -186,21 +170,12 @@ Item {
         if (includeShift)
             command.push(shiftKeycode + ":0");
         command.push(modifierKeycode + ":0");
-        console.log("OnScreenKeyboard: sendYdotoolCombo", JSON.stringify({
-            keycode,
-            modifier,
-            modifierKeycode,
-            includeShift,
-            command,
-            source
-        }));
         root.runYdotool(command);
         return true;
     }
 
     function sendText(text, modifier) {
         if (text.length === 0) {
-            console.log("OnScreenKeyboard: ignored empty text input");
             return;
         }
 
@@ -212,13 +187,6 @@ Item {
             return;
 
         const command = ["ydotool", "type", "--key-delay", "0", text];
-        console.log("OnScreenKeyboard: sendText", JSON.stringify({
-            text,
-            modifier,
-            keycode,
-            command,
-            mode: "ydotool-type"
-        }));
         root.runYdotool(command);
     }
 
@@ -246,7 +214,6 @@ Item {
 
     function sendSpecial(key, modifier) {
         if (key === "fn") {
-            console.log("OnScreenKeyboard: ignored fn key");
             return;
         }
 
@@ -265,139 +232,78 @@ Item {
     }
 
     Process {
-        id: ydotoolDaemonCheck
-        command: ["pgrep", "-x", "ydotoold"]
-        running: true
-
-        function onExited(exitCode) {
-            if (exitCode !== 0)
-                console.log("OnScreenKeyboard: ydotoold does not appear to be running. ydotool key injection will not work until ydotoold is started and accessible.");
-            else
-                console.log("OnScreenKeyboard: ydotoold is running");
-        }
-    }
-
-    Process {
         id: ydotoolRunner
         running: false
-
         function onExited(exitCode) {
-            console.log("OnScreenKeyboard: ydotool exited", JSON.stringify({
-                exitCode,
-                command: ydotoolRunner.command
-            }));
             root.drainYdotoolQueue();
-        }
-
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function (data) {
-                if (data.trim() !== "")
-                    console.log("OnScreenKeyboard: ydotool stdout:", data.trim());
-            }
-        }
-
-        stderr: SplitParser {
-            splitMarker: "\n"
-            onRead: function (data) {
-                if (data.trim() !== "")
-                    console.log("OnScreenKeyboard: ydotool stderr:", data.trim());
-            }
         }
     }
 
     GlobalShortcut {
-        name: root.shortcutName
-        onPressed: root.oskVisible = !root.oskVisible
+        name: "keyboard"
+        onPressed: root.active = !root.active
     }
 
-    Loader {
-        id: oskLoader
-        active: root.oskVisible
+    sourceComponent: PanelWindow {
+        id: oskWindow
 
-        sourceComponent: PanelWindow {
-            id: oskWindow
+        visible: root.active
+        color: "transparent"
 
-            visible: oskLoader.active
-            implicitWidth: 1580
-            implicitHeight: 390
-            color: "transparent"
+        anchors.bottom: true
+        anchors.left: true
+        anchors.right: true
+        implicitHeight: 400
 
-            anchors.bottom: true
+        WlrLayershell.namespace: "quickshell:osk"
+        WlrLayershell.layer: WlrLayer.Overlay
 
-            WlrLayershell.namespace: "quickshell:osk"
-            WlrLayershell.layer: WlrLayer.Overlay
+        mask: Region {
+            item: base
+        }
 
-            mask: Region {
-                item: base
-            }
+        Rectangle {
+            id: base
 
-            Rectangle {
-                id: base
+            implicitWidth: parent.width / 2
+            implicitHeight: parent.height
+            anchors.centerIn: parent
+            anchors.margins: Styles.marginSm
+            color: Colors.background
+            radius: Styles.radiusLg
 
+            ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: Styles.marginSm
-                color: Colors.background
-                radius: Styles.radiusLg
-                focus: false
+                spacing: Styles.marginSm
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: Styles.marginSm
+                RowLayout {
+                    id: topBar
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 22
                     spacing: Styles.marginSm
-
-                    RowLayout {
-                        id: topBar
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 22
-                        spacing: Styles.marginSm
-                        SliderStyled {
-                            Layout.fillHeight: true
-                            Layout.fillWidth: true
-                            onValueChanged: oskWindow.implicitWidth = value
-                            from: 500
-                            to: 2000
-                            showPercentage: false
-                        }
-                        ButtonStyled {
-                            text: "×"
-                            implicitWidth: 42
-                            Layout.fillHeight: true
-                            defaultColor: Colors.surfaceVariant
-                            textColor: Colors.onSurface
-                            onClicked: root.oskVisible = false
-                        }
-                    }
-
-                    Loader {
-                        id: keyboardLoader
-
-                        Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignRight
+                    Rectangle {
                         Layout.fillHeight: true
-                        source: Qt.resolvedUrl("../Components/Keyboard.qml")
+                        Layout.fillWidth: true
+                        radius: Styles.radiusSm
+                        color: Colors.onPrimary
                     }
+                    ButtonStyled {
+                        text: "×"
+                        implicitWidth: 42
+                        Layout.fillHeight: true
+                        defaultColor: Colors.surfaceVariant
+                        textColor: Colors.onSurface
+                        onClicked: root.active = false
+                    }
+                }
 
-                    Connections {
-                        target: keyboardLoader.item
-                        function onInputText(text, modifier) {
-                            console.log("OnScreenKeyboard: received inputText", JSON.stringify({
-                                text,
-                                modifier
-                            }));
-                            root.sendText(text, modifier);
-                        }
-                        function onSpecialKey(key, modifier) {
-                            console.log("OnScreenKeyboard: received specialKey", JSON.stringify({
-                                key,
-                                modifier
-                            }));
-                            root.sendSpecial(key, modifier);
-                        }
-                        function onClosedRequested() {
-                            console.log("OnScreenKeyboard: received closedRequested");
-                            root.oskVisible = false;
-                        }
-                    }
+                Keyboard {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    onInputText: (text, modifier) => root.sendText(text, modifier)
+                    onSpecialKey: (key, modifier) => root.sendSpecial(key, modifier)
                 }
             }
         }

@@ -50,6 +50,7 @@
             pkgs.satty
             pkgs.mpv
             pkgs.fastfetch
+            pkgs.ydotool
 
             # Commands used by Process/execDetached in the shell.
             pkgs.bash

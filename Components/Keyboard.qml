@@ -308,7 +308,6 @@ Rectangle {
 
     signal inputText(string text, string modifier)
     signal specialKey(string key, string modifier)
-    signal closedRequested
 
     function displayLabel(keyData) {
         if (keyData.label !== undefined)
@@ -339,41 +338,25 @@ Rectangle {
             capsActive: root.capsActive,
             activeModifier: root.activeModifier
         };
-        console.log("Keyboard: pressed", JSON.stringify(beforeState));
-
         if (keyData.key === "shift") {
             root.shiftActive = !root.shiftActive;
-            console.log("Keyboard: toggled shift", root.shiftActive);
             return;
         }
         if (keyData.key === "caps") {
             root.capsActive = !root.capsActive;
-            console.log("Keyboard: toggled caps", root.capsActive);
             return;
         }
         if (keyData.key === "ctrl" || keyData.key === "alt" || keyData.key === "super") {
             root.activeModifier = root.activeModifier === keyData.key ? "" : keyData.key;
-            console.log("Keyboard: toggled modifier", JSON.stringify({
-                modifier: keyData.key,
-                activeModifier: root.activeModifier
-            }));
             return;
         }
         if (keyData.normal !== undefined) {
             const text = root.outputText(keyData);
-            console.log("Keyboard: emit inputText", JSON.stringify({
-                text,
-                modifier: root.activeModifier
-            }));
             root.inputText(text, root.activeModifier);
             root.activeModifier = "";
             root.consumeShift();
             return;
         }
-        console.log("Keyboard: emit specialKey", JSON.stringify({
-            key: keyData.key,
-            modifier: root.activeModifier
-        }));
         root.specialKey(keyData.key, root.activeModifier);
         root.activeModifier = "";
         root.consumeShift();
@@ -382,7 +365,6 @@ Rectangle {
     ColumnLayout {
         id: keyboardColumn
         anchors.fill: parent
-        anchors.margins: Styles.marginSm
         spacing: Styles.marginSm
 
         KeyboardRow {
@@ -453,8 +435,8 @@ Rectangle {
                 text: root.displayLabel(modelData)
                 defaultColor: (modelData.key === "shift" && root.shiftActive) || (modelData.key === "caps" && root.capsActive) || (modelData.key !== undefined && modelData.key === root.activeModifier) ? Colors.primary : Colors.surfaceVariant
                 textColor: defaultColor === Colors.primary ? Colors.onPrimary : Colors.onSurface
-                pointSize: Styles.textMd
                 onClicked: root.handleKey(modelData)
+                radius: Styles.radiusLg
             }
         }
     }
