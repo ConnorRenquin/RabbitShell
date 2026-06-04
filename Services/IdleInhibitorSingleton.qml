@@ -32,7 +32,7 @@ Singleton {
     }
 
     GlobalShortcut {
-        name: "idleToggle"
+        name: "idle-toggle"
         onPressed: root.toggle()
     }
 

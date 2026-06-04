@@ -33,7 +33,7 @@ Singleton {
             label: "Rabbit Shell",
             param: "target",
             placeholder: "quickshell:powermenu",
-            options: ['quickshell:powermenu', 'quickshell:keyboard', 'quickshell:lockscreen', 'quickshell:applauncher', 'quickshell:mixer', 'quickshell:clipboard', 'quickshell:notification-manager', 'quickshell:screendraw', 'quickshell:toplevelview']
+            options: ['quickshell:powermenu', 'quickshell:keyboard', 'quickshell:idle-toggle', 'quickshell:lockscreen', 'quickshell:applauncher', 'quickshell:mixer', 'quickshell:clipboard', 'quickshell:notification-manager', 'quickshell:screendraw', 'quickshell:toplevelview']
         },
         {
             id: "focusDirection",
