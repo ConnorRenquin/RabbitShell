@@ -100,10 +100,17 @@ Singleton {
     }
 
     function toSaveData() {
-        const out = {}
+        // Start from the last-loaded saved values so that settings belonging to
+        // components that haven't registered yet (e.g. wallpaper settings, which
+        // only register when the settings panel is first opened) are never erased
+        // by a save triggered while only core settings are registered.
+        const out = Object.assign({}, root.savedValues)
         for (const s of settings) {
             if (s.value !== s.defaultValue) {
                 out[s.name] = s.value
+            } else {
+                // Setting was reverted to default – remove it from the saved file.
+                delete out[s.name]
             }
         }
         return out
@@ -122,6 +129,12 @@ Singleton {
 
         onDataLoaded: parsed => {
             root.savedValues = parsed
+
+            // When isReady is already true the reload was triggered by one of our
+            // own save() calls.  Just refreshing savedValues (above) is enough –
+            // the live settings array is already authoritative at that point.
+            if (root.isReady)
+                return
 
             const next = root.settings.map(s =>
                 parsed.hasOwnProperty(s.name)

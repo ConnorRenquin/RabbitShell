@@ -28,17 +28,17 @@ Rectangle {
     property int wallpaperTransitionDuration
 
     Component.onCompleted: {
-        wallpaperDirectory = Settings.register({
+        root.wallpaperDirectory = Settings.register({
             name: 'wallpaperDirectory',
             value: '/home',
             category: 'wallpaper'
         }).value;
-        wallpaperTransition = Settings.register({
+        root.wallpaperTransition = Settings.register({
             name: 'wallpaperTransition',
             value: 'fade',
             category: 'wallpaper'
         }).value;
-        wallpaperTransitionDuration = Settings.register({
+        root.wallpaperTransitionDuration = Settings.register({
             name: 'wallpaperTransitionDuration',
             value: 5,
             category: 'wallpaper'
@@ -83,7 +83,7 @@ Rectangle {
         }
 
         Rectangle {
-            id: wallpaperDirectory
+            id: wallpaperDirectorySection
             Layout.fillWidth: true
             Layout.preferredHeight: 120
             color: Colors.surface
