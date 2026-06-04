@@ -40,29 +40,126 @@ FloatingWindowPlus {
             id: controls
         }
 
-        function childIndexOf(item) {
-            for (var i = 0; i < settingsModuleUi.children.length; i++) {
-                if (settingsModuleUi.children[i] === item)
-                    return i;
+        property list<SettingsViewEntry> settingsViews: [
+            SettingsViewEntry {
+                id: aboutSettingsViewEntry
+                name: Icons.info + ' About'
+                view: Component {
+                    AboutSettingsView {
+                        name: aboutSettingsViewEntry.name
+                        anchors.fill: parent
+                    }
+                }
+            },
+            SettingsViewEntry {
+                id: hyprlandSettingsViewEntry
+                name: Icons.hyprland + ' Hyprland'
+                view: Component {
+                    HyprlandSettingsView {
+                        name: hyprlandSettingsViewEntry.name
+                        anchors.fill: parent
+                    }
+                }
+            },
+            SettingsViewEntry {
+                id: bluetoothSettingsViewEntry
+                name: Icons.bluetooth + ' Bluetooth'
+                view: Component {
+                    BluetoothSettingsView {
+                        name: bluetoothSettingsViewEntry.name
+                        anchors.fill: parent
+                    }
+                }
+            },
+            SettingsViewEntry {
+                id: networkSettingsViewEntry
+                name: Icons.network + ' Network'
+                view: Component {
+                    NetworkSettingsView {
+                        name: networkSettingsViewEntry.name
+                        anchors.fill: parent
+                    }
+                }
+            },
+            SettingsViewEntry {
+                id: appearanceSettingsViewEntry
+                name: Icons.appearance + ' Appearance'
+                view: Component {
+                    GeneralView {
+                        name: appearanceSettingsViewEntry.name
+                        category: 'appearance'
+                    }
+                }
+            },
+            SettingsViewEntry {
+                id: colorsSettingsViewEntry
+                name: Icons.colors + ' Colors'
+                view: Component {
+                    ColorsSettingsView {
+                        name: colorsSettingsViewEntry.name
+                        anchors.fill: parent
+                    }
+                }
+            },
+            SettingsViewEntry {
+                id: pipewireSettingsViewEntry
+                name: Icons.audio + ' Audio'
+                view: Component {
+                    PipewireSettingsView {
+                        name: pipewireSettingsViewEntry.name
+                        anchors.fill: parent
+                    }
+                }
+            },
+            SettingsViewEntry {
+                id: displaySettingsViewEntry
+                name: Icons.display + ' Display'
+                view: Component {
+                    DisplaySettingsView {
+                        name: displaySettingsViewEntry.name
+                        anchors.fill: parent
+                    }
+                }
+            },
+            SettingsViewEntry {
+                id: wallpaperSettingsViewEntry
+                name: Icons.wallpaper + ' Wallpaper'
+                view: Component {
+                    WallpaperSettingsView {
+                        name: wallpaperSettingsViewEntry.name
+                        anchors.fill: parent
+                    }
+                }
+            },
+            SettingsViewEntry {
+                id: miscSettingsViewEntry
+                name: Icons.misc + ' Misc'
+                view: Component {
+                    GeneralView {
+                        name: miscSettingsViewEntry.name
+                        category: 'misc'
+                    }
+                }
+            },
+            SettingsViewEntry {
+                id: cheatsheetSettingsViewEntry
+                name: Icons.knowledge + ' Knowledge'
+                view: Component {
+                    Cheatsheet {
+                        name: cheatsheetSettingsViewEntry.name
+                        anchors.fill: parent
+                    }
+                }
             }
-
-            return -1;
-        }
+        ]
 
         function selectTabByIndex(index) {
-            var children = settingsModuleUi.children;
-            if (children.length === 0)
+            if (settingsViews.length === 0)
                 return;
 
-            if (index < 0 || index >= children.length || children[index].name === undefined)
+            if (index < 0 || index >= settingsViews.length)
                 index = 0;
 
-            children.forEach(item => {
-                if (item.name !== undefined)
-                    item.visible = false;
-            });
-
-            children[index].visible = true;
             persisted.selectedTabIndex = index;
             settingModules.positionViewAtIndex(index, ListView.Contain);
         }
@@ -76,35 +173,15 @@ FloatingWindowPlus {
             if (controls.tabPressed(event) || controls.backtabPressed(event)) {
                 event.accepted = true;
 
-                // Filter children to only include actual views that have a 'name' property
-                var views = [];
-                for (var i = 0; i < settingsModuleUi.children.length; i++) {
-                    var child = settingsModuleUi.children[i];
-                    if (child.name !== undefined) {
-                        views.push(child);
-                    }
-                }
+                var viewCount = settingsViews.length;
+                if (viewCount === 0)
+                    return;
 
-                var currentIndex = -1;
-                for (var i = 0; i < views.length; i++) {
-                    if (views[i].visible) {
-                        currentIndex = i;
-                        break;
-                    }
-                }
-
-                if (currentIndex !== -1) {
-                    views[currentIndex].visible = false;
-                    var nextIndex;
-                    if (controls.backtabPressed(event)) {
-                        nextIndex = (currentIndex - 1 + views.length) % views.length;
-                    } else {
-                        nextIndex = (currentIndex + 1) % views.length;
-                    }
-                    var originalIndex = childIndexOf(views[nextIndex]);
-                    if (originalIndex !== -1)
-                        selectTabByIndex(originalIndex);
-                }
+                var currentIndex = persisted.selectedTabIndex;
+                var nextIndex = controls.backtabPressed(event)
+                    ? (currentIndex - 1 + viewCount) % viewCount
+                    : (currentIndex + 1) % viewCount;
+                selectTabByIndex(nextIndex);
             }
         }
 
@@ -123,22 +200,20 @@ FloatingWindowPlus {
                 property int minWidth: 40
 
                 ListView {
-
                     id: settingModules
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     clip: true
                     spacing: Styles.marginSm
-                    model: settingsModuleUi.children
+                    model: base.settingsViews
                     delegate: ButtonStyled {
-                        required property var modelData
+                        required property int index
+                        required property SettingsViewEntry modelData
                         textAlignment: persisted.sideButtonsCollapsed ? Text.AlignHCenter : Text.AlignLeft
                         width: ListView.view.width
                         text: persisted.sideButtonsCollapsed ? base.tabIcon(modelData.name) : modelData.name
-                        isFocused: modelData.visible
-                        onClicked: {
-                            base.selectTabByIndex(base.childIndexOf(modelData));
-                        }
+                        isFocused: index === persisted.selectedTabIndex
+                        onClicked: base.selectTabByIndex(index)
                     }
                 }
 
@@ -164,55 +239,33 @@ FloatingWindowPlus {
                 color: Colors.surface
                 Layout.preferredWidth: 300
                 Layout.fillWidth: true
-                AboutSettingsView {
-                    name: Icons.info + ' About'
-                    anchors.fill: parent
-                }
-                HyprlandSettingsView {
-                    name: Icons.hyprland + ' Hyprland'
-                    anchors.fill: parent
-                }
-                BluetoothSettingsView {
-                    name: Icons.bluetooth + ' Bluetooth'
-                    anchors.fill: parent
-                }
-                NetworkSettingsView {
-                    name: Icons.network + ' Network'
-                    anchors.fill: parent
-                }
-                GeneralView {
-                    name: Icons.appearance + ' Appearance'
-                    category: 'appearance'
-                }
-                ColorsSettingsView {
-                    name: Icons.colors + ' Colors'
-                    anchors.fill: parent
-                }
-                PipewireSettingsView {
-                    name: Icons.audio + ' Audio'
-                    anchors.fill: parent
-                }
-                DisplaySettingsView {
-                    name: Icons.display + ' Display'
-                    anchors.fill: parent
-                }
-                WallpaperSettingsView {
-                    name: Icons.wallpaper + ' Wallpaper'
-                    anchors.fill: parent
-                }
-                GeneralView {
-                    name: Icons.misc + ' Misc'
-                    category: 'misc'
-                }
-                Cheatsheet {
-                    name: Icons.knowledge + ' Knowledge'
-                    anchors.fill: parent
+                Repeater {
+                    model: base.settingsViews
+                    delegate: SettingsViewLoader {
+                        required property int index
+                        required property SettingsViewEntry modelData
+                        name: modelData.name
+                        sourceComponent: modelData.view
+                        visible: index === persisted.selectedTabIndex
+                    }
                 }
             }
         }
 
         Component.onCompleted: Qt.callLater(() => selectTabByIndex(persisted.selectedTabIndex))
     }
+    component SettingsViewEntry: QtObject {
+        required property string name
+        required property Component view
+    }
+
+    component SettingsViewLoader: Loader {
+        required property string name
+        anchors.fill: parent
+        active: visible
+        visible: false
+    }
+
     component GeneralView: ScrollView {
         id: view
         required property string name
