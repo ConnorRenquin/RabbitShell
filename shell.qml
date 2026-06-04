@@ -8,6 +8,7 @@ import qs.Settings
 import qs.Modules
 import qs.Modules.Clipboard
 import qs.Modules.SettingsMenu
+import qs.Modules.HyprlandSettingsView
 import qs.Modules.Bar
 
 ShellRoot {
@@ -23,6 +24,7 @@ ShellRoot {
     LockScreen {}
     Polkit {}
     SettingsMenu {}
+    HyprlandSettingsView {}
     TextEditor {}
     ScreenDraw {}
     TimeManager {}

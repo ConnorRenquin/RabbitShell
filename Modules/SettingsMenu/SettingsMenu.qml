@@ -12,7 +12,6 @@ import qs.Helpers
 import qs.Settings
 import qs.Modules.SettingsMenu.SettingsViews
 import qs.Modules.SettingsMenu.SettingsViews.Components
-import qs.Modules.SettingsMenu.SettingsViews.HyprlandSettingsView
 
 FloatingWindowPlus {
     id: root
@@ -51,16 +50,7 @@ FloatingWindowPlus {
                     }
                 }
             },
-            SettingsViewEntry {
-                id: hyprlandSettingsViewEntry
-                name: Icons.hyprland + ' Hyprland'
-                view: Component {
-                    HyprlandSettingsView {
-                        name: hyprlandSettingsViewEntry.name
-                        anchors.fill: parent
-                    }
-                }
-            },
+
             SettingsViewEntry {
                 id: bluetoothSettingsViewEntry
                 name: Icons.bluetooth + ' Bluetooth'

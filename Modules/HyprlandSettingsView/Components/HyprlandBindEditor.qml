@@ -6,12 +6,11 @@ import QtQuick.Controls
 
 import qs.Components
 import qs.Settings
-import ".." as HyprlandSettingsViews
 
 Rectangle {
     id: root
 
-    required property HyprlandSettingsViews.HyprlandSettingsView view
+    required property var view
     property var editorWindow: null
 
     property bool showKeyboardCapture: false

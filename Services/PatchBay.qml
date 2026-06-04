@@ -11,6 +11,7 @@ Singleton {
     signal openNotificationsManager
     signal lockScreen
     signal openSettings
+    signal openHyprlandSettings
     signal openTextEditor
     signal openTimeManager
     signal openTimer
@@ -25,6 +26,10 @@ Singleton {
         target: "patch"
         function settings() {
             root.openSettings()
+        }
+
+        function hyprlandSettings() {
+            root.openHyprlandSettings()
         }
     }
 }

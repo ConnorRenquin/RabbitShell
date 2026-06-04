@@ -30,6 +30,16 @@ Singleton {
             }
         },
         {
+            name: "Hyprland Settings",
+            genericName: "Hyprland Configuration",
+            description: "Open the Hyprland settings module",
+            keywords: ["hyprland", "settings", "preferences", "configuration", "config", "quickshell", "keybinds", "rules"],
+            icon: "preferences-desktop",
+            execute: function () {
+                PatchBay.openHyprlandSettings();
+            }
+        },
+        {
             name: "Text Editor",
             genericName: "Scratchpad Editor",
             description: "Open the Quickshell scratchpad text editor",

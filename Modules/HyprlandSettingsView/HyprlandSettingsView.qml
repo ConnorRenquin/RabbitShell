@@ -15,13 +15,23 @@ import "./Components" as HyprlandViewComponents
 
 import qs.Services
 
-Rectangle {
-    id: root
-
-    required property string name
+FloatingWindowPlus {
+    id: window
 
     color: Colors.surface
-    focus: root.capturingBindIndex >= 0
+    title: 'Hyprland Settings'
+    persistId: "hyprland-settings"
+
+    Component.onCompleted: PatchBay.openHyprlandSettings.connect(toggle)
+
+    delegate: Rectangle {
+        id: root
+
+        anchors.fill: parent
+        color: Colors.surface
+        focus: root.capturingBindIndex >= 0
+
+        property string name: Icons.hyprland + ' Hyprland'
 
     Keys.onPressed: event => {
         if (root.capturingBindIndex < 0)
@@ -1085,5 +1095,6 @@ Rectangle {
             visible: true
             anchors.fill: parent
         }
+    }
     }
 }
