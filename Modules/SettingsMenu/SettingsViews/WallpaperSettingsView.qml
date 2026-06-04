@@ -26,17 +26,17 @@ Rectangle {
     property int wallpaperTransitionDuration
 
     Component.onCompleted: {
-        root.wallpaperDirectory = Settings.register({
+        wallpaperDirectory = Settings.register({
             name: 'wallpaperDirectory',
             value: '/home',
             category: 'wallpaper'
         }).value;
-        root.wallpaperTransition = Settings.register({
+        wallpaperTransition = Settings.register({
             name: 'wallpaperTransition',
             value: 'fade',
             category: 'wallpaper'
         }).value;
-        root.wallpaperTransitionDuration = Settings.register({
+        wallpaperTransitionDuration = Settings.register({
             name: 'wallpaperTransitionDuration',
             value: 5,
             category: 'wallpaper'
@@ -108,18 +108,12 @@ Rectangle {
                     }
 
                     ButtonStyled {
-                        text: "Browse"
-                        onClicked: zenityProcess.running = true
-                    }
-
-                    ButtonStyled {
                         text: "Apply"
                         onClicked: {
                             if (directoryField.text) {
                                 Settings.change({
                                     name: 'wallpaperDirectory',
                                     value: directoryField.text,
-                                    category: 'wallpaper'
                                 });
                             }
                         }

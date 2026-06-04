@@ -26,18 +26,18 @@ Singleton {
     readonly property int textLg: textSm * 2.0
 
     Component.onCompleted: {
-        root.defaultFontFamily = Settings.register({
+        defaultFontFamily = Settings.register({
             name: 'fontFamily',
             value: 'JetBrainsMono Nerd Font Mono Propo',
             options: ['RobotoMono Nerd Font Propo', 'Agave Nerd Font Propo', 'JetBrainsMono Nerd Font Mono', 'SpaceMono Nerd Font Propo', 'Terminuss Nerd Font Mono'],
             category: 'appearance'
         }).value;
-        root.radiusSm = Settings.register({
+        radiusSm = Settings.register({
             name: 'radius',
             value: 5,
             category: 'appearance'
         }).value;
-        root.textSm = Settings.register({
+        textSm = Settings.register({
             name: 'textSize',
             value: 10,
             category: 'appearance'
