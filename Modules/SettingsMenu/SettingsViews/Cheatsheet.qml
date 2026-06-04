@@ -9,6 +9,7 @@ import Qt.labs.folderlistmodel
 
 import qs.Settings
 import qs.Components
+import qs.Components.Styled
 
 Item {
     id: root

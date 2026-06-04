@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Hyprland
 
 import qs.Components
+import qs.Components.Styled
 import qs.Services
 import qs.Settings
 import qs.Modules.Bar.BarWidgets

@@ -10,6 +10,7 @@ import QtQuick.Controls
 
 import qs.Settings
 import qs.Components
+import qs.Components.Styled
 import qs.Helpers
 
 Loader {

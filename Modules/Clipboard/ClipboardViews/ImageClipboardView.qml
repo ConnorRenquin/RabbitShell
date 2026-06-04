@@ -10,6 +10,8 @@ import Qt.labs.folderlistmodel
 import qs.Settings
 import qs.Helpers
 import qs.Components
+import qs.Components.Plus
+import qs.Components.Styled
 import qs.Services
 
 Rectangle {

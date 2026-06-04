@@ -7,6 +7,8 @@ import Quickshell.Services.Notifications
 import QtQuick
 import QtQuick.Layouts
 
+import qs.Components.Plus
+import qs.Components.Styled
 import qs.Settings
 import qs.Services
 

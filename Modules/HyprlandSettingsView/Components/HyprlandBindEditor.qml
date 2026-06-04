@@ -5,6 +5,8 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Components
+import qs.Components.Plus
+import qs.Components.Styled
 import qs.Settings
 
 Rectangle {

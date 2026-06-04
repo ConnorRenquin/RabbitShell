@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
+import qs.Components.Styled
 import qs.Settings
 
 Item {

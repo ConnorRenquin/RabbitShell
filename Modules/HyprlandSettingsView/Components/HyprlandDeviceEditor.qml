@@ -8,6 +8,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Components
+import qs.Components.Styled
 import qs.Settings
 import qs.Services
 

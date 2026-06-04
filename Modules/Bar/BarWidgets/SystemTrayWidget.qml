@@ -8,6 +8,8 @@ import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 
 import qs.Components
+import qs.Components.Plus
+import qs.Components.Styled
 import qs.Helpers
 import qs.Settings
 

@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 
 import qs.Components
+import qs.Components.Plus
 import qs.Settings.Models
 
 Singleton {

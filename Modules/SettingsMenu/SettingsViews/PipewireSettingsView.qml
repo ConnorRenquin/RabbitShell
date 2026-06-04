@@ -6,6 +6,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import qs.Components
+import qs.Components.Styled
 import qs.Settings
 import qs.Modules.SettingsMenu.SettingsViews.Components
 import qs.Services

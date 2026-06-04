@@ -5,6 +5,7 @@ import Quickshell.Io
 import QtQuick
 
 import qs.Components
+import qs.Components.Plus
 
 
 Singleton {

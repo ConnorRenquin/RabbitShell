@@ -9,6 +9,7 @@ import QtQuick
 import qs.Settings
 import qs.Helpers
 import qs.Components
+import qs.Components.Plus
 
 Singleton {
     id: root

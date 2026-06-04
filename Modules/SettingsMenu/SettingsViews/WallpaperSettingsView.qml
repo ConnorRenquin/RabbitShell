@@ -12,6 +12,8 @@ import Qt.labs.folderlistmodel
 import qs.Settings
 import qs.Modules.SettingsMenu.SettingsViews.Components
 import qs.Components
+import qs.Components.Plus
+import qs.Components.Styled
 
 Rectangle {
     id: root

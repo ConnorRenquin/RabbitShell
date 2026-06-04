@@ -8,6 +8,7 @@ import QtQuick.Layouts
 
 import qs.Settings
 import qs.Components
+import qs.Components.Styled
 
 Loader {
     id: root

@@ -5,6 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Widgets
 
+import qs.Components.Styled
 import qs.Settings
 
 Item {

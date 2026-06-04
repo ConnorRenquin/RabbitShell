@@ -2,6 +2,7 @@ import Quickshell.Wayland
 import QtQuick
 
 import qs.Components
+import qs.Components.Styled
 import qs.Settings
 import qs.Services
 import qs.Helpers

@@ -6,6 +6,8 @@ import QtQuick
 
 import qs.Settings
 import qs.Components
+import qs.Components.Plus
+import qs.Components.Styled
 
 Loader {
     id: loader

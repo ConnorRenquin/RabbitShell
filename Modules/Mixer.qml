@@ -11,6 +11,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import qs.Components
+import qs.Components.Plus
 import qs.Settings
 import qs.Services
 import qs.Helpers

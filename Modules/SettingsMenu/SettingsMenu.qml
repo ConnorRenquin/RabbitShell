@@ -7,6 +7,8 @@ import QtQuick.Controls
 import Quickshell
 
 import qs.Components
+import qs.Components.Plus
+import qs.Components.Styled
 import qs.Services
 import qs.Helpers
 import qs.Settings

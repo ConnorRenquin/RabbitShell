@@ -8,6 +8,8 @@ import QtQuick.Layouts
 
 import qs.Settings
 import qs.Components
+import qs.Components.Plus
+import qs.Components.Styled
 import qs.Helpers
 import qs.Services
 import qs.Modules.Clipboard.ClipboardViews

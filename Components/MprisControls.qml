@@ -3,6 +3,7 @@ import Quickshell.Services.Mpris
 import QtQuick
 import QtQuick.Layouts
 
+import qs.Components.Styled
 import qs.Settings
 
 ColumnLayout {

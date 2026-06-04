@@ -4,6 +4,7 @@ import QtQuick
 
 import qs.Settings
 import qs.Components
+import qs.Components.Styled
 
 Rectangle {
     id: root

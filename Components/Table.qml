@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Components
+import qs.Components.Styled
 import qs.Settings
 
 ColumnLayout {

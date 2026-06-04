@@ -3,6 +3,7 @@ import Quickshell.Services.Pipewire
 import QtQuick
 import QtQuick.Layouts
 
+import qs.Components.Styled
 import qs.Settings
 import qs.Services
 
