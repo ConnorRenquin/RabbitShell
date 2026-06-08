@@ -11,9 +11,6 @@ Singleton {
     signal openNotificationsManager
     signal lockScreen
     signal openSettings
-    signal openTextEditor
-    signal openTimeManager
-    signal openTimer
     signal openAppLauncher
     signal openAsciiEmojis
     signal openNerdFonts

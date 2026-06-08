@@ -29,26 +29,6 @@ Singleton {
                 PatchBay.openSettings();
             }
         },
-        {
-            name: "Text Editor",
-            genericName: "Scratchpad Editor",
-            description: "Open the Quickshell scratchpad text editor",
-            keywords: ["text", "editor", "scratchpad", "notes", "write"],
-            icon: "accessories-text-editor",
-            execute: function () {
-                PatchBay.openTextEditor();
-            }
-        },
-        {
-            name: "Timer",
-            genericName: "Time Manager",
-            description: "Open timers, stopwatch, and alarms",
-            keywords: ["timer", "time", "stopwatch", "alarm", "clock"],
-            icon: "alarm-symbolic",
-            execute: function () {
-                PatchBay.openTimer();
-            }
-        }
     ]
 
     property Component systemInfoComponent: Component {

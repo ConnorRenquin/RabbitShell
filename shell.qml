@@ -23,9 +23,7 @@ ShellRoot {
     LockScreen {}
     Polkit {}
     SettingsMenu {}
-    TextEditor {}
     ScreenDraw {}
-    TimeManager {}
     OnScreenKeyboard {}
     Component.onCompleted: {
         Qt.callLater(function () {
