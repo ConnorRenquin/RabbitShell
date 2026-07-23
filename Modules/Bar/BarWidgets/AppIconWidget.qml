@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Wayland
 import Quickshell.Widgets
 
 import QtQuick
@@ -125,7 +126,7 @@ Item {
             PopupWindow {
                 id: popup
                 visible: button.popupOpen
-                implicitWidth: 260
+                implicitWidth: 360
                 implicitHeight: popupContent.implicitHeight + Styles.marginMd
                 color: "transparent"
 
@@ -166,8 +167,8 @@ Item {
                                 id: windowButton
 
                                 Layout.fillWidth: true
-                                Layout.preferredWidth: 240
-                                Layout.preferredHeight: 36
+                                Layout.preferredWidth: 340
+                                Layout.preferredHeight: 96
                                 onClicked: {
                                     windowButton.modelData.wayland.activate();
                                     button.popupOpen = false;
@@ -179,16 +180,46 @@ Item {
                                     anchors.rightMargin: Styles.marginSm
                                     spacing: Styles.marginSm
 
-                                    IconImage {
-                                        implicitHeight: 22
-                                        implicitWidth: 22
-                                        source: root.iconFor(windowButton.modelData)
+                                    Rectangle {
+                                        Layout.preferredWidth: 128
+                                        Layout.preferredHeight: 72
+                                        radius: Styles.radiusSm
+                                        color: Colors.surface
+                                        clip: true
+
+                                        ScreencopyView {
+                                            id: preview
+                                            anchors.fill: parent
+                                            captureSource: popup.visible ? windowButton.modelData.wayland : null
+                                            live: popup.visible
+                                            paintCursor: false
+                                        }
+
+                                        IconImage {
+                                            visible: !preview.hasContent
+                                            anchors.centerIn: parent
+                                            implicitHeight: 28
+                                            implicitWidth: 28
+                                            source: root.iconFor(windowButton.modelData)
+                                        }
                                     }
 
-                                    TextStyled {
+                                    ColumnLayout {
                                         Layout.fillWidth: true
-                                        text: root.titleFor(windowButton.modelData)
-                                        font.pointSize: Styles.textSm
+                                        spacing: Styles.marginXS
+
+                                        TextStyled {
+                                            Layout.fillWidth: true
+                                            text: root.titleFor(windowButton.modelData)
+                                            font.pointSize: Styles.textSm
+                                        }
+
+                                        TextStyled {
+                                            Layout.fillWidth: true
+                                            text: root.appNameFor(windowButton.modelData)
+                                            color: Colors.onSurfaceVariant
+                                            font.pointSize: Styles.textXS
+                                        }
                                     }
                                 }
                             }
