@@ -86,6 +86,7 @@ Variants {
                 WorkspacesWidget {
                     monitorName: root.modelData.name
                 }
+                AppIconWidget {}
                 WindowTitleWidget {}
                 IdleInhibitorWidget{}
                 BarButton {
