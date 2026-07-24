@@ -40,6 +40,8 @@ Singleton {
     readonly property string sidebarOpen: ""
     readonly property string sidebarClosed: ""
     readonly property string calendar: "󰃭"
+    readonly property string moveWindow: "󰩨"
+
 
     readonly property string nowPlaying: "󰎄"
 

@@ -52,6 +52,23 @@ Item {
             wayland.close();
     }
 
+    function normalizedHyprAddress(address) {
+        const addressText = String(address || "");
+        if (addressText.length === 0)
+            return "";
+        return addressText.startsWith("0x") ? addressText : "0x" + addressText;
+    }
+
+    function moveToplevelToCurrentWorkspace(toplevel) {
+        const address = normalizedHyprAddress(toplevel?.address);
+        const workspaceId = Hyprland.focusedWorkspace?.id;
+        if (!address || workspaceId === undefined || workspaceId === null) {
+            return;
+        }
+        const lua = 'hl.dsp.window.move({ workspace = "' + workspaceId + '", window = "address:' + address + '", silent = true })';
+        Quickshell.execDetached(["hyprctl", "dispatch", lua]);
+    }
+
     function updateGroups() {
         const groupsByAppId = {};
         const groups = [];
@@ -191,7 +208,7 @@ Item {
                                 id: windowButton
 
                                 Layout.fillWidth: true
-                                Layout.preferredWidth: 380
+                                Layout.preferredWidth: 300
                                 Layout.preferredHeight: 96
                                 radius: Styles.radiusSm
                                 color: windowButton.modelData.activated ? Qt.lighter(theme.background, 1.3) : theme.background
@@ -255,17 +272,35 @@ Item {
                                         }
                                     }
 
-                                    ButtonStyled {
-                                        Layout.preferredWidth: 32
-                                        Layout.preferredHeight: 72
-                                        radius: Styles.radiusSm
-                                        defaultColor: theme.acent
-                                        text: Icons.close
+                                    ColumnLayout {
+                                        Layout.fillHeight: true
+                                        Layout.maximumWidth: 50
+                                        Layout.minimumWidth: 50
+                                        ButtonStyled {
+                                            Layout.fillHeight: true
+                                            Layout.fillWidth: true
+                                            radius: Styles.radiusSm
+                                            defaultColor: theme.acent
+                                            text: Icons.close
 
-                                        onClicked: mouse => {
-                                            mouse.accepted = true;
-                                            root.closeToplevel(windowButton.modelData);
-                                            button.popupOpen = false;
+                                            onClicked: mouse => {
+                                                mouse.accepted = true;
+                                                root.closeToplevel(windowButton.modelData);
+                                                button.popupOpen = false;
+                                            }
+                                        }
+                                        ButtonStyled {
+                                            Layout.fillHeight: true
+                                            Layout.fillWidth: true
+                                            radius: Styles.radiusSm
+                                            defaultColor: theme.acent
+                                            text: Icons.moveWindow
+
+                                            onClicked: mouse => {
+                                                mouse.accepted = true;
+                                                root.moveToplevelToCurrentWorkspace(windowButton.modelData);
+                                                button.popupOpen = false;
+                                            }
                                         }
                                     }
                                 }
