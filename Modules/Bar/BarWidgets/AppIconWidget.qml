@@ -46,6 +46,12 @@ Item {
         return toplevel?.wayland?.title || appNameFor(toplevel);
     }
 
+    function closeToplevel(toplevel) {
+        const wayland = toplevel?.wayland;
+        if (wayland?.close)
+            wayland.close();
+    }
+
     function updateGroups() {
         const groupsByAppId = {};
         const groups = [];
@@ -136,7 +142,7 @@ Item {
                 TextStyled {
                     anchors.centerIn: parent
                     text: button.modelData.toplevels.length
-                    color: theme.acent
+                    color: theme.text
                     font.pointSize: Styles.textXS
                 }
             }
@@ -144,7 +150,7 @@ Item {
             PopupWindow {
                 id: popup
                 visible: button.popupOpen
-                implicitWidth: 360
+                implicitWidth: 400
                 implicitHeight: popupContent.implicitHeight + Styles.marginMd
                 color: "transparent"
 
@@ -179,20 +185,26 @@ Item {
 
                         Repeater {
                             model: button.modelData.toplevels
-                            delegate: ButtonStyled {
+                            delegate: Rectangle {
                                 required property var modelData
 
                                 id: windowButton
 
                                 Layout.fillWidth: true
-                                Layout.preferredWidth: 340
+                                Layout.preferredWidth: 380
                                 Layout.preferredHeight: 96
-                                onClicked: {
-                                    windowButton.modelData.wayland.activate();
-                                    button.popupOpen = false;
+                                radius: Styles.radiusSm
+                                color: windowButton.modelData.activated ? Qt.lighter(theme.background, 1.3) : theme.background
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    hoverEnabled: true
+                                    onClicked: {
+                                        windowButton.modelData.wayland.activate();
+                                        button.popupOpen = false;
+                                    }
                                 }
-                                defaultColor: windowButton.modelData.activated ? theme.foreground : theme.background
-                                textColor: theme.text
 
                                 RowLayout {
                                     anchors.fill: parent
@@ -202,7 +214,7 @@ Item {
 
                                     Rectangle {
                                         Layout.preferredWidth: 128
-                                        Layout.preferredHeight: 72
+                                        Layout.fillHeight: true
                                         radius: Styles.radiusSm
                                         color: theme.foreground
                                         clip: true
@@ -216,7 +228,7 @@ Item {
                                         }
 
                                         IconImage {
-                                            visible: !preview.hasContent
+                                            // visible: !preview.hasContent
                                             anchors.centerIn: parent
                                             implicitHeight: 28
                                             implicitWidth: 28
@@ -240,6 +252,20 @@ Item {
                                             text: root.appNameFor(windowButton.modelData)
                                             color: theme.acent
                                             font.pointSize: Styles.textXS
+                                        }
+                                    }
+
+                                    ButtonStyled {
+                                        Layout.preferredWidth: 32
+                                        Layout.preferredHeight: 72
+                                        radius: Styles.radiusSm
+                                        defaultColor: theme.acent
+                                        text: Icons.close
+
+                                        onClicked: mouse => {
+                                            mouse.accepted = true;
+                                            root.closeToplevel(windowButton.modelData);
+                                            button.popupOpen = false;
                                         }
                                     }
                                 }
