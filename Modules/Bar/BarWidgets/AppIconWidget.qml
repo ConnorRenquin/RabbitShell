@@ -211,9 +211,10 @@ Item {
                                 Layout.preferredWidth: 300
                                 Layout.preferredHeight: 96
                                 radius: Styles.radiusSm
-                                color: windowButton.modelData.activated ? Qt.lighter(theme.background, 1.3) : theme.background
+                                color: windowButton.modelData.activated || hoverArea.containsMouse  ? Qt.lighter(theme.background, 1.3) : theme.background
 
                                 MouseArea {
+                                    id: hoverArea
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
                                     hoverEnabled: true
@@ -274,8 +275,8 @@ Item {
 
                                     ColumnLayout {
                                         Layout.fillHeight: true
-                                        Layout.maximumWidth: 50
-                                        Layout.minimumWidth: 50
+                                        Layout.maximumWidth: 30
+                                        Layout.minimumWidth: 30
                                         ButtonStyled {
                                             Layout.fillHeight: true
                                             Layout.fillWidth: true

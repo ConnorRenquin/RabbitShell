@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Effects
 
 import qs.Settings
 
@@ -47,7 +46,6 @@ Rectangle {
         id: buttonText
         visible: root.text
         anchors.fill: parent
-        anchors.margins: Styles.marginSm
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: root.text
