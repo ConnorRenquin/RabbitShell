@@ -10,6 +10,7 @@ import QtQuick.Layouts
 
 import qs.Components.Plus
 import qs.Components.Styled
+import qs.Helpers
 import qs.Settings
 
 Item {
@@ -17,10 +18,19 @@ Item {
 
     property var groupedToplevels: []
 
+    Themer {
+        id: theme
+        settingName: 'appIconColor'
+    }
+
     implicitWidth: icons.implicitWidth + Styles.marginSm
 
     function appIdFor(toplevel) {
         return toplevel?.wayland?.appId || "unknown";
+    }
+
+    function isValidToplevel(toplevel) {
+        return !!toplevel?.wayland && appIdFor(toplevel) !== "unknown";
     }
 
     function appNameFor(toplevel) {
@@ -41,6 +51,9 @@ Item {
         const groups = [];
 
         for (const toplevel of Hyprland.toplevels?.values || []) {
+            if (!isValidToplevel(toplevel))
+                continue;
+
             const appId = appIdFor(toplevel);
             if (!groupsByAppId[appId]) {
                 groupsByAppId[appId] = {
@@ -78,9 +91,13 @@ Item {
 
             property bool popupOpen: false
             property var activeToplevel: modelData.toplevels.find(toplevel => toplevel.activated) || modelData.toplevels[0]
+            readonly property bool hasActiveToplevel: modelData.toplevels.some(toplevel => toplevel.activated)
 
             Layout.preferredWidth: 35
             Layout.preferredHeight: 32
+            defaultColor: hasActiveToplevel ? theme.foreground : theme.background
+            textColor: theme.text
+            isFocused: hasActiveToplevel
             onClicked: activeToplevel?.wayland?.activate()
             onContainsMouseChanged: {
                 if (containsMouse)
@@ -114,11 +131,12 @@ Item {
                 width: 14
                 height: 14
                 radius: width / 2
-                color: Colors.surfaceVariant
+                color: theme.foreground
 
                 TextStyled {
                     anchors.centerIn: parent
                     text: button.modelData.toplevels.length
+                    color: theme.acent
                     font.pointSize: Styles.textXS
                 }
             }
@@ -151,7 +169,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: Styles.radiusMd
-                    color: Colors.background
+                    color: theme.background
 
                     ColumnLayout {
                         id: popupContent
@@ -173,6 +191,8 @@ Item {
                                     windowButton.modelData.wayland.activate();
                                     button.popupOpen = false;
                                 }
+                                defaultColor: windowButton.modelData.activated ? theme.foreground : theme.background
+                                textColor: theme.text
 
                                 RowLayout {
                                     anchors.fill: parent
@@ -184,7 +204,7 @@ Item {
                                         Layout.preferredWidth: 128
                                         Layout.preferredHeight: 72
                                         radius: Styles.radiusSm
-                                        color: Colors.surface
+                                        color: theme.foreground
                                         clip: true
 
                                         ScreencopyView {
@@ -211,13 +231,14 @@ Item {
                                         TextStyled {
                                             Layout.fillWidth: true
                                             text: root.titleFor(windowButton.modelData)
+                                            color: theme.text
                                             font.pointSize: Styles.textSm
                                         }
 
                                         TextStyled {
                                             Layout.fillWidth: true
                                             text: root.appNameFor(windowButton.modelData)
-                                            color: Colors.onSurfaceVariant
+                                            color: theme.acent
                                             font.pointSize: Styles.textXS
                                         }
                                     }
