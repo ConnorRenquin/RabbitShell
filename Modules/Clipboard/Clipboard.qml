@@ -176,6 +176,7 @@ FloatingWindowPlus {
                     isActive: root.currentTab === 2 && root.visible
                     focus: isActive
                     onRequestExit: root.exit()
+                    onRequestTabCycle: forward => root.cycleTab(forward)
                 }
 
                 NerdFontsView {

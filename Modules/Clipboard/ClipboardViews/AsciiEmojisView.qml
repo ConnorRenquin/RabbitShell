@@ -19,18 +19,92 @@ Rectangle {
     color: "transparent"
 
     signal requestExit
+    signal requestTabCycle(bool forward)
 
     visible: isActive
     property bool isActive: false
+    property string searchText: ""
+    property string selectedCategory: "all"
+    property int selectedIndex: 0
+    readonly property var categories: ["all", "faces", "reactions", "actions", "animals", "symbols", "dividers", "art"]
     focus: isActive
+
+    property var filteredEmojis: {
+        const query = searchText.trim().toLowerCase();
+        return emojiList.filter(item => {
+            const category = categoryFor(item);
+            if (selectedCategory !== "all" && category !== selectedCategory)
+                return false;
+            if (query === "")
+                return true;
+            const result = utils.fuzzySearch(query, (item.name + " " + item.emoji + " " + category).toLowerCase());
+            return result.matches;
+        });
+    }
+
+    function categoryFor(item) {
+        const name = item.name.toLowerCase();
+        if (name.includes("divider") || name.includes("banner") || name.includes("progress"))
+            return "dividers";
+        if (item.art)
+            return "art";
+
+        const animals = ["bear", "dog", "cat", "fish", "butterfly", "squid", "bat", "penguin", "pig", "bunny", "owl", "kirby", "zoidberg"];
+        if (animals.some(animal => name.includes(animal)))
+            return "animals";
+
+        const symbols = ["arrow", "checkbox", "copyright", "registered", "trademark", "infinity", "approximately", "equal", "degrees", "bullet", "stars set", "hearts set", "card suits", "weather", "chess", "moon", "flower", "star", "sun", "cloud", "snowman", "music", "check", "cross", "skull", "heart"];
+        if (symbols.some(symbol => name.includes(symbol)))
+            return "symbols";
+
+        const actions = ["flip", "dance", "flex", "strong", "fight", "run", "wave", "hello", "bye", "thanks", "highfive", "point", "look", "hug", "kiss", "dab", "cheers", "gun", "sword", "magic", "wizard", "gimme"];
+        if (actions.some(action => name.includes(action)))
+            return "actions";
+
+        const reactions = ["cry", "sad", "angry", "rage", "meh", "wtf", "wat", "omg", "surprised", "nope", "bored", "sleep", "tired", "thinking", "smirk", "blush", "disapprove", "approve", "success", "fail", "why", "confused", "help", "panic", "facepalm"];
+        if (reactions.some(reaction => name.includes(reaction)))
+            return "reactions";
+
+        return "faces";
+    }
+
+    function navigationHandler(event) {
+        if (controls.tabPressed(event)) {
+            requestTabCycle(true);
+            event.accepted = true;
+            return true;
+        }
+        if (controls.backtabPressed(event)) {
+            requestTabCycle(false);
+            event.accepted = true;
+            return true;
+        }
+        return false;
+    }
+
+    function copyEmoji(item, closeAfter = true) {
+        ClipboardService.copyToClipboard(item.emoji, false);
+        utils.notify({ summary: "Copied: " + item.name, body: item.emoji });
+        if (closeAfter)
+            requestExit();
+    }
+
+    onVisibleChanged: {
+        if (visible)
+            Qt.callLater(() => searchField.forceActiveFocus());
+    }
 
     Utils {
         id: utils
     }
 
+    Controls {
+        id: controls
+    }
+
     Themer {
         id: theme
-        variant: Settings.get('clipboardColor').value
+        settingName: 'clipboardColor'
     }
 
     property var emojiList: [
@@ -441,50 +515,225 @@ Rectangle {
         {
             name: "panic",
             emoji: "(」°ロ°)」"
-        }
+        },
+        { name: "sparkle divider", emoji: "✦•···············•✦" },
+        { name: "star divider", emoji: "★━━━━━━━━━━━━━━━━━━━━★" },
+        { name: "soft divider", emoji: "୨୧ ───────────── ୨୧" },
+        { name: "wave divider", emoji: "～～～～～～～～～～～～" },
+        { name: "dot divider", emoji: "· · ─────── ·𖥸· ─────── · ·" },
+        { name: "music divider", emoji: "♫♪♩·.¸¸.·♩♪♫" },
+        { name: "flower divider", emoji: "❀。• *₊°。 ❀°。" },
+        { name: "warning banner", emoji: "⚠ ─── WARNING ─── ⚠" },
+        { name: "arrow right long", emoji: "━━━━━━━▶" },
+        { name: "arrow left long", emoji: "◀━━━━━━━" },
+        { name: "double arrow", emoji: "«────── « ⋅ʚ♡ɞ⋅ » ──────»" },
+        { name: "up arrow", emoji: "▲\n│\n│" },
+        { name: "down arrow", emoji: "│\n│\n▼" },
+        { name: "corner arrows", emoji: "↖  ↑  ↗\n←  ·  →\n↙  ↓  ↘", art: true },
+        { name: "checkbox empty", emoji: "☐" },
+        { name: "checkbox checked", emoji: "☑" },
+        { name: "checkbox crossed", emoji: "☒" },
+        { name: "copyright", emoji: "©" },
+        { name: "registered", emoji: "®" },
+        { name: "trademark", emoji: "™" },
+        { name: "infinity", emoji: "∞" },
+        { name: "approximately", emoji: "≈" },
+        { name: "not equal", emoji: "≠" },
+        { name: "less greater", emoji: "≤ ≥" },
+        { name: "degrees", emoji: "°" },
+        { name: "bullet set", emoji: "• ◦ ● ○ ◆ ◇ ■ □" },
+        { name: "stars set", emoji: "★ ☆ ✦ ✧ ✩ ✪ ✫ ✬" },
+        { name: "hearts set", emoji: "♥ ♡ ❤ ❥ ღ ۵" },
+        { name: "card suits", emoji: "♠ ♣ ♥ ♦" },
+        { name: "weather set", emoji: "☀ ☁ ☂ ☃ ☄" },
+        { name: "chess set", emoji: "♔ ♕ ♖ ♗ ♘ ♙" },
+        { name: "moon phases", emoji: "○ ◔ ◑ ◕ ●" },
+        { name: "progress empty", emoji: "[░░░░░░░░░░] 0%" },
+        { name: "progress half", emoji: "[█████░░░░░] 50%" },
+        { name: "progress full", emoji: "[██████████] 100%" },
+        { name: "loading dots", emoji: "[ •••      ]" },
+        { name: "tiny cat", emoji: "/ᐠ｡ꞈ｡ᐟ\\" },
+        { name: "cat loaf", emoji: "|\\__/,|   (`\\\n|_ _  |.--.) )\n( T   )     /\n(((^_(((/(((_/", art: true },
+        { name: "bunny small", emoji: "(\\(\\\n( -.-)\no_(\")(\")", art: true },
+        { name: "owl", emoji: " /\\_/\\\n((@v@))\n():::()\n VV-VV", art: true },
+        { name: "fish swim", emoji: "><(((('>   <')))><" },
+        { name: "rose", emoji: "@}--'--,--" },
+        { name: "coffee cup", emoji: "  ( (\n   ) )\n........\n|      |]\n\\      /\n `----'", art: true },
+        { name: "steam thumbs up", emoji: "░░░░░░░░░░░░▄▄\n░░░░░░░░░░░█░░█\n░░░░░░░░░░░█░░█\n░░░░░░░░░░█░░░█\n░░░░░░░░░█░░░░█\n██████▄▄▄█░░░░░██████▄\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█████░░░░░░░░░█\n█████▀░░░░▀▀██████▀", art: true },
+        { name: "steam cat dots", emoji: "░░░░░░░░░░░░░░░░░░░░░░\n░░░░░▄▀▀▀▄░░░░░▄▀▀▀▄░░░\n░░░░█░░░░░█▄▄▄█░░░░░█░░\n░░░█░░░░░░░░░░░░░░░░░█░\n░░░█░░▄█▄░░░░░░░▄█▄░░█░\n░░░█░░░░░░░▄░▄░░░░░░░█░\n░░░░█░░░░░░░▀░░░░░░░█░░\n░░░░░▀▄▄▄▄▄▄▄▄▄▄▄▄▄▀░░░", art: true },
+        { name: "steam heart dots", emoji: "░░░░░▄██▄░░░░▄██▄░░░░░\n░░░▄██████▄░▄██████▄░░░\n░░███████████████████░░\n░░███████████████████░░\n░░░█████████████████░░░\n░░░░███████████████░░░░\n░░░░░█████████████░░░░░\n░░░░░░███████████░░░░░░\n░░░░░░░█████████░░░░░░░\n░░░░░░░░███████░░░░░░░░\n░░░░░░░░░█████░░░░░░░░░\n░░░░░░░░░░███░░░░░░░░░░\n░░░░░░░░░░░█░░░░░░░░░░░", art: true },
+        { name: "steam smile dots", emoji: "░░░░░░██████████░░░░░░\n░░░░██░░░░░░░░░░██░░░░\n░░██░░░░░░░░░░░░░░██░░\n░█░░░░██░░░░░░██░░░░█░\n█░░░░░██░░░░░░██░░░░░█\n█░░░░░░░░░░░░░░░░░░░░█\n█░░░░█░░░░░░░░░░█░░░░█\n░█░░░░██████████░░░░░█░\n░░██░░░░░░░░░░░░░░██░░\n░░░░██░░░░░░░░░░██░░░░\n░░░░░░██████████░░░░░░", art: true },
+        { name: "steam doge dots", emoji: "░░░░░░░░░░░░░░░▄▄░░░░\n░░░░░░░░░░░░░░░█░░█░░░\n░░░░░░░░░░░░░░░█░░█░░░\n░░░░░░░░░░░░░░█░░░█░░░\n░░░░░░░░░░░░░█░░░░█░░░\n░░░░░░░░▄▄▄▄█░░░░░████\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█████░░░░░░░░░█\n░░░░░░░░░░░░▀▀██████▀░", art: true },
+        { name: "pixel space invader", emoji: "░░░░░▄▄▄▄▄▄▄░░░░░\n░░▄██▄░░░░░▄██▄░░\n▄██████▄░░▄██████▄\n██████████████████\n██░░██░░██░░██░░██\n░░░░████████░░░░\n░░██░░░░░░░░██░░\n██░░██░░░░██░░██", art: true },
+        { name: "pixel ghost", emoji: "░░▄████████▄░░\n▄██▀░░░░░░▀██▄\n██░░██░░██░░██\n██░░██░░██░░██\n██░░░░▄▄░░░░██\n██░░░░░░░░░░██\n██░░██░░██░░██\n▀█▄▄██▄▄██▄▄█▀", art: true },
+        { name: "welcome banner", emoji: "╔════════════════════╗\n║      WELCOME       ║\n╚════════════════════╝", art: true },
+        { name: "gg banner", emoji: "┏━━━┓ ┏━━━┓\n┃┏━┓┃ ┃┏━┓┃\n┃┃ ┗┛ ┃┃ ┗┛\n┃┃┏━┓ ┃┃┏━┓\n┃┗┻━┃ ┃┗┻━┃\n┗━━━┛ ┗━━━┛", art: true }
     ]
 
     ColumnLayout {
         anchors.fill: parent
+        anchors.margins: Styles.marginSm
+        spacing: Styles.marginSm
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
+            color: theme.foreground
+            radius: Styles.radiusSm
+
+            TextFieldStyled {
+                id: searchField
+                anchors.fill: parent
+                anchors.margins: Styles.marginSm
+                placeholderText: "/search faces, symbols, dividers, or art"
+                color: theme.text
+                placeholderTextColor: theme.text
+                onTextChanged: {
+                    root.searchText = text;
+                    root.selectedIndex = 0;
+                }
+                Keys.onPressed: event => {
+                    if (root.navigationHandler(event))
+                        return;
+                    if (controls.escapePressed(event)) {
+                        if (text !== "")
+                            text = "";
+                        else
+                            root.requestExit();
+                        event.accepted = true;
+                    } else if (controls.downPressed(event)) {
+                        emojiGrid.forceActiveFocus();
+                        event.accepted = true;
+                    }
+                }
+            }
+        }
+
+        ListView {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 34
+            orientation: ListView.Horizontal
+            spacing: Styles.marginSm
+            clip: true
+            model: root.categories
+
+            delegate: ButtonStyled {
+                required property string modelData
+                text: modelData === "all" ? "∞" : modelData
+                implicitHeight: 30
+                implicitWidth: Math.max(54, text.length * 9 + Styles.marginMd * 2)
+                isFocused: root.selectedCategory === modelData
+                defaultColor: isFocused ? theme.foreground : theme.background
+                textColor: theme.text
+                onClicked: {
+                    root.selectedCategory = modelData;
+                    root.selectedIndex = 0;
+                }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+
+            TextStyled {
+                text: root.filteredEmojis.length + " " + (root.selectedCategory === "all" ? "ASCII items" : root.selectedCategory)
+                color: theme.text
+                font.pointSize: Styles.textSm
+            }
+
+            Item { Layout.fillWidth: true }
+
+            TextStyled {
+                text: "↵ copy  •  middle click keep open"
+                color: theme.text
+                font.pointSize: Styles.textXS
+                opacity: 0.7
+            }
+        }
 
         ScrollView {
+            id: emojiScroll
             Layout.fillHeight: true
             Layout.fillWidth: true
-            Layout.margins: Styles.marginSm
             contentWidth: availableWidth
+
             GridLayoutPlus {
                 id: emojiGrid
-                columns: Math.floor(parent.width / 420)
+                focus: true
+                columns: Math.max(1, Math.floor(width / 260))
                 anchors.left: parent.left
                 anchors.right: parent.right
                 rowSpacing: Styles.marginSm
                 columnSpacing: Styles.marginSm
+                model: root.filteredEmojis
 
-                model: root.emojiList
+                Keys.onPressed: event => {
+                    if (root.navigationHandler(event))
+                        return;
+                    if (controls.slashPressed(event)) {
+                        searchField.forceActiveFocus();
+                        event.accepted = true;
+                    } else if (controls.escapePressed(event)) {
+                        root.requestExit();
+                        event.accepted = true;
+                    } else if (controls.downPressed(event)) {
+                        root.selectedIndex = Math.min(root.filteredEmojis.length - 1, root.selectedIndex + emojiGrid.columns);
+                        event.accepted = true;
+                    } else if (controls.upPressed(event)) {
+                        root.selectedIndex = Math.max(0, root.selectedIndex - emojiGrid.columns);
+                        event.accepted = true;
+                    } else if (controls.rightPressed(event)) {
+                        root.selectedIndex = Math.min(root.filteredEmojis.length - 1, root.selectedIndex + 1);
+                        event.accepted = true;
+                    } else if (controls.leftPressed(event)) {
+                        root.selectedIndex = Math.max(0, root.selectedIndex - 1);
+                        event.accepted = true;
+                    } else if (controls.enterPressed(event) && root.filteredEmojis[root.selectedIndex]) {
+                        root.copyEmoji(root.filteredEmojis[root.selectedIndex]);
+                        event.accepted = true;
+                    }
+                }
+
                 delegate: ButtonStyled {
                     id: emojiButton
 
                     required property var modelData
                     required property int index
 
-                    defaultColor: theme.text
-                    text: emojiButton.modelData.emoji
-                    textColor: theme.background
-                    pointSize: 34
-
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 100
-
+                    Layout.preferredHeight: modelData.art ? 220 : 96
+                    defaultColor: theme.background
                     radius: Styles.radiusMd
+                    isFocused: root.selectedIndex === index
 
-                    onClicked: {
-                        const emoji = emojiButton.modelData.emoji;
-                        ClipboardService.copyToClipboard(emoji, false);
-                        utils.notify({
-                            summary: 'Copied: ' + emojiButton.modelData.name,
-                            body: emoji
-                        });
-                        root.requestExit();
+                    onClicked: mouse => root.copyEmoji(modelData, mouse.button !== Qt.MiddleButton)
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: Styles.marginSm
+                        spacing: Styles.marginXS
+
+                        TextStyled {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            text: emojiButton.modelData.emoji
+                            color: theme.text
+                            font.pointSize: emojiButton.modelData.art ? 10 : 24
+                            font.family: emojiButton.modelData.art ? "monospace" : Styles.defaultFontFamily
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            wrapMode: emojiButton.modelData.art ? Text.WrapAnywhere : Text.NoWrap
+                            elide: emojiButton.modelData.art ? Text.ElideNone : Text.ElideRight
+                        }
+
+                        TextStyled {
+                            Layout.fillWidth: true
+                            text: emojiButton.modelData.name
+                            color: theme.text
+                            font.pointSize: Styles.textXS
+                            horizontalAlignment: Text.AlignHCenter
+                            opacity: 0.75
+                        }
                     }
                 }
             }
