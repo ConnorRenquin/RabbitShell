@@ -116,7 +116,7 @@ Loader {
                 return;
 
             if (mode === "copy") {
-                Quickshell.execDetached(["sh", "-c", "grim -g '" + safeGeometry + "' - | wl-copy --type image/png"]);
+                Quickshell.execDetached(["sh", "-c", "grim -t png -g '" + safeGeometry + "' - | wl-copy --type image/png"]);
                 captureCloseDelay.restart();
                 return;
             }
