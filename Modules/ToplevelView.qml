@@ -233,34 +233,42 @@ Loader {
                 id: offMonitorWorkspaces
                 anchors.centerIn: parent
                 model: Object.keys(root.workspaceGroups).sort((a, b) => parseInt(a) - parseInt(b))
-                delegate: ColumnLayout {
+                delegate: Rectangle {
                     id: offMonitorToplevel
-
-                    spacing: Styles.marginSm
-
-                    Layout.alignment: Qt.AlignTop
 
                     required property var modelData
                     property var workspaceToplevels: root.workspaceGroups[modelData] ?? []
 
-                    Rectangle {
-                        Layout.preferredHeight: workspaceId.implicitHeight + Styles.marginSm
-                        Layout.fillWidth: true
-                        radius: Styles.radiusMd
-                        color: theme.background
-                        TextStyled {
-                            id: workspaceId
-                            anchors.fill: parent
-                            font.pointSize: Styles.textSm
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            text: "󰜌 " + offMonitorToplevel.modelData
-                        }
-                    }
+                    Layout.alignment: Qt.AlignTop
+                    implicitWidth: workspaceColumn.implicitWidth + Styles.marginSm * 2
+                    implicitHeight: workspaceColumn.implicitHeight + Styles.marginSm * 2
+                    color: theme.background
+                    radius: Styles.radiusMd
 
-                    ColumnLayoutPlus {
-                        model: parent.workspaceToplevels
-                        delegate: Rectangle {
+                    ColumnLayout {
+                        id: workspaceColumn
+                        anchors.fill: parent
+                        anchors.margins: Styles.marginSm
+                        spacing: Styles.marginSm
+
+                        Rectangle {
+                            Layout.preferredHeight: workspaceId.implicitHeight + Styles.marginSm
+                            Layout.fillWidth: true
+                            radius: Styles.radiusMd
+                            color: theme.background
+                            TextStyled {
+                                id: workspaceId
+                                anchors.fill: parent
+                                font.pointSize: Styles.textSm
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                text: "󰜌 " + offMonitorToplevel.modelData
+                            }
+                        }
+
+                        ColumnLayoutPlus {
+                            model: offMonitorToplevel.workspaceToplevels
+                            delegate: Rectangle {
                             id: offMonitor
 
                             required property var modelData
@@ -325,6 +333,7 @@ Loader {
                                         }
                                     }
                                 }
+                            }
                             }
                         }
                     }
