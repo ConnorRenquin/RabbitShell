@@ -177,9 +177,9 @@ Loader {
                     property var monitorInfo: Hyprland.monitors.values.find(monitor => monitor.id === firstClientInfo?.monitor)
 
                     Layout.alignment: Qt.AlignTop
-                    implicitWidth: workspaceColumn.implicitWidth + Styles.marginSm * 2
-                    implicitHeight: workspaceColumn.implicitHeight + Styles.marginSm * 2
-                    color: theme.background
+                    implicitWidth: workspaceColumn.implicitWidth + Styles.marginSm
+                    implicitHeight: workspaceColumn.implicitHeight + Styles.marginSm
+                    color: "transparent"
                     radius: Styles.radiusMd
 
                     ColumnLayout {
@@ -189,9 +189,10 @@ Loader {
                         spacing: Styles.marginSm
 
                         Rectangle {
+                            Layout.alignment: Qt.AlignTop
                             Layout.preferredHeight: workspaceId.implicitHeight + Styles.marginSm
-                            Layout.fillWidth: true
-                            color: theme.background
+                            Layout.preferredWidth: workspaceId.implicitWidth + Styles.marginSm
+                            color: theme.foreground
                             radius: Styles.radiusMd
 
                             TextStyled {
@@ -204,8 +205,10 @@ Loader {
                             }
                         }
 
-                        Item {
+                        Rectangle {
                             id: workspaceCanvas
+                            color: theme.background
+                            radius: Styles.radiusLg
 
                             Layout.preferredWidth: (workspaceBackground.monitorInfo?.width ?? 1920) / 5
                             Layout.preferredHeight: (workspaceBackground.monitorInfo?.height ?? 1080) / 5
@@ -229,7 +232,7 @@ Loader {
                                     y: clientInfo ? (clientInfo.at[1] - (workspaceBackground.monitorInfo?.y ?? 0)) * previewScale : 0
                                     width: clientInfo ? clientInfo.size[0] * previewScale : 0
                                     height: clientInfo ? clientInfo.size[1] * previewScale : 0
-                                    color: theme.background
+                                    color: "transparent"
                                     radius: Styles.radiusSm
                                     clip: true
 
@@ -260,11 +263,11 @@ Loader {
                                         RowLayout {
                                             id: textRow
                                             anchors.fill: parent
-                                            anchors.margins: 3
+                                            anchors.margins: 4
 
                                             TextStyled {
                                                 text: offMonitor.matchedPart.toUpperCase()
-                                                color: theme.background
+                                                color: theme.foreground
                                                 font.bold: true
                                             }
 
