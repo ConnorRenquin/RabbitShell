@@ -19,6 +19,7 @@ Loader {
 
     active: false
 
+    property bool popupsVisible: false
     property string typedKeys: ""
     property var pendingActivation: null
     property var toplevels: []
@@ -31,6 +32,24 @@ Loader {
         const primary = useAppId ? toplevel?.wayland?.appId : toplevel?.wayland?.title;
         const fallback = useAppId ? toplevel?.wayland?.title : toplevel?.wayland?.appId;
         return controls.preferredLabel(primary, fallback, "Unknown App");
+    }
+
+    function open() {
+        closeTimer.stop();
+        updateToplevels();
+        if (!active)
+            active = true;
+        Qt.callLater(() => popupsVisible = true);
+    }
+
+    function close() {
+        if (!popupsVisible && closeTimer.running)
+            return;
+        popupsVisible = false;
+        typedKeys = "";
+        activateTimer.stop();
+        pendingActivation = null;
+        closeTimer.restart();
     }
 
     function updateToplevels() {
@@ -63,11 +82,8 @@ Loader {
     }
 
     onActiveChanged: {
-        if (!active) {
-            typedKeys = "";
-            activateTimer.stop();
-            pendingActivation = null;
-        }
+        if (!active)
+            popupsVisible = false;
     }
 
 
@@ -91,16 +107,19 @@ Loader {
         name: "toplevelview"
         onPressed: {
             hideTimer.restart();
-            root.updateToplevels();
-            if (!root.active) {
-                root.active = true;
-            }
+            root.open();
         }
     }
 
     Timer {
         id: hideTimer
         interval: 5000
+        onTriggered: root.close()
+    }
+
+    Timer {
+        id: closeTimer
+        interval: 160
         onTriggered: root.active = false
     }
 
@@ -112,7 +131,7 @@ Loader {
             // which clears pendingActivation, so we must grab it before that.
             const target = root.pendingActivation;
             root.pendingActivation = null;
-            root.active = false;
+            root.close();
             if (target)
                 target.wayland.activate();
         }
@@ -134,9 +153,9 @@ Loader {
 
 
         HyprlandFocusGrab {
-            active: root.active
+            active: root.popupsVisible
             windows: [toplevelView]
-            onCleared: root.active = false
+            onCleared: root.close()
         }
 
 
@@ -164,6 +183,16 @@ Loader {
 
                 color: modelData.activated ? theme.background : theme.foreground
                 radius: Styles.radiusMd
+                scale: root.popupsVisible ? 1 : 0.65
+                opacity: root.popupsVisible ? 1 : 0
+
+                Behavior on scale {
+                    NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+                }
+
+                Behavior on opacity {
+                    NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+                }
 
                 RowLayout {
                     anchors.fill: parent
@@ -208,8 +237,7 @@ Loader {
                     if (enterMatch) {
                         activateTimer.stop();
                         root.pendingActivation = null;
-                        root.active = false;
-                        root.typedKeys = "";
+                        root.close();
                         enterMatch.toplevel.wayland.activate();
                         event.accepted = true;
                         return;
@@ -217,10 +245,7 @@ Loader {
                 }
 
                 if (controls.escapePressed(event)) {
-                    root.active = false;
-                    activateTimer.stop();
-                    root.pendingActivation = null;
-                    root.typedKeys = "";
+                    root.close();
                     event.accepted = true;
                     return;
                 }
