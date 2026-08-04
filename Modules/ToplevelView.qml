@@ -52,15 +52,28 @@ Loader {
         closeTimer.restart();
     }
 
+    function monitorForScreen(screenName) {
+        return Hyprland.monitors?.values.find(monitor => monitor.name === screenName) ?? null;
+    }
+
+    function toplevelsForScreen(screenName) {
+        const monitor = monitorForScreen(screenName);
+        const workspaceId = monitor?.activeWorkspace?.id;
+        if (workspaceId === undefined || workspaceId === null)
+            return [];
+        return toplevels.filter(toplevel => toplevel?.workspace?.id === workspaceId);
+    }
+
     function updateToplevels() {
-        if (!Hyprland.toplevels)
-            return;
-        if (!Hyprland.focusedWorkspace)
+        if (!Hyprland.toplevels || !Hyprland.monitors)
             return;
 
-        toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace?.id);
+        const activeWorkspaceIds = Hyprland.monitors.values
+            .map(monitor => monitor.activeWorkspace?.id)
+            .filter(workspaceId => workspaceId !== undefined && workspaceId !== null);
+
+        toplevels = Hyprland.toplevels.values.filter(toplevel => activeWorkspaceIds.includes(toplevel?.workspace?.id));
         allToplevels = toplevels;
-
 
         // Build into a local array so conflict checks use a consistent snapshot.
         const newHotkeys = [];
@@ -81,6 +94,12 @@ Loader {
         id: controls
     }
 
+    HyprlandFocusGrab {
+        active: root.popupsVisible
+        windows: root.item?.instances ?? []
+        onCleared: root.close()
+    }
+
     onActiveChanged: {
         if (!active)
             popupsVisible = false;
@@ -99,6 +118,20 @@ Loader {
     Connections {
         target: Hyprland
         function onFocusedWorkspaceChanged() {
+            root.updateToplevels();
+        }
+    }
+
+    Connections {
+        target: Hyprland.monitors
+        function onValuesChanged() {
+            root.updateToplevels();
+        }
+    }
+
+    Connections {
+        target: Hyprland.workspaces
+        function onValuesChanged() {
             root.updateToplevels();
         }
     }
@@ -137,132 +170,134 @@ Loader {
         }
     }
 
-    sourceComponent: PanelWindow {
-        id: toplevelView
+    sourceComponent: Variants {
+        model: Quickshell.screens
 
-        anchors.top: true
-        anchors.bottom: true
-        anchors.left: true
-        anchors.right: true
-        exclusionMode: ExclusionMode.Ignore
-        color: "transparent"
+        delegate: PanelWindow {
+            id: toplevelView
 
-        WlrLayershell.namespace: "toplevels"
-        WlrLayershell.layer: WlrLayer.Overlay
+            required property var modelData
+            property var screenToplevels: root.toplevelsForScreen(modelData.name)
 
+            screen: modelData
+            anchors.top: true
+            anchors.bottom: true
+            anchors.left: true
+            anchors.right: true
+            exclusionMode: ExclusionMode.Ignore
+            color: "transparent"
 
-
-        HyprlandFocusGrab {
-            active: root.popupsVisible
-            windows: [toplevelView]
-            onCleared: root.close()
-        }
-
+            WlrLayershell.namespace: "toplevels"
+            WlrLayershell.layer: WlrLayer.Overlay
 
 
-        Repeater {
-            model: root.toplevels
-            delegate: Rectangle {
-                id: onScreen
 
-                required property var modelData
 
-                property var hotkeyEntry: root.hotkeys.find(h => h.toplevel === modelData)
-                property string keyLabel: hotkeyEntry?.hotkey ?? ""
-                property string matchedPart: controls.matchedHotkeyPart(root.typedKeys, keyLabel)
-                property string unmatchedPart: controls.unmatchedHotkeyPart(root.typedKeys, keyLabel)
 
-                property ClientInfo clientInfo: HyprctlClients.clients.find(client => modelData.address === client.address.replace('0x', ''))
-                property var clientMonitor: Hyprland.monitors.values.find(monitor => monitor.id === clientInfo?.monitor)
+            Repeater {
+                model: toplevelView.screenToplevels
+                delegate: Rectangle {
+                    id: onScreen
 
-                width: 80
-                height: 60
+                    required property var modelData
 
-                x: clientInfo ? clientInfo.at[0] - (clientMonitor?.x ?? 0) + clientInfo.size[0] / 2 - width / 2 : 0
-                y: clientInfo ? clientInfo.at[1] - (clientMonitor?.y ?? 0) + clientInfo.size[1] / 2 - height / 2 : 0
+                    property var hotkeyEntry: root.hotkeys.find(h => h.toplevel === modelData)
+                    property string keyLabel: hotkeyEntry?.hotkey ?? ""
+                    property string matchedPart: controls.matchedHotkeyPart(root.typedKeys, keyLabel)
+                    property string unmatchedPart: controls.unmatchedHotkeyPart(root.typedKeys, keyLabel)
 
-                color: modelData.activated ? theme.background : theme.foreground
-                radius: Styles.radiusMd
-                scale: root.popupsVisible ? 1 : 0.65
-                opacity: root.popupsVisible ? 1 : 0
+                    property ClientInfo clientInfo: HyprctlClients.clients.find(client => modelData.address === client.address.replace('0x', ''))
+                    property var clientMonitor: Hyprland.monitors.values.find(monitor => monitor.id === clientInfo?.monitor)
 
-                Behavior on scale {
-                    NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
-                }
+                    width: 80
+                    height: 60
 
-                Behavior on opacity {
-                    NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
-                }
+                    x: clientInfo ? clientInfo.at[0] - (clientMonitor?.x ?? 0) + clientInfo.size[0] / 2 - width / 2 : 0
+                    y: clientInfo ? clientInfo.at[1] - (clientMonitor?.y ?? 0) + clientInfo.size[1] / 2 - height / 2 : 0
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: Styles.marginSm
-                    IconImage {
-                        implicitHeight: 32
-                        implicitWidth: 32
-                        source: Quickshell.iconPath(DesktopEntries.byId(onScreen.modelData.wayland?.appId)?.icon, "applications-other")
+                    color: modelData.activated ? theme.background : theme.foreground
+                    radius: Styles.radiusMd
+                    scale: root.popupsVisible ? 1 : 0.65
+                    opacity: root.popupsVisible ? 1 : 0
+
+                    Behavior on scale {
+                        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
                     }
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Row {
-                            TextStyled {
-                                text: onScreen.matchedPart.toUpperCase()
-                                color: theme.background
-                                font.bold: true
-                                font.pointSize: Styles.textSm
-                            }
-                            TextStyled {
-                                text: onScreen.unmatchedPart.toUpperCase()
-                                color: theme.text
-                                font.pointSize: Styles.textSm
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+                    }
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: Styles.marginSm
+                        IconImage {
+                            implicitHeight: 32
+                            implicitWidth: 32
+                            source: Quickshell.iconPath(DesktopEntries.byId(onScreen.modelData.wayland?.appId)?.icon, "applications-other")
+                        }
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            Row {
+                                TextStyled {
+                                    text: onScreen.matchedPart.toUpperCase()
+                                    color: theme.background
+                                    font.bold: true
+                                    font.pointSize: Styles.textSm
+                                }
+                                TextStyled {
+                                    text: onScreen.unmatchedPart.toUpperCase()
+                                    color: theme.text
+                                    font.pointSize: Styles.textSm
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        Rectangle {
-            id: controller
+            Rectangle {
+                id: controller
 
-            anchors.fill: parent
-            color: "transparent"
-            focus: true
+                anchors.fill: parent
+                color: "transparent"
+                focus: true
 
-            Keys.onPressed: function (event) {
-                hideTimer.restart();
+                Keys.onPressed: function (event) {
+                    hideTimer.restart();
 
-                if (controls.enterPressed(event)) {
-                    const enterMatch = root.hotkeys.find(h => h.hotkey === root.typedKeys) ?? (root.pendingActivation ? { toplevel: root.pendingActivation } : null);
-                    if (enterMatch) {
-                        activateTimer.stop();
-                        root.pendingActivation = null;
+                    if (controls.enterPressed(event)) {
+                        const enterMatch = root.hotkeys.find(h => h.hotkey === root.typedKeys) ?? (root.pendingActivation ? { toplevel: root.pendingActivation } : null);
+                        if (enterMatch) {
+                            activateTimer.stop();
+                            root.pendingActivation = null;
+                            root.close();
+                            enterMatch.toplevel.wayland.activate();
+                            event.accepted = true;
+                            return;
+                        }
+                    }
+
+                    if (controls.escapePressed(event)) {
                         root.close();
-                        enterMatch.toplevel.wayland.activate();
                         event.accepted = true;
                         return;
                     }
-                }
 
-                if (controls.escapePressed(event)) {
-                    root.close();
+                    let pressedChar = event.text.toLowerCase();
+                    if (pressedChar === "" || !/^[a-z]$/.test(pressedChar))
+                        return;
                     event.accepted = true;
-                    return;
-                }
-
-                let pressedChar = event.text.toLowerCase();
-                if (pressedChar === "" || !/^[a-z]$/.test(pressedChar))
-                    return;
-                event.accepted = true;
-                const result = controls.resolveTypedHotkey(pressedChar, root.typedKeys, root.hotkeys, root.allToplevels);
-                root.typedKeys = result.typedKeys;
-                if (result.index !== -1) {
-                    root.pendingActivation = root.allToplevels[result.index];
-                    activateTimer.restart();
-                } else if (root.pendingActivation !== null) {
-                    activateTimer.restart();
+                    const result = controls.resolveTypedHotkey(pressedChar, root.typedKeys, root.hotkeys, root.allToplevels);
+                    root.typedKeys = result.typedKeys;
+                    if (result.index !== -1) {
+                        root.pendingActivation = root.allToplevels[result.index];
+                        activateTimer.restart();
+                    } else if (root.pendingActivation !== null) {
+                        activateTimer.restart();
+                    }
                 }
             }
-        }
     }
+}
 }
