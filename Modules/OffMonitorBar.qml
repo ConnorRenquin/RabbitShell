@@ -12,6 +12,8 @@ import qs.Settings
 import qs.Helpers
 import qs.Components.Plus
 import qs.Components.Styled
+import qs.Services
+import qs.Services.Models
 
 Loader {
     id: root
@@ -169,6 +171,10 @@ Loader {
 
                     required property var modelData
                     property var workspaceToplevels: root.workspaceGroups[modelData] ?? []
+                    property var firstClientInfo: workspaceToplevels.length > 0
+                        ? HyprctlClients.clients.find(client => workspaceToplevels[0].address === client.address.replace('0x', ''))
+                        : null
+                    property var monitorInfo: Hyprland.monitors.values.find(monitor => monitor.id === firstClientInfo?.monitor)
 
                     Layout.alignment: Qt.AlignTop
                     implicitWidth: workspaceColumn.implicitWidth + Styles.marginSm * 2
@@ -198,31 +204,39 @@ Loader {
                             }
                         }
 
-                        ColumnLayoutPlus {
-                            model: workspaceBackground.workspaceToplevels
+                        Item {
+                            id: workspaceCanvas
 
-                            delegate: Rectangle {
-                                id: offMonitor
+                            Layout.preferredWidth: (workspaceBackground.monitorInfo?.width ?? 1920) / 5
+                            Layout.preferredHeight: (workspaceBackground.monitorInfo?.height ?? 1080) / 5
 
-                                required property var modelData
+                            Repeater {
+                                model: workspaceBackground.workspaceToplevels
 
-                                property var hotkeyEntry: root.hotkeys.find(entry => entry.toplevel === modelData)
-                                property string keyLabel: hotkeyEntry?.hotkey ?? ""
-                                property string matchedPart: controls.matchedHotkeyPart(root.typedKeys, keyLabel)
-                                property string unmatchedPart: controls.unmatchedHotkeyPart(root.typedKeys, keyLabel)
+                                delegate: Rectangle {
+                                    id: offMonitor
 
-                                Layout.preferredWidth: preview.sourceSize.width / 5
-                                Layout.preferredHeight: preview.sourceSize.height / 4.5
-                                color: theme.background
-                                radius: Styles.radiusSm
+                                    required property var modelData
 
-                                Item {
-                                    anchors.fill: parent
-                                    anchors.margins: Styles.marginSm
+                                    property var clientInfo: HyprctlClients.clients.find(client => modelData.address === client.address.replace('0x', ''))
+                                    property var hotkeyEntry: root.hotkeys.find(entry => entry.toplevel === modelData)
+                                    property string keyLabel: hotkeyEntry?.hotkey ?? ""
+                                    property string matchedPart: controls.matchedHotkeyPart(root.typedKeys, keyLabel)
+                                    property string unmatchedPart: controls.unmatchedHotkeyPart(root.typedKeys, keyLabel)
+                                    property real previewScale: 0.2
+
+                                    x: clientInfo ? (clientInfo.at[0] - (workspaceBackground.monitorInfo?.x ?? 0)) * previewScale : 0
+                                    y: clientInfo ? (clientInfo.at[1] - (workspaceBackground.monitorInfo?.y ?? 0)) * previewScale : 0
+                                    width: clientInfo ? clientInfo.size[0] * previewScale : 0
+                                    height: clientInfo ? clientInfo.size[1] * previewScale : 0
+                                    color: theme.background
+                                    radius: Styles.radiusSm
+                                    clip: true
 
                                     ScreencopyView {
                                         id: preview
                                         anchors.fill: parent
+                                        anchors.margins: Styles.marginSm
                                         captureSource: root.active ? offMonitor.modelData.wayland : null
                                         live: root.active
                                         paintCursor: false
@@ -231,16 +245,15 @@ Loader {
                                     IconImage {
                                         anchors.right: preview.right
                                         anchors.bottom: preview.bottom
-                                        anchors.margins: -15
-                                        implicitWidth: 64
-                                        implicitHeight: 64
+                                        implicitWidth: 32
+                                        implicitHeight: 32
                                         source: Quickshell.iconPath(DesktopEntries.byId(offMonitor.modelData.wayland?.appId)?.icon, "applications-other")
                                     }
 
                                     Rectangle {
                                         anchors.centerIn: parent
-                                        implicitWidth: Math.min(textRow.implicitWidth, preview.sourceSize.width / 6) + Styles.marginSm
-                                        height: 45
+                                        implicitWidth: Math.min(textRow.implicitWidth, offMonitor.width - Styles.marginSm * 2)
+                                        implicitHeight: textRow.implicitHeight + Styles.marginSm
                                         color: theme.background
                                         radius: Styles.radiusSm
 
