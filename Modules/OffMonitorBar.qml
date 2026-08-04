@@ -157,14 +157,45 @@ Loader {
             id: bar
 
             anchors.centerIn: parent
-            implicitWidth: workspaceColumns.implicitWidth + Styles.marginSm
-            implicitHeight: workspaceColumns.implicitHeight + Styles.marginSm
+            implicitWidth: workspaceGrid.implicitWidth + Styles.marginSm
+            implicitHeight: workspaceGrid.implicitHeight + Styles.marginSm
             color: "transparent"
 
-            RowLayoutPlus {
-                id: workspaceColumns
+            GridLayoutPlus {
+                id: workspaceGrid
+
+                property var workspaceIds: Object.keys(root.workspaceGroups).sort((a, b) => parseInt(a) - parseInt(b))
+
+                function cardWidth(workspaceId) {
+                    const workspaceToplevels = root.workspaceGroups[workspaceId] ?? [];
+                    const firstClient = workspaceToplevels.length > 0
+                        ? HyprctlClients.clients.find(client => workspaceToplevels[0].address === client.address.replace('0x', ''))
+                        : null;
+                    const monitor = Hyprland.monitors.values.find(candidate => candidate.id === firstClient?.monitor);
+                    return (monitor?.width ?? 1920) / 5 + Styles.marginSm;
+                }
+
+                function fittingColumnCount() {
+                    const availableWidth = Math.max(0, panel.width - Styles.marginSm * 2);
+                    let occupiedWidth = 0;
+                    let count = 0;
+
+                    for (const workspaceId of workspaceIds) {
+                        const nextWidth = cardWidth(workspaceId) + (count > 0 ? columnSpacing : 0);
+                        if (count > 0 && occupiedWidth + nextWidth > availableWidth)
+                            break;
+                        occupiedWidth += nextWidth;
+                        count++;
+                    }
+
+                    return Math.max(1, count);
+                }
+
                 anchors.centerIn: parent
-                model: Object.keys(root.workspaceGroups).sort((a, b) => parseInt(a) - parseInt(b))
+                columns: fittingColumnCount()
+                columnSpacing: Styles.marginSm
+                rowSpacing: Styles.marginSm
+                model: workspaceIds
 
                 delegate: Rectangle {
                     id: workspaceBackground
