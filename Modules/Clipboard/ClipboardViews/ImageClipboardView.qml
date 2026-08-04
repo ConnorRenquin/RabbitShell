@@ -42,8 +42,8 @@ Rectangle {
 
     FolderListModel {
         id: folderModel
-        folder: QtCoreLib.StandardPaths.writableLocation(QtCoreLib.StandardPaths.HomeLocation) + "/Pictures/clipboard"
-        rootFolder: QtCoreLib.StandardPaths.writableLocation(QtCoreLib.StandardPaths.HomeLocation) + "/Pictures/clipboard"
+        folder: QtCoreLib.StandardPaths.writableLocation(QtCoreLib.StandardPaths.HomeLocation) + "/Pictures/Screenshots"
+        rootFolder: QtCoreLib.StandardPaths.writableLocation(QtCoreLib.StandardPaths.HomeLocation) + "/Pictures/Screenshots"
         sortReversed: true
         showDirs: false
     }

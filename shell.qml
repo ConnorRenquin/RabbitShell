@@ -25,6 +25,7 @@ ShellRoot {
     Polkit {}
     SettingsMenu {}
     ScreenDraw {}
+    ScreenCapture {}
     OnScreenKeyboard {}
     Component.onCompleted: {
         Qt.callLater(function () {
