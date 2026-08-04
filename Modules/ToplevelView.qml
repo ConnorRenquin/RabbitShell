@@ -190,9 +190,34 @@ Loader {
             WlrLayershell.namespace: "toplevels"
             WlrLayershell.layer: WlrLayer.Overlay
 
+            Rectangle {
+                id: emptyState
 
+                anchors.centerIn: parent
+                visible: toplevelView.screenToplevels.length === 0
+                implicitWidth: emptyStateText.implicitWidth + Styles.marginSm * 2
+                implicitHeight: emptyStateText.implicitHeight + Styles.marginSm * 2
+                color: theme.background
+                radius: Styles.radiusMd
+                scale: root.popupsVisible ? 1 : 0.65
+                opacity: root.popupsVisible ? 1 : 0
 
+                Behavior on scale {
+                    NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+                }
 
+                Behavior on opacity {
+                    NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+                }
+
+                TextStyled {
+                    id: emptyStateText
+                    anchors.centerIn: parent
+                    text: "No windows on this workspace"
+                    color: theme.text
+                    font.pointSize: Styles.textSm
+                }
+            }
 
             Repeater {
                 model: toplevelView.screenToplevels

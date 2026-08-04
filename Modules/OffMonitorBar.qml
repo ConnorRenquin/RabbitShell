@@ -100,8 +100,6 @@ Loader {
         name: "offmonitorbar"
         onPressed: {
             root.updateToplevels();
-            if (root.toplevels.length === 0)
-                return;
             hideTimer.restart();
             root.active = true;
         }
@@ -157,9 +155,32 @@ Loader {
             id: bar
 
             anchors.centerIn: parent
-            implicitWidth: workspaceGrid.implicitWidth + Styles.marginSm
-            implicitHeight: workspaceGrid.implicitHeight + Styles.marginSm
+            implicitWidth: root.toplevels.length > 0
+                ? workspaceGrid.implicitWidth + Styles.marginSm
+                : emptyState.implicitWidth
+            implicitHeight: root.toplevels.length > 0
+                ? workspaceGrid.implicitHeight + Styles.marginSm
+                : emptyState.implicitHeight
             color: "transparent"
+
+            Rectangle {
+                id: emptyState
+
+                anchors.centerIn: parent
+                visible: root.toplevels.length === 0
+                implicitWidth: emptyStateText.implicitWidth + Styles.marginSm * 2
+                implicitHeight: emptyStateText.implicitHeight + Styles.marginSm * 2
+                color: theme.background
+                radius: Styles.radiusMd
+
+                TextStyled {
+                    id: emptyStateText
+                    anchors.centerIn: parent
+                    text: "No windows on other workspaces"
+                    color: theme.text
+                    font.pointSize: Styles.textSm
+                }
+            }
 
             GridLayoutPlus {
                 id: workspaceGrid
@@ -192,6 +213,7 @@ Loader {
                 }
 
                 anchors.centerIn: parent
+                visible: root.toplevels.length > 0
                 columns: fittingColumnCount()
                 columnSpacing: Styles.marginSm
                 rowSpacing: Styles.marginSm
