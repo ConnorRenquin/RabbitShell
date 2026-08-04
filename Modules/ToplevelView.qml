@@ -9,7 +9,6 @@ import QtQuick.Layouts
 
 import qs.Settings
 import qs.Helpers
-import qs.Components
 import qs.Components.Plus
 import qs.Components.Styled
 import qs.Services
@@ -224,14 +223,14 @@ Loader {
             anchors.margins: topBar ? Styles.marginMd * 3 : Styles.marginSm
             anchors.horizontalCenter: parent.horizontalCenter
 
-            width: offMonitorFlow.implicitWidth + Styles.marginSm
-            height: offMonitorFlow.implicitHeight + Styles.marginSm
+            width: offMonitorWorkspaces.implicitWidth + Styles.marginSm
+            height: offMonitorWorkspaces.implicitHeight + Styles.marginSm
 
-            color: theme.foreground
+            color: "transparent"
             radius: Styles.radiusMd
 
-            GridLayoutPlus {
-                id: offMonitorFlow
+            RowLayoutPlus {
+                id: offMonitorWorkspaces
                 anchors.centerIn: parent
                 model: Object.keys(root.workspaceGroups).sort((a, b) => parseInt(a) - parseInt(b))
                 delegate: ColumnLayout {
@@ -261,73 +260,70 @@ Loader {
 
                     ColumnLayoutPlus {
                         model: parent.workspaceToplevels
-                        delegate: ButtonStyled {
+                        delegate: Rectangle {
                             id: offMonitor
 
                             required property var modelData
 
-                            implicitWidth: 175
-                            implicitHeight: 50
-                            isFocused: modelData.activated
+                            Layout.preferredWidth: preview.sourceSize.width / 5
+                            Layout.preferredHeight: preview.sourceSize.height / 4.5
 
-                            onClicked: modelData.wayland.activate()
+                            // color: "transparent"
+                            color: theme.background
+                            radius: Styles.radiusSm
 
                             property var hotkeyEntry: root.hotkeys.find(h => h.toplevel === modelData)
                             property string keyLabel: hotkeyEntry?.hotkey ?? ""
                             property string matchedPart: root.typedKeys !== "" && keyLabel.startsWith(root.typedKeys) ? root.typedKeys : ""
                             property string unmatchedPart: matchedPart !== "" ? keyLabel.substring(matchedPart.length) : keyLabel
 
-                            defaultColor: theme.background
 
-                            RowLayout {
+                            Item {
                                 anchors.fill: parent
                                 anchors.margins: Styles.marginSm
-                                Rectangle {
-                                    Layout.preferredWidth: 64
-                                    Layout.fillHeight: true
-                                    radius: Styles.radiusSm
-                                    color: theme.foreground
-                                    clip: true
-
-                                    ScreencopyView {
-                                        id: preview
-                                        anchors.fill: parent
-                                        captureSource: root.active ? offMonitor.modelData.wayland : null
-                                        live: root.active
-                                        paintCursor: false
-                                    }
+                                ScreencopyView {
+                                    id: preview
+                                    anchors.fill: parent
+                                    captureSource: root.active ? offMonitor.modelData.wayland : null
+                                    live: root.active
+                                    paintCursor: false
                                 }
                                 IconImage {
-                                    Layout.preferredHeight: 28
-                                    Layout.preferredWidth: 28
+                                    anchors.bottom: preview.bottom
+                                    anchors.right: preview.right
+                                    anchors.margins: -15
+                                    implicitHeight: 64
+                                    implicitWidth: 64
                                     source: Quickshell.iconPath(DesktopEntries.byId(offMonitor.modelData.wayland?.appId)?.icon, "applications-other")
                                 }
                                 Rectangle {
-                                    Layout.preferredHeight: textRow.implicitHeight + Styles.marginSm
-                                    Layout.preferredWidth: Math.max(30, textRow.implicitWidth + Styles.marginSm)
+                                    id: toplevelInfo
                                     color: theme.background
-                                    radius: Styles.radiusLg
-                                    Row {
+                                    radius: Styles.radiusSm
+                                    anchors.centerIn: parent
+                                    implicitWidth: Math.min(textRow.implicitWidth, preview.sourceSize.width / 6) + Styles.marginSm
+                                    height: 45
+                                    RowLayout {
                                         id: textRow
                                         anchors.centerIn: parent
+                                        anchors.margins: 3
+                                        anchors.fill: parent
                                         TextStyled {
                                             text: offMonitor.matchedPart.toUpperCase()
                                             color: theme.background
                                             font.bold: true
-                                            font.pointSize: Styles.textSm
                                         }
                                         TextStyled {
                                             text: offMonitor.unmatchedPart.toUpperCase()
                                             color: theme.text
+                                        }
+                                        TextStyled {
+                                            text: root.toplevelLabel(offMonitor.modelData)
+                                            Layout.fillWidth: true
+                                            elide: Text.ElideRight
                                             font.pointSize: Styles.textSm
                                         }
                                     }
-                                }
-                                TextStyled {
-                                    Layout.fillWidth: true
-                                    text: root.toplevelLabel(offMonitor.modelData)
-                                    elide: Text.ElideRight
-                                    font.pointSize: Styles.textSm
                                 }
                             }
                         }
