@@ -81,4 +81,68 @@ Item {
     function cPressed(event) {
         return event.key === Qt.Key_C;
     }
+
+    function preferredLabel(primary, fallback, unknownLabel = "Unknown") {
+        return primary || fallback || unknownLabel;
+    }
+
+    function hotkeyLabel(value, fallback = "unknown") {
+        return String(value || fallback).toLowerCase().replace(/[^a-z]/g, '') || fallback;
+    }
+
+    function generateHotkey(value, assigned, fallback = "unknown") {
+        const name = hotkeyLabel(value, fallback);
+        const taken = key => assigned.some(entry => entry.hotkey === key);
+
+        for (let length = 1; length <= Math.min(2, name.length); length++) {
+            const prefix = name.substring(0, length);
+            if (!taken(prefix))
+                return prefix;
+        }
+
+        const base = name.substring(0, Math.min(2, name.length));
+        for (let index = 0; index < 26; index++) {
+            const candidate = base + String.fromCharCode(97 + index);
+            if (!taken(candidate))
+                return candidate;
+        }
+
+        return name.substring(0, 3) || fallback.substring(0, 3);
+    }
+
+    function resolveTypedHotkey(character, typedKeys, hotkeys, items) {
+        let nextTypedKeys = typedKeys + character;
+        let match = hotkeys.find(entry => entry.hotkey === nextTypedKeys);
+        let ambiguous = hotkeys.some(entry => entry.hotkey !== nextTypedKeys && entry.hotkey.startsWith(nextTypedKeys));
+
+        if (match) {
+            return {
+                typedKeys: ambiguous ? nextTypedKeys : "",
+                index: items.indexOf(match.toplevel)
+            };
+        }
+
+        if (!hotkeys.some(entry => entry.hotkey.startsWith(nextTypedKeys))) {
+            nextTypedKeys = character;
+            match = hotkeys.find(entry => entry.hotkey === nextTypedKeys);
+            ambiguous = hotkeys.some(entry => entry.hotkey !== nextTypedKeys && entry.hotkey.startsWith(nextTypedKeys));
+            if (match) {
+                return {
+                    typedKeys: ambiguous ? nextTypedKeys : "",
+                    index: items.indexOf(match.toplevel)
+                };
+            }
+        }
+
+        return { typedKeys: nextTypedKeys, index: -1 };
+    }
+
+    function matchedHotkeyPart(typedKeys, hotkey) {
+        return typedKeys !== "" && hotkey.startsWith(typedKeys) ? typedKeys : "";
+    }
+
+    function unmatchedHotkeyPart(typedKeys, hotkey) {
+        const matched = matchedHotkeyPart(typedKeys, hotkey);
+        return matched !== "" ? hotkey.substring(matched.length) : hotkey;
+    }
 }

@@ -22,42 +22,15 @@ Loader {
     property string typedKeys: ""
     property var pendingActivation: null
     property var toplevels: []
-    property var workspaceGroups: []
     property var allToplevels: []
     property var hotkeys: []
 
 
-    // assigned: array of already-committed {hotkey} entries to check against.
-    // Passing it explicitly avoids relying on root.hotkeys mid-update.
-    function generateHotkey(toplevel, assigned) {
-        const useAppId = Settings.get('toplevelLabel')?.value === 'appId';
-        const raw = useAppId
-            ? (toplevel?.wayland?.appId || toplevel?.wayland?.title || "unknown")
-            : (toplevel?.wayland?.title || toplevel?.wayland?.appId || "unknown");
-        const name = raw.toLowerCase().replace(/[^a-z]/g, '') || "unknown";
-
-        const taken = key => assigned.some(h => h.hotkey === key);
-
-        for (let len = 1; len <= Math.min(2, name.length); len++) {
-            const prefix = name.substring(0, len);
-            if (!taken(prefix)) return prefix;
-        }
-
-        const base = name.substring(0, Math.min(2, name.length));
-        for (let i = 0; i < 26; i++) {
-            const prefix = base + String.fromCharCode(97 + i);
-            if (!taken(prefix)) return prefix;
-        }
-
-        return name.substring(0, 3) || "unk";
-    }
-
-
     function toplevelLabel(toplevel) {
         const useAppId = Settings.get('toplevelLabel')?.value === 'appId';
-        return useAppId
-            ? (toplevel?.wayland?.appId ?? "Unknown App")
-            : (toplevel?.wayland?.title ?? "Unknown App");
+        const primary = useAppId ? toplevel?.wayland?.appId : toplevel?.wayland?.title;
+        const fallback = useAppId ? toplevel?.wayland?.title : toplevel?.wayland?.appId;
+        return controls.preferredLabel(primary, fallback, "Unknown App");
     }
 
     function updateToplevels() {
@@ -66,72 +39,27 @@ Loader {
         if (!Hyprland.focusedWorkspace)
             return;
 
-        workspaceGroups = Hyprland.toplevels.values.reduce((groups, toplevel) => {
-            var workspaceId = toplevel?.workspace?.id;
-            if (workspaceId === undefined || workspaceId === null || workspaceId === Hyprland.focusedWorkspace?.id) {
-                return groups;
-            }
-            if (!groups[workspaceId]) {
-                groups[workspaceId] = [];
-            }
-            groups[workspaceId].push(toplevel);
-            return groups;
-        }, {});
         toplevels = Hyprland.toplevels.values.filter(toplevel => toplevel?.workspace?.id === Hyprland.focusedWorkspace?.id);
-        const sortedOtherToplevels = Object.keys(workspaceGroups)
-            .sort((a, b) => parseInt(a) - parseInt(b))
-            .map(id => workspaceGroups[id])
-            .reduce((acc, arr) => acc.concat(arr), []);
-        allToplevels = toplevels.concat(sortedOtherToplevels);
+        allToplevels = toplevels;
 
 
         // Build into a local array so conflict checks use a consistent snapshot.
         const newHotkeys = [];
         for (const toplevel of allToplevels) {
-            const hotkey = generateHotkey(toplevel, newHotkeys);
+            const hotkey = controls.generateHotkey(root.toplevelLabel(toplevel), newHotkeys);
             newHotkeys.push({ toplevel, hotkey });
         }
 
         hotkeys = newHotkeys;
     }
 
-    // Appends char to typedKeys and returns the unambiguously matched toplevel index,
-    // or -1 if still ambiguous/typing. Clears typedKeys on a successful match.
-    function resolveTypedKey(char) {
-        root.typedKeys += char;
-
-        let match = root.hotkeys.find(h => h.hotkey === root.typedKeys);
-        let ambiguous = root.hotkeys.some(h => h.hotkey !== root.typedKeys && h.hotkey.startsWith(root.typedKeys));
-
-        if (match) {
-            const idx = root.allToplevels.indexOf(match.toplevel);
-            if (!ambiguous) {
-                // Unambiguous: clear typed buffer, fire immediately via timer
-                root.typedKeys = "";
-            }
-            return idx;
-        }
-
-        if (!root.hotkeys.some(h => h.hotkey.startsWith(root.typedKeys))) {
-            // Nothing at all starts with the accumulated buffer - reset to just this char
-            root.typedKeys = char;
-            match = root.hotkeys.find(h => h.hotkey === root.typedKeys);
-            ambiguous = root.hotkeys.some(h => h.hotkey !== root.typedKeys && h.hotkey.startsWith(root.typedKeys));
-            if (match) {
-                const idx = root.allToplevels.indexOf(match.toplevel);
-                if (!ambiguous)
-                    root.typedKeys = "";
-                return idx;
-            }
-        }
-
-        return -1;
-    }
-
-
     Themer {
         id: theme
         settingName: 'toplevel'
+    }
+
+    Controls {
+        id: controls
     }
 
     onActiveChanged: {
@@ -203,9 +131,7 @@ Loader {
         WlrLayershell.namespace: "toplevels"
         WlrLayershell.layer: WlrLayer.Overlay
 
-        mask: Region {
-            item: offMonitorBar
-        }
+
 
         HyprlandFocusGrab {
             active: root.active
@@ -213,133 +139,7 @@ Loader {
             onCleared: root.active = false
         }
 
-        Rectangle {
-            id: offMonitorBar
 
-            visible: Object.keys(root.workspaceGroups).length > 0
-
-            property bool topBar: Settings.get('barPosition').value
-            anchors.top: parent.top
-            anchors.margins: topBar ? Styles.marginMd * 3 : Styles.marginSm
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            width: offMonitorWorkspaces.implicitWidth + Styles.marginSm
-            height: offMonitorWorkspaces.implicitHeight + Styles.marginSm
-
-            color: "transparent"
-            radius: Styles.radiusMd
-
-            RowLayoutPlus {
-                id: offMonitorWorkspaces
-                anchors.centerIn: parent
-                model: Object.keys(root.workspaceGroups).sort((a, b) => parseInt(a) - parseInt(b))
-                delegate: Rectangle {
-                    id: offMonitorToplevel
-
-                    required property var modelData
-                    property var workspaceToplevels: root.workspaceGroups[modelData] ?? []
-
-                    Layout.alignment: Qt.AlignTop
-                    implicitWidth: workspaceColumn.implicitWidth + Styles.marginSm * 2
-                    implicitHeight: workspaceColumn.implicitHeight + Styles.marginSm * 2
-                    color: theme.background
-                    radius: Styles.radiusMd
-
-                    ColumnLayout {
-                        id: workspaceColumn
-                        anchors.fill: parent
-                        anchors.margins: Styles.marginSm
-                        spacing: Styles.marginSm
-
-                        Rectangle {
-                            Layout.preferredHeight: workspaceId.implicitHeight + Styles.marginSm
-                            Layout.fillWidth: true
-                            radius: Styles.radiusMd
-                            color: theme.background
-                            TextStyled {
-                                id: workspaceId
-                                anchors.fill: parent
-                                font.pointSize: Styles.textSm
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                text: "󰜌 " + offMonitorToplevel.modelData
-                            }
-                        }
-
-                        ColumnLayoutPlus {
-                            model: offMonitorToplevel.workspaceToplevels
-                            delegate: Rectangle {
-                            id: offMonitor
-
-                            required property var modelData
-
-                            Layout.preferredWidth: preview.sourceSize.width / 5
-                            Layout.preferredHeight: preview.sourceSize.height / 4.5
-
-                            // color: "transparent"
-                            color: theme.background
-                            radius: Styles.radiusSm
-
-                            property var hotkeyEntry: root.hotkeys.find(h => h.toplevel === modelData)
-                            property string keyLabel: hotkeyEntry?.hotkey ?? ""
-                            property string matchedPart: root.typedKeys !== "" && keyLabel.startsWith(root.typedKeys) ? root.typedKeys : ""
-                            property string unmatchedPart: matchedPart !== "" ? keyLabel.substring(matchedPart.length) : keyLabel
-
-
-                            Item {
-                                anchors.fill: parent
-                                anchors.margins: Styles.marginSm
-                                ScreencopyView {
-                                    id: preview
-                                    anchors.fill: parent
-                                    captureSource: root.active ? offMonitor.modelData.wayland : null
-                                    live: root.active
-                                    paintCursor: false
-                                }
-                                IconImage {
-                                    anchors.bottom: preview.bottom
-                                    anchors.right: preview.right
-                                    anchors.margins: -15
-                                    implicitHeight: 64
-                                    implicitWidth: 64
-                                    source: Quickshell.iconPath(DesktopEntries.byId(offMonitor.modelData.wayland?.appId)?.icon, "applications-other")
-                                }
-                                Rectangle {
-                                    id: toplevelInfo
-                                    color: theme.background
-                                    radius: Styles.radiusSm
-                                    anchors.centerIn: parent
-                                    implicitWidth: Math.min(textRow.implicitWidth, preview.sourceSize.width / 6) + Styles.marginSm
-                                    height: 45
-                                    RowLayout {
-                                        id: textRow
-                                        anchors.centerIn: parent
-                                        anchors.margins: 3
-                                        anchors.fill: parent
-                                        TextStyled {
-                                            text: offMonitor.matchedPart.toUpperCase()
-                                            color: theme.background
-                                            font.bold: true
-                                        }
-                                        TextStyled {
-                                            text: offMonitor.unmatchedPart.toUpperCase()
-                                            color: theme.text
-                                        }
-                                        TextStyled {
-                                            text: root.toplevelLabel(offMonitor.modelData)
-                                            Layout.fillWidth: true
-                                            elide: Text.ElideRight
-                                            font.pointSize: Styles.textSm
-                                        }
-                                    }
-                                }
-                            }
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         Repeater {
             model: root.toplevels
@@ -350,8 +150,8 @@ Loader {
 
                 property var hotkeyEntry: root.hotkeys.find(h => h.toplevel === modelData)
                 property string keyLabel: hotkeyEntry?.hotkey ?? ""
-                property string matchedPart: root.typedKeys !== "" && keyLabel.startsWith(root.typedKeys) ? root.typedKeys : ""
-                property string unmatchedPart: matchedPart !== "" ? keyLabel.substring(matchedPart.length) : keyLabel
+                property string matchedPart: controls.matchedHotkeyPart(root.typedKeys, keyLabel)
+                property string unmatchedPart: controls.unmatchedHotkeyPart(root.typedKeys, keyLabel)
 
                 property ClientInfo clientInfo: HyprctlClients.clients.find(client => modelData.address === client.address.replace('0x', ''))
                 property var clientMonitor: Hyprland.monitors.values.find(monitor => monitor.id === clientInfo?.monitor)
@@ -403,7 +203,7 @@ Loader {
             Keys.onPressed: function (event) {
                 hideTimer.restart();
 
-                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                if (controls.enterPressed(event)) {
                     const enterMatch = root.hotkeys.find(h => h.hotkey === root.typedKeys) ?? (root.pendingActivation ? { toplevel: root.pendingActivation } : null);
                     if (enterMatch) {
                         activateTimer.stop();
@@ -416,7 +216,7 @@ Loader {
                     }
                 }
 
-                if (event.key === Qt.Key_Escape) {
+                if (controls.escapePressed(event)) {
                     root.active = false;
                     activateTimer.stop();
                     root.pendingActivation = null;
@@ -429,9 +229,10 @@ Loader {
                 if (pressedChar === "" || !/^[a-z]$/.test(pressedChar))
                     return;
                 event.accepted = true;
-                let idx = root.resolveTypedKey(pressedChar);
-                if (idx !== -1) {
-                    root.pendingActivation = root.allToplevels[idx];
+                const result = controls.resolveTypedHotkey(pressedChar, root.typedKeys, root.hotkeys, root.allToplevels);
+                root.typedKeys = result.typedKeys;
+                if (result.index !== -1) {
+                    root.pendingActivation = root.allToplevels[result.index];
                     activateTimer.restart();
                 } else if (root.pendingActivation !== null) {
                     activateTimer.restart();

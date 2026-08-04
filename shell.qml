@@ -18,6 +18,7 @@ ShellRoot {
     Mixer {}
     PowerMenu {}
     ToplevelView {}
+    OffMonitorBar {}
     Clipboard {}
     NotificationManager {}
     LockScreen {}
