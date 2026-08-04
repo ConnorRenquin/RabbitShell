@@ -116,6 +116,8 @@ Item {
             property var activeToplevel: modelData.toplevels.find(toplevel => toplevel.activated) || modelData.toplevels[0]
             readonly property bool hasActiveToplevel: modelData.toplevels.some(toplevel => toplevel.activated)
 
+            radius: hasActiveToplevel ? Styles.marginLg : Styles.marginSm
+
             Layout.preferredWidth: 35
             Layout.preferredHeight: 32
             defaultColor: hasActiveToplevel ? theme.foreground : theme.background
@@ -127,6 +129,12 @@ Item {
                     popupOpen = true;
                 else
                     closePopupTimer.restart();
+            }
+
+            Behavior on radius {
+                NumberAnimation {
+                    duration: 250
+                }
             }
 
             Timer {
