@@ -98,10 +98,9 @@ Rectangle {
                 font.pointSize: Styles.textLg
                 visible: text
                 text: root.notification?.appName ?? "Notification"
-            }
-
-            Item {
                 Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                wrapMode: Text.Wrap
             }
 
             AThing{
@@ -120,15 +119,20 @@ Rectangle {
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                Layout.minimumWidth: 0
 
                 RowLayout {
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 0
+
                     TextEditStyled {
                         id: summaryText
                         readOnly: true
                         Layout.fillWidth: true
+                        Layout.minimumWidth: 0
                         visible: text
                         text: root.notification?.summary ?? ""
-                        wrapMode: Text.WordWrap
+                        wrapMode: Text.Wrap
                     }
                     AThing{
                         visible: root.showTimeLeft  && !root.notification?.appName
@@ -142,10 +146,11 @@ Rectangle {
                     id: bodyText
                     readOnly: true
                     Layout.fillWidth: true
+                    Layout.minimumWidth: 0
                     font.pointSize: Styles.textSm
                     visible: text
                     text: root.removeIndentation(root.notification?.body) ?? ""
-                    wrapMode: Text.WordWrap
+                    wrapMode: Text.Wrap
                 }
             }
             Image {
