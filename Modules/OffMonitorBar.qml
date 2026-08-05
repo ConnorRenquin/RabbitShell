@@ -193,7 +193,7 @@ Loader {
                         ? HyprctlClients.clients.find(client => workspaceToplevels[0].address === client.address.replace('0x', ''))
                         : null;
                     const monitor = Hyprland.monitors.values.find(candidate => candidate.id === firstClient?.monitor);
-                    return (monitor?.width ?? 1920) / 5 + Styles.marginSm;
+                    return (monitor?.width ?? 1920) / 5 + Styles.marginLg;
                 }
 
                 function fittingColumnCount() {
@@ -230,15 +230,14 @@ Loader {
                     property var monitorInfo: Hyprland.monitors.values.find(monitor => monitor.id === firstClientInfo?.monitor)
 
                     Layout.alignment: Qt.AlignTop
-                    implicitWidth: workspaceColumn.implicitWidth + Styles.marginSm
-                    implicitHeight: workspaceColumn.implicitHeight + Styles.marginSm
+                    implicitWidth: workspaceColumn.implicitWidth
+                    implicitHeight: workspaceColumn.implicitHeight
+
                     color: "transparent"
-                    radius: Styles.radiusMd
 
                     ColumnLayout {
                         id: workspaceColumn
                         anchors.fill: parent
-                        anchors.margins: Styles.marginSm
                         spacing: Styles.marginSm
 
                         Rectangle {
@@ -246,7 +245,7 @@ Loader {
                             Layout.preferredHeight: workspaceId.implicitHeight + Styles.marginSm
                             Layout.preferredWidth: workspaceId.implicitWidth + Styles.marginSm
                             color: theme.foreground
-                            radius: Styles.radiusMd
+                            radius: Styles.radiusSm
 
                             TextStyled {
                                 id: workspaceId
@@ -261,7 +260,7 @@ Loader {
                         Rectangle {
                             id: workspaceCanvas
                             color: theme.background
-                            radius: Styles.radiusLg
+                            radius: Styles.radiusMd
 
                             Layout.preferredWidth: (workspaceBackground.monitorInfo?.width ?? 1920) / 5
                             Layout.preferredHeight: (workspaceBackground.monitorInfo?.height ?? 1080) / 5
@@ -269,7 +268,7 @@ Loader {
                             Repeater {
                                 model: workspaceBackground.workspaceToplevels
 
-                                delegate: Rectangle {
+                                delegate: ClippingRectangle {
                                     id: offMonitor
 
                                     required property var modelData
@@ -285,14 +284,12 @@ Loader {
                                     y: clientInfo ? (clientInfo.at[1] - (workspaceBackground.monitorInfo?.y ?? 0)) * previewScale : 0
                                     width: clientInfo ? clientInfo.size[0] * previewScale : 0
                                     height: clientInfo ? clientInfo.size[1] * previewScale : 0
-                                    color: "transparent"
                                     radius: Styles.radiusSm
                                     clip: true
 
                                     ScreencopyView {
                                         id: preview
                                         anchors.fill: parent
-                                        anchors.margins: Styles.marginSm
                                         captureSource: root.active ? offMonitor.modelData.wayland : null
                                         live: root.active
                                         paintCursor: false
@@ -316,7 +313,6 @@ Loader {
                                         RowLayout {
                                             id: textRow
                                             anchors.fill: parent
-                                            anchors.margins: 4
 
                                             TextStyled {
                                                 text: offMonitor.matchedPart.toUpperCase()
