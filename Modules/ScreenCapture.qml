@@ -4,6 +4,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Io
 import Quickshell.Wayland
 
 import QtQuick
@@ -27,6 +28,8 @@ Loader {
     property int screenshotDelay: 0
     property int countdownRemaining: 0
     property bool countdownActive: false
+    property bool recording: false
+    property string recordingPath: ""
     readonly property var screenshotDelays: [0, 3, 5, 10]
     property var shapes: []
     property var currentShape: null
@@ -64,6 +67,10 @@ Loader {
     }
 
     function close() {
+        if (recording) {
+            stopRecording();
+            return;
+        }
         resetSelection();
         active = false;
     }
@@ -183,6 +190,107 @@ Loader {
         screenshotDelay = screenshotDelays[(currentIndex + 1) % screenshotDelays.length];
     }
 
+    function logRecording(message) {
+        console.log("[ScreenCapture/Recording] " + message);
+    }
+
+    function startRecording() {
+        if (selection.width < 2 || selection.height < 2 || recording || countdownActive) {
+            logRecording("Start rejected: selection=" + selection.width + "x" + selection.height
+                + ", recording=" + recording + ", countdownActive=" + countdownActive);
+            return;
+        }
+
+        const monitor = Hyprland.focusedMonitor;
+        const globalX = Math.round((monitor?.x ?? 0) + selection.x);
+        const globalY = Math.round((monitor?.y ?? 0) + selection.y);
+        const width = Math.max(2, Math.floor(selection.width / 2) * 2);
+        const height = Math.max(2, Math.floor(selection.height / 2) * 2);
+        const geometry = globalX + "," + globalY + " " + width + "x" + height;
+        const now = new Date();
+        const pad = value => value < 10 ? "0" + value : String(value);
+        const filename = "recording-" + now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate())
+            + "-" + pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds()) + ".mp4";
+
+        recordingPath = "$HOME/Videos/Recordings/" + filename;
+        recordingProcess.command = ["sh", "-c", "mkdir -p \"$HOME/Videos/Recordings\" && exec wf-recorder -g '" + geometry + "' -f \"" + recordingPath + "\""];
+        logRecording("Queued geometry=" + geometry + ", output=" + recordingPath);
+        logRecording("Command: " + recordingProcess.command.join(" "));
+        chromeVisible = false;
+        recording = true;
+        recordingStartDelay.restart();
+    }
+
+    function stopRecording() {
+        if (!recording) {
+            logRecording("Stop ignored: no recording is active");
+            return;
+        }
+        logRecording("Stop requested: processRunning=" + recordingProcess.running
+            + ", processId=" + recordingProcess.processId + ", startupDelay=" + recordingStartDelay.running);
+        if (recordingStartDelay.running) {
+            recordingStartDelay.stop();
+            recording = false;
+            resetSelection();
+            active = false;
+            logRecording("Recording cancelled before wf-recorder started");
+            return;
+        }
+        recordingProcess.running = false;
+    }
+
+    Timer {
+        id: recordingStartDelay
+
+        interval: 120
+        onTriggered: {
+            loader.logRecording("Startup delay complete; launching wf-recorder");
+            recordingProcess.running = true;
+        }
+    }
+
+    Process {
+        id: recordingProcess
+
+        running: false
+
+        onStarted: loader.logRecording("wf-recorder started with processId=" + processId)
+
+        stdout: SplitParser {
+            splitMarker: "\n"
+            onRead: data => {
+                if (data.trim() !== "")
+                    loader.logRecording("stdout: " + data.trim());
+            }
+        }
+
+        stderr: SplitParser {
+            splitMarker: "\n"
+            onRead: data => {
+                if (data.trim() !== "")
+                    loader.logRecording("stderr: " + data.trim());
+            }
+        }
+
+        onExited: (exitCode, exitStatus) => {
+            loader.logRecording("wf-recorder exited: exitCode=" + exitCode + ", exitStatus=" + exitStatus
+                + ", recordingState=" + loader.recording + ", output=" + loader.recordingPath);
+            if (!loader.recording) {
+                loader.logRecording("Exit cleanup skipped because recording state was already cleared");
+                return;
+            }
+
+            const completedPath = loader.recordingPath;
+            loader.recording = false;
+            if (completedPath !== "") {
+                const safePath = completedPath.replace(/[^A-Za-z0-9_\-.$/]/g, "");
+                Quickshell.execDetached(["notify-send", "-a", "quickshell", exitCode === 0 ? "Recording saved" : "Recording stopped", safePath]);
+            }
+            loader.resetSelection();
+            loader.active = false;
+        }
+    }
+
     GlobalShortcut {
         name: "screen-capture"
         onPressed: loader.open()
@@ -250,14 +358,20 @@ Loader {
         exclusionMode: ExclusionMode.Ignore
         color: "transparent"
         screen: Quickshell.screens.find(candidate => candidate.name === Hyprland.focusedMonitor?.name) ?? Quickshell.screens[0]
+        mask: Region {
+            item: loader.recording ? recordingStopButton : captureSurface
+        }
 
         WlrLayershell.namespace: "screen-capture"
         WlrLayershell.layer: WlrLayer.Overlay
 
         HyprlandFocusGrab {
-            active: loader.active
+            active: loader.active && !loader.recording
             windows: [panel]
-            onCleared: loader.close()
+            onCleared: {
+                if (!loader.recording)
+                    loader.close();
+            }
         }
 
         Controls {
@@ -479,6 +593,34 @@ Loader {
             }
 
             Rectangle {
+                visible: loader.recording
+                x: loader.selection.x - border.width
+                y: loader.selection.y - border.width
+                width: loader.selection.width + border.width * 2
+                height: loader.selection.height + border.width * 2
+                color: "transparent"
+                border.color: Colors.error
+                border.width: 2
+            }
+
+            ButtonStyled {
+                id: recordingStopButton
+
+                visible: loader.recording
+                x: Math.max(Styles.marginSm, Math.min(parent.width - width - Styles.marginSm,
+                    loader.selection.x + loader.selection.width / 2 - width / 2))
+                y: loader.selection.y + loader.selection.height + height + Styles.marginSm <= parent.height
+                    ? loader.selection.y + loader.selection.height + Styles.marginSm
+                    : loader.selection.y - height - Styles.marginSm
+                implicitWidth: 72
+                implicitHeight: 34
+                text: Icons.close + " Stop"
+                defaultColor: Colors.error
+                textColor: Colors.onError
+                onClicked: loader.stopRecording()
+            }
+
+            Rectangle {
                 visible: loader.countdownActive
                 anchors.centerIn: parent
                 width: 96
@@ -690,6 +832,15 @@ Loader {
                         defaultColor: isFocused ? Colors.primary : Colors.surfaceVariant
                         textColor: isFocused ? Colors.onPrimary : Colors.onSurface
                         onClicked: loader.cycleScreenshotDelay()
+                    }
+
+                    ButtonStyled {
+                        implicitWidth: 30
+                        implicitHeight: 30
+                        text: Icons.video
+                        defaultColor: Colors.error
+                        textColor: Colors.onError
+                        onClicked: loader.startRecording()
                     }
 
                     ButtonStyled {
