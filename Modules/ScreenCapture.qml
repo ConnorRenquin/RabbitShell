@@ -191,14 +191,10 @@ Loader {
         screenshotDelay = screenshotDelays[(currentIndex + 1) % screenshotDelays.length];
     }
 
-    function logRecording(message) {
-        console.log("[ScreenCapture/Recording] " + message);
-    }
+
 
     function startRecording() {
         if (selection.width < 2 || selection.height < 2 || recording || countdownActive) {
-            logRecording("Start rejected: selection=" + selection.width + "x" + selection.height
-                + ", recording=" + recording + ", countdownActive=" + countdownActive);
             return;
         }
 
@@ -215,8 +211,6 @@ Loader {
 
         recordingPath = "$HOME/Videos/Recordings/" + filename;
         recordingProcess.command = ["sh", "-c", "mkdir -p \"$HOME/Videos/Recordings\" && exec wf-recorder -g '" + geometry + "' -f \"" + recordingPath + "\""];
-        logRecording("Queued geometry=" + geometry + ", output=" + recordingPath);
-        logRecording("Command: " + recordingProcess.command.join(" "));
         chromeVisible = false;
         recording = true;
         recordingStartDelay.restart();
@@ -224,17 +218,13 @@ Loader {
 
     function stopRecording() {
         if (!recording) {
-            logRecording("Stop ignored: no recording is active");
             return;
         }
-        logRecording("Stop requested: processRunning=" + recordingProcess.running
-            + ", processId=" + recordingProcess.processId + ", startupDelay=" + recordingStartDelay.running);
         if (recordingStartDelay.running) {
             recordingStartDelay.stop();
             recording = false;
             resetSelection();
             active = false;
-            logRecording("Recording cancelled before wf-recorder started");
             return;
         }
         recordingProcess.running = false;
@@ -244,10 +234,8 @@ Loader {
         id: recordingStartDelay
 
         interval: 120
-        onTriggered: {
-            loader.logRecording("Startup delay complete; launching wf-recorder");
-            recordingProcess.running = true;
-        }
+        onTriggered: recordingProcess.running = true;
+
     }
 
     Process {
@@ -255,29 +243,16 @@ Loader {
 
         running: false
 
-        onStarted: loader.logRecording("wf-recorder started with processId=" + processId)
-
         stdout: SplitParser {
             splitMarker: "\n"
-            onRead: data => {
-                if (data.trim() !== "")
-                    loader.logRecording("stdout: " + data.trim());
-            }
         }
 
         stderr: SplitParser {
             splitMarker: "\n"
-            onRead: data => {
-                if (data.trim() !== "")
-                    loader.logRecording("stderr: " + data.trim());
-            }
         }
 
         onExited: (exitCode, exitStatus) => {
-            loader.logRecording("wf-recorder exited: exitCode=" + exitCode + ", exitStatus=" + exitStatus
-                + ", recordingState=" + loader.recording + ", output=" + loader.recordingPath);
             if (!loader.recording) {
-                loader.logRecording("Exit cleanup skipped because recording state was already cleared");
                 return;
             }
 
@@ -452,19 +427,16 @@ Loader {
 
             Repeater {
                 model: loader.confirming && loader.drawingTool === "select" ? loader.adjustmentHandles : []
-
                 delegate: Rectangle {
                     required property var modelData
                     readonly property real handleSize: Math.max(8, Styles.marginSm)
-
+                    visible: !recordingProcess.running
                     x: loader.selection.x + loader.selection.width * modelData.xFactor - handleSize / 2
                     y: loader.selection.y + loader.selection.height * modelData.yFactor - handleSize / 2
                     width: handleSize
                     height: handleSize
                     radius: handleSize / 2
                     color: Colors.primary
-                    border.color: Colors.onPrimary
-                    border.width: 1
                 }
             }
 
@@ -619,8 +591,7 @@ Loader {
                 y: loader.selection.y + loader.selection.height + height + Styles.marginSm <= parent.height
                     ? loader.selection.y + loader.selection.height + Styles.marginSm
                     : loader.selection.y - height - Styles.marginSm
-                implicitWidth: 72
-                implicitHeight: 34
+                implicitHeight: 30
                 text: Icons.close + " Stop"
                 defaultColor: Colors.error
                 textColor: Colors.onError
@@ -790,7 +761,6 @@ Loader {
 
                         delegate: ButtonStyled {
                             required property var modelData
-                            implicitWidth: 30
                             implicitHeight: 30
                             text: modelData.icon
                             isFocused: loader.drawingTool === modelData.tool
@@ -801,7 +771,6 @@ Loader {
                     }
 
                     ButtonStyled {
-                        implicitWidth: 30
                         implicitHeight: 30
                         text: Icons.undo
                         defaultColor: Colors.surfaceVariant
@@ -821,7 +790,6 @@ Loader {
                     }
 
                     ButtonStyled {
-                        implicitWidth: 30
                         implicitHeight: 30
                         text: Icons.reset
                         defaultColor: Colors.surfaceVariant
@@ -836,7 +804,6 @@ Loader {
                     }
 
                     ButtonStyled {
-                        implicitWidth: 48
                         implicitHeight: 30
                         text: Icons.clock + " " + loader.screenshotDelay + "s"
                         isFocused: loader.screenshotDelay > 0
@@ -846,7 +813,6 @@ Loader {
                     }
 
                     ButtonStyled {
-                        implicitWidth: 30
                         implicitHeight: 30
                         text: Icons.video
                         defaultColor: Colors.error
@@ -855,7 +821,6 @@ Loader {
                     }
 
                     ButtonStyled {
-                        implicitWidth: 30
                         implicitHeight: 30
                         text: Icons.image
                         defaultColor: Colors.primary
