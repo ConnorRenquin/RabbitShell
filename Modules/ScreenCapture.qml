@@ -29,12 +29,20 @@ Loader {
     property bool chromeVisible: true
     property point dragStart: Qt.point(0, 0)
     property rect selection: Qt.rect(0, 0, 0, 0)
+    property rect adjustmentStart: Qt.rect(0, 0, 0, 0)
+    property string adjustmentMode: ""
     property bool dragging: false
     property bool confirming: false
+    readonly property var adjustmentHandles: [
+        { xFactor: 0, yFactor: 0 }, { xFactor: 0.5, yFactor: 0 }, { xFactor: 1, yFactor: 0 },
+        { xFactor: 0, yFactor: 0.5 }, { xFactor: 1, yFactor: 0.5 },
+        { xFactor: 0, yFactor: 1 }, { xFactor: 0.5, yFactor: 1 }, { xFactor: 1, yFactor: 1 }
+    ]
 
     function resetSelection() {
         selection = Qt.rect(0, 0, 0, 0);
         dragging = false;
+        adjustmentMode = "";
         confirming = false;
         drawingTool = "select";
         shapes = [];
@@ -57,6 +65,61 @@ Loader {
         const left = Math.min(start.x, end.x);
         const top = Math.min(start.y, end.y);
         return Qt.rect(left, top, Math.abs(end.x - start.x), Math.abs(end.y - start.y));
+    }
+
+    function adjustmentModeAt(x, y) {
+        if (!confirming || drawingTool !== "select")
+            return "";
+
+        const tolerance = 10;
+        const left = Math.abs(x - selection.x) <= tolerance;
+        const right = Math.abs(x - selection.x - selection.width) <= tolerance;
+        const top = Math.abs(y - selection.y) <= tolerance;
+        const bottom = Math.abs(y - selection.y - selection.height) <= tolerance;
+        const withinX = x >= selection.x - tolerance && x <= selection.x + selection.width + tolerance;
+        const withinY = y >= selection.y - tolerance && y <= selection.y + selection.height + tolerance;
+
+        if (top && left && withinX && withinY) return "topLeft";
+        if (top && right && withinX && withinY) return "topRight";
+        if (bottom && left && withinX && withinY) return "bottomLeft";
+        if (bottom && right && withinX && withinY) return "bottomRight";
+        if (top && withinX) return "top";
+        if (bottom && withinX) return "bottom";
+        if (left && withinY) return "left";
+        if (right && withinY) return "right";
+        if (x >= selection.x && x <= selection.x + selection.width
+                && y >= selection.y && y <= selection.y + selection.height)
+            return "move";
+        return "";
+    }
+
+    function adjustSelection(x, y, surfaceWidth, surfaceHeight) {
+        const minimumSize = 2;
+        const deltaX = x - dragStart.x;
+        const deltaY = y - dragStart.y;
+        const start = adjustmentStart;
+
+        if (adjustmentMode === "move") {
+            const newX = Math.max(0, Math.min(surfaceWidth - start.width, start.x + deltaX));
+            const newY = Math.max(0, Math.min(surfaceHeight - start.height, start.y + deltaY));
+            selection = Qt.rect(newX, newY, start.width, start.height);
+            return;
+        }
+
+        let left = start.x;
+        let top = start.y;
+        let right = start.x + start.width;
+        let bottom = start.y + start.height;
+        const mode = adjustmentMode.toLowerCase();
+        if (mode.indexOf("left") !== -1)
+            left = Math.max(0, Math.min(right - minimumSize, start.x + deltaX));
+        if (mode.indexOf("right") !== -1)
+            right = Math.min(surfaceWidth, Math.max(left + minimumSize, start.x + start.width + deltaX));
+        if (mode.indexOf("top") !== -1)
+            top = Math.max(0, Math.min(bottom - minimumSize, start.y + deltaY));
+        if (mode.indexOf("bottom") !== -1)
+            bottom = Math.min(surfaceHeight, Math.max(top + minimumSize, start.y + start.height + deltaY));
+        selection = Qt.rect(left, top, right - left, bottom - top);
     }
 
     function selectFullScreen(width, height) {
@@ -230,6 +293,24 @@ Loader {
                 border.width: 1
             }
 
+            Repeater {
+                model: loader.confirming && loader.drawingTool === "select" ? loader.adjustmentHandles : []
+
+                delegate: Rectangle {
+                    required property var modelData
+                    readonly property real handleSize: Math.max(8, Styles.marginSm)
+
+                    x: loader.selection.x + loader.selection.width * modelData.xFactor - handleSize / 2
+                    y: loader.selection.y + loader.selection.height * modelData.yFactor - handleSize / 2
+                    width: handleSize
+                    height: handleSize
+                    radius: handleSize / 2
+                    color: Colors.primary
+                    border.color: Colors.onPrimary
+                    border.width: 1
+                }
+            }
+
             Canvas {
                 id: annotationCanvas
 
@@ -278,7 +359,18 @@ Loader {
 
             MouseArea {
                 anchors.fill: parent
-                cursorShape: loader.drawingTool === "select" ? Qt.CrossCursor : Qt.ArrowCursor
+                hoverEnabled: true
+                cursorShape: {
+                    if (loader.drawingTool !== "select")
+                        return Qt.ArrowCursor;
+                    const mode = loader.adjustmentMode || loader.adjustmentModeAt(mouseX, mouseY);
+                    if (mode === "move") return Qt.SizeAllCursor;
+                    if (mode === "left" || mode === "right") return Qt.SizeHorCursor;
+                    if (mode === "top" || mode === "bottom") return Qt.SizeVerCursor;
+                    if (mode === "topLeft" || mode === "bottomRight") return Qt.SizeFDiagCursor;
+                    if (mode === "topRight" || mode === "bottomLeft") return Qt.SizeBDiagCursor;
+                    return Qt.CrossCursor;
+                }
                 enabled: loader.chromeVisible
 
                 onPressed: mouse => {
@@ -294,6 +386,13 @@ Loader {
                             ? { type: loader.drawingTool, points: [localPoint], color: loader.paintColor.toString(), width: loader.paintWidth }
                             : { type: loader.drawingTool, startX: localPoint.x, startY: localPoint.y, endX: localPoint.x, endY: localPoint.y, color: loader.paintColor.toString(), width: loader.paintWidth };
                         annotationCanvas.requestPaint();
+                        return;
+                    }
+                    const adjustment = loader.adjustmentModeAt(mouse.x, mouse.y);
+                    if (adjustment !== "") {
+                        loader.adjustmentMode = adjustment;
+                        loader.adjustmentStart = loader.selection;
+                        loader.dragStart = Qt.point(mouse.x, mouse.y);
                         return;
                     }
                     if (loader.targetMode === "window") {
@@ -316,6 +415,8 @@ Loader {
                             loader.currentShape.endY = localY;
                         }
                         annotationCanvas.requestPaint();
+                    } else if (loader.adjustmentMode !== "") {
+                        loader.adjustSelection(mouse.x, mouse.y, captureSurface.width, captureSurface.height);
                     } else if (loader.dragging) {
                         loader.selection = loader.normalizedSelection(loader.dragStart, Qt.point(mouse.x, mouse.y));
                     }
@@ -326,6 +427,11 @@ Loader {
                         loader.shapes.push(loader.currentShape);
                         loader.currentShape = null;
                         annotationCanvas.requestPaint();
+                        return;
+                    }
+                    if (loader.adjustmentMode !== "") {
+                        loader.adjustSelection(mouse.x, mouse.y, captureSurface.width, captureSurface.height);
+                        loader.adjustmentMode = "";
                         return;
                     }
                     if (!loader.dragging)
