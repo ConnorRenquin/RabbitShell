@@ -24,6 +24,10 @@ Loader {
     property string drawingTool: "select"
     property color paintColor: Colors.error
     property int paintWidth: 6
+    property int screenshotDelay: 0
+    property int countdownRemaining: 0
+    property bool countdownActive: false
+    readonly property var screenshotDelays: [0, 3, 5, 10]
     property var shapes: []
     property var currentShape: null
     property bool chromeVisible: true
@@ -43,6 +47,9 @@ Loader {
         selection = Qt.rect(0, 0, 0, 0);
         dragging = false;
         adjustmentMode = "";
+        countdownTimer.stop();
+        countdownRemaining = 0;
+        countdownActive = false;
         confirming = false;
         drawingTool = "select";
         shapes = [];
@@ -144,7 +151,7 @@ Loader {
     }
 
     function capture() {
-        if (selection.width < 2 || selection.height < 2)
+        if (selection.width < 2 || selection.height < 2 || countdownActive)
             return;
 
         const monitor = Hyprland.focusedMonitor;
@@ -152,18 +159,47 @@ Loader {
         const globalY = Math.round((monitor?.y ?? 0) + selection.y);
         const width = Math.round(selection.width);
         const height = Math.round(selection.height);
-        const geometry = globalX + "," + globalY + " " + width + "x" + height;
-        const mode = captureMode;
+        captureDelay.geometry = globalX + "," + globalY + " " + width + "x" + height;
+        captureDelay.mode = captureMode;
 
+        if (screenshotDelay > 0) {
+            countdownRemaining = screenshotDelay;
+            countdownActive = true;
+            countdownTimer.restart();
+        } else {
+            triggerCapture();
+        }
+    }
+
+    function triggerCapture() {
+        countdownActive = false;
+        countdownRemaining = 0;
         chromeVisible = false;
-        captureDelay.geometry = geometry;
-        captureDelay.mode = mode;
         captureDelay.restart();
+    }
+
+    function cycleScreenshotDelay() {
+        const currentIndex = screenshotDelays.indexOf(screenshotDelay);
+        screenshotDelay = screenshotDelays[(currentIndex + 1) % screenshotDelays.length];
     }
 
     GlobalShortcut {
         name: "screen-capture"
         onPressed: loader.open()
+    }
+
+    Timer {
+        id: countdownTimer
+
+        interval: 1000
+        repeat: true
+        onTriggered: {
+            loader.countdownRemaining--;
+            if (loader.countdownRemaining <= 0) {
+                stop();
+                loader.triggerCapture();
+            }
+        }
     }
 
     Timer {
@@ -371,7 +407,7 @@ Loader {
                     if (mode === "topRight" || mode === "bottomLeft") return Qt.SizeBDiagCursor;
                     return Qt.CrossCursor;
                 }
-                enabled: loader.chromeVisible
+                enabled: loader.chromeVisible && !loader.countdownActive
 
                 onPressed: mouse => {
                     if (toolbar.contains(toolbar.mapFromItem(this, mouse.x, mouse.y))) {
@@ -443,9 +479,27 @@ Loader {
             }
 
             Rectangle {
+                visible: loader.countdownActive
+                anchors.centerIn: parent
+                width: 96
+                height: 96
+                radius: width / 2
+                color: Colors.surface
+                border.color: Colors.primary
+                border.width: 2
+
+                TextStyled {
+                    anchors.centerIn: parent
+                    text: loader.countdownRemaining
+                    color: Colors.onSurface
+                    font.pixelSize: 48
+                }
+            }
+
+            Rectangle {
                 id: toolbar
 
-                visible: loader.chromeVisible
+                visible: loader.chromeVisible && !loader.countdownActive
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.topMargin: Styles.marginMd
@@ -533,7 +587,7 @@ Loader {
             Rectangle {
                 id: confirmation
 
-                visible: loader.chromeVisible && loader.confirming
+                visible: loader.chromeVisible && loader.confirming && !loader.countdownActive
                 x: Math.max(Styles.marginSm, Math.min(parent.width - width - Styles.marginSm, loader.selection.x + loader.selection.width / 2 - width / 2))
                 y: Math.max(Styles.marginSm, Math.min(parent.height - height - Styles.marginSm, loader.selection.y + loader.selection.height + Styles.marginSm))
                 width: confirmationRow.implicitWidth + Styles.marginMd * 2
@@ -626,6 +680,16 @@ Loader {
                         Layout.fillHeight: true
                         Layout.preferredWidth: 1
                         color: Colors.outlineVariant
+                    }
+
+                    ButtonStyled {
+                        implicitWidth: 48
+                        implicitHeight: 30
+                        text: Icons.clock + " " + loader.screenshotDelay + "s"
+                        isFocused: loader.screenshotDelay > 0
+                        defaultColor: isFocused ? Colors.primary : Colors.surfaceVariant
+                        textColor: isFocused ? Colors.onPrimary : Colors.onSurface
+                        onClicked: loader.cycleScreenshotDelay()
                     }
 
                     ButtonStyled {
