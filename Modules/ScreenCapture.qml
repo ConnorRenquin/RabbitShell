@@ -172,6 +172,7 @@ Loader {
         if (screenshotDelay > 0) {
             countdownRemaining = screenshotDelay;
             countdownActive = true;
+            chromeVisible = false;
             countdownTimer.restart();
         } else {
             triggerCapture();
@@ -359,19 +360,25 @@ Loader {
         color: "transparent"
         screen: Quickshell.screens.find(candidate => candidate.name === Hyprland.focusedMonitor?.name) ?? Quickshell.screens[0]
         mask: Region {
-            item: loader.recording ? recordingStopButton : captureSurface
+            item: loader.recording ? recordingStopButton : loader.chromeVisible ? captureSurface : noInputTarget
         }
 
         WlrLayershell.namespace: "screen-capture"
         WlrLayershell.layer: WlrLayer.Overlay
 
         HyprlandFocusGrab {
-            active: loader.active && !loader.recording
+            active: loader.active && loader.chromeVisible && !loader.recording
             windows: [panel]
             onCleared: {
-                if (!loader.recording)
+                if (loader.chromeVisible && !loader.recording)
                     loader.close();
             }
+        }
+
+        Item {
+            id: noInputTarget
+            width: 0
+            height: 0
         }
 
         Controls {
@@ -621,20 +628,24 @@ Loader {
             }
 
             Rectangle {
+                id: countdownIndicator
+
                 visible: loader.countdownActive
-                anchors.centerIn: parent
-                width: 96
-                height: 96
-                radius: width / 2
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.margins: Styles.marginMd
+                width: 62
+                height: 38
+                radius: Styles.radiusSm
                 color: Colors.surface
                 border.color: Colors.primary
-                border.width: 2
+                border.width: 1
 
                 TextStyled {
                     anchors.centerIn: parent
-                    text: loader.countdownRemaining
+                    text: Icons.clock + " " + loader.countdownRemaining
                     color: Colors.onSurface
-                    font.pixelSize: 48
+                    font.pixelSize: 18
                 }
             }
 
