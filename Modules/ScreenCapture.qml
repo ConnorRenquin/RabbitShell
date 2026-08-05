@@ -184,7 +184,7 @@ Loader {
                 anchors.top: parent.top
                 height: loader.selection.y
                 color: Colors.scrim
-                opacity: 0.65
+                opacity: 0.55
             }
 
             Rectangle {
@@ -195,7 +195,7 @@ Loader {
                 width: loader.selection.x
                 height: loader.selection.height
                 color: Colors.scrim
-                opacity: 0.65
+                opacity: 0.55
             }
 
             Rectangle {
@@ -206,7 +206,7 @@ Loader {
                 width: Math.max(0, parent.width - loader.selection.x - loader.selection.width)
                 height: loader.selection.height
                 color: Colors.scrim
-                opacity: 0.65
+                opacity: 0.55
             }
 
             Rectangle {
@@ -216,7 +216,7 @@ Loader {
                 anchors.bottom: parent.bottom
                 height: Math.max(0, parent.height - loader.selection.y - loader.selection.height)
                 color: Colors.scrim
-                opacity: 0.65
+                opacity: 0.55
             }
 
             Rectangle {
@@ -226,8 +226,8 @@ Loader {
                 width: loader.selection.width
                 height: loader.selection.height
                 color: "transparent"
-                border.color: Colors.primary
-                border.width: 2
+                border.color: Colors.onPrimary
+                border.width: 1
             }
 
             Canvas {
