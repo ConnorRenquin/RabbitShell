@@ -17,7 +17,7 @@ Rectangle {
     Layout.fillWidth: true
     Layout.preferredHeight: titlebar.implicitHeight + Styles.marginSm * 2
     color: Colors.surface
-    radius: Styles.radiusLg
+    radius: Styles.radiusSm
 
     RowLayout {
         id: titlebar
