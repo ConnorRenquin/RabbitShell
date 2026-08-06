@@ -284,7 +284,7 @@ Loader {
                                     y: clientInfo ? (clientInfo.at[1] - (workspaceBackground.monitorInfo?.y ?? 0)) * previewScale : 0
                                     width: clientInfo ? clientInfo.size[0] * previewScale : 0
                                     height: clientInfo ? clientInfo.size[1] * previewScale : 0
-                                    radius: Styles.radiusSm
+                                    radius: Styles.radiusMd
                                     clip: true
 
                                     ScreencopyView {
