@@ -190,7 +190,9 @@ Rectangle {
             spacing: Styles.marginSm
             clip: true
             model: root.categories
-
+            // (\(\
+            // ( -.-)
+            // o_(")(")
             delegate: ButtonStyled {
                 required property string modelData
                 text: modelData === "all" ? "∞" : modelData
@@ -223,8 +225,8 @@ Rectangle {
             Layout.margins: Styles.marginSm
             focus: true
             clip: true
-            cellWidth: 180
-            cellHeight: 148
+            cellWidth: 200
+            cellHeight: 200
             currentIndex: root.selectedIndex
             model: root.filteredGlyphs
 
@@ -266,8 +268,8 @@ Rectangle {
                 required property var modelData
                 required property int index
 
-                width: glyphGrid.cellWidth - Styles.marginSm
-                height: glyphGrid.cellHeight - Styles.marginSm
+                width: glyphGrid.cellWidth
+                height: glyphGrid.cellHeight
                 radius: Styles.radiusMd
                 defaultColor: theme.background
                 isFocused: root.selectedIndex === index
