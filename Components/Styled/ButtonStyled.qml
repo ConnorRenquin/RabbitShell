@@ -20,12 +20,12 @@ Rectangle {
     property string text
     property alias textColor: buttonText.color
 
-
     property alias pointSize: buttonText.font.pointSize
 
     property string defaultColor: Colors.background
     property bool isFocused: false
     property alias containsMouse: mouseArea.containsMouse
+    property alias textMargin: buttonText.anchors.margins
 
     default property alias content: contentItem.data
 

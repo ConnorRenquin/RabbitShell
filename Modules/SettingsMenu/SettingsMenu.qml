@@ -201,6 +201,7 @@ FloatingWindowPlus {
                     delegate: ButtonStyled {
                         required property int index
                         required property SettingsViewEntry modelData
+                        textMargin: 5
                         textAlignment: persisted.sideButtonsCollapsed ? Text.AlignHCenter : Text.AlignLeft
                         width: ListView.view.width
                         text: persisted.sideButtonsCollapsed ? base.tabIcon(modelData.name) : modelData.name
