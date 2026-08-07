@@ -84,7 +84,10 @@ Rectangle {
 
     function copyEmoji(item, closeAfter = true) {
         ClipboardService.copyToClipboard(item.emoji, false);
-        utils.notify({ summary: "Copied: " + item.name, body: item.emoji });
+        utils.notify({
+            summary: "Copied: " + item.name,
+            body: item.emoji
+        });
         if (closeAfter)
             requestExit();
     }
@@ -516,58 +519,228 @@ Rectangle {
             name: "panic",
             emoji: "(」°ロ°)」"
         },
-        { name: "sparkle divider", emoji: "✦•···············•✦" },
-        { name: "star divider", emoji: "★━━━━━━━━━━━━━━━━━━━━★" },
-        { name: "soft divider", emoji: "୨୧ ───────────── ୨୧" },
-        { name: "wave divider", emoji: "～～～～～～～～～～～～" },
-        { name: "dot divider", emoji: "· · ─────── ·𖥸· ─────── · ·" },
-        { name: "music divider", emoji: "♫♪♩·.¸¸.·♩♪♫" },
-        { name: "flower divider", emoji: "❀。• *₊°。 ❀°。" },
-        { name: "warning banner", emoji: "⚠ ─── WARNING ─── ⚠" },
-        { name: "arrow right long", emoji: "━━━━━━━▶" },
-        { name: "arrow left long", emoji: "◀━━━━━━━" },
-        { name: "double arrow", emoji: "«────── « ⋅ʚ♡ɞ⋅ » ──────»" },
-        { name: "up arrow", emoji: "▲\n│\n│" },
-        { name: "down arrow", emoji: "│\n│\n▼" },
-        { name: "corner arrows", emoji: "↖  ↑  ↗\n←  ·  →\n↙  ↓  ↘", art: true },
-        { name: "checkbox empty", emoji: "☐" },
-        { name: "checkbox checked", emoji: "☑" },
-        { name: "checkbox crossed", emoji: "☒" },
-        { name: "copyright", emoji: "©" },
-        { name: "registered", emoji: "®" },
-        { name: "trademark", emoji: "™" },
-        { name: "infinity", emoji: "∞" },
-        { name: "approximately", emoji: "≈" },
-        { name: "not equal", emoji: "≠" },
-        { name: "less greater", emoji: "≤ ≥" },
-        { name: "degrees", emoji: "°" },
-        { name: "bullet set", emoji: "• ◦ ● ○ ◆ ◇ ■ □" },
-        { name: "stars set", emoji: "★ ☆ ✦ ✧ ✩ ✪ ✫ ✬" },
-        { name: "hearts set", emoji: "♥ ♡ ❤ ❥ ღ ۵" },
-        { name: "card suits", emoji: "♠ ♣ ♥ ♦" },
-        { name: "weather set", emoji: "☀ ☁ ☂ ☃ ☄" },
-        { name: "chess set", emoji: "♔ ♕ ♖ ♗ ♘ ♙" },
-        { name: "moon phases", emoji: "○ ◔ ◑ ◕ ●" },
-        { name: "progress empty", emoji: "[░░░░░░░░░░] 0%" },
-        { name: "progress half", emoji: "[█████░░░░░] 50%" },
-        { name: "progress full", emoji: "[██████████] 100%" },
-        { name: "loading dots", emoji: "[ •••      ]" },
-        { name: "tiny cat", emoji: "/ᐠ｡ꞈ｡ᐟ\\" },
-        { name: "cat loaf", emoji: "|\\__/,|   (`\\\n|_ _  |.--.) )\n( T   )     /\n(((^_(((/(((_/", art: true },
-        { name: "bunny small", emoji: "(\\(\\\n( -.-)\no_(\")(\")", art: true },
-        { name: "owl", emoji: " /\\_/\\\n((@v@))\n():::()\n VV-VV", art: true },
-        { name: "fish swim", emoji: "><(((('>   <')))><" },
-        { name: "rose", emoji: "@}--'--,--" },
-        { name: "coffee cup", emoji: "  ( (\n   ) )\n........\n|      |]\n\\      /\n `----'", art: true },
-        { name: "steam thumbs up", emoji: "░░░░░░░░░░░░▄▄\n░░░░░░░░░░░█░░█\n░░░░░░░░░░░█░░█\n░░░░░░░░░░█░░░█\n░░░░░░░░░█░░░░█\n██████▄▄▄█░░░░░██████▄\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█████░░░░░░░░░█\n█████▀░░░░▀▀██████▀", art: true },
-        { name: "steam cat dots", emoji: "░░░░░░░░░░░░░░░░░░░░░░\n░░░░░▄▀▀▀▄░░░░░▄▀▀▀▄░░░\n░░░░█░░░░░█▄▄▄█░░░░░█░░\n░░░█░░░░░░░░░░░░░░░░░█░\n░░░█░░▄█▄░░░░░░░▄█▄░░█░\n░░░█░░░░░░░▄░▄░░░░░░░█░\n░░░░█░░░░░░░▀░░░░░░░█░░\n░░░░░▀▄▄▄▄▄▄▄▄▄▄▄▄▄▀░░░", art: true },
-        { name: "steam heart dots", emoji: "░░░░░▄██▄░░░░▄██▄░░░░░\n░░░▄██████▄░▄██████▄░░░\n░░███████████████████░░\n░░███████████████████░░\n░░░█████████████████░░░\n░░░░███████████████░░░░\n░░░░░█████████████░░░░░\n░░░░░░███████████░░░░░░\n░░░░░░░█████████░░░░░░░\n░░░░░░░░███████░░░░░░░░\n░░░░░░░░░█████░░░░░░░░░\n░░░░░░░░░░███░░░░░░░░░░\n░░░░░░░░░░░█░░░░░░░░░░░", art: true },
-        { name: "steam smile dots", emoji: "░░░░░░██████████░░░░░░\n░░░░██░░░░░░░░░░██░░░░\n░░██░░░░░░░░░░░░░░██░░\n░█░░░░██░░░░░░██░░░░█░\n█░░░░░██░░░░░░██░░░░░█\n█░░░░░░░░░░░░░░░░░░░░█\n█░░░░█░░░░░░░░░░█░░░░█\n░█░░░░██████████░░░░░█░\n░░██░░░░░░░░░░░░░░██░░\n░░░░██░░░░░░░░░░██░░░░\n░░░░░░██████████░░░░░░", art: true },
-        { name: "steam doge dots", emoji: "░░░░░░░░░░░░░░░▄▄░░░░\n░░░░░░░░░░░░░░░█░░█░░░\n░░░░░░░░░░░░░░░█░░█░░░\n░░░░░░░░░░░░░░█░░░█░░░\n░░░░░░░░░░░░░█░░░░█░░░\n░░░░░░░░▄▄▄▄█░░░░░████\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█████░░░░░░░░░█\n░░░░░░░░░░░░▀▀██████▀░", art: true },
-        { name: "pixel space invader", emoji: "░░░░░▄▄▄▄▄▄▄░░░░░\n░░▄██▄░░░░░▄██▄░░\n▄██████▄░░▄██████▄\n██████████████████\n██░░██░░██░░██░░██\n░░░░████████░░░░\n░░██░░░░░░░░██░░\n██░░██░░░░██░░██", art: true },
-        { name: "pixel ghost", emoji: "░░▄████████▄░░\n▄██▀░░░░░░▀██▄\n██░░██░░██░░██\n██░░██░░██░░██\n██░░░░▄▄░░░░██\n██░░░░░░░░░░██\n██░░██░░██░░██\n▀█▄▄██▄▄██▄▄█▀", art: true },
-        { name: "welcome banner", emoji: "╔════════════════════╗\n║      WELCOME       ║\n╚════════════════════╝", art: true },
-        { name: "gg banner", emoji: "┏━━━┓ ┏━━━┓\n┃┏━┓┃ ┃┏━┓┃\n┃┃ ┗┛ ┃┃ ┗┛\n┃┃┏━┓ ┃┃┏━┓\n┃┗┻━┃ ┃┗┻━┃\n┗━━━┛ ┗━━━┛", art: true }
+        {
+            name: "sparkle divider",
+            emoji: "✦•···············•✦"
+        },
+        {
+            name: "star divider",
+            emoji: "★━━━━━━━━━━━━━━━━━━━━★"
+        },
+        {
+            name: "soft divider",
+            emoji: "୨୧ ───────────── ୨୧"
+        },
+        {
+            name: "wave divider",
+            emoji: "～～～～～～～～～～～～"
+        },
+        {
+            name: "dot divider",
+            emoji: "· · ─────── ·𖥸· ─────── · ·"
+        },
+        {
+            name: "music divider",
+            emoji: "♫♪♩·.¸¸.·♩♪♫"
+        },
+        {
+            name: "flower divider",
+            emoji: "❀。• *₊°。 ❀°。"
+        },
+        {
+            name: "warning banner",
+            emoji: "⚠ ─── WARNING ─── ⚠"
+        },
+        {
+            name: "arrow right long",
+            emoji: "━━━━━━━▶"
+        },
+        {
+            name: "arrow left long",
+            emoji: "◀━━━━━━━"
+        },
+        {
+            name: "double arrow",
+            emoji: "«────── « ⋅ʚ♡ɞ⋅ » ──────»"
+        },
+        {
+            name: "up arrow",
+            emoji: "▲\n│\n│"
+        },
+        {
+            name: "down arrow",
+            emoji: "│\n│\n▼"
+        },
+        {
+            name: "corner arrows",
+            emoji: "↖  ↑  ↗\n←  ·  →\n↙  ↓  ↘",
+            art: true
+        },
+        {
+            name: "checkbox empty",
+            emoji: "☐"
+        },
+        {
+            name: "checkbox checked",
+            emoji: "☑"
+        },
+        {
+            name: "checkbox crossed",
+            emoji: "☒"
+        },
+        {
+            name: "copyright",
+            emoji: "©"
+        },
+        {
+            name: "registered",
+            emoji: "®"
+        },
+        {
+            name: "trademark",
+            emoji: "™"
+        },
+        {
+            name: "infinity",
+            emoji: "∞"
+        },
+        {
+            name: "approximately",
+            emoji: "≈"
+        },
+        {
+            name: "not equal",
+            emoji: "≠"
+        },
+        {
+            name: "less greater",
+            emoji: "≤ ≥"
+        },
+        {
+            name: "degrees",
+            emoji: "°"
+        },
+        {
+            name: "bullet set",
+            emoji: "• ◦ ● ○ ◆ ◇ ■ □"
+        },
+        {
+            name: "stars set",
+            emoji: "★ ☆ ✦ ✧ ✩ ✪ ✫ ✬"
+        },
+        {
+            name: "hearts set",
+            emoji: "♥ ♡ ❤ ❥ ღ ۵"
+        },
+        {
+            name: "card suits",
+            emoji: "♠ ♣ ♥ ♦"
+        },
+        {
+            name: "weather set",
+            emoji: "☀ ☁ ☂ ☃ ☄"
+        },
+        {
+            name: "chess set",
+            emoji: "♔ ♕ ♖ ♗ ♘ ♙"
+        },
+        {
+            name: "moon phases",
+            emoji: "○ ◔ ◑ ◕ ●"
+        },
+        {
+            name: "progress empty",
+            emoji: "[░░░░░░░░░░] 0%"
+        },
+        {
+            name: "progress half",
+            emoji: "[█████░░░░░] 50%"
+        },
+        {
+            name: "progress full",
+            emoji: "[██████████] 100%"
+        },
+        {
+            name: "loading dots",
+            emoji: "[ •••      ]"
+        },
+        {
+            name: "tiny cat",
+            emoji: "/ᐠ｡ꞈ｡ᐟ\\"
+        },
+        {
+            name: "cat loaf",
+            emoji: "|\\__/,|   (`\\\n|_ _  |.--.) )\n( T   )     /\n(((^_(((/(((_/",
+            art: true
+        },
+        {
+            name: "bunny small",
+            emoji: "(\\(\\\n( -.-)\no_(\")(\")",
+            art: true
+        },
+        {
+            name: "owl",
+            emoji: " /\\_/\\\n((@v@))\n():::()\n VV-VV",
+            art: true
+        },
+        {
+            name: "fish swim",
+            emoji: "><(((('>   <')))><"
+        },
+        {
+            name: "rose",
+            emoji: "@}--'--,--"
+        },
+        {
+            name: "coffee cup",
+            emoji: "  ( (\n   ) )\n........\n|      |]\n\\      /\n `----'",
+            art: true
+        },
+        {
+            name: "steam thumbs up",
+            emoji: "░░░░░░░░░░░░▄▄\n░░░░░░░░░░░█░░█\n░░░░░░░░░░░█░░█\n░░░░░░░░░░█░░░█\n░░░░░░░░░█░░░░█\n██████▄▄▄█░░░░░██████▄\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█░░░░░░░░░░░░░░█\n▓▓▓▓▓█████░░░░░░░░░█\n█████▀░░░░▀▀██████▀",
+            art: true
+        },
+        {
+            name: "steam cat dots",
+            emoji: "░░░░░░░░░░░░░░░░░░░░░░\n░░░░░▄▀▀▀▄░░░░░▄▀▀▀▄░░░\n░░░░█░░░░░█▄▄▄█░░░░░█░░\n░░░█░░░░░░░░░░░░░░░░░█░\n░░░█░░▄█▄░░░░░░░▄█▄░░█░\n░░░█░░░░░░░▄░▄░░░░░░░█░\n░░░░█░░░░░░░▀░░░░░░░█░░\n░░░░░▀▄▄▄▄▄▄▄▄▄▄▄▄▄▀░░░",
+            art: true
+        },
+        {
+            name: "steam heart dots",
+            emoji: "░░░░░▄██▄░░░░▄██▄░░░░░\n░░░▄██████▄░▄██████▄░░░\n░░███████████████████░░\n░░███████████████████░░\n░░░█████████████████░░░\n░░░░███████████████░░░░\n░░░░░█████████████░░░░░\n░░░░░░███████████░░░░░░\n░░░░░░░█████████░░░░░░░\n░░░░░░░░███████░░░░░░░░\n░░░░░░░░░█████░░░░░░░░░\n░░░░░░░░░░███░░░░░░░░░░\n░░░░░░░░░░░█░░░░░░░░░░░",
+            art: true
+        },
+        {
+            name: "steam smile dots",
+            emoji: "░░░░░░██████████░░░░░░\n░░░░██░░░░░░░░░░██░░░░\n░░██░░░░░░░░░░░░░░██░░\n░█░░░░██░░░░░░██░░░░█░\n█░░░░░██░░░░░░██░░░░░█\n█░░░░░░░░░░░░░░░░░░░░█\n█░░░░█░░░░░░░░░░█░░░░█\n░█░░░░██████████░░░░░█░\n░░██░░░░░░░░░░░░░░██░░\n░░░░██░░░░░░░░░░██░░░░\n░░░░░░██████████░░░░░░",
+            art: true
+        },
+        {
+            name: "steam doge dots",
+            emoji: "░░░░░░░░░░░░░░░▄▄░░░░\n░░░░░░░░░░░░░░░█░░█░░░\n░░░░░░░░░░░░░░░█░░█░░░\n░░░░░░░░░░░░░░█░░░█░░░\n░░░░░░░░░░░░░█░░░░█░░░\n░░░░░░░░▄▄▄▄█░░░░░████\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█░░░░░░░░░░░░░█\n░░░░░░░█████░░░░░░░░░█\n░░░░░░░░░░░░▀▀██████▀░",
+            art: true
+        },
+        {
+            name: "pixel space invader",
+            emoji: "░░░░░▄▄▄▄▄▄▄░░░░░\n░░▄██▄░░░░░▄██▄░░\n▄██████▄░░▄██████▄\n██████████████████\n██░░██░░██░░██░░██\n░░░░████████░░░░\n░░██░░░░░░░░██░░\n██░░██░░░░██░░██",
+            art: true
+        },
+        {
+            name: "pixel ghost",
+            emoji: "░░▄████████▄░░\n▄██▀░░░░░░▀██▄\n██░░██░░██░░██\n██░░██░░██░░██\n██░░░░▄▄░░░░██\n██░░░░░░░░░░██\n██░░██░░██░░██\n▀█▄▄██▄▄██▄▄█▀",
+            art: true
+        },
+        {
+            name: "welcome banner",
+            emoji: "╔════════════════════╗\n║      WELCOME       ║\n╚════════════════════╝",
+            art: true
+        },
+        {
+            name: "gg banner",
+            emoji: "┏━━━┓ ┏━━━┓\n┃┏━┓┃ ┃┏━┓┃\n┃┃ ┗┛ ┃┃ ┗┛\n┃┃┏━┓ ┃┃┏━┓\n┃┗┻━┃ ┃┗┻━┃\n┗━━━┛ ┗━━━┛",
+            art: true
+        }
     ]
 
     ColumnLayout {
@@ -641,7 +814,9 @@ Rectangle {
                 font.pointSize: Styles.textSm
             }
 
-            Item { Layout.fillWidth: true }
+            Item {
+                Layout.fillWidth: true
+            }
 
             TextStyled {
                 text: "↵ copy  •  middle click keep open"

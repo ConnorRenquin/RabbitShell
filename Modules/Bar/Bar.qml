@@ -88,7 +88,7 @@ Variants {
                 }
                 AppIconWidget {}
                 WindowTitleWidget {}
-                IdleInhibitorWidget{}
+                IdleInhibitorWidget {}
                 BarButton {
                     id: notificationsButton
                     visible: Notifications.notifications.values.length > 0

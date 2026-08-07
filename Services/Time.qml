@@ -15,21 +15,23 @@ Singleton {
     property bool militaryTime: false
 
     Component.onCompleted: {
-        militaryTime = Settings.register({ name: 'militaryTime', value: false, category: 'appearance' }).value;
+        militaryTime = Settings.register({
+            name: 'militaryTime',
+            value: false,
+            category: 'appearance'
+        }).value;
     }
 
     Connections {
         target: Settings
         function onSettingsChanged() {
             const s = Settings.settings.find(x => x.name === 'militaryTime');
-            if (s) militaryTime = s.value;
+            if (s)
+                militaryTime = s.value;
         }
     }
 
-    readonly property var clockSymbols: [
-        "󱐿", "󱑀", "󱑁", "󱑂", "󱑃", "󱑄",
-        "󱑅", "󱑆", "󱑇", "󱑈", "󱑉", "󱑊"
-    ]
+    readonly property var clockSymbols: ["󱐿", "󱑀", "󱑁", "󱑂", "󱑃", "󱑄", "󱑅", "󱑆", "󱑇", "󱑈", "󱑉", "󱑊"]
 
     function getTime() {
         if (militaryTime)
@@ -38,13 +40,14 @@ Singleton {
     }
 
     function getSymbol() {
-        const symbolIndex = (Time.hour % 12 - 1)
-        if (symbolIndex > 0) return clockSymbols[symbolIndex]
-        return clockSymbols[11]
+        const symbolIndex = (Time.hour % 12 - 1);
+        if (symbolIndex > 0)
+            return clockSymbols[symbolIndex];
+        return clockSymbols[11];
     }
 
     function getSymbolAtIndex(symbolIndex) {
-        return clockSymbols[symbolIndex]
+        return clockSymbols[symbolIndex];
     }
 
     SystemClock {

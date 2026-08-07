@@ -20,7 +20,7 @@ This desktop shell is designed to be **extremely minimal, modular, and hackable*
 ### Core Files
 
 - `PatchBay.qml` - The central event bus used to pass signals between decoupled
-components (e.g., notifying the notification widget).
+  components (e.g., notifying the notification widget).
 - `Utils.qml` & `Time.qml` - Core helper utilities with high dependency counts.
 - `Settings.qml` - Manages persistent user settings (saved to `.data/settings.json`).
 - `Colors.qml` & `Styles.qml` - Tailwind-like utility styling definitions.
@@ -34,25 +34,25 @@ Before you write a single line of code, you **must** ask and answer the followin
 ### Architectural Alignment
 
 1. **Is this a Service (state/logic) or a Module/Component (UI)?**
-   - *Rule*: Keep UI components thin. Heavy logic, external process execution, or persistent state should live in a Service singleton.
+   - _Rule_: Keep UI components thin. Heavy logic, external process execution, or persistent state should live in a Service singleton.
 2. **Does this feature need to communicate with other components?**
-   - *Rule*: Do not tightly couple components. Use `qs.Services.PatchBay` to emit and listen to global events.
+   - _Rule_: Do not tightly couple components. Use `qs.Services.PatchBay` to emit and listen to global events.
 3. **Does this feature require persistent user configuration?**
-   - *Rule*: Register new settings in `Settings.qml` using `register()`. Do not write custom file-saving logic unless absolutely necessary.
+   - _Rule_: Register new settings in `Settings.qml` using `register()`. Do not write custom file-saving logic unless absolutely necessary.
 
 ### Styling & Design
 
 1. **Are we using the design system?**
-   - *Rule*: Never hardcode hex colors or pixel dimensions if they can be derived from `qs.Settings.Colors` or `qs.Settings.Styles`.
+   - _Rule_: Never hardcode hex colors or pixel dimensions if they can be derived from `qs.Settings.Colors` or `qs.Settings.Styles`.
 2. **Is the layout responsive and Wayland-compatible?**
-   - *Rule*: Ensure anchors, layouts, and window positioning respect different monitor sizes and scales using `qs.Services.MonitorInfo` or `qs.Services.HyprctlMonitors`.
+   - _Rule_: Ensure anchors, layouts, and window positioning respect different monitor sizes and scales using `qs.Services.MonitorInfo` or `qs.Services.HyprctlMonitors`.
 
 ### Performance & Safety
 
 1. **Will this block the main QML thread?**
-   - *Rule*: Never run blocking shell commands synchronously. Use asynchronous process execution (`Quickshell.execDetached` or async `Process` objects) and asynchronous file views (`FileView`).
+   - _Rule_: Never run blocking shell commands synchronously. Use asynchronous process execution (`Quickshell.execDetached` or async `Process` objects) and asynchronous file views (`FileView`).
 2. **Is this command safe to run?**
-   - *Rule*: Sanitize any user input before passing it to shell commands or IPC calls to prevent command injection.
+   - _Rule_: Sanitize any user input before passing it to shell commands or IPC calls to prevent command injection.
 
 ---
 

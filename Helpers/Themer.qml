@@ -5,7 +5,8 @@ import qs.Settings
 Item {
     property string settingName
     property string variant: {
-        if (!settingName) return 'regular';
+        if (!settingName)
+            return 'regular';
         const s = Settings.settings.find(s => s.name === settingName);
         return s ? s.value : 'regular';
     }

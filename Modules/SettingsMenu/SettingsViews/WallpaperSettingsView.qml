@@ -115,7 +115,7 @@ Rectangle {
                             if (directoryField.text) {
                                 Settings.change({
                                     name: 'wallpaperDirectory',
-                                    value: directoryField.text,
+                                    value: directoryField.text
                                 });
                             }
                         }
