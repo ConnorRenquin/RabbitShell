@@ -26,10 +26,29 @@ Loader {
     sourceComponent: PanelWindow {
         id: root
 
-        implicitWidth: 1000
+        implicitWidth: 800
         implicitHeight: 320
 
         color: "transparent"
+
+        property bool offset: Settings.register({
+            name: 'offsetScreenAppLauncher',
+            value: true,
+            category: 'appearance'
+        }).value
+        property bool center: Settings.register({
+            name: 'centerScreenAppLauncher',
+            value: true,
+            category: 'appearance'
+        }).value
+        property bool topBar: Settings.get('barPosition').value
+        anchors.bottom: !topBar && !center
+        anchors.top: topBar && !center
+        anchors.left: offset
+        margins.left: 10
+        margins.top: 70
+        margins.bottom: 70
+        exclusionMode: ExclusionMode.Ignore
 
         Component.onCompleted: {
             textInput.focus = true;
@@ -161,7 +180,7 @@ Loader {
                     id: noResultsText
                     anchors.centerIn: parent
                     visible: System.filteredApplications.length === 0
-                    text: "No results found."
+                    text: "no results found"
                 }
 
                 GridView {
@@ -169,50 +188,48 @@ Loader {
 
                     clip: true
                     anchors.fill: parent
-                    anchors.margins: Styles.marginSm
 
                     cellWidth: width / 3
-                    cellHeight: 60
+                    cellHeight: height / 4
                     snapMode: GridView.SnapToRow
 
                     model: System.filteredApplications
-                    delegate: ButtonStyled {
+                    delegate: Item {
                         id: appLaunchButton
 
                         required property var modelData
                         required property int index
 
-                        implicitWidth: appGridView.cellWidth - Styles.marginSm
-                        implicitHeight: appGridView.cellHeight - Styles.marginSm
+                        implicitWidth: appGridView.cellWidth
+                        implicitHeight: appGridView.cellHeight
+                        ButtonStyled {
 
-                        isFocused: index === appGridView.currentIndex
+                            isFocused: appLaunchButton.index === appGridView.currentIndex
+                            anchors.fill: parent
+                            anchors.margins: Styles.marginSm / 2
 
-                        onClicked: {
-                            System.launchApplication(modelData);
-                            textInput.text = "";
-                            loader.active = false;
-                        }
-
-                        FlexboxLayout {
-                            id: appButtonContent
-                            gap: Styles.marginSm
-
-                            anchors {
-                                fill: parent
-                                margins: Styles.marginSm
+                            onClicked: {
+                                System.launchApplication(appLaunchButton.modelData);
+                                textInput.text = "";
+                                loader.active = false;
                             }
 
-                            IconImage {
-                                id: appIcon
-                                implicitWidth: 32
-                                implicitHeight: 32
-                                source: Quickshell.iconPath(appLaunchButton.modelData.icon, "applications-other")
-                            }
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.margins: Styles.marginSm
+                                spacing: 10
+                                IconImage {
+                                    id: appIcon
+                                    implicitWidth: 32
+                                    implicitHeight: 32
+                                    source: Quickshell.iconPath(appLaunchButton.modelData.icon, "applications-other")
+                                }
 
-                            TextStyled {
-                                id: appName
-                                Layout.fillWidth: true
-                                text: appLaunchButton.modelData.name
+                                TextStyled {
+                                    id: appName
+                                    Layout.fillWidth: true
+                                    text: appLaunchButton.modelData.name
+                                }
                             }
                         }
                     }
