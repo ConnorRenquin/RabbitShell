@@ -271,7 +271,6 @@ Rectangle {
 
         required property BluetoothAdapter modelData
 
-
         Layout.fillWidth: true
         implicitHeight: adapterContent.implicitHeight + Styles.marginMd
         color: theme.foreground
@@ -321,7 +320,7 @@ Rectangle {
                     Layout.fillWidth: true
                     defaultColor: theme.acent
                     text: "Discover"
-                    isFocused:adapterCard.modelData.discoverable
+                    isFocused: adapterCard.modelData.discoverable
                     onClicked: adapterCard.modelData.discoverable = !adapterCard.modelData.discoverable
                 }
 
@@ -340,13 +339,18 @@ Rectangle {
     component DeviceCard: Rectangle {
         id: deviceCard
 
+        Themer {
+            id: deviceCardTheme
+            variant: 'tertiary'
+        }
+
         required property BluetoothDevice modelData
 
         visible: !deviceCard.modelData.blocked
         Layout.fillWidth: true
         Layout.preferredHeight: visible ? implicitHeight : 0
         implicitHeight: visible ? deviceContent.implicitHeight + Styles.marginMd : 0
-        color: Colors.surface
+        color: deviceCardTheme.background
         radius: Styles.radiusMd
 
         ColumnLayout {
@@ -383,49 +387,48 @@ Rectangle {
                     Layout.fillWidth: true
                 }
 
-                ButtonStyled {
-                    visible: deviceCard.modelData.paired || deviceCard.modelData.bonded
-                    enabled: !deviceCard.modelData.pairing && !deviceCard.modelData.blocked
-                    text: deviceCard.modelData.connected ? "Disconnect" : "Connect"
-                    defaultColor: deviceCard.modelData.connected ? Colors.error : Colors.background
-                    textColor: deviceCard.modelData.connected ? Colors.onError : Colors.onSurface
-                    onClicked: deviceCard.modelData.connected = !deviceCard.modelData.connected
-                }
-
-                ButtonStyled {
-
-                    enabled: !deviceCard.modelData.connected
-                    text: {
-                        if (deviceCard.modelData.pairing)
-                            return "Cancel";
-                        if (deviceCard.modelData.paired)
-                            return "Forget";
-                        return deviceCard.modelData.blocked ? "Unblock + Pair" : "Pair";
+                ColumnLayout {
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: 100
+                    ButtonStyled {
+                        Layout.fillWidth: true
+                        defaultColor: deviceCardTheme.acent
+                        visible: deviceCard.modelData.paired || deviceCard.modelData.bonded
+                        text: deviceCard.modelData.connected ? "Disconnect" : "Connect"
+                        onClicked: deviceCard.modelData.connected = !deviceCard.modelData.connected
                     }
-                    defaultColor: deviceCard.modelData.paired ? Colors.error : Colors.background
-                    textColor: deviceCard.modelData.paired ? Colors.onError : Colors.onSurface
-                    onClicked: {
-                        if (deviceCard.modelData.pairing) {
-                            deviceCard.modelData.cancelPair();
-                        } else if (deviceCard.modelData.paired) {
-                            deviceCard.modelData.forget();
-                        } else {
-                            root.pairDevice(deviceCard.modelData);
-                        }
+
+                    ButtonStyled {
+                        Layout.fillWidth: true
+                        defaultColor: deviceCardTheme.acent
+                        visible: deviceCard.modelData.pairing
+                        enabled: !deviceCard.modelData.connected
+                        text: "Cancel"
+                        onClicked: deviceCard.modelData.cancelPair()
+                    }
+
+                    ButtonStyled {
+                        Layout.fillWidth: true
+                        defaultColor: deviceCardTheme.acent
+                        visible: deviceCard.modelData.paired
+                        enabled: !deviceCard.modelData.connected
+                        text: "Forget"
+                        onClicked: deviceCard.modelData.forget()
                     }
                 }
 
                 ActionMenu {
                     id: extraSettingsMenu
+                    Layout.preferredWidth: 30
+                    Layout.fillHeight: true
                     text: Icons.more
                     pointSize: Styles.textLg
-                    defaultColor: Colors.background
-                    textColor: Colors.onSurface
+                    defaultColor: deviceCardTheme.acent
                     popupWidth: extraSettingsColumn.implicitWidth + Styles.marginSm * 2
                     popupHeight: extraSettingsColumn.implicitHeight + Styles.marginSm * 2
                     popupX: -extraSettingsMenu.popupWidth / 2 + extraSettingsMenu.width / 2
                     popupY: -extraSettingsMenu.popupHeight - Styles.marginSm
-                    popupColor: Colors.background
+                    popupColor: deviceCardTheme.acent
                     popupPadding: Styles.marginSm
                     onClicked: extraSettingsMenu.togglePopup()
 
