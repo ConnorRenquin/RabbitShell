@@ -171,7 +171,8 @@ Rectangle {
                     root.selectedIndex = 0;
                 }
                 Keys.onPressed: event => {
-                    if (root.navigationHandler(event)) return;
+                    if (root.navigationHandler(event))
+                        return;
                     if (controls.escapePressed(event)) {
                         text = "";
                         glyphGrid.focus = true;
@@ -222,10 +223,9 @@ Rectangle {
 
             Layout.fillHeight: true
             Layout.fillWidth: true
-            Layout.margins: Styles.marginSm
             focus: true
             clip: true
-            cellWidth: 200
+            cellWidth: parent.width / 3
             cellHeight: 200
             currentIndex: root.selectedIndex
             model: root.filteredGlyphs
@@ -262,59 +262,63 @@ Rectangle {
                 }
             }
 
-            delegate: ButtonStyled {
+            delegate: Item {
                 id: glyphButton
 
                 required property var modelData
                 required property int index
-
                 width: glyphGrid.cellWidth
                 height: glyphGrid.cellHeight
-                radius: Styles.radiusMd
-                defaultColor: theme.background
-                isFocused: root.selectedIndex === index
+                ButtonStyled {
 
-                onClicked: mouse => {
-                    root.selectedIndex = index;
-                    if (mouse.button === Qt.RightButton)
-                        root.copyGlyph(modelData, "codepoint", false);
-                    else if (mouse.button === Qt.MiddleButton)
-                        root.copyGlyph(modelData, "css", false);
-                    else
-                        root.copyGlyph(modelData);
-                }
-
-                ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: Styles.marginMd
-                    spacing: Styles.marginSm
+                    anchors.margins: Styles.marginSm / 2
+                    radius: Styles.radiusMd
+                    defaultColor: theme.background
+                    isFocused: root.selectedIndex === glyphButton.index
 
-                    TextStyled {
-                        Layout.fillWidth: true
-                        horizontalAlignment: Text.AlignHCenter
-                        text: glyphButton.modelData.glyph
-                        color: theme.text
-                        font.pointSize: 34
-                        font.family: Styles.defaultFontFamily
+                    onClicked: mouse => {
+                        root.selectedIndex = glyphButton.index;
+                        if (mouse.button === Qt.RightButton)
+                            root.copyGlyph(glyphButton.modelData, "codepoint", false);
+                        else if (mouse.button === Qt.MiddleButton)
+                            root.copyGlyph(glyphButton.modelData, "css", false);
+                        else
+                            root.copyGlyph(glyphButton.modelData);
                     }
 
-                    TextStyled {
-                        Layout.fillWidth: true
-                        horizontalAlignment: Text.AlignHCenter
-                        text: glyphButton.modelData.name
-                        color: theme.text
-                        font.pointSize: Styles.textSm
-                        elide: Text.ElideRight
-                    }
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: Styles.marginMd
+                        spacing: Styles.marginSm
 
-                    TextStyled {
-                        Layout.fillWidth: true
-                        horizontalAlignment: Text.AlignHCenter
-                        text: glyphButton.modelData.category + " • U+" + glyphButton.modelData.code.toUpperCase()
-                        color: theme.text
-                        font.pointSize: Styles.textXS
-                        opacity: 0.8
-                        elide: Text.ElideRight
+                        TextStyled {
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignHCenter
+                            text: glyphButton.modelData.glyph
+                            color: theme.text
+                            font.pointSize: 34
+                            font.family: Styles.defaultFontFamily
+                        }
+
+                        TextStyled {
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignHCenter
+                            text: glyphButton.modelData.name
+                            color: theme.text
+                            font.pointSize: Styles.textSm
+                            elide: Text.ElideRight
+                        }
+
+                        TextStyled {
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignHCenter
+                            text: glyphButton.modelData.category + " • U+" + glyphButton.modelData.code.toUpperCase()
+                            color: theme.text
+                            font.pointSize: Styles.textXS
+                            opacity: 0.8
+                            elide: Text.ElideRight
+                        }
                     }
                 }
             }
