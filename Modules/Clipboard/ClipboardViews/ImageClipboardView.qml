@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Widgets
 
@@ -60,6 +61,8 @@ Rectangle {
 
             contentWidth: availableWidth
 
+            DottedBackground {}
+
             Flow {
                 id: flow
                 anchors.left: parent.left
@@ -72,6 +75,7 @@ Rectangle {
 
                     Rectangle {
                         id: image
+
 
                         required property string fileName
                         required property url fileUrl
