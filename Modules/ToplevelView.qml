@@ -232,7 +232,7 @@ Loader {
                     property string unmatchedPart: controls.unmatchedHotkeyPart(root.typedKeys, keyLabel)
 
                     property ClientInfo clientInfo: HyprctlClients.clients.find(client => modelData.address === client.address.replace('0x', ''))
-                    property var clientMonitor: Hyprland.monitors.values.find(monitor => monitor.id === clientInfo?.monitor)
+                    property var clientMonitor: HyprctlMonitors.monitors.find(monitor => monitor.id === clientInfo?.monitor)
 
                     width: 80
                     height: 60

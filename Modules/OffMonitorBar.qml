@@ -192,7 +192,7 @@ Loader {
                     const firstClient = workspaceToplevels.length > 0
                         ? HyprctlClients.clients.find(client => workspaceToplevels[0].address === client.address.replace('0x', ''))
                         : null;
-                    const monitor = Hyprland.monitors.values.find(candidate => candidate.id === firstClient?.monitor);
+                    const monitor = HyprctlMonitors.monitors.find(candidate => candidate.id === firstClient?.monitor);
                     return (monitor?.width ?? 1920) / 5 + Styles.marginLg;
                 }
 
@@ -227,7 +227,7 @@ Loader {
                     property var firstClientInfo: workspaceToplevels.length > 0
                         ? HyprctlClients.clients.find(client => workspaceToplevels[0].address === client.address.replace('0x', ''))
                         : null
-                    property var monitorInfo: Hyprland.monitors.values.find(monitor => monitor.id === firstClientInfo?.monitor)
+                    property var monitorInfo: HyprctlMonitors.monitors.find(monitor => monitor.id === firstClientInfo?.monitor)
 
                     Layout.alignment: Qt.AlignTop
                     implicitWidth: workspaceColumn.implicitWidth
