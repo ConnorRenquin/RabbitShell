@@ -49,6 +49,36 @@ Singleton {
             options: ['title', 'appId'],
             category: 'appearance'
         })
+        register({
+            name: 'barWidgets',
+            value: [
+                { widget: 'workspaces', section: 'left' },
+                { widget: 'appIconRow', section: 'left' },
+                { widget: 'windowTitle', section: 'left' },
+                { widget: 'idleInhibitor', section: 'left' },
+                { widget: 'notifications', section: 'left' },
+                { widget: 'clock', section: 'center' },
+                { widget: 'media', section: 'right' },
+                { widget: 'systemTray', section: 'right' },
+                { widget: 'battery', section: 'right' }
+            ],
+            category: 'appearance',
+            editor: 'widgetList',
+            editorOptions: {
+                widgets: [
+                    'appIconRow',
+                    'battery',
+                    'clock',
+                    'idleInhibitor',
+                    'media',
+                    'notifications',
+                    'systemTray',
+                    'windowTitle',
+                    'workspaces'
+                ],
+                sections: ['left', 'center', 'right']
+            }
+        })
     }
 
     property var settings: []
@@ -68,8 +98,10 @@ Singleton {
                               ? root.savedValues[setting.name]
                               : (setting.value ?? null),
             category:     setting.category ?? 'misc',
-            type:         typeof setting.value,
+            type:         Array.isArray(setting.value) ? 'array' : typeof setting.value,
             options:      setting.options ?? null,
+            editor:       setting.editor ?? null,
+            editorOptions: setting.editorOptions ?? null,
         }
         settings = [...settings, entry]
         return entry

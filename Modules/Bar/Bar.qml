@@ -1,13 +1,10 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Hyprland
 
-import qs.Components
-import qs.Components.Styled
-import qs.Services
 import qs.Settings
-import qs.Modules.Bar.BarWidgets
 
 Variants {
     model: Quickshell.screens
@@ -17,6 +14,11 @@ Variants {
         required property var modelData
 
         property bool top: true
+        property var barWidgets: Settings.get('barWidgets')?.value ?? []
+
+        function widgetsFor(section) {
+            return barWidgets.filter(entry => entry.section === section);
+        }
 
         Component.onCompleted: {
             top = Settings.register({
@@ -83,31 +85,41 @@ Variants {
             BarRow {
                 id: leftGroup
                 anchors.left: parent.left
-                WorkspacesWidget {
-                    monitorName: root.modelData.name
-                }
-                AppIconWidget {}
-                WindowTitleWidget {}
-                IdleInhibitorWidget {}
-                BarButton {
-                    id: notificationsButton
-                    visible: Notifications.notifications.values.length > 0
-                    text: Icons.notificationBell + ' ' + Notifications.notifications.values.length
-                    onClicked: PatchBay.openNotificationsManager()
+
+                Repeater {
+                    model: root.widgetsFor('left')
+                    delegate: WidgetSpawner {
+                        required property var modelData
+                        widget: modelData.widget
+                        monitorName: root.modelData.name
+                    }
                 }
             }
-            ClockWidget {
-                anchors.centerIn: parent
-                implicitHeight: parent.height
+            BarRow {
+                id: centerGroup
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Repeater {
+                    model: root.widgetsFor('center')
+                    delegate: WidgetSpawner {
+                        required property var modelData
+                        widget: modelData.widget
+                        monitorName: root.modelData.name
+                    }
+                }
             }
             BarRow {
                 id: rightGroup
                 anchors.right: parent.right
-                MediaWidget {
-                    Layout.fillHeight: true
+
+                Repeater {
+                    model: root.widgetsFor('right')
+                    delegate: WidgetSpawner {
+                        required property var modelData
+                        widget: modelData.widget
+                        monitorName: root.modelData.name
+                    }
                 }
-                SystemTrayWidget {}
-                BatteryWidget {}
             }
         }
     }
@@ -119,7 +131,4 @@ Variants {
         spacing: Styles.marginXS
     }
 
-    component BarButton: ButtonStyled {
-        Layout.fillHeight: true
-    }
 }

@@ -31,7 +31,7 @@ Rectangle {
             required property int index
 
             Layout.fillWidth: true
-            Layout.preferredHeight: 40
+            Layout.preferredHeight: widgetListEditor.visible ? widgetListEditor.implicitHeight : 40
 
             radius: Styles.radiusSm
             color: "transparent"
@@ -39,6 +39,7 @@ Rectangle {
             RowLayout {
                 anchors.fill: parent
                 spacing: Styles.marginMd
+                visible: row.modelData.editor !== 'widgetList'
 
                 TextStyled {
                     Layout.fillWidth: true
@@ -111,6 +112,13 @@ Rectangle {
                         })
                     }
                 }
+            }
+
+            WidgetListEditor {
+                id: widgetListEditor
+                anchors.fill: parent
+                visible: row.modelData.editor === 'widgetList'
+                setting: row.modelData
             }
         }
     }

@@ -5,4 +5,6 @@ QtObject {
     required property var value
     property list<var> options
     property string category: 'misc'
+    property string editor
+    property var editorOptions
 }
