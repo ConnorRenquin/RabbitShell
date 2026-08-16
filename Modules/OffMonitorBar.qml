@@ -287,6 +287,30 @@ Loader {
                                     radius: Styles.radiusMd
                                     clip: true
 
+                                    HoverHandler {
+                                        id: previewHover
+                                        cursorShape: Qt.PointingHandCursor
+                                    }
+
+                                    TapHandler {
+                                        onTapped: {
+                                            activateTimer.stop();
+                                            root.pendingActivation = null;
+                                            root.typedKeys = "";
+                                            root.active = false;
+                                            offMonitor.modelData.wayland.activate();
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        color: "transparent"
+                                        radius: offMonitor.radius
+                                        border.color: theme.foreground
+                                        border.width: previewHover.hovered ? 2 : 0
+                                        z: 1
+                                    }
+
                                     ScreencopyView {
                                         id: preview
                                         anchors.fill: parent
