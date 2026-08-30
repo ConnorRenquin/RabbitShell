@@ -23,7 +23,11 @@ Loader {
     property string captureMode: "copysave"
     property string targetMode: "area"
     property string drawingTool: "select"
-    property color paintColor: Colors.error
+    property string paintColorMode: "error"
+    readonly property color paintColor: paintColorMode === "primary" ? Colors.primary
+        : paintColorMode === "tertiary" ? Colors.tertiary
+        : paintColorMode === "onSurface" ? Colors.onSurface
+        : Colors.error
     property int paintWidth: 6
     property int screenshotDelay: 0
     property int countdownRemaining: 0
@@ -54,16 +58,32 @@ Loader {
         countdownRemaining = 0;
         countdownActive = false;
         confirming = false;
-        drawingTool = "select";
         shapes = [];
         currentShape = null;
         chromeVisible = true;
     }
 
+    function updateSetting(name, value) {
+        Settings.change({ name: name, value: value });
+    }
+
+    function loadSettings() {
+        captureMode = Settings.get("screenCaptureMode")?.value ?? "copysave";
+        targetMode = Settings.get("screenCaptureTargetMode")?.value ?? "area";
+        drawingTool = Settings.get("screenCaptureDrawingTool")?.value ?? "select";
+        paintColorMode = Settings.get("screenCapturePaintColor")?.value ?? "error";
+        screenshotDelay = Settings.get("screenCaptureDelay")?.value ?? 0;
+    }
+
     function open() {
         resetSelection();
-        targetMode = "area";
         active = true;
+        if (targetMode === "screen") {
+            Qt.callLater(() => {
+                if (active && item)
+                    selectFullScreen(item.width, item.height);
+            });
+        }
     }
 
     function close() {
@@ -189,6 +209,16 @@ Loader {
     function cycleScreenshotDelay() {
         const currentIndex = screenshotDelays.indexOf(screenshotDelay);
         screenshotDelay = screenshotDelays[(currentIndex + 1) % screenshotDelays.length];
+        updateSetting("screenCaptureDelay", screenshotDelay);
+    }
+
+    Component.onCompleted: loadSettings()
+
+    Connections {
+        target: Settings
+        function onSettingsChanged() {
+            loader.loadSettings();
+        }
     }
 
 
@@ -673,6 +703,7 @@ Loader {
                             onClicked: {
                                 loader.resetSelection();
                                 loader.targetMode = modelData.mode;
+                                loader.updateSetting("screenCaptureTargetMode", modelData.mode);
                                 if (modelData.mode === "screen")
                                     loader.selectFullScreen(captureSurface.width, captureSurface.height);
                             }
@@ -716,21 +747,29 @@ Loader {
                     spacing: Styles.marginMd
 
                     Repeater {
-                        model: [Colors.error, Colors.primary, Colors.tertiary, Colors.onSurface]
+                        model: [
+                            { mode: "error", color: Colors.error },
+                            { mode: "primary", color: Colors.primary },
+                            { mode: "tertiary", color: Colors.tertiary },
+                            { mode: "onSurface", color: Colors.onSurface }
+                        ]
 
                         delegate: Rectangle {
                             required property var modelData
                             width: 24
                             height: 24
                             radius: 12
-                            color: modelData
-                            border.width: loader.paintColor.toString() === modelData.toString() ? 2 : 0
+                            color: modelData.color
+                            border.width: loader.paintColorMode === modelData.mode ? 2 : 0
                             border.color: Colors.onSurface
 
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: loader.paintColor = parent.modelData
+                                onClicked: {
+                                    loader.paintColorMode = parent.modelData.mode;
+                                    loader.updateSetting("screenCapturePaintColor", parent.modelData.mode);
+                                }
                             }
                         }
                     }
@@ -756,7 +795,10 @@ Loader {
                             isFocused: loader.drawingTool === modelData.tool
                             defaultColor: isFocused ? Colors.primary : Colors.surfaceVariant
                             textColor: isFocused ? Colors.onPrimary : Colors.onSurface
-                            onClicked: loader.drawingTool = modelData.tool
+                            onClicked: {
+                                loader.drawingTool = isFocused ? "select" : modelData.tool;
+                                loader.updateSetting("screenCaptureDrawingTool", loader.drawingTool);
+                            }
                         }
                     }
 
@@ -831,7 +873,10 @@ Loader {
                             isFocused: loader.captureMode === modelData.mode
                             defaultColor: isFocused ? Colors.primary : Colors.surfaceVariant
                             textColor: isFocused ? Colors.onPrimary : Colors.onSurface
-                            onClicked: loader.captureMode = modelData.mode
+                            onClicked: {
+                                loader.captureMode = modelData.mode;
+                                loader.updateSetting("screenCaptureMode", modelData.mode);
+                            }
                         }
                     }
 

@@ -49,6 +49,36 @@ Singleton {
             options: ['title', 'appId'],
             category: 'appearance'
         })
+        register({
+            name: 'screenCaptureTargetMode',
+            value: 'area',
+            options: ['area', 'window', 'screen'],
+            category: 'misc'
+        })
+        register({
+            name: 'screenCaptureMode',
+            value: 'copysave',
+            options: ['copy', 'save', 'copysave'],
+            category: 'misc'
+        })
+        register({
+            name: 'screenCaptureDrawingTool',
+            value: 'select',
+            options: ['select', 'draw', 'line', 'box', 'erase'],
+            category: 'misc'
+        })
+        register({
+            name: 'screenCapturePaintColor',
+            value: 'error',
+            options: ['error', 'primary', 'tertiary', 'onSurface'],
+            category: 'misc'
+        })
+        register({
+            name: 'screenCaptureDelay',
+            value: 0,
+            options: [0, 3, 5, 10],
+            category: 'misc'
+        })
     }
 
     property var settings: []
