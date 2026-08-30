@@ -365,6 +365,11 @@ Loader {
             anchors.fill: parent
             focus: true
 
+            TapHandler {
+                acceptedButtons: Qt.RightButton
+                onTapped: loader.close()
+            }
+
             Keys.onPressed: event => {
                 if (controls.escapePressed(event)) {
                     loader.close();
@@ -517,15 +522,15 @@ Loader {
                         annotationCanvas.requestPaint();
                         return;
                     }
+                    if (loader.targetMode === "window") {
+                        loader.selectWindowAt(mouse.x, mouse.y);
+                        return;
+                    }
                     const adjustment = loader.adjustmentModeAt(mouse.x, mouse.y);
                     if (adjustment !== "") {
                         loader.adjustmentMode = adjustment;
                         loader.adjustmentStart = loader.selection;
                         loader.dragStart = Qt.point(mouse.x, mouse.y);
-                        return;
-                    }
-                    if (loader.targetMode === "window") {
-                        loader.selectWindowAt(mouse.x, mouse.y);
                         return;
                     }
                     loader.dragStart = Qt.point(mouse.x, mouse.y);
@@ -676,27 +681,6 @@ Loader {
 
                     Spacer {}
 
-                    Repeater {
-                        model: [
-                            { icon: Icons.copy, mode: "copy" },
-                            { icon: Icons.save, mode: "save" },
-                            { icon: Icons.image, mode: "copysave" }
-                        ]
-
-                        delegate: ButtonStyled {
-                            required property var modelData
-                            implicitWidth: 30
-                            implicitHeight: 30
-                            text: modelData.icon
-                            isFocused: loader.captureMode === modelData.mode
-                            defaultColor: isFocused ? Colors.primary : Colors.surfaceVariant
-                            textColor: isFocused ? Colors.onPrimary : Colors.onSurface
-                            onClicked: loader.captureMode = modelData.mode
-                        }
-                    }
-
-                    Spacer {}
-
                     ButtonStyled {
                         implicitWidth: 30
                         implicitHeight: 30
@@ -713,7 +697,13 @@ Loader {
 
                 visible: loader.chromeVisible && loader.confirming && !loader.countdownActive
                 x: Math.max(Styles.marginSm, Math.min(parent.width - width - Styles.marginSm, loader.selection.x + loader.selection.width / 2 - width / 2))
-                y: Math.max(Styles.marginSm, Math.min(parent.height - height - Styles.marginSm, loader.selection.y + loader.selection.height + Styles.marginSm))
+                y: loader.targetMode === "screen" || loader.targetMode === "window"
+                    ? toolbar.y + toolbar.height + Styles.marginSm
+                    : loader.selection.y >= height + Styles.marginSm * 2
+                        ? loader.selection.y - height - Styles.marginSm
+                        : loader.selection.y + loader.selection.height + height + Styles.marginSm * 2 <= parent.height
+                            ? loader.selection.y + loader.selection.height + Styles.marginSm
+                            : Math.max(Styles.marginSm, loader.selection.y + Styles.marginSm)
                 width: confirmationRow.implicitWidth + Styles.marginMd * 2
                 height: 50
                 color: Colors.surface
@@ -818,6 +808,31 @@ Loader {
                         defaultColor: Colors.error
                         textColor: Colors.onError
                         onClicked: loader.startRecording()
+                    }
+
+                    Rectangle {
+                        Layout.fillHeight: true
+                        Layout.preferredWidth: 1
+                        color: Colors.outlineVariant
+                    }
+
+                    Repeater {
+                        model: [
+                            { icon: Icons.copy, mode: "copy" },
+                            { icon: Icons.save, mode: "save" },
+                            { icon: Icons.image, mode: "copysave" }
+                        ]
+
+                        delegate: ButtonStyled {
+                            required property var modelData
+                            implicitWidth: 30
+                            implicitHeight: 30
+                            text: modelData.icon
+                            isFocused: loader.captureMode === modelData.mode
+                            defaultColor: isFocused ? Colors.primary : Colors.surfaceVariant
+                            textColor: isFocused ? Colors.onPrimary : Colors.onSurface
+                            onClicked: loader.captureMode = modelData.mode
+                        }
                     }
 
                     ButtonStyled {
