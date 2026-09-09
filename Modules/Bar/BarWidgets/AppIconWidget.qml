@@ -33,13 +33,18 @@ Item {
         return !!toplevel?.wayland && appIdFor(toplevel) !== "unknown";
     }
 
+    function desktopEntryFor(toplevel) {
+        const appId = appIdFor(toplevel);
+        return DesktopEntries.byId(appId) || DesktopEntries.heuristicLookup(appId);
+    }
+
     function appNameFor(toplevel) {
         const appId = appIdFor(toplevel);
-        return DesktopEntries.byId(appId)?.name || appId;
+        return desktopEntryFor(toplevel)?.name || appId;
     }
 
     function iconFor(toplevel) {
-        return Quickshell.iconPath(DesktopEntries.byId(appIdFor(toplevel))?.icon, "applications-other");
+        return Quickshell.iconPath(desktopEntryFor(toplevel)?.icon, "applications-other");
     }
 
     function titleFor(toplevel) {
@@ -98,6 +103,13 @@ Item {
 
     Connections {
         target: Hyprland.toplevels
+        function onValuesChanged() {
+            root.updateGroups();
+        }
+    }
+
+    Connections {
+        target: DesktopEntries.applications
         function onValuesChanged() {
             root.updateGroups();
         }
