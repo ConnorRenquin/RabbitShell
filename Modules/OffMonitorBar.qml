@@ -33,6 +33,29 @@ Loader {
         return controls.preferredLabel(primary, fallback, "Unknown App");
     }
 
+    function specialWorkspaceName(workspace) {
+        const prefix = "special:";
+        const name = workspace?.name ?? "";
+        return name.startsWith(prefix) ? name.slice(prefix.length) : "";
+    }
+
+    function shownSpecialWorkspaceName() {
+        const monitorSpecial = Hyprland.focusedMonitor?.lastIpcObject?.specialWorkspace;
+        return specialWorkspaceName(monitorSpecial) || specialWorkspaceName(Hyprland.focusedWorkspace);
+    }
+
+    function activateToplevel(toplevel) {
+        if (!toplevel?.wayland)
+            return;
+
+        const currentSpecial = shownSpecialWorkspaceName();
+        const targetSpecial = specialWorkspaceName(toplevel.workspace);
+        if (currentSpecial !== targetSpecial)
+            Hyprland.dispatch('hl.dsp.workspace.toggle_special({ workspace = "' + (targetSpecial || currentSpecial) + '" })');
+
+        Qt.callLater(() => toplevel.wayland.activate());
+    }
+
     function updateToplevels() {
         if (!Hyprland.toplevels || !Hyprland.focusedWorkspace)
             return;
@@ -99,6 +122,7 @@ Loader {
     GlobalShortcut {
         name: "offmonitorbar"
         onPressed: {
+            Hyprland.refreshMonitors();
             root.updateToplevels();
             hideTimer.restart();
             root.active = true;
@@ -119,7 +143,7 @@ Loader {
             root.pendingActivation = null;
             root.active = false;
             if (target)
-                target.wayland.activate();
+                root.activateToplevel(target);
         }
     }
 
@@ -298,7 +322,7 @@ Loader {
                                             root.pendingActivation = null;
                                             root.typedKeys = "";
                                             root.active = false;
-                                            offMonitor.modelData.wayland.activate();
+                                            root.activateToplevel(offMonitor.modelData);
                                         }
                                     }
 
@@ -381,7 +405,7 @@ Loader {
                         root.pendingActivation = null;
                         root.typedKeys = "";
                         root.active = false;
-                        match.toplevel.wayland.activate();
+                        root.activateToplevel(match.toplevel);
                         event.accepted = true;
                     }
                     return;
