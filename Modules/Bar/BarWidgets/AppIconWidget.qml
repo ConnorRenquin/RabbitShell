@@ -108,6 +108,30 @@ Item {
         }
     }
 
+    Repeater {
+        model: Hyprland.toplevels
+
+        delegate: Item {
+            id: toplevelWatcher
+
+            required property var modelData
+
+            Connections {
+                target: toplevelWatcher.modelData
+                function onWaylandChanged() {
+                    root.updateGroups();
+                }
+            }
+
+            Connections {
+                target: toplevelWatcher.modelData?.wayland ?? null
+                function onAppIdChanged() {
+                    root.updateGroups();
+                }
+            }
+        }
+    }
+
     Connections {
         target: DesktopEntries.applications
         function onValuesChanged() {
