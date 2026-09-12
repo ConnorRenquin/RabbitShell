@@ -204,57 +204,6 @@ Loader {
                     }
                 }
             }
-
-            Rectangle {
-                id: categoryRowBackground
-
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: categoryRow.implicitWidth + Styles.marginSm
-                Layout.preferredHeight: Styles.marginLg + Styles.marginMd
-
-                color: Colors.surface
-                radius: Styles.radiusSm
-
-                RowLayout {
-                    id: categoryRow
-
-                    anchors.centerIn: parent
-                    spacing: Styles.marginXS
-
-                    ButtonStyled {
-                        Layout.preferredWidth: Styles.marginLg + Styles.marginSm
-                        Layout.preferredHeight: Styles.marginLg + Styles.marginSm
-
-                        text: Icons.infinity
-                        pointSize: Styles.textLg
-                        isFocused: root.selectedCategory === "all"
-                        defaultColor: isFocused ? Colors.primary : Colors.background
-                        textColor: isFocused ? Colors.onPrimary : Colors.onBackground
-                        Accessible.name: "All applications"
-                        onClicked: root.selectCategory("all")
-                    }
-
-                    Repeater {
-                        model: root.availableCategoryDefinitions
-
-                        delegate: ButtonStyled {
-                            required property var modelData
-
-                            Layout.preferredWidth: Styles.marginLg + Styles.marginSm
-                            Layout.preferredHeight: Styles.marginLg + Styles.marginSm
-
-                            text: modelData.icon
-                            pointSize: Styles.textLg
-                            isFocused: root.selectedCategory === modelData.category
-                            defaultColor: isFocused ? Colors.primary : Colors.background
-                            textColor: isFocused ? Colors.onPrimary : Colors.onBackground
-                            Accessible.name: modelData.category
-                            onClicked: root.selectCategory(modelData.category)
-                        }
-                    }
-                }
-            }
-
             Rectangle {
                 id: appGridBackground
 
@@ -319,6 +268,55 @@ Loader {
                                     text: appLaunchButton.modelData.name
                                 }
                             }
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                id: categoryRowBackground
+
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: categoryRow.implicitWidth + Styles.marginSm
+                Layout.preferredHeight: Styles.marginLg + Styles.marginMd
+
+                color: Colors.surface
+                radius: Styles.radiusSm
+
+                RowLayout {
+                    id: categoryRow
+
+                    anchors.centerIn: parent
+                    spacing: Styles.marginXS
+
+                    ButtonStyled {
+                        Layout.preferredWidth: Styles.marginLg + Styles.marginSm
+                        Layout.preferredHeight: Styles.marginLg + Styles.marginSm
+
+                        text: Icons.infinity
+                        pointSize: Styles.textLg
+                        isFocused: root.selectedCategory === "all"
+                        defaultColor: isFocused ? Colors.primary : Colors.background
+                        textColor: isFocused ? Colors.onPrimary : Colors.onBackground
+                        Accessible.name: "All applications"
+                        onClicked: root.selectCategory("all")
+                    }
+
+                    Repeater {
+                        model: root.availableCategoryDefinitions
+
+                        delegate: ButtonStyled {
+                            required property var modelData
+
+                            Layout.preferredWidth: Styles.marginLg + Styles.marginSm
+                            Layout.preferredHeight: Styles.marginLg + Styles.marginSm
+
+                            text: modelData.icon
+                            pointSize: Styles.textLg
+                            isFocused: root.selectedCategory === modelData.category
+                            defaultColor: isFocused ? Colors.primary : Colors.background
+                            textColor: isFocused ? Colors.onPrimary : Colors.onBackground
+                            Accessible.name: modelData.category
+                            onClicked: root.selectCategory(modelData.category)
                         }
                     }
                 }
