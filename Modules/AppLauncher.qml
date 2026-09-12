@@ -153,7 +153,10 @@ Loader {
                             right: clockBackground.left
                             margins: Styles.marginSm
                         }
-                        onTextChanged: System.setApplicationSearchText(text)
+                        onTextChanged: {
+                            System.setApplicationSearchText(text);
+                            appGridView.currentIndex = System.filteredApplications.length > 0 ? 0 : -1;
+                        }
                         Keys.onPressed: event => root.gridNavigationController(event)
                     }
 
