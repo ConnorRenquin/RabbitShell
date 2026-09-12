@@ -17,13 +17,30 @@ Singleton {
 
     // Application launcher state
     property var filteredApplications: []
+    property var applicationCategories: []
     property string applicationSearchText: ""
+    property string applicationCategory: "all"
+    readonly property var mainApplicationCategories: [
+        "AudioVideo",
+        "Development",
+        "Education",
+        "HealthFitness",
+        "Game",
+        "Graphics",
+        "Network",
+        "Office",
+        "Science",
+        "Settings",
+        "System",
+        "Utility"
+    ]
     readonly property var shellApplications: [
         {
             name: "Settings",
             genericName: "Settings Module",
             description: "Open the Quickshell settings module",
             keywords: ["settings", "preferences", "configuration", "config", "quickshell"],
+            categories: ["Settings"],
             icon: "preferences-system",
             execute: function () {
                 PatchBay.openSettings();
@@ -78,6 +95,11 @@ Singleton {
         root.updateFilteredApplications(root.applicationSearchText);
     }
 
+    function setApplicationCategory(category) {
+        root.applicationCategory = category || "all";
+        root.updateFilteredApplications(root.applicationSearchText);
+    }
+
     function calculateApplicationRelevance(app, searchText) {
         if (searchText === "")
             return 1;
@@ -112,17 +134,27 @@ Singleton {
 
         var allApps = root.shellApplications.concat(DesktopEntries.applications.values);
 
+        var availableCategories = {};
+        for (var i = 0; i < allApps.length; i++) {
+            var categories = allApps[i].categories || [];
+            for (var j = 0; j < categories.length; j++)
+                availableCategories[categories[j]] = true;
+        }
+        root.applicationCategories = root.mainApplicationCategories.filter(category => availableCategories[category]);
+
+        var categoryApps = allApps.filter(app => root.applicationCategory === "all" || (app.categories || []).includes(root.applicationCategory));
+
         if (searchText === "") {
-            root.filteredApplications = allApps;
+            root.filteredApplications = categoryApps;
             return;
         }
 
         var scored = [];
-        for (var i = 0; i < allApps.length; i++) {
-            var score = root.calculateApplicationRelevance(allApps[i], searchText);
+        for (var k = 0; k < categoryApps.length; k++) {
+            var score = root.calculateApplicationRelevance(categoryApps[k], searchText);
             if (score > 0) {
                 scored.push({
-                    app: allApps[i],
+                    app: categoryApps[k],
                     score: score
                 });
             }
@@ -133,8 +165,8 @@ Singleton {
         });
 
         var results = [];
-        for (var j = 0; j < scored.length; j++) {
-            results.push(scored[j].app);
+        for (var resultIndex = 0; resultIndex < scored.length; resultIndex++) {
+            results.push(scored[resultIndex].app);
         }
 
         root.filteredApplications = results;

@@ -27,7 +27,7 @@ Loader {
         id: root
 
         implicitWidth: 800
-        implicitHeight: 320
+        implicitHeight: 380
 
         color: "transparent"
 
@@ -42,6 +42,22 @@ Loader {
             category: 'appearance'
         }).value
         property bool topBar: Settings.get('barPosition').value
+        property string selectedCategory: "all"
+        readonly property var categoryDefinitions: [
+            { category: "AudioVideo", icon: Icons.categoryAudioVideo },
+            { category: "Development", icon: Icons.categoryDevelopment },
+            { category: "Education", icon: Icons.categoryEducation },
+            { category: "HealthFitness", icon: Icons.categoryHealthFitness },
+            { category: "Game", icon: Icons.categoryGame },
+            { category: "Graphics", icon: Icons.categoryGraphics },
+            { category: "Network", icon: Icons.categoryNetwork },
+            { category: "Office", icon: Icons.categoryOffice },
+            { category: "Science", icon: Icons.categoryScience },
+            { category: "Settings", icon: Icons.categorySettings },
+            { category: "System", icon: Icons.categorySystem },
+            { category: "Utility", icon: Icons.categoryUtility }
+        ]
+        readonly property var availableCategoryDefinitions: categoryDefinitions.filter(definition => System.applicationCategories.includes(definition.category))
         anchors.bottom: !topBar && !center
         anchors.top: topBar && !center
         anchors.left: offset
@@ -52,6 +68,7 @@ Loader {
 
         Component.onCompleted: {
             textInput.focus = true;
+            System.setApplicationCategory("all");
             System.setApplicationSearchText(textInput.text);
         }
 
@@ -60,7 +77,13 @@ Loader {
         }
 
         function gridNavigationController(event) {
-            if (controls.escapePressed(event)) {
+            if (controls.tabPressed(event)) {
+                cycleCategory(1);
+                event.accepted = true;
+            } else if (controls.backtabPressed(event)) {
+                cycleCategory(-1);
+                event.accepted = true;
+            } else if (controls.escapePressed(event)) {
                 textInput.text = "";
                 loader.active = false;
             } else if (controls.enterPressed(event)) {
@@ -78,6 +101,18 @@ Loader {
             } else if (controls.rightPressed(event, true)) {
                 appGridView.moveCurrentIndexRight();
             }
+        }
+
+        function selectCategory(category) {
+            selectedCategory = category;
+            System.setApplicationCategory(category);
+            appGridView.currentIndex = System.filteredApplications.length > 0 ? 0 : -1;
+        }
+
+        function cycleCategory(offset) {
+            var categories = ["all"].concat(availableCategoryDefinitions.map(definition => definition.category));
+            var currentIndex = categories.indexOf(selectedCategory);
+            selectCategory(categories[(currentIndex + offset + categories.length) % categories.length]);
         }
 
         HyprlandFocusGrab {
@@ -163,6 +198,56 @@ Loader {
                         textInput.text = "";
                         loader.active = false;
                         PatchBay.openPowerMenu();
+                    }
+                }
+            }
+
+            Rectangle {
+                id: categoryRowBackground
+
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: categoryRow.implicitWidth + Styles.marginSm
+                Layout.preferredHeight: Styles.marginLg + Styles.marginMd
+
+                color: Colors.surface
+                radius: Styles.radiusSm
+
+                RowLayout {
+                    id: categoryRow
+
+                    anchors.centerIn: parent
+                    spacing: Styles.marginXS
+
+                    ButtonStyled {
+                        Layout.preferredWidth: Styles.marginLg + Styles.marginSm
+                        Layout.preferredHeight: Styles.marginLg + Styles.marginSm
+
+                        text: Icons.infinity
+                        pointSize: Styles.textLg
+                        isFocused: root.selectedCategory === "all"
+                        defaultColor: isFocused ? Colors.primary : Colors.background
+                        textColor: isFocused ? Colors.onPrimary : Colors.onBackground
+                        Accessible.name: "All applications"
+                        onClicked: root.selectCategory("all")
+                    }
+
+                    Repeater {
+                        model: root.availableCategoryDefinitions
+
+                        delegate: ButtonStyled {
+                            required property var modelData
+
+                            Layout.preferredWidth: Styles.marginLg + Styles.marginSm
+                            Layout.preferredHeight: Styles.marginLg + Styles.marginSm
+
+                            text: modelData.icon
+                            pointSize: Styles.textLg
+                            isFocused: root.selectedCategory === modelData.category
+                            defaultColor: isFocused ? Colors.primary : Colors.background
+                            textColor: isFocused ? Colors.onPrimary : Colors.onBackground
+                            Accessible.name: modelData.category
+                            onClicked: root.selectCategory(modelData.category)
+                        }
                     }
                 }
             }

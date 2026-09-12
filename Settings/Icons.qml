@@ -43,6 +43,20 @@ Singleton {
     readonly property string calendar: "󰃭"
     readonly property string moveWindow: "󰩨"
 
+    readonly property string categoryAudioVideo: "󰝚"
+    readonly property string categoryDevelopment: ""
+    readonly property string categoryEducation: "󰑴"
+    readonly property string categoryHealthFitness: "󰓅"
+    readonly property string categoryGame: "󰊗"
+    readonly property string categoryGraphics: "󰏘"
+    readonly property string categoryNetwork: "󰖩"
+    readonly property string categoryOffice: "󰈙"
+    readonly property string categoryScience: ""
+    readonly property string categorySettings: settingsCog
+    readonly property string categorySystem: ""
+    readonly property string categoryUtility: "󰒓"
+    readonly property string infinity: "∞"
+
 
     readonly property string nowPlaying: "󰎄"
 
